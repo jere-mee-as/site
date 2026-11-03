@@ -140,6 +140,52 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
 .foot a{text-decoration:none;color:var(--tangerine)}
 @media (min-width:768px){.foot{flex-direction:row}}
 
+/* play button + player deck */
+.play-big{position:absolute;left:50%;bottom:-6rem;transform:translateX(-50%);z-index:25;display:flex;align-items:center;gap:.75rem;padding:.9rem 1.6rem;border:2px solid var(--ivory);background:var(--magenta);color:var(--ivory);font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.35em;text-transform:uppercase;cursor:pointer;box-shadow:6px 6px 0 var(--tangerine);white-space:nowrap}
+.play-big:hover{background:var(--tangerine);color:var(--ink);box-shadow:6px 6px 0 var(--magenta)}
+body.fine .play-big{cursor:none}
+.cover-cap{bottom:-2.25rem}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:65;height:76px;display:flex;align-items:center;gap:1rem;padding:0 1rem;background:oklch(0.12 0.02 330 / 92%);border-top:2px solid var(--ivory);box-shadow:0 -6px 0 var(--magenta);backdrop-filter:blur(8px)}
+#bar button{background:none;border:0;color:var(--ivory);font:700 16px var(--mono);cursor:pointer;width:40px;height:40px;display:grid;place-items:center}
+#bar button:hover{color:var(--tangerine)}
+#bar #b-play{width:48px;height:48px;background:var(--magenta);border:2px solid var(--ivory);box-shadow:3px 3px 0 var(--tangerine)}
+#bar #b-play:hover{background:var(--tangerine);color:var(--ink)}
+body.fine #bar button,body.fine #bar input,body.fine #thumb{cursor:none}
+.btns{display:flex;align-items:center;gap:.25rem;flex-shrink:0}
+.meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.meta .row1{display:flex;align-items:baseline;gap:.75rem;min-width:0}
+.meta .n{font-size:10px;letter-spacing:.3em;color:var(--tangerine);flex-shrink:0}
+.meta .title{font-family:var(--display);font-weight:700;font-size:13px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meta .row2{display:flex;align-items:center;gap:.6rem;font-size:11px;color:var(--lilac)}
+.meta .tm{width:3.2em;flex-shrink:0;text-align:center}
+#seek{flex:1}
+.vol{display:flex;align-items:center;gap:.25rem;flex-shrink:0}
+#vol{width:84px}
+#bar input[type=range]{-webkit-appearance:none;appearance:none;height:4px;background:linear-gradient(90deg,var(--magenta) var(--p,0%),oklch(0.8 0.08 300 / 30%) var(--p,0%));cursor:pointer}
+#bar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--ivory);border:2px solid var(--magenta)}
+#bar input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:0;background:var(--ivory);border:2px solid var(--magenta)}
+#thumb{position:relative;flex-shrink:0;width:52px;height:52px;border:2px solid var(--ivory);box-shadow:3px 3px 0 var(--magenta);background:#000;overflow:hidden;cursor:pointer}
+#thumb #yt,#thumb iframe{position:absolute;left:0;top:0;width:200px!important;height:200px!important;transform:scale(.24);transform-origin:0 0;pointer-events:none;border:0}
+#thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:opacity .3s}
+#thumb.live img{opacity:0;pointer-events:none}
+#thumb::after{content:"";position:absolute;inset:0}
+body{padding-bottom:76px}
+@media (max-width:700px){
+  #bar{gap:.6rem;padding:0 .6rem}
+  #bar button{width:34px}
+  #bar #b-play{width:42px;height:42px}
+  .vol{display:none}
+  .meta .tm{width:auto;font-size:10px}
+  #thumb{width:46px;height:46px}
+  #thumb #yt,#thumb iframe{transform:scale(.21)}
+  .cover-cap{letter-spacing:.3em}
+}
+.tracks li{cursor:pointer}
+body.fine .tracks li{cursor:none}
+.tracks li.playing{background:oklch(0.55 0.23 3 / 35%)}
+.tracks li.playing .n::before{content:"▶ ";color:var(--ivory)}
+.tracks li .n{width:3.2rem}
+
 /* motion-sensitive visitors: no strobe, no flashes, no glitch */
 @media (prefers-reduced-motion: reduce){
   .strobe{animation:none;background:var(--plum)}
@@ -173,6 +219,7 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
         <div class="beam"></div>
       </div>
       <div class="cover-cap flicker" id="cap">EMI · 1982 · click anywhere</div>
+      <button class="play-big" id="play-big" type="button"><span id="play-big-icon">▶</span> <span id="play-big-label">Play Rio</span></button>
     </div>
     <a class="back" href="../">← Jerelevance</a>
     <div class="mq-top" data-marquee="DURAN DURAN — RIO — DURAN DURAN — RIO"></div>
@@ -212,11 +259,28 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
     <div class="abs strobe"></div>
     <h2>The <span style="color:var(--tangerine)">Sound</span>scape</h2>
     <canvas id="bars"></canvas>
-    <p class="hint">shake the mouse · scroll hard · it plays you back</p>
+    <p class="hint" id="hint">shake the mouse · scroll hard · it plays you back</p>
     <div class="band a" data-marquee="HUNGRY LIKE THE WOLF · SAVE A PRAYER · THE CHAUFFEUR"></div>
     <div class="band b" data-marquee="NEW RELIGION · MY OWN WAY · HOLD BACK THE RAIN" data-rev></div>
   </section>
 </main>
+
+<div id="bar" role="region" aria-label="Music player">
+  <div class="btns">
+    <button type="button" id="b-prev" aria-label="Previous track">⏮</button>
+    <button type="button" id="b-play" aria-label="Play or pause">▶</button>
+    <button type="button" id="b-next" aria-label="Next track">⏭</button>
+  </div>
+  <div class="meta">
+    <div class="row1"><span class="n"><span id="deck-n">01</span> / 09</span><span class="title" id="deck-title">Rio</span></div>
+    <div class="row2"><span class="tm" id="t-cur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek"><span class="tm" id="t-dur">5:33</span></div>
+  </div>
+  <div class="vol">
+    <button type="button" id="b-mute" aria-label="Mute">🔊</button>
+    <input type="range" id="vol" min="0" max="100" value="80" aria-label="Volume">
+  </div>
+  <div id="thumb" title="Duran Duran — Rio"><div id="yt"></div><img id="thumb-img" alt="" src="https://i.ytimg.com/vi/V-qYYZrky1Y/hqdefault.jpg"></div>
+</div>
 
 <footer>
   <div class="big text-outline">RIO</div>
@@ -251,7 +315,10 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
   });
 
   /* ---- tracklist ---- */
-  const TRACKS = [["Rio","5:33"],["My Own Way","4:51"],["Lonely in Your Nightmare","3:50"],["Hungry Like the Wolf","3:41"],["Hold Back the Rain","3:59"],["New Religion","5:31"],["Last Chance on the Stairway","4:18"],["Save a Prayer","5:25"],["The Chauffeur","5:23"]];
+  // official 2009 remaster uploads from Duran Duran's YouTube channel
+  const TRACKS = [["Rio","5:33","V-qYYZrky1Y"],["My Own Way","4:51","bhD5hmN86G4"],["Lonely in Your Nightmare","3:50","_R4kIZcbOJk"],["Hungry Like the Wolf","3:41","DjcCQsRCHUs"],["Hold Back the Rain","3:59","Hmy-VWBtypo"],["New Religion","5:31","-Y9Tty4Jg10"],["Last Chance on the Stairway","4:18","0TSOM7PkFkg"],["Save a Prayer","5:25","zMNZ5Gw3Zbg"],["The Chauffeur","5:23","kUX9pf_wJmg"]];
+  const IDS = TRACKS.map(t => t[2]);
+  let music = 0, playing = false; // music: 0..1, eases toward 1 while a song plays
   const ol = document.getElementById("tracklist");
   const preview = document.getElementById("preview");
   const previewImg = preview.querySelector("img");
@@ -259,6 +326,7 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
   TRACKS.forEach(([title, len], i) => {
     const li = document.createElement("li");
     li.innerHTML = `<span class="n">${String(i+1).padStart(2,"0")}</span><span class="t" style="font-size:min(${(68/title.length).toFixed(2)}vw,4.5rem)">${title}</span><span class="d">${len}</span>`;
+    li.addEventListener("click", () => playTrack(i));
     if (fine) {
       li.addEventListener("pointerenter", () => { hover = i; previewImg.style.filter = `hue-rotate(${i*40}deg) saturate(1.6)`; preview.style.display = "block"; placePreview(); });
       li.addEventListener("pointerleave", () => { hover = null; preview.style.display = "none"; });
@@ -284,6 +352,7 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
     placePreview();
   }, { passive:true });
   addEventListener("pointerdown", e => {
+    if (e.target.closest && e.target.closest("#bar")) return; // no flash when using the player
     pulse.bursts.push({ x:e.clientX, y:e.clientY, t:performance.now() });
     flash(.85); lastFlash = performance.now();
   });
@@ -367,7 +436,8 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
     ctx.fillStyle = "rgba(20,4,16,0.28)"; ctx.fillRect(0,0,w,h);
     ctx.globalCompositeOperation = "lighter";
     const mx = pulse.px*dpr, my = pulse.py*dpr;
-    const energy = (1 + Math.abs(pulse.vel)*.08 + pulse.mouseSpeed*.03) * motion;
+    music += ((playing ? 1 : 0) - music) * .03;
+    const energy = (1 + Math.abs(pulse.vel)*.08 + pulse.mouseSpeed*.03 + music*1.6) * motion;
     const diag = w + h, R = 260*dpr;
     ctx.shadowBlur = 12*dpr;
     for (const s of strings) {
@@ -423,8 +493,8 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
   function drawBars(t){
     if (barsOn) {
       bctx.clearRect(0,0,bw,bh);
-      const energy = .3 + Math.min(1.5, pulse.mouseSpeed*.03 + Math.abs(pulse.vel)*.02);
-      const n = 64, cw = bw/n, tt = t*motion;
+      const energy = .3 + music*.7 + Math.min(1.5, pulse.mouseSpeed*.03 + Math.abs(pulse.vel)*.02);
+      const n = 64, cw = bw/n, tt = t*motion*(1 + music*.6);
       for (let i = 0; i < n; i++) {
         const near = moved ? 1 - Math.min(1, Math.abs(i/n - pulse.mx)*3) : 0;
         const v = (Math.sin(tt*.008 + i*.5)*.5+.5) * (Math.sin(tt*.003 + i*.13)*.5+.5);
@@ -436,6 +506,88 @@ footer{position:relative;z-index:10;overflow:hidden;background:var(--plum);paddi
     requestAnimationFrame(drawBars);
   }
   requestAnimationFrame(drawBars);
+
+  /* ---- YouTube player in the bottom bar: the whole album, full tracks ---- */
+  const $ = id => document.getElementById(id);
+  const thumb = $("thumb"), thumbImg = $("thumb-img"), seek = $("seek"), vol = $("vol");
+  const bigIcon = $("play-big-icon"), bigLabel = $("play-big-label"), bPlay = $("b-play");
+  let player = null, ready = false, pending = null, current = 0, apiLoading = false, seeking = false, started = false;
+  const fmt = s => { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); };
+  const fill = el => el.style.setProperty("--p", (el.value - el.min) / (el.max - el.min) * 100 + "%");
+  fill(seek); fill(vol);
+
+  function loadApi(){
+    if (apiLoading) return; apiLoading = true;
+    window.onYouTubeIframeAPIReady = () => {
+      player = new YT.Player("yt", {
+        width: "100%", height: "100%",
+        playerVars: { playsinline: 1, rel: 0, controls: 0, disablekb: 1, iv_load_policy: 3 },
+        events: {
+          onReady: () => { ready = true; player.setVolume(+vol.value); if (pending !== null) { const i = pending; pending = null; start(i); } },
+          onStateChange: e => {
+            if (e.data === YT.PlayerState.PLAYING) { thumb.classList.add("live"); setIndex(player.getPlaylistIndex()); setPlaying(true); }
+            else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlaying(false);
+          },
+          onError: () => { if (current < IDS.length - 1) player.nextVideo(); }
+        }
+      });
+    };
+    const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+  }
+  function start(i){ started = true; player.loadPlaylist(IDS, i); setIndex(i); }
+  function playTrack(i){
+    if (ready) { if (i === current && started) player.playVideo(); else start(i); }
+    else { pending = i; setIndex(i); loadApi(); }
+  }
+  function toggle(){
+    if (!ready || !started) return playTrack(current);
+    playing ? player.pauseVideo() : player.playVideo();
+  }
+  function setIndex(i){
+    if (i == null || i < 0) return;
+    current = i;
+    $("deck-n").textContent = String(i+1).padStart(2,"0");
+    $("deck-title").textContent = TRACKS[i][0];
+    $("t-dur").textContent = TRACKS[i][1];
+    thumbImg.src = `https://i.ytimg.com/vi/${IDS[i]}/hqdefault.jpg`;
+    [...ol.children].forEach((li, k) => li.classList.toggle("playing", k === i && started));
+  }
+  function setPlaying(p){
+    playing = p;
+    bPlay.textContent = p ? "❚❚" : "▶";
+    bigIcon.textContent = p ? "❚❚" : "▶";
+    bigLabel.textContent = p ? "Pause" : (started ? "Resume" : "Play Rio");
+    $("hint").textContent = p ? "now playing · keep moving, it moves with you" : "shake the mouse · scroll hard · it plays you back";
+  }
+  // progress
+  setInterval(() => {
+    if (!ready || !started || seeking) return;
+    const d = player.getDuration(), c = player.getCurrentTime();
+    if (d > 0) { seek.value = c / d * 1000; fill(seek); $("t-cur").textContent = fmt(c); $("t-dur").textContent = fmt(d); }
+  }, 250);
+  seek.addEventListener("input", () => {
+    seeking = true; fill(seek);
+    if (ready && started) $("t-cur").textContent = fmt(seek.value / 1000 * player.getDuration());
+  });
+  seek.addEventListener("change", () => {
+    if (ready && started) player.seekTo(seek.value / 1000 * player.getDuration(), true);
+    seeking = false;
+  });
+  vol.addEventListener("input", () => {
+    fill(vol);
+    if (ready) { player.setVolume(+vol.value); if (+vol.value > 0) player.unMute(); }
+    $("b-mute").textContent = +vol.value === 0 ? "🔇" : "🔊";
+  });
+  $("b-mute").addEventListener("click", () => {
+    if (!ready) return;
+    if (player.isMuted()) { player.unMute(); $("b-mute").textContent = "🔊"; }
+    else { player.mute(); $("b-mute").textContent = "🔇"; }
+  });
+  $("play-big").addEventListener("click", toggle);
+  bPlay.addEventListener("click", toggle);
+  thumb.addEventListener("click", toggle);
+  $("b-prev").addEventListener("click", () => playTrack(Math.max(0, current - 1)));
+  $("b-next").addEventListener("click", () => playTrack(Math.min(IDS.length - 1, current + 1)));
 })();
 </script>
 </body>
