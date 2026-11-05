@@ -6,7 +6,7 @@
   },
   "scope.html": {
     "title": "Scope",
-    "comment": "An oscilloscope for whatever's playing on YouTube",
+    "comment": "An oscilloscope for any audio file you drop in",
     "date": "2026-11-02"
   }
 }
