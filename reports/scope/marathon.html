@@ -19,7 +19,7 @@
 @property --hl{syntax:'<color>';inherits:true;initial-value:yellow}
 @property --on{syntax:'<color>';inherits:true;initial-value:black}
 @property --onhl{syntax:'<color>';inherits:true;initial-value:black}
-:root.morph{transition:--fl 2.4s steps(8,end),--fc 2.4s steps(8,end),--fh 2.4s steps(8,end),--ink 2.4s steps(8,end),--line 2.4s steps(8,end),--hl 2.4s steps(8,end),--on 2.4s steps(8,end),--onhl 2.4s steps(8,end)}
+:root.morph{--me:cubic-bezier(.45,0,.55,1);transition:--fl var(--mt,3s) var(--me),--fc var(--mt,3s) var(--me),--fh var(--mt,3s) var(--me),--ink var(--mt,3s) var(--me),--line var(--mt,3s) var(--me),--hl var(--mt,3s) var(--me),--on var(--mt,3s) var(--me),--onhl var(--mt,3s) var(--me)}
 :root{
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
@@ -307,10 +307,6 @@ body.hide-ui:not(.awake){cursor:none}
       <h3><span>Order</span></h3>
       <div class="seg" id="cyOrder"></div>
     </div>
-    <div class="sec" data-show="cycle">
-      <h3><span>Change</span></h3>
-      <div class="seg" id="cyHow"></div>
-    </div>
 
     <div class="sec" data-show="gen">
       <h3><span>Style</span></h3>
@@ -474,15 +470,16 @@ body.hide-ui:not(.awake){cursor:none}
   let patt = null, pattKey = "";
 
   let morphT = 0, BGREADY = false;
-  function applyField(key, morph) {
+  function applyField(key, morph, dur = 3000) {
     fieldKey = key; const f = FIELDS[key];
     let fh = f.fh;
     if (morph) {
       // glide the long way round never: pick the nearest equivalent hue
       const cur = parseFloat(getComputedStyle(root).getPropertyValue("--fh")) || 0;
       while (fh - cur > 180) fh -= 360; while (cur - fh > 180) fh += 360;
+      root.style.setProperty("--mt", dur + "ms");
       root.classList.add("morph"); clearTimeout(morphT);
-      morphT = setTimeout(() => root.classList.remove("morph"), 2600);
+      morphT = setTimeout(() => root.classList.remove("morph"), dur + 150);
     } else root.classList.remove("morph");
     for (const k of ["fl", "fc", "ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, f[k]);
     root.style.setProperty("--fh", fh);
@@ -540,7 +537,7 @@ body.hide-ui:not(.awake){cursor:none}
   try { cySet = new Set(JSON.parse(store.get("cyset", "null")) || FKEYS); } catch { cySet = new Set(FKEYS); }
   [...cySet].forEach(k => { if (!FIELDS[k]) cySet.delete(k); });
   const CY = { secs: Math.min(60, Math.max(3, +store.get("cysecs", "12") || 12)), shuffle: store.get("cyshuf", "0") === "1",
-               how: store.get("cyhow", "wipe") === "blend" ? "blend" : "wipe", t0: 0, next: null, bag: [], lastCd: "" };
+               t0: 0, next: null, bag: [], lastCd: "" };
   const saveSet = () => store.set("cyset", JSON.stringify([...cySet]));
 
   function paintSwatches() {
@@ -588,10 +585,9 @@ body.hide-ui:not(.awake){cursor:none}
   function cycleNow() {
     if (!CY.next) { planNext(); if (!CY.next) return; }
     const k = CY.next;
-    if (CY.how === "blend" || reduced) {
-      applyField(k, !reduced); log("cycle // " + FIELDS[k].name.toLowerCase());
-      decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 300, keep: 1 });
-    } else switchField(k);
+    applyField(k, !reduced, Math.round(Math.min(8000, Math.max(1800, CY.secs * 1000 * .55))));
+    log("cycle // " + FIELDS[k].name.toLowerCase());
+    decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 300, keep: 1 });
     CY.t0 = performance.now(); planNext();
   }
   const cyBar = $("#cyBar"), cyCd = $("#cyCd");
@@ -608,7 +604,6 @@ body.hide-ui:not(.awake){cursor:none}
   cySecs.value = CY.secs; showSecs();
   cySecs.oninput = () => { CY.secs = +cySecs.value; store.set("cysecs", CY.secs); showSecs(); };
   seg2("#cyOrder", [["0", "In order"], ["1", "Shuffle"]], () => CY.shuffle ? 1 : 0, k => { CY.shuffle = k === "1"; store.set("cyshuf", k); CY.bag = []; planNext(); log("cycle // " + (CY.shuffle ? "shuffle" : "in order")); });
-  seg2("#cyHow", [["wipe", "Wipe"], ["blend", "Blend"]], () => CY.how, k => { CY.how = k; store.set("cyhow", k); });
 
   // ----- colour generator (the jerelevance colour generator: drift + marathon aesthetic) -----
   const GEN = { on: false, style: store.get("gstyle", "marathon") === "drift" ? "drift" : "marathon",
