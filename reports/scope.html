@@ -106,6 +106,19 @@
     transition: opacity .3s ease, transform .3s ease;
   }
   .player[hidden] { display: none; }
+  .qrow { grid-column: 1 / -1; display: flex; align-items: center; gap: 6px; padding-top: 6px; border-top: 1px solid var(--edge); }
+  .qrow[hidden], .q[hidden] { display: none; }
+  .sk { width: 26px; height: 22px; padding: 0; display: grid; place-items: center; background: none; backdrop-filter: none; border-color: transparent; color: var(--muted); }
+  .sk:hover:not(:disabled) { color: var(--line); border-color: var(--edge); }
+  .sk:disabled { opacity: .35; cursor: default; }
+  .sk svg { width: 9px; height: 9px; fill: currentColor; }
+  .qpos { flex: 1; text-align: center; color: var(--muted); font-size: 10px; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
+  .q { grid-column: 1 / -1; list-style: none; margin: 0; padding: 0; max-height: 96px; overflow: auto; scrollbar-width: thin; }
+  .q button { width: 100%; display: flex; gap: 8px; padding: 3px 6px; background: none; backdrop-filter: none; border-color: transparent; text-align: left; font-size: 11px; color: var(--muted); }
+  .q button:hover { border-color: var(--edge); color: var(--ink); }
+  .q button i { font-style: normal; font-variant-numeric: tabular-nums; flex: none; opacity: .7; }
+  .q button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .q li.cur button { color: var(--line); border-color: var(--edge); }
   .pp { width: 34px; height: 34px; padding: 0; border-radius: 50%; display: grid; place-items: center; grid-row: span 2; }
   .pp svg { width: 12px; height: 12px; fill: currentColor; }
   .name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); }
@@ -164,12 +177,18 @@
     <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position">
     <span class="time" id="time">0:00</span>
   </div>
+  <div class="qrow" id="qrow" hidden>
+    <button class="sk" id="prevBtn" type="button" aria-label="Previous track" title="Previous (B)"><svg viewBox="0 0 10 10"><path d="M1 1h1.6v8H1zM9 1v8L3 5z"/></svg></button>
+    <span class="qpos" id="qPos"></span>
+    <button class="sk" id="nextBtn" type="button" aria-label="Next track" title="Next (N)"><svg viewBox="0 0 10 10"><path d="M7.4 1H9v8H7.4zM1 1v8l6-4z"/></svg></button>
+  </div>
+  <ol class="q" id="qList" hidden></ol>
 </div>
 
 <div class="bar" id="bar">
   <div class="group">
     <button class="primary" id="uploadBtn" type="button">Upload song</button>
-    <input id="file" type="file" accept="audio/*" hidden>
+    <input id="file" type="file" accept="audio/*" multiple hidden>
   </div>
 
   <div class="group" id="palettes"><span class="label">Color</span></div>
@@ -184,7 +203,7 @@
     <input class="edge" id="intensity" type="range" min="30" max="250" step="5" title="How big the line swings">
   </div>
 
-  <div class="msg" id="msg">Upload a song or drop one anywhere on the page. Space plays and pauses, H hides the controls, F goes fullscreen.</div>
+  <div class="msg" id="msg">Upload songs or drop them anywhere on the page; more than one makes a queue. Space plays and pauses, H hides the controls, F goes fullscreen.</div>
 </div>
 
 <script>
@@ -320,16 +339,47 @@
   const timeEl = document.getElementById("time");
   const fileInput = document.getElementById("file");
   document.getElementById("uploadBtn").onclick = () => fileInput.click();
-  fileInput.onchange = () => { if (fileInput.files[0]) playFile(fileInput.files[0]); fileInput.value = ""; };
+  fileInput.onchange = () => { if (fileInput.files.length) enqueue(fileInput.files); fileInput.value = ""; };
 
   const ICON_PLAY = '<svg viewBox="0 0 12 12"><path d="M2.5 1.2v9.6L10.5 6z"/></svg>';
   const ICON_PAUSE = '<svg viewBox="0 0 12 12"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>';
   const fmt = s => isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "0:00";
 
+  // queue: several files play in order; adding while something plays appends without interrupting
+  const Q = []; let qi = -1;
+  const isAudio = f => f.type.startsWith("audio/") || /\.(mp3|m4a|aac|wav|flac|ogg|opus|aiff?)$/i.test(f.name);
+  const qName = f => f.name.replace(/\.[^.]+$/, "");
+  const qList = document.getElementById("qList"), qrow = document.getElementById("qrow");
+  const prevBtn = document.getElementById("prevBtn"), nextBtn = document.getElementById("nextBtn");
+  const p2 = n => String(n).padStart(2, "0");
+  function enqueue(files) {
+    const ok = [...files].filter(isAudio).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    if (!ok.length) { say("That isn't audio. Try an mp3, m4a, wav or flac.", true); return; }
+    const idle = qi < 0 || (audioEl?.ended && qi >= Q.length - 1);
+    const first = Q.length; Q.push(...ok);
+    if (idle) playAt(first); else { renderQueue(); say("Queued " + ok.length + (ok.length > 1 ? " songs." : " song.")); }
+  }
+  function playAt(i) { if (i < 0 || i >= Q.length) return; qi = i; playFile(Q[i]); renderQueue(); }
+  function next() { if (qi < Q.length - 1) playAt(qi + 1); }
+  function prev() { if (audioEl && audioEl.currentTime > 3) { audioEl.currentTime = 0; return; } if (qi > 0) playAt(qi - 1); }
+  function renderQueue() {
+    const many = Q.length > 1;
+    qrow.hidden = qList.hidden = !many;
+    prevBtn.disabled = qi < 0; nextBtn.disabled = qi >= Q.length - 1;
+    document.getElementById("qPos").textContent = p2(qi + 1) + " / " + p2(Q.length);
+    qList.innerHTML = "";
+    Q.forEach((f, i) => {
+      const li = document.createElement("li"); if (i === qi) li.className = "cur";
+      const b = document.createElement("button"); b.type = "button";
+      b.innerHTML = `<i>${p2(i + 1)}</i><span></span>`; b.lastChild.textContent = qName(f); b.title = qName(f);
+      b.onclick = () => playAt(i);
+      li.appendChild(b); qList.appendChild(li);
+    });
+    const cur = qList.children[qi]; if (cur) cur.scrollIntoView({ block: "nearest" });
+  }
+  prevBtn.onclick = prev; nextBtn.onclick = next;
+
   async function playFile(file) {
-    if (!file.type.startsWith("audio/") && !/\.(mp3|m4a|aac|wav|flac|ogg|opus|aiff?)$/i.test(file.name)) {
-      say("That file isn't audio. Try an mp3, m4a, wav or flac.", true); return;
-    }
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
     await ctx.resume();
     if (!audioEl) {
@@ -344,6 +394,7 @@
       buf = new Float32Array(analyser.fftSize);
       for (const ev of ["timeupdate", "play", "pause", "loadedmetadata", "ended"]) audioEl.addEventListener(ev, syncUI);
       audioEl.addEventListener("error", () => say("Couldn't play that file. Try a different format.", true));
+      audioEl.addEventListener("ended", () => { if (qi < Q.length - 1) next(); else if (Q.length > 1) say("End of the queue."); });
     }
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = URL.createObjectURL(file);
@@ -379,8 +430,8 @@
   addEventListener("dragover", e => e.preventDefault());
   addEventListener("drop", e => {
     e.preventDefault(); dragDepth = 0; document.body.classList.remove("dragging");
-    const f = e.dataTransfer?.files?.[0];
-    if (f) playFile(f);
+    const fs = e.dataTransfer?.files;
+    if (fs?.length) enqueue(fs);
   });
 
   // ---------- drawing ----------
@@ -550,6 +601,8 @@
     if (e.key === "h" || e.key === "H") setFocus(!document.body.classList.contains("hide-ui"));
     if (e.key === "Escape" && document.body.classList.contains("hide-ui")) setFocus(false);
     if (e.key === "f" || e.key === "F") toggleFullscreen();
+    if (e.key === "n" || e.key === "N") next();
+    if (e.key === "b" || e.key === "B") prev();
   });
 })();
 </script>

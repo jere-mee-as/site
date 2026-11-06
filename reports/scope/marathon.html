@@ -104,6 +104,20 @@ button{background:none;border:0;padding:0;cursor:pointer}
 .pp{width:36px;height:36px;flex:none;display:grid;place-items:center;background:var(--ink);color:var(--fsel);transition:background .12s,color .12s}
 .pp:hover{background:var(--hl);color:var(--onhl)}
 .pp:disabled{opacity:.35;cursor:default;background:var(--ink);color:var(--fsel)}
+.sk{width:30px;height:36px;flex:none;display:grid;place-items:center;border:1px solid var(--rule);transition:background .12s,color .12s,border-color .12s}
+.sk:hover{background:var(--hl);color:var(--onhl);border-color:var(--hl)}
+.sk:disabled{opacity:.3;cursor:default;background:none;color:inherit;border-color:var(--rule)}
+.sk svg{width:10px;height:10px;fill:currentColor}
+.queue{display:grid;gap:4px;border-top:1px solid var(--rule);padding-top:8px}
+.queue ol{list-style:none;margin:0;padding:0;max-height:92px;overflow:auto;scrollbar-width:thin;display:grid;gap:1px}
+.queue li button{width:100%;display:flex;gap:10px;align-items:baseline;padding:2px 6px;text-align:left;font-size:10.5px;letter-spacing:.04em;transition:background .12s,color .12s}
+.queue li button:hover{background:var(--hl);color:var(--onhl)}
+.queue li button b{font-family:var(--dot);font-weight:700;font-size:12px;flex:none;color:var(--dim)}
+.queue li button span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-transform:uppercase}
+.queue li.done button{color:var(--dim)}
+.queue li.cur button{background:var(--ink);color:var(--fsel)}
+.queue li.cur button b{color:var(--line)}
+.queue li.cur button:hover{background:var(--hl);color:var(--onhl)}
 .pp svg{width:12px;height:12px;fill:currentColor}
 .load{flex:1;height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--line);color:var(--on);
   font-family:var(--display);font-weight:900;font-stretch:125%;font-size:14px;text-transform:uppercase;transition:background .12s,color .12s}
@@ -219,11 +233,17 @@ body.hide-ui:not(.awake){cursor:none}
   <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position" disabled>
   <canvas id="eq" aria-hidden="true"></canvas>
   <div class="ctl">
+    <button class="sk" id="prevBtn" type="button" aria-label="Previous track" title="Previous (B)" disabled><svg viewBox="0 0 10 10"><path d="M1 1h1.6v8H1zM9 1v8L3 5z"/></svg></button>
     <button class="pp" id="pp" type="button" aria-label="Play" disabled></button>
+    <button class="sk" id="nextBtn" type="button" aria-label="Next track" title="Next (N)" disabled><svg viewBox="0 0 10 10"><path d="M7.4 1H9v8H7.4zM1 1v8l6-4z"/></svg></button>
     <button class="load" id="uploadBtn" type="button"><span>Load signal</span><i></i></button>
-    <input id="file" type="file" accept="audio/*" hidden>
+    <input id="file" type="file" accept="audio/*" multiple hidden>
   </div>
-  <div class="hint" id="hint">Drop audio anywhere, or load a file.</div>
+  <div class="hint" id="hint">Drop audio anywhere, or load files. More than one makes a queue.</div>
+  <div class="queue" id="queue" hidden>
+    <div class="row1"><span class="lbl">Queue</span><span class="lbl" id="qPos">00/00</span></div>
+    <ol id="qList"></ol>
+  </div>
 </section>
 
 <aside class="side pn" id="side" aria-label="Controls">
@@ -269,7 +289,7 @@ body.hide-ui:not(.awake){cursor:none}
     <h3><span>Log</span></h3>
     <div id="feed" aria-live="polite"></div>
   </div>
-  <div class="keys"><b>␣</b>play &nbsp;<b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel<br><b>[</b><b>]</b>field &nbsp;<b>M</b>draw &nbsp;<b>C</b>chaos<br><b>G</b>grid &nbsp;<b>T</b>text</div>
+  <div class="keys"><b>␣</b>play &nbsp;<b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel<br><b>[</b><b>]</b>field &nbsp;<b>M</b>draw &nbsp;<b>C</b>chaos<br><b>G</b>grid &nbsp;<b>T</b>text<br><b>N</b>next &nbsp;<b>B</b>back</div>
 </aside>
 
 <button class="wake" id="wakeBtn" type="button">Show controls</button>
@@ -478,17 +498,47 @@ body.hide-ui:not(.awake){cursor:none}
   const pp = $("#pp"), seek = $("#seek"), tCur = $("#tCur"), tDur = $("#tDur"), srcTag = $("#srcTag"), trackName = $("#trackName");
   const fileInput = $("#file");
   $("#uploadBtn").onclick = () => fileInput.click();
-  fileInput.onchange = () => { if (fileInput.files[0]) playFile(fileInput.files[0]); fileInput.value = ""; };
+  fileInput.onchange = () => { if (fileInput.files.length) enqueue(fileInput.files); fileInput.value = ""; };
 
   const ICON_PLAY = '<svg viewBox="0 0 12 12"><path d="M2.5 1.2v9.6L10.5 6z"/></svg>';
   const ICON_PAUSE = '<svg viewBox="0 0 12 12"><path d="M2 1h3v10H2zM7 1h3v10H7z"/></svg>';
   pp.innerHTML = ICON_PLAY;
   const fmt = s => isFinite(s) ? pad(Math.floor(s / 60)) + ":" + pad(Math.floor(s % 60)) : "00:00";
 
+  // ---------- queue: several files play in order; adding while something plays appends without interrupting ----------
+  const Q = []; let qi = -1;
+  const isAudio = f => f.type.startsWith("audio/") || /\.(mp3|m4a|aac|wav|flac|ogg|opus|aiff?)$/i.test(f.name);
+  const qName = f => f.name.replace(/\.[^.]+$/, "");
+  const qList = $("#qList"), qBox = $("#queue"), prevBtn = $("#prevBtn"), nextBtn = $("#nextBtn");
+  function enqueue(files) {
+    const all = [...files], ok = all.filter(isAudio).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    if (all.length > ok.length) log("input // rejected " + (all.length - ok.length) + " non-audio");
+    if (!ok.length) { say("Rejected: that isn't audio. Try mp3, m4a, wav or flac.", true); return; }
+    const idle = qi < 0 || (audioEl?.ended && qi >= Q.length - 1);
+    const first = Q.length; Q.push(...ok);
+    if (Q.length > 1) log("queue // +" + ok.length + " · " + pad(Q.length) + " total", true);
+    if (idle) playAt(first); else { renderQueue(); say("Queued " + ok.length + (ok.length > 1 ? " tracks." : " track.")); }
+  }
+  function playAt(i) { if (i < 0 || i >= Q.length) return; qi = i; playFile(Q[i]); renderQueue(); }
+  function next() { if (qi < Q.length - 1) playAt(qi + 1); }
+  function prev() { if (audioEl && audioEl.currentTime > 3) { audioEl.currentTime = 0; return; } if (qi > 0) playAt(qi - 1); }
+  function renderQueue() {
+    qBox.hidden = Q.length < 2;
+    prevBtn.disabled = qi < 0; nextBtn.disabled = qi >= Q.length - 1;
+    $("#qPos").textContent = pad(qi + 1) + "/" + pad(Q.length);
+    qList.innerHTML = "";
+    Q.forEach((f, i) => {
+      const li = document.createElement("li"); li.className = i === qi ? "cur" : i < qi ? "done" : "";
+      const b = document.createElement("button"); b.type = "button";
+      b.innerHTML = `<b>${pad(i + 1)}</b><span></span>`; b.lastChild.textContent = qName(f); b.title = qName(f);
+      b.onclick = () => playAt(i);
+      li.appendChild(b); qList.appendChild(li);
+    });
+    const cur = qList.children[qi]; if (cur) cur.scrollIntoView({ block: "nearest" });
+  }
+  prevBtn.onclick = prev; nextBtn.onclick = next;
+
   async function playFile(file) {
-    if (!file.type.startsWith("audio/") && !/\.(mp3|m4a|aac|wav|flac|ogg|opus|aiff?)$/i.test(file.name)) {
-      say("Rejected: that file isn't audio. Try mp3, m4a, wav or flac.", true); log("input // rejected " + file.name.slice(0, 24)); return;
-    }
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
     await ctx.resume();
     if (!audioEl) {
@@ -500,7 +550,10 @@ body.hide-ui:not(.awake){cursor:none}
       for (const ev of ["timeupdate", "play", "pause", "loadedmetadata", "ended"]) audioEl.addEventListener(ev, syncUI);
       audioEl.addEventListener("play", () => log("transport // run", true));
       audioEl.addEventListener("pause", () => { if (!audioEl.ended) log("transport // hold"); });
-      audioEl.addEventListener("ended", () => log("transport // end of signal"));
+      audioEl.addEventListener("ended", () => {
+        if (qi < Q.length - 1) { log("queue // next"); next(); }
+        else { log(Q.length > 1 ? "queue // end of queue" : "transport // end of signal"); renderQueue(); }
+      });
       audioEl.addEventListener("error", () => { say("Couldn't decode that file. Try a different format.", true); log("decoder // fault"); });
     }
     if (objectUrl) URL.revokeObjectURL(objectUrl);
@@ -544,7 +597,7 @@ body.hide-ui:not(.awake){cursor:none}
   addEventListener("dragover", e => e.preventDefault());
   addEventListener("drop", e => {
     e.preventDefault(); dragDepth = 0; body.classList.remove("dragging");
-    const f = e.dataTransfer?.files?.[0]; if (f) playFile(f);
+    const fs = e.dataTransfer?.files; if (fs?.length) enqueue(fs);
   });
 
   // ---------- canvases ----------
@@ -1052,6 +1105,8 @@ body.hide-ui:not(.awake){cursor:none}
     else if (k === "p") setPanel(body.classList.contains("panel-off"));
     else if (k === "m") { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; store.set("mode", modeKey); markAll(); log("draw // " + modeKey); }
     else if (k === "c") setChaos((CH.lvl + 1) % 3);
+    else if (k === "n") next();
+    else if (k === "b") prev();
     else if (k === "g") toggleLayer("grid");
     else if (k === "t") toggleLayer("text");
     else if (e.key === "]") cycleField(1);
