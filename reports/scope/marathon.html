@@ -223,6 +223,11 @@ body.hide-ui:not(.awake){cursor:none}
   body.panel-off .side{transform:translateY(102%)}
   .giant{font-size:clamp(110px,24vh,220px)}
 }
+/* low power: no always-on css animation, no live backdrop blur */
+:root.low{animation:none}
+:root.low .giant,:root.low .brand h1{animation:none}
+:root.low body.gen .top,:root.low body.gen .deck,:root.low body.gen .side{-webkit-backdrop-filter:none;backdrop-filter:none}
+:root.low body.gen:not(.ui-lock) .side,:root.low body.gen:not(.ui-lock) .deck,:root.low body.gen:not(.ui-lock) .top{background:color-mix(in srgb,var(--fsel) 78%,transparent)}
 @media (prefers-reduced-motion:reduce){
   :root{animation:none}
   *{animation:none!important;transition:none!important}
@@ -339,6 +344,10 @@ body.hide-ui:not(.awake){cursor:none}
   <section class="grp">
     <header class="gh"><b>03</b><span>Layers</span><i></i></header>
     <div class="seg" id="layers"></div>
+    <div class="sec">
+      <h3><span>Power</span><b id="lowName">FULL</b></h3>
+      <div class="seg" id="power"></div>
+    </div>
   </section>
 
   <section class="grp">
@@ -349,7 +358,7 @@ body.hide-ui:not(.awake){cursor:none}
       <div><b id="roG">1.0</b><span>GAIN ×</span></div>
     </div>
     <div id="feed" aria-live="polite"></div>
-    <div class="keys"><b>␣</b>play &nbsp;<b>N</b><b>B</b>track &nbsp;<b>[</b><b>]</b>field<br><b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel &nbsp;<b>M</b>draw<br><b>G</b>grid &nbsp;<b>T</b>text</div>
+    <div class="keys"><b>␣</b>play &nbsp;<b>N</b><b>B</b>track &nbsp;<b>[</b><b>]</b>field<br><b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel &nbsp;<b>M</b>draw<br><b>G</b>grid &nbsp;<b>T</b>text &nbsp;<b>L</b>low power</div>
   </section>
 </aside>
 
@@ -583,7 +592,7 @@ body.hide-ui:not(.awake){cursor:none}
   }
   function fitGen() {
     const w0 = innerWidth * 1.12, h0 = innerHeight * 1.12;
-    const w = Math.round(Math.sqrt(16000 * w0 / h0)), h = Math.round(16000 / w);
+    const A = LOW.on ? 7000 : 16000, w = Math.round(Math.sqrt(A * w0 / h0)), h = Math.round(A / w);
     if (w !== genCv.width || h !== genCv.height) { genCv.width = w; genCv.height = h; gImg = gx.createImageData(w, h); }
     const mara = GEN.style === "marathon";
     genCv.style.filter = `blur(${Math.round(Math.max(w0, h0) / (mara ? 38 : 30))}px) saturate(${mara ? 1.3 : 1.15})`;
@@ -627,7 +636,7 @@ body.hide-ui:not(.awake){cursor:none}
   }
   function genFrame(now, dt) {
     if (!GEN.frozen) GEN.t += dt * (reduced ? .2 : .75);
-    if (GEN.frozen ? GEN.paintT : now - GEN.paintT < 33) return;        // ~30 fps is plenty for something this soft
+    if (GEN.frozen ? GEN.paintT : now - GEN.paintT < (LOW.on ? 100 : 33)) return;        // ~30 fps is plenty for something this soft; ~10 in low power
     GEN.paintT = now;
     const p = GEN.style === "marathon" ? maraPalette(GEN.t) : driftPalette(GEN.t);
     GEN.cur = p;
@@ -689,6 +698,26 @@ body.hide-ui:not(.awake){cursor:none}
   }
   function toggleLayer(key) { LAY[key] = !LAY[key]; store.set(key, LAY[key] ? "1" : "0"); applyLayers(); }
   applyLayers();
+
+  // ---------- low power: 30 fps, 1× pixels, generator at ~10 fps and half resolution, no css animation or live blur ----------
+  const LOW = { on: store.get("low", "0") === "1", last: 0 };
+  const powerSeg = seg2l();
+  function seg2l() {
+    const w = $("#power");
+    for (const [k, name] of [["0", "Full"], ["1", "Low"]]) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.key = k; b.textContent = name;
+      b.onclick = () => setLow(k === "1"); w.appendChild(b);
+    }
+    return w;
+  }
+  function setLow(on, quiet) {
+    LOW.on = on; store.set("low", on ? "1" : "0");
+    root.classList.toggle("low", on);
+    powerSeg.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", (b.dataset.key === "1") === on));
+    $("#lowName").textContent = on ? "LOW" : "FULL";
+    if (typeof resize === "function" && W) { resize(); if (GEN.on) { fitGen(); GEN.paintT = 0; } }
+    if (!quiet) log("power // " + (on ? "low" : "full"), !on);
+  }
 
   // ---------- messages + status ----------
   const hint = $("#hint"), statusEl = $("#status"), statusText = $("#statusText");
@@ -826,7 +855,7 @@ body.hide-ui:not(.awake){cursor:none}
   const eq = $("#eq"), eg = eq.getContext("2d");
   let W = 0, H = 0, dpr = 1;
   function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = LOW.on ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
     for (const c of [canvas, fx]) { c.width = W * dpr; c.height = H * dpr; }
     g.setTransform(dpr, 0, 0, dpr, 0, 0); fg.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1075,6 +1104,8 @@ body.hide-ui:not(.awake){cursor:none}
 
   let lastNow = performance.now(), TR_COL = "#fff", TR_INK = "#fff";
   function frame(now) {
+    if (LOW.on && now - LOW.last < 32) { requestAnimationFrame(frame); return; }   // low power: ~30 fps
+    LOW.last = now;
     const dt = Math.min(.1, (now - lastNow) / 1000); lastNow = now;
     if (GEN.on) genFrame(now, dt);
     g.clearRect(0, 0, W, H);
@@ -1228,6 +1259,7 @@ body.hide-ui:not(.awake){cursor:none}
     const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]);
   };
 
+  setLow(LOW.on, true);
   setBg(BG.mode, true);
   requestAnimationFrame(frame);
 
@@ -1276,6 +1308,7 @@ body.hide-ui:not(.awake){cursor:none}
     else if (k === "n") next();
     else if (k === "b") prev();
     else if (k === "g") toggleLayer("grid");
+    else if (k === "l") setLow(!LOW.on);
     else if (k === "t") toggleLayer("text");
     else if (e.key === "]") cycleField(1);
     else if (e.key === "[") cycleField(-1);
