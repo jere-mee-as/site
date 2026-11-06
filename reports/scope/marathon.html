@@ -11,15 +11,6 @@
 /* Operator scope: full-bleed colour field, the trace in the middle, source deck bottom-left,
    control panel on the right, status strip on top. Every field drifts slowly in hue. */
 @property --drift{syntax:'<number>';inherits:true;initial-value:0}
-@property --fl{syntax:'<number>';inherits:true;initial-value:.46}
-@property --fc{syntax:'<number>';inherits:true;initial-value:.29}
-@property --fh{syntax:'<number>';inherits:true;initial-value:266}
-@property --ink{syntax:'<color>';inherits:true;initial-value:white}
-@property --line{syntax:'<color>';inherits:true;initial-value:lime}
-@property --hl{syntax:'<color>';inherits:true;initial-value:yellow}
-@property --on{syntax:'<color>';inherits:true;initial-value:black}
-@property --onhl{syntax:'<color>';inherits:true;initial-value:black}
-:root.morph{--me:cubic-bezier(.45,0,.55,1);transition:--fl var(--mt,3s) var(--me),--fc var(--mt,3s) var(--me),--fh var(--mt,3s) var(--me),--ink var(--mt,3s) var(--me),--line var(--mt,3s) var(--me),--hl var(--mt,3s) var(--me),--on var(--mt,3s) var(--me),--onhl var(--mt,3s) var(--me)}
 :root{
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
@@ -151,19 +142,6 @@ body.panel-off .side{transform:translateX(102%)}
 .sec h3 .tx{display:flex;gap:12px}
 .sec h3 .tx button{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid transparent}
 .sec h3 .tx button:hover{color:var(--ink);border-bottom-color:var(--line)}
-.tabs{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--rule)}
-.tabs button{height:40px;font-family:var(--display);font-weight:900;font-stretch:115%;font-size:12px;text-transform:uppercase;letter-spacing:.02em;
-  border-left:1px solid var(--rule);transition:background .12s,color .12s}
-.tabs button:first-child{border-left:0}
-.tabs button:hover{background:var(--hl);color:var(--onhl)}
-.tabs button[aria-selected="true"]{background:var(--ink);color:var(--fsel)}
-.gvals{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.gvals button{display:grid;gap:5px;padding:0 0 4px;border:1px solid var(--rule);font-size:9px;letter-spacing:.08em;text-align:left;transition:border-color .12s}
-.gvals button i{display:block;height:30px}
-.gvals button b{padding:0 6px;font-weight:500}
-.gvals button:hover{border-color:var(--hl)}
-.sec h3{margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:400}
-.sec h3 b{color:var(--ink);font-weight:700}
 .fields{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .sw{height:36px;position:relative;border:1px solid var(--rule);display:flex;align-items:flex-end;padding:2px 5px;font-size:8px;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;font-weight:700;overflow:hidden;transition:border-color .12s}
 .sw svg{position:absolute;left:0;top:5px;width:100%;height:16px}
@@ -187,20 +165,8 @@ body.panel-off .side{transform:translateX(102%)}
 .keys{font-size:10px;color:var(--dim);line-height:1.8}
 .keys b{color:var(--ink);font-weight:700;display:inline-block;min-width:1.6em;padding:0 4px;margin-right:4px;border:1px solid var(--rule);text-align:center;line-height:1.5}
 
-/* generator background */
-.dotgrid{position:fixed;inset:0;z-index:0;pointer-events:none;display:none;
-  background-image:radial-gradient(circle,color-mix(in oklch,var(--ink) 22%,transparent) 1px,transparent 1.7px);background-size:28px 28px}
-#gen{position:fixed;left:-6%;top:-6%;width:112%;height:112%;z-index:0;display:none;pointer-events:none}
-body.gen{background-image:none}
-body.gen #gen,body.gen .dotgrid{display:block}
-body.gen.no-grid .dotgrid{display:none}
-body.gen .top,body.gen .deck,body.gen .side{background:var(--gbg);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
-/* locked black or white: the same see-through panels as the field backgrounds */
-body.gen.ui-lock .top,body.gen.ui-lock .deck,body.gen.ui-lock .side{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}
-
 /* layers off */
 body.no-grid{background-image:none}
-body.no-grid .dotgrid{display:none}
 body.no-text .giant-wrap{display:none}
 #inv{position:fixed;left:0;right:0;top:0;height:22vh;z-index:61;pointer-events:none;opacity:0;mix-blend-mode:difference;
   background:linear-gradient(transparent,#fff 35%,#fff 65%,transparent)}
@@ -226,8 +192,6 @@ body.hide-ui:not(.awake){cursor:none}
 /* low power: no always-on css animation, no live backdrop blur */
 :root.low{animation:none}
 :root.low .giant,:root.low .brand h1{animation:none}
-:root.low body.gen .top,:root.low body.gen .deck,:root.low body.gen .side{-webkit-backdrop-filter:none;backdrop-filter:none}
-:root.low body.gen:not(.ui-lock) .side,:root.low body.gen:not(.ui-lock) .deck,:root.low body.gen:not(.ui-lock) .top{background:color-mix(in srgb,var(--fsel) 78%,transparent)}
 @media (prefers-reduced-motion:reduce){
   :root{animation:none}
   *{animation:none!important;transition:none!important}
@@ -235,8 +199,6 @@ body.hide-ui:not(.awake){cursor:none}
 </style>
 </head>
 <body>
-<canvas id="gen" aria-hidden="true"></canvas>
-<div class="dotgrid" aria-hidden="true"></div>
 <div class="giant-wrap" aria-hidden="true"><div class="giant">SCOPE</div></div>
 <canvas id="scope" aria-hidden="true"></canvas>
 
@@ -282,38 +244,9 @@ body.hide-ui:not(.awake){cursor:none}
 <aside class="side pn" id="side" aria-label="Controls">
   <section class="grp">
     <header class="gh"><b>01</b><span>Background</span><i></i></header>
-    <div class="tabs" role="tablist" aria-label="Background" id="bgTabs">
-      <button type="button" role="tab" data-bg="field">Field</button>
-      <button type="button" role="tab" data-bg="gen">Generator</button>
-    </div>
-
-    <div class="sec" data-show="field">
+    <div class="sec">
       <h3><span>Current</span><b id="fieldName">SIGNAL</b></h3>
       <div class="fields" id="fields"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Style</span></h3>
-      <div class="seg" id="gStyle"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Colours at once</span></h3>
-      <div class="seg" id="gAmt"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Change speed</span></h3>
-      <div class="seg" id="gSpd"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Text</span></h3>
-      <div class="seg" id="gUi"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Trace</span></h3>
-      <div class="seg" id="gTrace"></div>
-    </div>
-    <div class="sec" data-show="gen">
-      <h3><span>Values · tap to copy</span><span class="tx"><button type="button" id="gFreeze" aria-pressed="false">Freeze</button></span></h3>
-      <div class="gvals" id="gVals"></div>
     </div>
   </section>
 
@@ -464,24 +397,13 @@ body.hide-ui:not(.awake){cursor:none}
   const C = { ink: "", line: "", hl: "", bg: "#000" }; let bgT = 0;   // resolved colours for the canvases
   let patt = null, pattKey = "";
 
-  let morphT = 0, BGREADY = false;
-  function applyField(key, morph, dur = 3000) {
+  function applyField(key) {
     fieldKey = key; const f = FIELDS[key];
-    let fh = f.fh;
-    if (morph) {
-      // glide the long way round never: pick the nearest equivalent hue
-      const cur = parseFloat(getComputedStyle(root).getPropertyValue("--fh")) || 0;
-      while (fh - cur > 180) fh -= 360; while (cur - fh > 180) fh += 360;
-      root.style.setProperty("--mt", dur + "ms");
-      root.classList.add("morph"); clearTimeout(morphT);
-      morphT = setTimeout(() => root.classList.remove("morph"), dur + 150);
-    } else root.classList.remove("morph");
-    for (const k of ["fl", "fc", "ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, f[k]);
-    root.style.setProperty("--fh", fh);
+    for (const k of ["fl", "fc", "fh", "ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, f[k]);
     root.style.colorScheme = f.fl < .6 ? "dark" : "light";
     C.ink = f.ink; C.line = f.line; C.hl = f.hl; patt = null;
     store.set("field", key);
-    if (BGREADY) paintSwatches();
+    document.querySelectorAll(".sw").forEach(b => { const on = b.dataset.key === key; b.classList.toggle("now", on); b.setAttribute("aria-pressed", on); });
   }
 
   const fWrap = $("#fields");
@@ -516,171 +438,11 @@ body.hide-ui:not(.awake){cursor:none}
   }
   applyField(fieldKey); markAll();
 
-  // ---------- background: one field, or the colour generator ----------
-  const BG = { mode: store.get("bg") === "gen" ? "gen" : "field" };
-  const seg2 = (wrap, opts, get, set) => {
-    const w = $(wrap);
-    const mark = () => w.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(get()) === b.dataset.key));
-    for (const [k, name] of opts) {
-      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.key = k; b.textContent = name;
-      b.onclick = () => { set(k); mark(); }; w.appendChild(b);
-    }
-    mark(); return mark;
-  };
-
   function paintSwatches() {
     document.querySelectorAll(".sw").forEach(b => { const on = b.dataset.key === fieldKey; b.classList.toggle("now", on); b.setAttribute("aria-pressed", on); });
   }
   const swatchClick = (key, e) => switchField(key, e.clientX, e.clientY);
 
-  // ----- colour generator (the jerelevance colour generator: drift + marathon aesthetic) -----
-  const GEN = { on: false, style: store.get("gstyle", "marathon") === "drift" ? "drift" : "marathon",
-                amt: Math.min(3, Math.max(0, +store.get("gamt", "1") || 0)), spd: Math.min(2, Math.max(0, +store.get("gspd", "1") || 0)),
-                frozen: false, ui: ["auto", "black", "white"].includes(store.get("gui")) ? store.get("gui") : "auto",
-                trace: ["neg", "white", "black"].includes(store.get("gtrace")) ? store.get("gtrace") : "neg", t: Math.random() * 1000, seed: Math.random() * 360, slot: -1, pal: null, paintT: 0, valT: 0, dark: null, cur: null };
-  const genCv = $("#gen"), gx = genCv.getContext("2d");
-  let gImg = gx.createImageData(genCv.width, genCv.height);
-  const MARA = [[.93, .23, 125, "acid lime"], [.65, .27, 0, "hot pink"], [.45, .29, 266, "cobalt"], [.7, .2, 45, "tangerine"], [.6, .25, 28, "signal red"],
-    [.88, .13, 170, "mint"], [.93, .21, 108, "acid yellow"], [.52, .26, 295, "violet"], [1, 0, 0, "white"], [0, 0, 0, "black"]];
-  const AMT = { 0: [.16, 14, 1.3], 1: [.3, 11, 1.6], 2: [.62, 7, 2.4], 3: [.95, 5, 3] }, SPD = [1.9, 1, .45];
-  function rngFor(n) { let s = (n * 2654435761 + (GEN.seed * 1000 | 0)) >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
-  function oklchRGB(L, Cc, h) {
-    const a = Cc * Math.cos(h * Math.PI / 180), b = Cc * Math.sin(h * Math.PI / 180);
-    const l = Math.pow(L + .3963377774 * a + .2158037573 * b, 3), m = Math.pow(L - .1055613458 * a - .0638541728 * b, 3), s = Math.pow(L - .0894841775 * a - 1.2914855480 * b, 3);
-    return [4.0767416621 * l - 3.3077115913 * m + .2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - .3413193965 * s, -.0041960863 * l - .7034186147 * m + 1.7076147010 * s]
-      .map(v => { v = v <= .0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - .055; return Math.round(Math.max(0, Math.min(1, v)) * 255); });
-  }
-  const hex = c => "#" + c.map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase();
-  // mix around the hue wheel; black and white borrow the other colour's hue so nothing passes through grey
-  function mixC(a, b, f) {
-    const ha = a.C < .01 ? b.h : a.h, hb = b.C < .01 ? a.h : b.h, dh = ((hb - ha + 540) % 360) - 180;
-    let Cc = a.C + (b.C - a.C) * f; if (a.C >= .01 && b.C >= .01) Cc = Math.max(.12, Cc);
-    return { L: a.L + (b.L - a.L) * f, C: Cc, h: (ha + dh * f + 360) % 360, name: f < .5 ? a.name : b.name };
-  }
-  function maraSet(n) {
-    const r = rngFor(n), pool = MARA.slice(0, 8); let pick = [];
-    while (pick.length < 4) pick.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
-    pick.sort((a, b) => a[0] - b[0]); pick = [pick[0], pick[3], pick[1], pick[2]];   // dark, light, dark, light: neighbours always clash
-    const bw = r(); if (bw < .35) pick[0] = MARA[9]; else if (bw < .7) pick[3] = MARA[8]; else if (bw < .9) { pick[0] = MARA[9]; pick[3] = MARA[8]; }
-    return pick.map(c => ({ L: c[0], C: c[1], h: c[2], name: c[3] }));
-  }
-  function maraPalette(time) {
-    const span = AMT[GEN.amt][1] * SPD[GEN.spd], u = time / span, n = Math.floor(u); let f = u - n;
-    if (n !== GEN.slot) { GEN.slot = n; GEN.pal = [maraSet(n), maraSet(n + 1)]; }
-    f = f < .35 ? 0 : (f - .35) / .65; f = f * f * (3 - 2 * f);
-    return GEN.pal[0].map((a, i) => { const c = mixC(a, GEN.pal[1][i], f); c.L = Math.max(0, Math.min(1, c.L + (c.C > .01 ? .03 * Math.sin(time * (.7 + i * .13) + i * 1.7) : 0))); c.rgb = oklchRGB(c.L, c.C, c.h); return c; });
-  }
-  function driftPalette(time) {
-    const base = (GEN.seed + time * 10 / SPD[GEN.spd]) % 360, out = [];
-    const offs = [0, 28 + 10 * Math.sin(time * .5), 62 + 14 * Math.sin(time * .33), 100 + 16 * Math.cos(time * .41)], Ls = [.5, .64, .56, .7];
-    for (let i = 0; i < 4; i++) {
-      const h = (base + offs[i] + 360) % 360, L = Ls[i] + .05 * Math.sin(time * (.7 + i * .13) + i * 1.7), Cc = .17 + .04 * Math.sin(time * (.55 + i * .11) + i * 2.3);
-      out.push({ L, C: Cc, h, rgb: oklchRGB(L, Cc, h) });
-    }
-    return out;
-  }
-  function ramp(p) {
-    const lut = new Uint8ClampedArray(768), stops = [p[0], p[1], p[2], p[3], p[2], p[1], p[0]], mara = GEN.style === "marathon";
-    for (let k = 0; k < 256; k++) {
-      const u = k / 256 * 6, i = Math.floor(u), a = stops[i], b = stops[i + 1]; let f = u - i;
-      f = f * f * (3 - 2 * f);
-      if (mara) { const e = a.C < .01 || b.C < .01 ? 3 + GEN.amt : AMT[GEN.amt][2]; f = f < .5 ? .5 * Math.pow(2 * f, e) : 1 - .5 * Math.pow(2 - 2 * f, e); }
-      const m = mixC(a, b, f), c = oklchRGB(m.L, m.C, m.h);
-      lut[k * 3] = c[0]; lut[k * 3 + 1] = c[1]; lut[k * 3 + 2] = c[2];
-    }
-    return lut;
-  }
-  function fitGen() {
-    const w0 = innerWidth * 1.12, h0 = innerHeight * 1.12;
-    const A = LOW.on ? 7000 : 16000, w = Math.round(Math.sqrt(A * w0 / h0)), h = Math.round(A / w);
-    if (w !== genCv.width || h !== genCv.height) { genCv.width = w; genCv.height = h; gImg = gx.createImageData(w, h); }
-    const mara = GEN.style === "marathon";
-    genCv.style.filter = `blur(${Math.round(Math.max(w0, h0) / (mara ? 38 : 30))}px) saturate(${mara ? 1.3 : 1.15})`;
-  }
-  addEventListener("resize", () => { if (GEN.on) fitGen(); });
-  // a fluid field: coordinates warped twice by moving sines, so the colour marbles like ink in water
-  function paintGen(p, time) {
-    const lut = ramp(p), w = genCv.width, h = genCv.height, d = gImg.data, T = time * .9, u = .9 / Math.min(w, h), k0 = GEN.style === "marathon" ? AMT[GEN.amt][0] : .36;
-    let lum = 0, n = 0;
-    for (let y = 0; y < h; y++) {
-      const ny = 1 + (y - h / 2) * u;
-      for (let x = 0; x < w; x++) {
-        const nx = .85 + (x - w / 2) * u;
-        const qx = nx + .8 * Math.sin(ny * 1.7 + T * 1.1) + .3 * Math.sin(ny * 3.1 - T * .7);
-        const qy = ny + .8 * Math.cos(nx * 1.5 - T * .9) + .3 * Math.cos(nx * 2.9 + T * .6);
-        const rx = qx + .6 * Math.sin(qy * 2.3 + T * .8), ry = qy + .6 * Math.cos(qx * 2.1 - T * .75);
-        let v = .5 + .5 * Math.sin(rx * 1.3 + ry * 1.1 + T * .5);
-        v = Math.min(.999, Math.max(0, .5 + (v - .5) * k0 + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
-        const k = (v * 255) | 0, o = (y * w + x) * 4;
-        d[o] = lut[k * 3]; d[o + 1] = lut[k * 3 + 1]; d[o + 2] = lut[k * 3 + 2]; d[o + 3] = 255;
-        if (!(x % 6) && !(y % 6)) { lum += .2126 * d[o] + .7152 * d[o + 1] + .0722 * d[o + 2]; n++; }
-      }
-    }
-    gx.putImageData(gImg, 0, 0);
-    return lum / n / 255;
-  }
-  // the interface goes black or white against the gradient, with hysteresis so it doesn't flicker
-  function genTheme(dark) {
-    if (GEN.dark === dark) return; GEN.dark = dark;
-    const T = dark ? { ink: "oklch(1 0 0)", line: "oklch(1 0 0)", on: "oklch(0 0 0)", hl: "oklch(.93 .23 125)", onhl: "oklch(0 0 0)", bg: "#000", gbg: "rgba(0,0,0,.6)" }
-                   : { ink: "oklch(0 0 0)", line: "oklch(0 0 0)", on: "oklch(1 0 0)", hl: "oklch(.65 .27 0)", onhl: "oklch(1 0 0)", bg: "#fff", gbg: "rgba(255,255,255,.66)" };
-    for (const k of ["ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, T[k]);
-    root.style.setProperty("--fsel", T.bg); root.style.setProperty("--gbg", T.gbg); root.style.colorScheme = dark ? "dark" : "light";
-    C.ink = T.ink; C.line = T.line; C.hl = T.hl; C.bg = T.bg; patt = null;
-  }
-  const gVals = $("#gVals"), valBtns = [];
-  for (let i = 0; i < 4; i++) {
-    const b = document.createElement("button"); b.type = "button"; b.innerHTML = "<i></i><b>------</b>";
-    b.onclick = () => { const v = b.lastChild.textContent; if (!v.startsWith("#")) return; try { navigator.clipboard.writeText(v); } catch {} b.lastChild.textContent = "COPIED"; GEN.valT = performance.now() + 800; log("color // copied " + v.toLowerCase()); };
-    gVals.appendChild(b); valBtns.push(b);
-  }
-  function genFrame(now, dt) {
-    if (!GEN.frozen) GEN.t += dt * (reduced ? .2 : .75);
-    if (GEN.frozen ? GEN.paintT : now - GEN.paintT < (LOW.on ? 100 : 33)) return;        // ~30 fps is plenty for something this soft; ~10 in low power
-    GEN.paintT = now;
-    const p = GEN.style === "marathon" ? maraPalette(GEN.t) : driftPalette(GEN.t);
-    GEN.cur = p;
-    const lum = paintGen(p, GEN.t);
-    if (GEN.ui !== "auto") genTheme(GEN.ui === "black");
-    else if (GEN.dark === null) genTheme(lum <= .5);
-    else if (GEN.dark && lum > .6) genTheme(false);
-    else if (!GEN.dark && lum < .4) genTheme(true);
-    if (now > GEN.valT && BG.mode === "gen" && !body.classList.contains("panel-off")) {
-      GEN.valT = now + 250;
-      p.forEach((c, i) => { valBtns[i].firstChild.style.background = `rgb(${c.rgb})`; valBtns[i].lastChild.textContent = hex(c.rgb); valBtns[i].title = (c.name ? c.name + " · " : "") + `oklch ${c.L.toFixed(2)} ${c.C.toFixed(3)} ${Math.round(c.h)}°`; });
-    }
-  }
-  const uiLock = () => body.classList.toggle("ui-lock", GEN.ui !== "auto");
-  function genOn() { uiLock(); GEN.on = true; GEN.dark = null; GEN.paintT = 0; GEN.valT = 0; fitGen(); body.classList.add("gen"); genFrame(performance.now(), 0); }
-  function genOff() {
-    GEN.on = false; body.classList.remove("gen");
-    root.style.removeProperty("--fsel"); root.style.removeProperty("--gbg");
-    applyField(fieldKey);
-  }
-  seg2("#gStyle", [["drift", "Drift"], ["marathon", "Marathon"]], () => GEN.style, k => { GEN.style = k; GEN.slot = -1; store.set("gstyle", k); if (GEN.on) { fitGen(); GEN.paintT = 0; } log("color // " + k); });
-  seg2("#gAmt", [["0", "Fewer"], ["1", "Few"], ["2", "More"], ["3", "Loads"]], () => GEN.amt, k => { GEN.amt = +k; GEN.slot = -1; store.set("gamt", k); GEN.paintT = 0; });
-  seg2("#gSpd", [["0", "Slow"], ["1", "Normal"], ["2", "Fast"]], () => GEN.spd, k => { GEN.spd = +k; GEN.slot = -1; store.set("gspd", k); });
-  seg2("#gUi", [["auto", "Auto"], ["black", "White"], ["white", "Black"]], () => GEN.ui, k => { GEN.ui = k; store.set("gui", k); GEN.dark = null; GEN.paintT = 0; uiLock(); });
-  seg2("#gTrace", [["neg", "Negative"], ["white", "White"], ["black", "Black"]], () => GEN.trace, k => { GEN.trace = k; store.set("gtrace", k); log("trace // " + (k === "neg" ? "negative" : k)); });
-  const gFreeze = $("#gFreeze");
-  gFreeze.onclick = () => { GEN.frozen = !GEN.frozen; GEN.paintT = 0; gFreeze.setAttribute("aria-pressed", GEN.frozen); gFreeze.textContent = GEN.frozen ? "Frozen" : "Freeze"; gFreeze.style.color = GEN.frozen ? "var(--line)" : ""; };
-
-  // ----- switching between the three -----
-  function setBg(mode, quiet) {
-    const was = BG.mode, fromCol = GEN.on && GEN.cur ? `rgb(${GEN.cur[0].rgb})` : getComputedStyle(body).backgroundColor;
-    BG.mode = mode; store.set("bg", mode);
-    document.querySelectorAll("#bgTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.bg === mode));
-    document.querySelectorAll("#side [data-show]").forEach(el => { el.hidden = !el.dataset.show.split(" ").includes(mode); });
-    if (mode === "gen" && !GEN.on) genOn();
-    if (mode !== "gen" && GEN.on) genOff();
-    paintSwatches();
-    if (!quiet && was !== mode) {
-      wipe(pick(), fromCol);
-      log("background // " + (mode === "gen" ? "generator · " + GEN.style : "field"), true);
-    }
-  }
-  document.querySelectorAll("#bgTabs button").forEach(b => b.onclick = () => setBg(b.dataset.bg));
-  BGREADY = true;
 
   // ---------- layers: dot grid, text, frame furniture ----------
   const LAY = { grid: store.get("grid", "1") === "1", text: store.get("text", "1") === "1", frame: store.get("frame", "1") === "1" };
@@ -715,7 +477,7 @@ body.hide-ui:not(.awake){cursor:none}
     root.classList.toggle("low", on);
     powerSeg.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", (b.dataset.key === "1") === on));
     $("#lowName").textContent = on ? "LOW" : "FULL";
-    if (typeof resize === "function" && W) { resize(); if (GEN.on) { fitGen(); GEN.paintT = 0; } }
+    if (typeof resize === "function" && W) resize();
     if (!quiet) log("power // " + (on ? "low" : "full"), !on);
   }
 
@@ -1007,7 +769,7 @@ body.hide-ui:not(.awake){cursor:none}
     } else if (modeKey === "dots") {
       const step = { hair: 6, fine: 9, medium: 12, bold: 16 }[widthKey], r = { hair: 1.8, fine: 2.8, medium: 4, bold: 5.8 }[widthKey] * wm + grow;
       // knock a ring of field colour out behind each dot so it never sinks into the grid
-      if (main && !GEN.on) {
+      if (main) {
         g.fillStyle = C.bg; g.beginPath();
         for (let x = box.left; x <= box.right; x += step) { const y = yAt(x); g.moveTo(x + r + 2.5, y); g.arc(x, y, r + 2.5, 0, 6.2832); }
         g.fill();
@@ -1020,7 +782,7 @@ body.hide-ui:not(.awake){cursor:none}
       const cs = { hair: 7, fine: 10, medium: 14, bold: 20 }[widthKey];
       const h = box.bottom - box.top, cols = Math.floor(span / cs), rows = Math.floor(h / cs);
       const ox = box.left + (span - cols * cs) / 2, oy = box.top + (h - rows * cs) / 2;
-      if (main && LAY.grid && !GEN.on) { const a = g.globalAlpha; g.globalAlpha = a * .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = a; }
+      if (main && LAY.grid) { const a = g.globalAlpha; g.globalAlpha = a * .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = a; }
       const Rw = new Int16Array(cols);
       for (let c = 0; c < cols; c++) Rw[c] = Math.max(0, Math.min(rows - 1, Math.floor((yAt(ox + c * cs + cs / 2) - oy) / cs)));
       g.fillStyle = col;
@@ -1096,7 +858,7 @@ body.hide-ui:not(.awake){cursor:none}
       g.fill();
     };
     const isLit = (c, r) => r < lit[c], isTop = (c, r) => on && r === lit[c] - 1, isPeak = (c, r) => on && r === pkr[c] - 1 && pkr[c] > lit[c];
-    pass(TR_INK, GEN.on ? .2 : .14, (c, r) => !isLit(c, r) && !isPeak(c, r));
+    pass(TR_INK, .14, (c, r) => !isLit(c, r) && !isPeak(c, r));
     pass(TR_INK, 1, (c, r) => isLit(c, r) && !isTop(c, r));
     pass(TR_COL, 1, (c, r) => isTop(c, r) || isPeak(c, r));
     g.globalAlpha = 1;
@@ -1107,7 +869,6 @@ body.hide-ui:not(.awake){cursor:none}
     if (LOW.on && now - LOW.last < 32) { requestAnimationFrame(frame); return; }   // low power: ~30 fps
     LOW.last = now;
     const dt = Math.min(.1, (now - lastNow) / 1000); lastNow = now;
-    if (GEN.on) genFrame(now, dt);
     g.clearRect(0, 0, W, H);
     const box = frameBox();
     const k = sample();
@@ -1120,16 +881,8 @@ body.hide-ui:not(.awake){cursor:none}
       const d = EDGE > 0 ? Math.min(1, Math.min(t, 1 - t) / EDGE) : 1;        // lasso at the sides
       PY[i] = mid - v * Math.sin(d * Math.PI / 2) * amp;
     }
-    if (!GEN.on && now - bgT > 120) { bgT = now; C.bg = getComputedStyle(body).backgroundColor; }
-    if (root.classList.contains("morph")) {
-      const cs = getComputedStyle(root);
-      C.ink = cs.getPropertyValue("--ink").trim(); C.line = cs.getPropertyValue("--line").trim(); C.hl = cs.getPropertyValue("--hl").trim(); patt = null;
-    }
-    // over the generator everything on this canvas is one colour; "negative" inverts whatever is underneath
-    const neg = GEN.on && GEN.trace === "neg";
-    if (canvas.style.mixBlendMode !== (neg ? "difference" : "normal")) canvas.style.mixBlendMode = neg ? "difference" : "normal";
-    TR_COL = !GEN.on ? C.line : neg || GEN.trace === "white" ? "#fff" : "#000";
-    TR_INK = GEN.on ? TR_COL : C.ink;
+    if (now - bgT > 120) { bgT = now; C.bg = getComputedStyle(body).backgroundColor; }
+    TR_COL = C.line; TR_INK = C.ink;
     if (!body.classList.contains("hide-ui")) chrome(box);
     if (modeKey === "bars") drawBars(box, now);
     else {
@@ -1246,7 +999,6 @@ body.hide-ui:not(.awake){cursor:none}
   }
 
   function switchField(key, x, y, fast) {
-    if (BG.mode === "gen") setBg("field", true);
     if (key === fieldKey) return;
     const old = getComputedStyle(body).backgroundColor, kind = fast ? (Math.random() < .5 ? "glitch" : pick()) : x != null ? (Math.random() < .4 ? "ripple" : pick()) : pick();
     applyField(key);
@@ -1255,12 +1007,11 @@ body.hide-ui:not(.awake){cursor:none}
     decode($("#fieldName"), FIELDS[key].name.toUpperCase(), { delay: reduced ? 0 : fast ? 150 : 420, keep: 1 });
   }
   const cycleField = d => {
-    if (BG.mode === "gen") setBg("field", true);
     const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]);
   };
 
   setLow(LOW.on, true);
-  setBg(BG.mode, true);
+  paintSwatches();
   requestAnimationFrame(frame);
 
   // ---------- panel, focus, fullscreen ----------
