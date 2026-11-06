@@ -19,7 +19,7 @@
 @property --hl{syntax:'<color>';inherits:true;initial-value:yellow}
 @property --on{syntax:'<color>';inherits:true;initial-value:black}
 @property --onhl{syntax:'<color>';inherits:true;initial-value:black}
-:root.morph{transition:--fl 2.4s ease-in-out,--fc 2.4s ease-in-out,--fh 2.4s ease-in-out,--ink 2.4s ease-in-out,--line 2.4s ease-in-out,--hl 2.4s ease-in-out,--on 2.4s ease-in-out,--onhl 2.4s ease-in-out}
+:root.morph{transition:--fl 2.4s steps(8,end),--fc 2.4s steps(8,end),--fh 2.4s steps(8,end),--ink 2.4s steps(8,end),--line 2.4s steps(8,end),--hl 2.4s steps(8,end),--on 2.4s steps(8,end),--onhl 2.4s steps(8,end)}
 :root{
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
@@ -59,6 +59,7 @@ button{background:none;border:0;padding:0;cursor:pointer}
 
 /* layers */
 #scope{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+#ht{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none}
 #fx{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:60;pointer-events:none}
 .giant-wrap{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
 .giant{position:absolute;left:-.05em;bottom:-.06em;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-weight:900;font-stretch:125%;
@@ -155,9 +156,8 @@ body.panel-off .side{transform:translateX(102%)}
 body.no-grid{background-image:none}
 body.no-text .giant-wrap{display:none}
 /* chaos */
-#glow{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;
-  background:radial-gradient(ellipse 65% 75% at var(--gx,30%) var(--gy,50%),var(--hl),transparent 70%),
-             radial-gradient(ellipse 55% 65% at var(--gx2,72%) var(--gy2,45%),var(--line),transparent 70%)}
+body.chaos{background-image:none}
+body.chaos .deck,body.chaos .side{background:linear-gradient(var(--panel),var(--panel)),var(--field)}
 .ctag{background:var(--hl);color:var(--onhl);animation:blink .5s steps(2) infinite}
 body.chaos .status.live i{animation-duration:.3s}
 #inv{position:fixed;left:0;right:0;top:0;height:22vh;z-index:61;pointer-events:none;opacity:0;mix-blend-mode:difference;
@@ -189,8 +189,8 @@ body.hide-ui:not(.awake){cursor:none}
 </style>
 </head>
 <body>
-<div id="glow" aria-hidden="true"></div>
 <div class="giant-wrap" aria-hidden="true"><div class="giant">SCOPE</div></div>
+<canvas id="ht" aria-hidden="true"></canvas>
 <canvas id="scope" aria-hidden="true"></canvas>
 
 <header class="top">
@@ -443,7 +443,7 @@ body.hide-ui:not(.awake){cursor:none}
 
   // ---------- chaos: off / some / wild ----------
   const CHAOS = ["Off", "Some", "Wild"];
-  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null, glow: 0, drive: 0 };
+  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null, drive: 0, hue: 0, hueT: 0 };
   const cWrap = $("#chaos");
   CHAOS.forEach((name, i) => {
     const b = document.createElement("button");
@@ -458,7 +458,7 @@ body.hide-ui:not(.awake){cursor:none}
     $("#chaosName").textContent = CHAOS[l].toUpperCase();
     $("#chaosTag").hidden = !l; $("#chaosTag").textContent = l === 2 ? "Wild" : "Chaos";
     body.classList.toggle("chaos", !!l);
-    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; CH.glow = 0; glowEl.style.opacity = 0; }
+    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; HT.rings.length = 0; hg.clearRect(0, 0, W, H); }
     if (!quiet) log(l ? "chaos // " + CHAOS[l].toLowerCase() + (playing() ? " · locked to signal" : " · armed, waiting for signal") : "chaos // off", !!l);
   }
 
@@ -550,13 +550,14 @@ body.hide-ui:not(.awake){cursor:none}
   // ---------- canvases ----------
   const canvas = $("#scope"), g = canvas.getContext("2d");
   const fx = $("#fx"), fg = fx.getContext("2d");
+  const ht = $("#ht"), hg = ht.getContext("2d");
   const eq = $("#eq"), eg = eq.getContext("2d");
   let W = 0, H = 0, dpr = 1;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
-    for (const c of [canvas, fx]) { c.width = W * dpr; c.height = H * dpr; }
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); fg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const c of [canvas, fx, ht]) { c.width = W * dpr; c.height = H * dpr; }
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); fg.setTransform(dpr, 0, 0, dpr, 0, 0); hg.setTransform(dpr, 0, 0, dpr, 0, 0);
     patt = null;
   }
   addEventListener("resize", resize); resize();
@@ -731,7 +732,7 @@ body.hide-ui:not(.awake){cursor:none}
   }
 
   // ---------- chaos engine: everything below is driven by the live spectrum ----------
-  const giant = $(".giant"), giantWrap = $(".giant-wrap"), glowEl = $("#glow");
+  const giant = $(".giant"), giantWrap = $(".giant-wrap");
   const WORDS = ["SCOPE", "SIGNAL", "LOUD", "PEAK", "CLIP", "WAVE", "NOISE", "JERE", "OSC-01", "████", "Δ//Ξ", "CHAOS"];
   // bass / mids / highs as 0..1, plus a beat when the low end jumps above its own running average
   function listen(now) {
@@ -765,8 +766,10 @@ body.hide-ui:not(.awake){cursor:none}
   function onBeat(now) {
     const L = CH.lvl, b = CH.b; CH.beats++;
     glitchEl(canvas, .4 + b * L * .8);
-    CH.glow = Math.min(1, CH.glow + .25 + b * .35);   // a beat swells the colour wash; it eases back on its own
-    CH.drive += .9 + b;                                 // and shoves the wash around
+    // a beat drops a round-pixel ripple into the dot field, and kicks the hue one step
+    HT.rings.push({ x: Math.random() * W, y: Math.random() * H, t: now, s: .55 + b * .45 * L / 2, sp: 520 + 500 * b });
+    if (HT.rings.length > 6) HT.rings.shift();
+    CH.hue += 12 * L;
     if (CH.beats % (L === 2 ? 4 : 8) === 0 && LAY.text) decode(giant, WORDS[Math.random() * WORDS.length | 0], { frames: 7, speed: 30 });
     if (L === 2 && now - CH.lastField > 3200 && b > .55 && Math.random() < .5) {
       CH.lastField = now;
@@ -778,19 +781,47 @@ body.hide-ui:not(.awake){cursor:none}
     if (L === 2 && CH.beats % 16 === 0) { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; markAll(); }
     if (Math.random() < .25 * L) decode(statusText, statusText.getAttribute("aria-label") || statusText.textContent, { frames: 5, speed: 28 });
   }
+  // ---------- halftone: the dot grid becomes the light show. round pixels in four sizes, stepped bands + ripples ----------
+  const HT = { rings: [], lv: null, cols: 0, rows: 0, t: 0 };
+  function halftone() {
+    const S = 28, L = CH.lvl, b = CH.b, m = CH.m, now = performance.now();
+    const cols = Math.ceil(W / S) + 1, rows = Math.ceil(H / S) + 1;
+    if (!HT.lv || HT.cols !== cols || HT.rows !== rows) { HT.lv = new Uint8Array(cols * rows); HT.cols = cols; HT.rows = rows; HT.t = 0; }
+    if (now - HT.t > 85) {          // recompute at ~12 fps so it moves in steps
+      HT.t = now;
+      const ph = CH.drive, amp = Math.min(1, .25 + m * .9) * (L === 2 ? 1 : .7);
+      HT.rings = HT.rings.filter(r => now - r.t < 2400);
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        const x = c * S, y = r * S;
+        // stepped bands rolling down the field, slightly raked
+        let v = (.5 + .5 * Math.sin((y / H * 3.2 + x / W * .9 - ph) * 6.2832)) * amp * .7;
+        for (const R of HT.rings) {
+          const age = (now - R.t) / 1000, rad = age * R.sp, d = Math.abs(Math.hypot(x - R.x, y - R.y) - rad);
+          if (d < 70) v = Math.max(v, (1 - d / 70) * R.s * Math.max(0, 1 - age / 2.4));
+        }
+        v += b * .22 * L / 2;
+        HT.lv[r * cols + c] = Math.max(0, Math.min(4, Math.floor(v * 5)));
+      }
+    }
+    hg.clearRect(0, 0, W, H);
+    const tones = [C.ink, C.ink, C.line, C.line, C.hl], alph = [.22, .35, .85, 1, 1], rad = [1.3, 3.2, 5.6, 8.4, 11.5];
+    for (let lvl = LAY.grid ? 0 : 1; lvl <= 4; lvl++) {
+      hg.fillStyle = tones[lvl]; hg.globalAlpha = alph[lvl]; hg.beginPath();
+      for (let i = 0; i < HT.lv.length; i++) if (HT.lv[i] === lvl) {
+        const x = (i % cols) * S + S / 2, y = (i / cols | 0) * S + S / 2;
+        hg.moveTo(x + rad[lvl], y); hg.arc(x, y, rad[lvl], 0, 6.2832);
+      }
+      hg.fill();
+    }
+    hg.globalAlpha = 1;
+  }
   function chaosPre(box, dt) {
     const L = CH.lvl, b = CH.b, m = CH.m, h = CH.h;
-    // hue spins with the mids, kicks with the bass
-    CH.kick = (CH.kick + dt * (m * 50 + b * 40) * L) % 360; root.style.setProperty("--kick", CH.kick.toFixed(1));
-    // colour wash: two soft gradients in the highlight and trace colours, orbiting with the mids, swelling with the bass
-    CH.drive += dt * (.15 + m * 1.2) * L;
-    CH.glow += ((b * .35 + m * .15) * L / 2 - CH.glow) * Math.min(1, dt * 1.6);
-    const gw = Math.min(L === 2 ? .7 : .45, CH.glow), d = CH.drive;
-    glowEl.style.opacity = gw.toFixed(3);
-    glowEl.style.setProperty("--gx", (50 + 38 * Math.sin(d * .7)).toFixed(1) + "%");
-    glowEl.style.setProperty("--gy", (50 + 36 * Math.cos(d * .53)).toFixed(1) + "%");
-    glowEl.style.setProperty("--gx2", (50 + 40 * Math.cos(d * .61 + 2)).toFixed(1) + "%");
-    glowEl.style.setProperty("--gy2", (50 + 34 * Math.sin(d * .47 + 1)).toFixed(1) + "%");
+    // hue moves in steps, never a smooth spin: the mids push it, the beats kick it, it lands every ~0.4s
+    CH.hue += dt * m * 18 * L;
+    if (performance.now() - CH.hueT > 400) { CH.hueT = performance.now(); CH.kick = Math.round(CH.hue / 12) * 12 % 360; root.style.setProperty("--kick", CH.kick); }
+    CH.drive += dt * (.2 + m * 1.4) * L;
+    halftone(dt);
     // shake on the low end
     const sh = b * b * 9 * L;
     canvas.style.transform = sh > .6 ? `translate(${((Math.random() - .5) * sh).toFixed(1)}px,${((Math.random() - .5) * sh).toFixed(1)}px)` : "";
