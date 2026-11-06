@@ -15,7 +15,8 @@
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
   --fsel:oklch(var(--fl) var(--fc) var(--fh));
-  --field:oklch(var(--fl) var(--fc) calc(var(--fh) + var(--drift)));
+  --kick:0;
+  --field:oklch(var(--fl) var(--fc) calc(var(--fh) + var(--drift) + var(--kick)));
   --dim:color-mix(in oklch,var(--ink) 64%,transparent);
   --rule:color-mix(in oklch,var(--ink) 28%,transparent);
   --panel:color-mix(in oklch,var(--ink) 7%,transparent);
@@ -118,10 +119,10 @@ body.panel-off .side{transform:translateX(102%)}
 .sec{display:grid;gap:8px}
 .sec h3{margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:400}
 .sec h3 b{color:var(--ink);font-weight:700}
-.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
-.sw{height:40px;position:relative;border:1px solid var(--rule);display:flex;align-items:flex-end;padding:3px 6px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;overflow:hidden;transition:border-color .12s}
+.fields{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.sw{height:36px;position:relative;border:1px solid var(--rule);display:flex;align-items:flex-end;padding:2px 5px;font-size:8px;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;font-weight:700;overflow:hidden;transition:border-color .12s}
 .sw svg{position:absolute;left:0;top:5px;width:100%;height:16px}
-.sw:hover{border-color:var(--hl);border-width:2px;padding:2px 5px}
+.sw:hover{border-color:var(--hl);border-width:2px;padding:1px 4px}
 .sw[aria-pressed="true"]::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;background:currentColor;animation:blink 1.1s steps(2) infinite}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
 .chip{height:28px;border:1px solid var(--rule);font-size:10px;letter-spacing:.14em;text-transform:uppercase;display:grid;place-items:center;transition:background .12s,color .12s,border-color .12s}
@@ -140,6 +141,16 @@ body.panel-off .side{transform:translateX(102%)}
 #feed .g{color:var(--line)}
 .keys{font-size:10px;color:var(--dim);line-height:1.8}
 .keys b{color:var(--ink);font-weight:700;display:inline-block;min-width:1.6em;padding:0 4px;margin-right:4px;border:1px solid var(--rule);text-align:center;line-height:1.5}
+
+/* layers off */
+body.no-grid{background-image:none}
+body.no-text .giant-wrap{display:none}
+/* chaos */
+.ctag{background:var(--hl);color:var(--onhl);animation:blink .5s steps(2) infinite}
+body.chaos .status.live i{animation-duration:.3s}
+#inv{position:fixed;left:0;right:0;top:0;height:22vh;z-index:61;pointer-events:none;opacity:0;mix-blend-mode:difference;
+  background:linear-gradient(transparent,#fff 35%,#fff 65%,transparent)}
+.seg.wild .chip[data-key="2"][aria-pressed="true"]{background:var(--hl);color:var(--onhl);border-color:var(--hl)}
 
 /* drop + focus */
 body.dragging::after{content:"PATCH IN";position:fixed;inset:14px;z-index:70;display:grid;place-items:center;border:3px solid var(--line);
@@ -171,7 +182,7 @@ body.hide-ui:not(.awake){cursor:none}
 
 <header class="top">
   <div class="brand"><h1 id="brand">SCOPE</h1><span class="slash">//</span><span class="lbl">OSC-01 · CH.A</span></div>
-  <div class="status" id="status"><i></i><span id="statusText">NO SIGNAL</span></div>
+  <div class="status" id="status"><i></i><span id="statusText">NO SIGNAL</span><span class="tag ctag" id="chaosTag" hidden>Chaos</span></div>
   <div class="right">
     <span class="clock" id="clock">00:00:00</span>
     <a class="ib" href="../scope.html" title="Back to the original Scope" style="text-decoration:none">Classic</a>
@@ -220,6 +231,14 @@ body.hide-ui:not(.awake){cursor:none}
     <div class="seg" id="views"></div>
   </div>
   <div class="sec">
+    <h3><span>Chaos</span><b id="chaosName">OFF</b></h3>
+    <div class="seg wild" id="chaos"></div>
+  </div>
+  <div class="sec">
+    <h3><span>Layers</span></h3>
+    <div class="seg" id="layers"></div>
+  </div>
+  <div class="sec">
     <h3><span>Edges</span></h3>
     <div class="sl"><input id="edge" type="range" min="0" max="45" step="1" aria-label="Edges" title="How much the trace eases in at the sides"><output id="edgeOut">12</output></div>
     <h3><span>Intensity</span></h3>
@@ -237,11 +256,12 @@ body.hide-ui:not(.awake){cursor:none}
     <h3><span>Log</span></h3>
     <div id="feed" aria-live="polite"></div>
   </div>
-  <div class="keys"><b>␣</b>play &nbsp;<b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel<br><b>[</b><b>]</b>field &nbsp;<b>M</b>draw</div>
+  <div class="keys"><b>␣</b>play &nbsp;<b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel<br><b>[</b><b>]</b>field &nbsp;<b>M</b>draw &nbsp;<b>C</b>chaos<br><b>G</b>grid &nbsp;<b>T</b>text</div>
 </aside>
 
 <button class="wake" id="wakeBtn" type="button">Show controls</button>
 <canvas id="fx" aria-hidden="true"></canvas>
+<div id="inv" aria-hidden="true"></div>
 
 <script>
 (() => {
@@ -309,6 +329,25 @@ body.hide-ui:not(.awake){cursor:none}
     term:    { name: "Term",    fl: .13, fc: 0,   fh: 0,   ink: "oklch(.95 .01 100)",  line: "oklch(.93 .23 125)", on: "oklch(.15 0 0)",   hl: "oklch(.65 .27 0)",   onhl: "#111" },
     redline: { name: "Redline", fl: .14, fc: .015,fh: 25,  ink: "oklch(.96 0 0)",      line: "oklch(.63 .25 27)",  on: "#fff",              hl: "oklch(.96 0 0)",     onhl: "oklch(.14 0 0)" },
     white:   { name: "White",   fl: .94, fc: .004,fh: 250, ink: "oklch(.1 0 0)",       line: "oklch(.65 .27 0)",   on: "#fff",              hl: "oklch(.8 .21 128)",  onhl: "oklch(.1 0 0)" },
+    klein:   { name: "Klein",   fl: .36, fc: .25, fh: 266, ink: "oklch(.97 0 0)",      line: "oklch(.93 .19 103)", on: "oklch(.15 0 0)",   hl: "oklch(.68 .24 32)",  onhl: "#fff" },
+    hazard:  { name: "Hazard",  fl: .16, fc: .01, fh: 60,  ink: "oklch(.97 0 0)",      line: "oklch(.72 .21 48)",  on: "oklch(.12 0 0)",   hl: "oklch(.95 .19 105)", onhl: "oklch(.12 0 0)" },
+    infra:   { name: "Infra",   fl: .6,  fc: .3,  fh: 340, ink: "oklch(.14 0 0)",      line: "oklch(.95 .2 105)",  on: "oklch(.14 0 0)",   hl: "oklch(.22 .12 265)", onhl: "#fff" },
+    cmyk:    { name: "CMYK",    fl: .82, fc: .14, fh: 210, ink: "oklch(.15 0 0)",      line: "oklch(.58 .29 345)", on: "#fff",              hl: "oklch(.93 .2 105)",  onhl: "oklch(.12 0 0)" },
+    uv:      { name: "UV",      fl: .26, fc: .18, fh: 300, ink: "oklch(.96 0 0)",      line: "oklch(.9 .25 135)",  on: "oklch(.14 0 0)",   hl: "oklch(.75 .2 340)",  onhl: "oklch(.12 0 0)" },
+    toxic:   { name: "Toxic",   fl: .1,  fc: .02, fh: 140, ink: "oklch(.95 .05 140)",  line: "oklch(.87 .29 142)", on: "oklch(.12 0 0)",   hl: "oklch(.65 .27 0)",   onhl: "#111" },
+    tron:    { name: "Tron",    fl: .16, fc: .04, fh: 250, ink: "oklch(.92 .05 220)",  line: "oklch(.88 .15 200)", on: "oklch(.14 0 0)",   hl: "oklch(.75 .19 50)",  onhl: "oklch(.12 0 0)" },
+    poster:  { name: "Poster",  fl: .56, fc: .23, fh: 28,  ink: "oklch(.12 0 0)",      line: "oklch(.12 0 0)",     on: "#fff",              hl: "oklch(.97 0 0)",     onhl: "oklch(.12 0 0)" },
+    lava:    { name: "Lava",    fl: .62, fc: .22, fh: 40,  ink: "oklch(.12 0 0)",      line: "oklch(.97 .14 100)", on: "oklch(.12 0 0)",   hl: "oklch(.2 .08 270)",  onhl: "#fff" },
+    gum:     { name: "Gum",     fl: .8,  fc: .13, fh: 350, ink: "oklch(.25 .2 266)",   line: "oklch(.42 .29 266)", on: "#fff",              hl: "oklch(.9 .21 125)",  onhl: "oklch(.12 0 0)" },
+    mondrian:{ name: "Primary", fl: .97, fc: 0,   fh: 0,   ink: "oklch(.1 0 0)",       line: "oklch(.57 .24 27)",  on: "#fff",              hl: "oklch(.45 .25 265)", onhl: "#fff" },
+    sodium:  { name: "Sodium",  fl: .8,  fc: .17, fh: 75,  ink: "oklch(.2 .1 265)",    line: "oklch(.32 .2 265)",  on: "#fff",              hl: "oklch(.6 .25 30)",   onhl: "#fff" },
+    ice:     { name: "Ice",     fl: .96, fc: .03, fh: 230, ink: "oklch(.2 .1 260)",    line: "oklch(.45 .29 266)", on: "#fff",              hl: "oklch(.85 .18 85)",  onhl: "oklch(.12 0 0)" },
+    rust:    { name: "Rust",    fl: .44, fc: .13, fh: 40,  ink: "oklch(.96 .02 80)",   line: "oklch(.88 .14 175)", on: "oklch(.14 0 0)",   hl: "oklch(.92 .2 105)",  onhl: "oklch(.12 0 0)" },
+    vapor:   { name: "Vapor",   fl: .68, fc: .18, fh: 310, ink: "oklch(.14 0 0)",      line: "oklch(.9 .15 190)",  on: "oklch(.14 0 0)",   hl: "oklch(.95 .2 105)",  onhl: "oklch(.12 0 0)" },
+    lime:    { name: "Lime",    fl: .9,  fc: .22, fh: 128, ink: "oklch(.12 0 0)",      line: "oklch(.42 .29 266)", on: "#fff",              hl: "oklch(.65 .27 0)",   onhl: "#fff" },
+    coral:   { name: "Coral",   fl: .72, fc: .17, fh: 25,  ink: "oklch(.15 .05 250)",  line: "oklch(.25 .12 255)", on: "#fff",              hl: "oklch(.9 .15 180)",  onhl: "oklch(.12 0 0)" },
+    void:    { name: "Void",    fl: 0,   fc: 0,   fh: 0,   ink: "oklch(1 0 0)",        line: "oklch(1 0 0)",       on: "#000",              hl: "oklch(.65 .27 0)",   onhl: "#fff" },
+    paper:   { name: "Paper",   fl: 1,   fc: 0,   fh: 0,   ink: "oklch(0 0 0)",        line: "oklch(0 0 0)",       on: "#fff",              hl: "oklch(.9 .25 135)",  onhl: "#000" },
   };
   const FKEYS = Object.keys(FIELDS);
   const WIDTHS = { hair: 1, fine: 1.75, medium: 3, bold: 5.5 };
@@ -361,6 +400,44 @@ body.hide-ui:not(.awake){cursor:none}
     $("#wName").textContent = widthKey.toUpperCase();
   }
   applyField(fieldKey); markAll();
+
+  // ---------- layers: dot grid, text, frame furniture ----------
+  const LAY = { grid: store.get("grid", "1") === "1", text: store.get("text", "1") === "1", frame: store.get("frame", "1") === "1" };
+  const lWrap = $("#layers");
+  for (const key of Object.keys(LAY)) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.key = key; b.textContent = key;
+    b.title = { grid: "Dot grid (G)", text: "Giant word and labels (T)", frame: "Brackets, ticks and centre line" }[key];
+    b.onclick = () => toggleLayer(key);
+    lWrap.appendChild(b);
+  }
+  function applyLayers() {
+    body.classList.toggle("no-grid", !LAY.grid); body.classList.toggle("no-text", !LAY.text);
+    lWrap.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", LAY[b.dataset.key]));
+  }
+  function toggleLayer(key) { LAY[key] = !LAY[key]; store.set(key, LAY[key] ? "1" : "0"); applyLayers(); }
+  applyLayers();
+
+  // ---------- chaos: off / some / wild ----------
+  const CHAOS = ["Off", "Some", "Wild"];
+  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null };
+  const cWrap = $("#chaos");
+  CHAOS.forEach((name, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.dataset.key = i; b.textContent = name;
+    b.onclick = () => setChaos(i);
+    cWrap.appendChild(b);
+  });
+  function setChaos(l, quiet) {
+    if (reduced && l) { say("Chaos is off while reduced motion is on.", true); return; }
+    CH.lvl = l; store.set("chaos", l);
+    cWrap.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", +b.dataset.key === l));
+    $("#chaosName").textContent = CHAOS[l].toUpperCase();
+    $("#chaosTag").hidden = !l; $("#chaosTag").textContent = l === 2 ? "Wild" : "Chaos";
+    body.classList.toggle("chaos", !!l);
+    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; }
+    if (!quiet) log(l ? "chaos // " + CHAOS[l].toLowerCase() + (playing() ? " · locked to signal" : " · armed, waiting for signal") : "chaos // off", !!l);
+  }
 
   // ---------- messages + status ----------
   const hint = $("#hint"), statusEl = $("#status"), statusText = $("#statusText");
@@ -569,30 +646,156 @@ body.hide-ui:not(.awake){cursor:none}
   }
 
   function chrome(box) {
-    // instrument furniture: corner brackets, centre line of round pixels, scale ticks
+    // instrument furniture: corner brackets, scale ticks, centre line of round pixels, labels
     const { left, right, top: tp, bottom } = box, mid = (tp + bottom) / 2, L = 12;
-    g.strokeStyle = C.ink; g.globalAlpha = .55; g.lineWidth = 1.5; g.beginPath();
-    g.moveTo(left, tp + L); g.lineTo(left, tp); g.lineTo(left + L, tp);
-    g.moveTo(right - L, tp); g.lineTo(right, tp); g.lineTo(right, tp + L);
-    g.moveTo(left, bottom - L); g.lineTo(left, bottom); g.lineTo(left + L, bottom);
-    g.moveTo(right - L, bottom); g.lineTo(right, bottom); g.lineTo(right, bottom - L);
-    g.stroke();
-    g.fillStyle = C.ink; g.globalAlpha = .22;
-    for (let x = left + 14; x < right - 8; x += 14) { g.beginPath(); g.arc(x, mid, 1.3, 0, 6.2832); g.fill(); }
-    g.globalAlpha = .5;
-    for (let k = 0; k <= 8; k++) { const y = tp + (bottom - tp) * k / 8; g.fillRect(right + 6, y - .5, k % 4 ? 4 : 8, 1); }
-    g.font = "500 9px " + getComputedStyle(body).getPropertyValue("--mono");
-    g.globalAlpha = .6; g.textBaseline = "top";
-    g.fillText("CH.A", left + 2, tp + 6);
-    g.textAlign = "right"; g.fillText(locked ? "LOCK" : "FREE", right - 2, tp + 6); g.textAlign = "left";
+    if (LAY.frame) {
+      g.strokeStyle = C.ink; g.globalAlpha = .55; g.lineWidth = 1.5; g.beginPath();
+      g.moveTo(left, tp + L); g.lineTo(left, tp); g.lineTo(left + L, tp);
+      g.moveTo(right - L, tp); g.lineTo(right, tp); g.lineTo(right, tp + L);
+      g.moveTo(left, bottom - L); g.lineTo(left, bottom); g.lineTo(left + L, bottom);
+      g.moveTo(right - L, bottom); g.lineTo(right, bottom); g.lineTo(right, bottom - L);
+      g.stroke();
+      g.fillStyle = C.ink; g.globalAlpha = .5;
+      for (let k = 0; k <= 8; k++) { const y = tp + (bottom - tp) * k / 8; g.fillRect(right + 6, y - .5, k % 4 ? 4 : 8, 1); }
+      if (LAY.grid) { g.globalAlpha = .22; for (let x = left + 14; x < right - 8; x += 14) { g.beginPath(); g.arc(x, mid, 1.3, 0, 6.2832); g.fill(); } }
+    }
+    if (LAY.text) {
+      g.fillStyle = C.ink; g.font = "500 9px " + getComputedStyle(body).getPropertyValue("--mono");
+      g.globalAlpha = .6; g.textBaseline = "top";
+      g.fillText("CH.A", left + 2, tp + 6);
+      g.textAlign = "right"; g.fillText(locked ? "LOCK" : "FREE", right - 2, tp + 6); g.textAlign = "left";
+    }
     g.globalAlpha = 1;
   }
 
+  // draws the trace in the current mode; chaos uses it again for ghosts and mirrors
+  function drawTrace(box, col, dx, flip, wm, main) {
+    const span = box.right - box.left, mid = (box.top + box.bottom) / 2;
+    const yIdx = i => flip ? 2 * mid - PY[i] : PY[i];
+    const yAt = x => { const f = Math.max(0, Math.min(N - 1, (x - box.left) / span * (N - 1))), i = f | 0, r = f - i; return yIdx(i) * (1 - r) + yIdx(Math.min(N - 1, i + 1)) * r; };
+    g.save(); g.translate(dx, 0);
+    if (modeKey === "line") {
+      g.strokeStyle = col; g.lineWidth = WIDTHS[widthKey] * wm; g.lineJoin = "round"; g.lineCap = "round";
+      g.beginPath();
+      for (let i = 0; i < N; i++) { const x = box.left + span * i / (N - 1); i ? g.lineTo(x, yIdx(i)) : g.moveTo(x, yIdx(i)); }
+      g.stroke();
+    } else if (modeKey === "dots") {
+      const step = { hair: 5, fine: 8, medium: 11, bold: 15 }[widthKey], r = { hair: 1.1, fine: 1.8, medium: 2.8, bold: 4.4 }[widthKey] * wm;
+      g.fillStyle = col;
+      for (let x = box.left; x <= box.right; x += step) { g.beginPath(); g.arc(x, yAt(x), r, 0, 6.2832); g.fill(); }
+    } else {
+      // matrix: the trace quantised onto a dot-matrix; round pixels for the body, square ones on the turning points
+      const cs = { hair: 7, fine: 10, medium: 14, bold: 20 }[widthKey];
+      const h = box.bottom - box.top, cols = Math.floor(span / cs), rows = Math.floor(h / cs);
+      const ox = box.left + (span - cols * cs) / 2, oy = box.top + (h - rows * cs) / 2;
+      if (main && LAY.grid) { const a = g.globalAlpha; g.globalAlpha = a * .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = a; }
+      const Rw = new Int16Array(cols);
+      for (let c = 0; c < cols; c++) Rw[c] = Math.max(0, Math.min(rows - 1, Math.floor((yAt(ox + c * cs + cs / 2) - oy) / cs)));
+      g.fillStyle = col;
+      const rad = Math.min(cs * .5, cs * .36 * Math.sqrt(wm));
+      for (let c = 0; c < cols; c++) {
+        const a = c ? Rw[c - 1] : Rw[c], b = Rw[c], lo = Math.min(a, b), hi = Math.max(a, b);
+        const turn = c > 0 && c < cols - 1 && ((Rw[c] < Rw[c - 1] && Rw[c] <= Rw[c + 1]) || (Rw[c] > Rw[c - 1] && Rw[c] >= Rw[c + 1]));
+        const cx = ox + c * cs + cs / 2;
+        for (let r = lo; r <= hi; r++) {
+          const cy = oy + r * cs + cs / 2;
+          if (turn && r === b) { const s = cs * .78; g.fillRect(cx - s / 2, cy - s / 2, s, s); }
+          else { g.beginPath(); g.arc(cx, cy, rad, 0, 6.2832); g.fill(); }
+        }
+      }
+    }
+    g.restore();
+  }
+
+  // ---------- chaos engine: everything below is driven by the live spectrum ----------
+  const giant = $(".giant"), giantWrap = $(".giant-wrap");
+  const WORDS = ["SCOPE", "SIGNAL", "LOUD", "PEAK", "CLIP", "WAVE", "NOISE", "JERE", "OSC-01", "████", "Δ//Ξ", "CHAOS"];
+  // bass / mids / highs as 0..1, plus a beat when the low end jumps above its own running average
+  function listen(now) {
+    if (!playing()) { CH.b *= .9; CH.m *= .9; CH.h *= .9; return false; }
+    analyser.getByteFrequencyData(fbuf);
+    const sr = ctx.sampleRate, n = fbuf.length;
+    const band = (a, z) => { const i0 = Math.max(1, Math.floor(a / (sr / 2) * n)), i1 = Math.max(i0 + 1, Math.ceil(z / (sr / 2) * n)); let s = 0; for (let i = i0; i < i1; i++) s += fbuf[i]; return s / ((i1 - i0) * 255); };
+    const norm = (v, lo, hi) => Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
+    const b = norm(band(30, 160), .35, .95), m = norm(band(160, 2400), .25, .85), h = norm(band(2400, 12000), .12, .7);
+    CH.b += (b - CH.b) * (b > CH.b ? .7 : .25); CH.m += (m - CH.m) * .3; CH.h += (h - CH.h) * .5;
+    const beat = b > CH.ab * 1.18 + .07 && b > .3 && now - CH.last > 190;
+    CH.ab += (b - CH.ab) * .05;
+    if (beat) CH.last = now;
+    return beat;
+  }
+  function glitchEl(el, amt) {
+    const j = a => Math.round((Math.random() - .5) * a), st = "steps(1,end)";
+    el.animate([
+      { transform: `translate(${j(60 * amt)}px,${j(8 * amt)}px)`, clipPath: "inset(0 0 52% 0)", filter: "hue-rotate(140deg) saturate(1.8)", easing: st },
+      { offset: .35, transform: `translate(${j(30 * amt)}px,0)`, clipPath: `inset(${20 + j(20)}% 0 ${10 + j(10)}% 0)`, filter: "invert(1)", easing: st },
+      { offset: .7, transform: `translate(${j(14 * amt)}px,0)`, clipPath: "inset(0 0 0 0)", filter: "hue-rotate(-90deg)", easing: st },
+      { transform: "none", clipPath: "inset(0 0 0 0)", filter: "none" }
+    ], { duration: 160 + 140 * amt });
+  }
+  // gradient invert band sweeping down the screen, instead of a white flash
+  const inv = $("#inv");
+  function invSweep(dur) {
+    if (reduced) return;
+    inv.animate([{ transform: "translateY(-30vh)", opacity: 1 }, { transform: "translateY(110vh)", opacity: 1 }], { duration: dur || 320, easing: "steps(7,end)" });
+  }
+  function onBeat(now) {
+    const L = CH.lvl, b = CH.b; CH.beats++;
+    glitchEl(canvas, .4 + b * L * .8);
+    if (Math.random() < .35 * L) invSweep(220 + Math.random() * 160);
+    if (CH.beats % (L === 2 ? 4 : 8) === 0 && LAY.text) decode(giant, WORDS[Math.random() * WORDS.length | 0], { frames: 7, speed: 30 });
+    if (L === 2 && now - CH.lastField > 1700 && b > .55 && Math.random() < .5) {
+      CH.lastField = now;
+      let k; do k = FKEYS[Math.random() * FKEYS.length | 0]; while (k === fieldKey);
+      switchField(k, Math.random() * W, Math.random() * H, true);
+    }
+    if (L === 2 && CH.beats % 16 === 0) { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; markAll(); }
+    if (Math.random() < .25 * L) decode(statusText, statusText.getAttribute("aria-label") || statusText.textContent, { frames: 5, speed: 28 });
+  }
+  function chaosPre(box, dt) {
+    const L = CH.lvl, b = CH.b, m = CH.m, h = CH.h;
+    // hue spins with the mids, kicks with the bass
+    CH.kick = (CH.kick + dt * (m * 50 + b * 40) * L) % 360; root.style.setProperty("--kick", CH.kick.toFixed(1));
+    // shake on the low end
+    const sh = b * b * 9 * L;
+    canvas.style.transform = sh > .6 ? `translate(${((Math.random() - .5) * sh).toFixed(1)}px,${((Math.random() - .5) * sh).toFixed(1)}px)` : "";
+    giantWrap.style.transform = `scale(${(1 + b * .05 * L).toFixed(3)})`;
+    // tears: on highs, a chunk of the trace jumps sideways in time and height
+    if (L === 2 && (CH.tear ? --CH.tear.life > 0 : Math.random() < h * .25)) {
+      if (!CH.tear) CH.tear = { s: Math.random() * N * .8 | 0, n: 40 + Math.random() * 140 | 0, off: (Math.random() - .5) * (box.bottom - box.top) * .5 * (.4 + h), life: 3 + Math.random() * 5 | 0 };
+      const T = CH.tear; for (let i = T.s; i < Math.min(N, T.s + T.n); i++) PY[i] += T.off;
+    } else CH.tear = null;
+    // RGB-ish split: two offset ghosts in the highlight and ink colours
+    const split = b * 18 * L + h * 6 * L;
+    if (split > 2) {
+      g.globalAlpha = .6; drawTrace(box, C.hl, split, false, 1, false);
+      g.globalAlpha = .45; drawTrace(box, C.ink, -split * .7, false, 1, false);
+      g.globalAlpha = 1;
+    }
+  }
+  function chaosPost(box) {
+    const L = CH.lvl, b = CH.b, h = CH.h;
+    if (L === 2 && b > .45) { g.globalAlpha = .5 + b * .4; drawTrace(box, C.hl, 0, true, 1, false); g.globalAlpha = 1; }   // mirror on heavy bass
+    // block noise from the highs: square and round pixels in the field's own colours
+    const n = Math.floor(h * h * 26 * L);
+    const cols = [C.line, C.hl, C.ink];
+    for (let i = 0; i < n; i++) {
+      const s = 4 + Math.random() * (L === 2 ? 46 : 22), x = Math.random() * W, y = box.top + Math.random() * (box.bottom - box.top);
+      g.fillStyle = cols[Math.random() * 3 | 0]; g.globalAlpha = .55 + Math.random() * .45;
+      if (Math.random() < .5) g.fillRect(x, y, s, s * (Math.random() < .3 ? .2 : 1)); else { g.beginPath(); g.arc(x, y, s * .3, 0, 6.2832); g.fill(); }
+    }
+    // scan tears across the whole width on the loudest highs
+    if (L === 2 && h > .5) { g.fillStyle = C.hl; g.globalAlpha = .8; for (let i = 0; i < 3; i++) g.fillRect(0, Math.random() * H, W, 1 + Math.random() * 3); }
+    g.globalAlpha = 1;
+  }
+
+  let lastNow = performance.now();
   function frame(now) {
+    const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
     g.clearRect(0, 0, W, H);
     const box = frameBox();
     const k = sample();
-    const mid = (box.top + box.bottom) / 2, amp = (box.bottom - box.top) / 2 * 0.92, span = box.right - box.left;
+    const mid = (box.top + box.bottom) / 2, amp = (box.bottom - box.top) / 2 * 0.92;
     const ease = viewKey === "one" ? 0.4 : 0.55;
     for (let i = 0; i < N; i++) {
       shown[i] += (ys[i] * k - shown[i]) * ease;
@@ -601,38 +804,12 @@ body.hide-ui:not(.awake){cursor:none}
       const d = EDGE > 0 ? Math.min(1, Math.min(t, 1 - t) / EDGE) : 1;        // lasso at the sides
       PY[i] = mid - v * Math.sin(d * Math.PI / 2) * amp;
     }
+    const wild = CH.lvl && !reduced;
+    const beat = wild ? listen(now) : false;
     if (!body.classList.contains("hide-ui")) chrome(box);
-    const yAt = x => { const f = Math.max(0, Math.min(N - 1, (x - box.left) / span * (N - 1))), i = f | 0, r = f - i; return PY[i] * (1 - r) + (PY[Math.min(N - 1, i + 1)]) * r; };
-
-    if (modeKey === "line") {
-      g.strokeStyle = C.line; g.lineWidth = WIDTHS[widthKey]; g.lineJoin = "round"; g.lineCap = "round";
-      g.beginPath();
-      for (let i = 0; i < N; i++) { const x = box.left + span * i / (N - 1); i ? g.lineTo(x, PY[i]) : g.moveTo(x, PY[i]); }
-      g.stroke();
-    } else if (modeKey === "dots") {
-      const step = { hair: 5, fine: 8, medium: 11, bold: 15 }[widthKey], r = { hair: 1.1, fine: 1.8, medium: 2.8, bold: 4.4 }[widthKey];
-      g.fillStyle = C.line;
-      for (let x = box.left; x <= box.right; x += step) { g.beginPath(); g.arc(x, yAt(x), r, 0, 6.2832); g.fill(); }
-    } else {
-      // matrix: the trace quantised onto a dot-matrix; round pixels for the body, square ones on the turning points
-      const cs = { hair: 7, fine: 10, medium: 14, bold: 20 }[widthKey];
-      const h = box.bottom - box.top, cols = Math.floor(span / cs), rows = Math.floor(h / cs);
-      const ox = box.left + (span - cols * cs) / 2, oy = box.top + (h - rows * cs) / 2;
-      g.globalAlpha = .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = 1;
-      const R = new Int16Array(cols);
-      for (let c = 0; c < cols; c++) R[c] = Math.max(0, Math.min(rows - 1, Math.floor((yAt(ox + c * cs + cs / 2) - oy) / cs)));
-      for (let c = 0; c < cols; c++) {
-        const a = c ? R[c - 1] : R[c], b = R[c], lo = Math.min(a, b), hi = Math.max(a, b);
-        const turn = c > 0 && c < cols - 1 && ((R[c] < R[c - 1] && R[c] <= R[c + 1]) || (R[c] > R[c - 1] && R[c] >= R[c + 1]));
-        const cx = ox + c * cs + cs / 2;
-        g.fillStyle = C.line;
-        for (let r = lo; r <= hi; r++) {
-          const cy = oy + r * cs + cs / 2;
-          if (turn && r === b) { const s = cs * .78; g.fillRect(cx - s / 2, cy - s / 2, s, s); }
-          else { g.beginPath(); g.arc(cx, cy, cs * .36, 0, 6.2832); g.fill(); }
-        }
-      }
-    }
+    if (wild) chaosPre(box, dt);
+    drawTrace(box, C.line, 0, false, wild ? 1 + CH.b * 1.3 * CH.lvl : 1, true);
+    if (wild) { chaosPost(box); if (beat) onBeat(now); }
     eqFrame(now);
     readout(now);
     fxFrame(now);
@@ -693,7 +870,7 @@ body.hide-ui:not(.awake){cursor:none}
   let lastT = "";
   const pick = () => { let k; do k = POOL[Math.random() * POOL.length | 0]; while (k === lastT && POOL.length > 1); lastT = k; return k; };
   let TR = null;
-  function wipe(kind, col, ox, oy) {
+  function wipe(kind, col, ox, oy, fast) {
     if (reduced) return;
     const s = kind === "ripple" ? 18 : kind === "rain" ? 28 : 44, cols = Math.ceil(W / s), rows = Math.ceil(H / s);
     ox = ox ?? W / 2; oy = oy ?? H / 2;
@@ -711,7 +888,8 @@ body.hide-ui:not(.awake){cursor:none}
       else v = 0;
       th[r * cols + c] = v;
     }
-    TR = { kind, col, t0: performance.now(), dur: kind === "glitch" ? 560 : kind === "ripple" ? 1150 : 900, s, cols, rows, th, slices: null, lastStep: -1 };
+    if (kind === "glitch") invSweep(fast ? 220 : 380);
+    TR = { kind, col, t0: performance.now(), dur: (kind === "glitch" ? 560 : kind === "ripple" ? 1150 : 900) * (fast ? .45 : 1), s, cols, rows, th, slices: null, lastStep: -1 };
   }
   function fxFrame(now) {
     if (!TR) return;
@@ -729,7 +907,6 @@ body.hide-ui:not(.awake){cursor:none}
         const y = Math.random() * H, hh = (Math.random() * .16 + .03) * H, dx = (Math.random() - .5) * 90 * (p + .3);
         fg.fillRect(dx, y, W, hh);
       }
-      if (p < .7) { fg.globalCompositeOperation = "difference"; fg.fillStyle = "#fff"; fg.fillRect(0, Math.random() * H, W, H * .05 + Math.random() * H * .06); fg.globalCompositeOperation = "source-over"; }
       return;
     }
     const { s, cols, rows, th } = TR;
@@ -743,17 +920,18 @@ body.hide-ui:not(.awake){cursor:none}
     }
   }
 
-  function switchField(key, x, y) {
+  function switchField(key, x, y, fast) {
     if (key === fieldKey) return;
-    const old = getComputedStyle(body).backgroundColor, kind = x != null ? (Math.random() < .4 ? "ripple" : pick()) : pick();
+    const old = getComputedStyle(body).backgroundColor, kind = fast ? (Math.random() < .5 ? "glitch" : pick()) : x != null ? (Math.random() < .4 ? "ripple" : pick()) : pick();
     applyField(key);
-    wipe(kind, old, x, y);
-    log("field // " + FIELDS[key].name.toLowerCase() + " · " + kind);
-    decode($("#fieldName"), FIELDS[key].name.toUpperCase(), { delay: reduced ? 0 : 420, keep: 1 });
+    wipe(kind, old, x, y, fast);
+    log((fast ? "chaos // " : "field // ") + FIELDS[key].name.toLowerCase() + " · " + kind, !!fast);
+    decode($("#fieldName"), FIELDS[key].name.toUpperCase(), { delay: reduced ? 0 : fast ? 150 : 420, keep: 1 });
   }
   const cycleField = d => { const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]); };
 
   requestAnimationFrame(frame);
+  setChaos(CH.lvl, true);
 
   // ---------- panel, focus, fullscreen ----------
   const panelBtn = $("#panelBtn");
@@ -797,6 +975,9 @@ body.hide-ui:not(.awake){cursor:none}
     else if (k === "f") toggleFullscreen();
     else if (k === "p") setPanel(body.classList.contains("panel-off"));
     else if (k === "m") { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; store.set("mode", modeKey); markAll(); log("draw // " + modeKey); }
+    else if (k === "c") setChaos((CH.lvl + 1) % 3);
+    else if (k === "g") toggleLayer("grid");
+    else if (k === "t") toggleLayer("text");
     else if (e.key === "]") cycleField(1);
     else if (e.key === "[") cycleField(-1);
     egg = (egg + e.key).slice(-8);
