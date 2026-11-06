@@ -298,12 +298,9 @@ main{grid-area:main;overflow:auto;padding:16px 22px 26px 34px;min-width:0;positi
 .cg-tabs #cg-t-mara[aria-selected="true"] i{animation:cgtick .6s steps(5) infinite}
 @keyframes cgtick{to{background-position:20px 0}}
 #colorgen.mara .cg-box{background:#000;border-color:var(--fg)}
-#colorgen.mara #cg-canvas{image-rendering:pixelated;inset:0;width:100%;height:100%}
-#colorgen.mara .cg-grain{display:none}
 #colorgen.mara .cg-coords{background:#000;padding:10px 12px}
 #colorgen.mara .cg-row{text-shadow:none}
 @media (min-width:721px){:root[data-field="color"] .cg-box{max-height:max(220px,calc(100vh - 420px))}}
-html.cg-bg.cg-mara #cg-canvas{image-rendering:pixelated}
 #colorgen:fullscreen .cg-tabs,#colorgen.cg-full .cg-tabs{position:absolute;left:18px;bottom:18px;z-index:2;margin:0;width:min(420px,calc(100% - 36px));background:rgba(0,0,0,.35);border-color:#fff}
 #colorgen:fullscreen .cg-tabs button,#colorgen.cg-full .cg-tabs button{color:#fff}
 #colorgen:fullscreen .cg-tabs button+button,#colorgen.cg-full .cg-tabs button+button{border-color:#fff}
@@ -946,15 +943,30 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
       [.88, .13, 170, 'mint'], [.93, .21, 108, 'acid yellow'], [.52, .26, 295, 'violet'], [1, 0, 0, 'white'], [0, 0, 0, 'black']];
     var mSlot = -1, mPal = null;
     function rngFor(n) { var s = (n * 2654435761 + (seed * 1000 | 0)) >>> 0; return function () { s = (s + 0x6D2B79F5) >>> 0; var x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
-    function maraPalette(time) {
-      var slot = Math.floor(time / 2.4); if (slot === mSlot && mPal) return mPal; mSlot = slot;
-      var r = rngFor(slot), pool = MARA.slice(0, 8), pick = [], i;
+    // mix two colours around the hue wheel; black and white borrow the other colour's hue, so nothing passes through grey
+    function mixC(a, b, f) {
+      var ha = a.C < .01 ? b.h : a.h, hb = b.C < .01 ? a.h : b.h, dh = ((hb - ha + 540) % 360) - 180;
+      var L = a.L + (b.L - a.L) * f, C = a.C + (b.C - a.C) * f;
+      if (a.C >= .01 && b.C >= .01) C = Math.max(.12, C);
+      return { L: L, C: C, h: (ha + dh * f + 360) % 360, name: f < .5 ? a.name : b.name };
+    }
+    // one set of four per slot: black only ever sits first and white last, so black never fades into white
+    function maraSet(n) {
+      var r = rngFor(n), pool = MARA.slice(0, 8), pick = [], i;
       while (pick.length < 4) { i = Math.floor(r() * pool.length); pick.push(pool.splice(i, 1)[0]); }
-      var bw = r(); if (bw < .4) pick[3] = MARA[9]; else if (bw < .8) pick[3] = MARA[8]; else { pick[2] = MARA[8]; pick[3] = MARA[9]; }
-      pick.sort(function (a, b) { return a[0] - b[0]; });
-      pick = [pick[0], pick[3], pick[1], pick[2]];
-      mPal = pick.map(function (c) { return { L: c[0], C: c[1], h: c[2], name: c[3], rgb: c[3] === 'white' ? [255, 255, 255] : c[3] === 'black' ? [0, 0, 0] : oklch(c[0], c[1], c[2]) }; });
-      return mPal;
+      // alternate dark / light down the ramp so neighbours always clash: 0 dark, 1 light, 2 dark, 3 light
+      pick.sort(function (a, b) { return a[0] - b[0]; }); pick = [pick[0], pick[3], pick[1], pick[2]];
+      var bw = r(); if (bw < .35) pick[0] = MARA[9]; else if (bw < .7) pick[3] = MARA[8]; else if (bw < .9) { pick[0] = MARA[9]; pick[3] = MARA[8]; }
+      return pick.map(function (c) { return { L: c[0], C: c[1], h: c[2], name: c[3] }; });
+    }
+    function maraPalette(time) {
+      var span = 7, u = time / span, n = Math.floor(u), f = u - n;
+      if (n !== mSlot) { mSlot = n; mPal = [maraSet(n), maraSet(n + 1)]; }
+      f = f < .62 ? 0 : (f - .62) / .38; f = f * f * (3 - 2 * f);
+      return mPal[0].map(function (a, i) {
+        var c = mixC(a, mPal[1][i], f), L = c.L + (c.C > .01 ? .03 * Math.sin(time * (.7 + i * .13) + i * 1.7) : 0);
+        c.L = Math.max(0, Math.min(1, L)); c.rgb = oklch(c.L, c.C, c.h); return c;
+      });
     }
 
     // OKLCH to sRGB, so colours stay even in brightness as the hue turns
@@ -989,17 +1001,12 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
     // A ramp of 256 colours through the four, blended around the hue wheel (not straight
     // across it) with chroma held up, so the in-between colours never go grey
     function ramp(p) {
-      if (mode === 'marathon') {
-        var hard = new Uint8ClampedArray(256 * 3), seq = [p[0], p[1], p[2], p[3], p[0], p[2], p[1], p[3]];
-        for (var q = 0; q < 256; q++) { var c0 = seq[Math.floor(q / 256 * seq.length)].rgb; hard[q * 3] = c0[0]; hard[q * 3 + 1] = c0[1]; hard[q * 3 + 2] = c0[2]; }
-        return hard;
-      }
       var lut = new Uint8ClampedArray(256 * 3), stops = [p[0], p[1], p[2], p[3], p[2], p[1], p[0]];
       for (var k = 0; k < 256; k++) {
         var u = k / 256 * 6, i = Math.floor(u), f = u - i, a = stops[i], b = stops[i + 1];
         f = f * f * (3 - 2 * f);
-        var dh = ((b.h - a.h + 540) % 360) - 180;
-        var c = oklch(a.L + (b.L - a.L) * f, Math.max(.12, a.C + (b.C - a.C) * f), a.h + dh * f);
+        if (mode === 'marathon') { var e = a.C < .01 || b.C < .01 ? 5 : 2.4; f = f < .5 ? .5 * Math.pow(2 * f, e) : 1 - .5 * Math.pow(2 - 2 * f, e); }
+        var m = mixC(a, b, f), c = oklch(m.L, m.C, m.h);
         lut[k * 3] = c[0]; lut[k * 3 + 1] = c[1]; lut[k * 3 + 2] = c[2];
       }
       return lut;
@@ -1012,7 +1019,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
       var w = Math.round(Math.sqrt(16000 * aspect)), h = Math.round(16000 / w);
       if (w !== cv.width || h !== cv.height) { cv.width = w; cv.height = h; img = cx.createImageData(w, h); }
       // melt: blur in proportion to the box, so fullscreen is as soft as the small box
-      cv.style.filter = mode === 'marathon' ? 'none' : 'blur(' + Math.round(Math.max(r.width, r.height) / 30) + 'px) saturate(1.15)';
+      cv.style.filter = 'blur(' + Math.round(Math.max(r.width, r.height) / (mode === 'marathon' ? 38 : 30)) + 'px) saturate(' + (mode === 'marathon' ? 1.3 : 1.15) + ')';
     }
     window.addEventListener('resize', fit);
     function paint(p, time) {
@@ -1026,8 +1033,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
           var rx = qx + .6 * Math.sin(qy * 2.3 + T * .8);
           var ry = qy + .6 * Math.cos(qx * 2.1 - T * .75);
           var v = .5 + .5 * Math.sin(rx * 1.3 + ry * 1.1 + T * .5);
-          if (mode === 'marathon') { v = v * 1.7 + .25 * Math.sin(rx * .7 - ry * .9 + T * .3) + T * .05; v = v - Math.floor(v); if (v > .999) v = .999; }
-          else v = Math.min(.999, Math.max(0, .5 + (v - .5) * .36 + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
+          v = Math.min(.999, Math.max(0, .5 + (v - .5) * (mode === 'marathon' ? .62 : .36) + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
           var k = (v * 255) | 0, o = (y * w + x) * 4;
           d[o] = lut[k * 3]; d[o + 1] = lut[k * 3 + 1]; d[o + 2] = lut[k * 3 + 2]; d[o + 3] = 255;
         }
