@@ -585,9 +585,9 @@ body.hide-ui:not(.awake){cursor:none}
   function cycleNow() {
     if (!CY.next) { planNext(); if (!CY.next) return; }
     const k = CY.next;
-    applyField(k, !reduced, Math.round(Math.min(8000, Math.max(1800, CY.secs * 1000 * .55))));
+    applyField(k);                                   // a clean cut: no fade, no wipe
     log("cycle // " + FIELDS[k].name.toLowerCase());
-    decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 300, keep: 1 });
+    decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { keep: 1 });
     CY.t0 = performance.now(); planNext();
   }
   const cyBar = $("#cyBar"), cyCd = $("#cyCd");
