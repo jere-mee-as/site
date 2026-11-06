@@ -24,8 +24,7 @@
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
   --fsel:oklch(var(--fl) var(--fc) var(--fh));
-  --kick:0;
-  --field:oklch(var(--fl) var(--fc) calc(var(--fh) + var(--drift) + var(--kick)));
+  --field:oklch(var(--fl) var(--fc) calc(var(--fh) + var(--drift)));
   --dim:color-mix(in oklch,var(--ink) 64%,transparent);
   --rule:color-mix(in oklch,var(--ink) 28%,transparent);
   --panel:color-mix(in oklch,var(--ink) 7%,transparent);
@@ -59,7 +58,6 @@ button{background:none;border:0;padding:0;cursor:pointer}
 
 /* layers */
 #scope{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
-#ht{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;pointer-events:none}
 #fx{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:60;pointer-events:none}
 .giant-wrap{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none}
 .giant{position:absolute;left:-.05em;bottom:-.06em;writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--display);font-weight:900;font-stretch:125%;
@@ -87,6 +85,7 @@ button{background:none;border:0;padding:0;cursor:pointer}
 .clock{font-family:var(--dot);font-weight:700;font-size:15px;letter-spacing:.04em;margin-right:8px}
 .ib{height:28px;min-width:28px;padding:0 8px;display:grid;place-items:center;border:1px solid var(--rule);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
   transition:background .12s,color .12s,border-color .12s}
+a.ib{color:inherit}
 .ib:hover{background:var(--hl);color:var(--onhl);border-color:var(--hl)}
 .ib svg{width:14px;height:14px}
 .ib[aria-pressed="true"]{background:var(--ink);color:var(--fsel);border-color:var(--ink)}
@@ -135,19 +134,47 @@ input[type=range]::-moz-range-thumb{width:10px;height:14px;background:var(--line
 input[type=range]:hover::-webkit-slider-thumb{background:var(--hl)}
 input[type=range]:hover::-moz-range-thumb{background:var(--hl)}
 
-/* control panel */
-.side{position:fixed;z-index:5;top:49px;right:0;bottom:0;width:288px;border-width:0 0 0 1px;overflow:auto;padding:16px 16px 18px;
-  display:flex;flex-direction:column;gap:18px;transition:transform .45s steps(5,end),opacity .3s steps(3,end);scrollbar-width:thin}
+/* control panel: four numbered groups, generous air between them */
+.side{position:fixed;z-index:5;top:49px;right:0;bottom:0;width:324px;border-width:0 0 0 1px;overflow:auto;padding:22px 22px 28px;
+  display:flex;flex-direction:column;gap:38px;transition:transform .45s steps(5,end),opacity .3s steps(3,end);scrollbar-width:thin}
 .side::before{top:-1px;left:-1px}
 body.panel-off .side{transform:translateX(102%)}
-.sec{display:grid;gap:8px}
+.grp{display:grid;gap:18px}
+.gh{display:flex;align-items:center;gap:10px}
+.gh b{font-family:var(--dot);font-weight:700;font-size:13px;color:var(--line)}
+.gh span{font-family:var(--display);font-weight:900;font-stretch:125%;font-size:15px;text-transform:uppercase;letter-spacing:-.005em}
+.gh i{flex:1;height:1px;background:var(--rule)}
+.sec{display:grid;gap:9px}
+.sec[hidden],.sec h3[hidden]{display:none}
+.sec h3 .tx{display:flex;gap:12px}
+.sec h3 .tx button{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid transparent}
+.sec h3 .tx button:hover{color:var(--ink);border-bottom-color:var(--line)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule)}
+.tabs button{height:40px;font-family:var(--display);font-weight:900;font-stretch:115%;font-size:12px;text-transform:uppercase;letter-spacing:.02em;
+  border-left:1px solid var(--rule);transition:background .12s,color .12s}
+.tabs button:first-child{border-left:0}
+.tabs button:hover{background:var(--hl);color:var(--onhl)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--fsel)}
+.cyc{border:1px solid var(--rule);padding:12px 12px 11px;display:grid;gap:9px}
+.cyc .top2{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cyc .nm{font-family:var(--display);font-weight:900;font-stretch:125%;font-size:20px;line-height:1;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cyc .cd{font-family:var(--dot);font-weight:900;font-size:18px;line-height:1}
+.pbar{height:8px;background:radial-gradient(circle,var(--rule) 2.2px,transparent 2.7px) 0 0/10px 8px}
+.pbar i{display:block;height:100%;width:0;background:radial-gradient(circle,var(--line) 2.4px,transparent 2.9px) 0 0/10px 8px}
+.gvals{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.gvals button{display:grid;gap:5px;padding:0 0 4px;border:1px solid var(--rule);font-size:9px;letter-spacing:.08em;text-align:left;transition:border-color .12s}
+.gvals button i{display:block;height:30px}
+.gvals button b{padding:0 6px;font-weight:500}
+.gvals button:hover{border-color:var(--hl)}
 .sec h3{margin:0;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);font-weight:400}
 .sec h3 b{color:var(--ink);font-weight:700}
-.fields{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.fields{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
 .sw{height:36px;position:relative;border:1px solid var(--rule);display:flex;align-items:flex-end;padding:2px 5px;font-size:8px;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;font-weight:700;overflow:hidden;transition:border-color .12s}
 .sw svg{position:absolute;left:0;top:5px;width:100%;height:16px}
 .sw:hover{border-color:var(--hl);border-width:2px;padding:1px 4px}
-.sw[aria-pressed="true"]::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;background:currentColor;animation:blink 1.1s steps(2) infinite}
+.sw.out{opacity:.26;border-style:dashed}
+.sw.out:hover{opacity:.6}
+.sw.now::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;background:currentColor;animation:blink 1.1s steps(2) infinite}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
 .chip{height:28px;border:1px solid var(--rule);font-size:10px;letter-spacing:.14em;text-transform:uppercase;display:grid;place-items:center;transition:background .12s,color .12s,border-color .12s}
 .chip:hover{background:var(--hl);color:var(--onhl);border-color:var(--hl)}
@@ -166,17 +193,21 @@ body.panel-off .side{transform:translateX(102%)}
 .keys{font-size:10px;color:var(--dim);line-height:1.8}
 .keys b{color:var(--ink);font-weight:700;display:inline-block;min-width:1.6em;padding:0 4px;margin-right:4px;border:1px solid var(--rule);text-align:center;line-height:1.5}
 
+/* generator background */
+.dotgrid{position:fixed;inset:0;z-index:0;pointer-events:none;display:none;
+  background-image:radial-gradient(circle,color-mix(in oklch,var(--ink) 22%,transparent) 1px,transparent 1.7px);background-size:28px 28px}
+#gen{position:fixed;left:-6%;top:-6%;width:112%;height:112%;z-index:0;display:none;pointer-events:none}
+body.gen{background-image:none}
+body.gen #gen,body.gen .dotgrid{display:block}
+body.gen.no-grid .dotgrid{display:none}
+body.gen .top,body.gen .deck,body.gen .side{background:var(--gbg);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+
 /* layers off */
 body.no-grid{background-image:none}
+body.no-grid .dotgrid{display:none}
 body.no-text .giant-wrap{display:none}
-/* chaos */
-body.chaos{background-image:none}
-body.chaos .deck,body.chaos .side{background:linear-gradient(var(--panel),var(--panel)),var(--field)}
-.ctag{background:var(--hl);color:var(--onhl);animation:blink .5s steps(2) infinite}
-body.chaos .status.live i{animation-duration:.3s}
 #inv{position:fixed;left:0;right:0;top:0;height:22vh;z-index:61;pointer-events:none;opacity:0;mix-blend-mode:difference;
   background:linear-gradient(transparent,#fff 35%,#fff 65%,transparent)}
-.seg.wild .chip[data-key="2"][aria-pressed="true"]{background:var(--hl);color:var(--onhl);border-color:var(--hl)}
 
 /* drop + focus */
 body.dragging::after{content:"PATCH IN";position:fixed;inset:14px;z-index:70;display:grid;place-items:center;border:3px solid var(--line);
@@ -203,13 +234,14 @@ body.hide-ui:not(.awake){cursor:none}
 </style>
 </head>
 <body>
+<canvas id="gen" aria-hidden="true"></canvas>
+<div class="dotgrid" aria-hidden="true"></div>
 <div class="giant-wrap" aria-hidden="true"><div class="giant">SCOPE</div></div>
-<canvas id="ht" aria-hidden="true"></canvas>
 <canvas id="scope" aria-hidden="true"></canvas>
 
 <header class="top">
   <div class="brand"><h1 id="brand">SCOPE</h1><span class="slash">//</span><span class="lbl">OSC-01 · CH.A</span></div>
-  <div class="status" id="status"><i></i><span id="statusText">NO SIGNAL</span><span class="tag ctag" id="chaosTag" hidden>Chaos</span></div>
+  <div class="status" id="status"><i></i><span id="statusText">NO SIGNAL</span></div>
   <div class="right">
     <span class="clock" id="clock">00:00:00</span>
     <a class="ib" href="../scope.html" title="Back to the original Scope" style="text-decoration:none">Classic</a>
@@ -247,49 +279,96 @@ body.hide-ui:not(.awake){cursor:none}
 </section>
 
 <aside class="side pn" id="side" aria-label="Controls">
-  <div class="sec">
-    <h3><span>Field</span><b id="fieldName">SIGNAL</b></h3>
-    <div class="fields" id="fields"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Draw</span></h3>
-    <div class="seg" id="modes"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Weight</span><b id="wName">FINE</b></h3>
-    <div class="seg" id="widths"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Window</span></h3>
-    <div class="seg" id="views"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Chaos</span><b id="chaosName">OFF</b></h3>
-    <div class="seg wild" id="chaos"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Layers</span></h3>
+  <section class="grp">
+    <header class="gh"><b>01</b><span>Background</span><i></i></header>
+    <div class="tabs" role="tablist" aria-label="Background" id="bgTabs">
+      <button type="button" role="tab" data-bg="field">Field</button>
+      <button type="button" role="tab" data-bg="cycle">Cycle</button>
+      <button type="button" role="tab" data-bg="gen">Generator</button>
+    </div>
+
+    <div class="sec" data-show="cycle">
+      <div class="cyc">
+        <div class="top2"><span class="lbl">Next</span><span class="cd" id="cyCd">--</span></div>
+        <div class="nm" id="cyNext">—</div>
+        <div class="pbar"><i id="cyBar"></i></div>
+      </div>
+    </div>
+    <div class="sec" data-show="field cycle">
+      <h3 data-show="field"><span>Current</span><b id="fieldName">SIGNAL</b></h3>
+      <h3 data-show="cycle"><span>In rotation &nbsp;<b id="cyCount">00</b></span><span class="tx"><button type="button" id="cyAll">All</button><button type="button" id="cyNone">None</button></span></h3>
+      <div class="fields" id="fields"></div>
+    </div>
+    <div class="sec" data-show="cycle">
+      <h3><span>Every</span></h3>
+      <div class="sl"><input id="cySecs" type="range" min="3" max="60" step="1" aria-label="Seconds between changes"><output id="cySecsOut">12S</output></div>
+    </div>
+    <div class="sec" data-show="cycle">
+      <h3><span>Order</span></h3>
+      <div class="seg" id="cyOrder"></div>
+    </div>
+    <div class="sec" data-show="cycle">
+      <h3><span>Change</span></h3>
+      <div class="seg" id="cyHow"></div>
+    </div>
+
+    <div class="sec" data-show="gen">
+      <h3><span>Style</span></h3>
+      <div class="seg" id="gStyle"></div>
+    </div>
+    <div class="sec" data-show="gen">
+      <h3><span>Colours at once</span></h3>
+      <div class="seg" id="gAmt"></div>
+    </div>
+    <div class="sec" data-show="gen">
+      <h3><span>Change speed</span></h3>
+      <div class="seg" id="gSpd"></div>
+    </div>
+    <div class="sec" data-show="gen">
+      <h3><span>Values · tap to copy</span><span class="tx"><button type="button" id="gFreeze" aria-pressed="false">Freeze</button></span></h3>
+      <div class="gvals" id="gVals"></div>
+    </div>
+  </section>
+
+  <section class="grp">
+    <header class="gh"><b>02</b><span>Trace</span><i></i></header>
+    <div class="sec">
+      <h3><span>Draw</span></h3>
+      <div class="seg" id="modes"></div>
+    </div>
+    <div class="sec">
+      <h3><span>Weight</span><b id="wName">FINE</b></h3>
+      <div class="seg" id="widths"></div>
+    </div>
+    <div class="sec">
+      <h3><span>Window</span></h3>
+      <div class="seg" id="views"></div>
+    </div>
+    <div class="sec">
+      <h3><span>Edges</span></h3>
+      <div class="sl"><input id="edge" type="range" min="0" max="45" step="1" aria-label="Edges" title="How much the trace eases in at the sides"><output id="edgeOut">12</output></div>
+    </div>
+    <div class="sec">
+      <h3><span>Intensity</span></h3>
+      <div class="sl"><input id="intensity" type="range" min="30" max="250" step="5" aria-label="Intensity" title="How big the trace swings"><output id="intOut">1.0×</output></div>
+    </div>
+  </section>
+
+  <section class="grp">
+    <header class="gh"><b>03</b><span>Layers</span><i></i></header>
     <div class="seg" id="layers"></div>
-  </div>
-  <div class="sec">
-    <h3><span>Edges</span></h3>
-    <div class="sl"><input id="edge" type="range" min="0" max="45" step="1" aria-label="Edges" title="How much the trace eases in at the sides"><output id="edgeOut">12</output></div>
-    <h3><span>Intensity</span></h3>
-    <div class="sl"><input id="intensity" type="range" min="30" max="250" step="5" aria-label="Intensity" title="How big the trace swings"><output id="intOut">1.0×</output></div>
-  </div>
-  <div class="sec">
-    <h3><span>Readout</span></h3>
+  </section>
+
+  <section class="grp">
+    <header class="gh"><b>04</b><span>Monitor</span><i></i></header>
     <div class="ro">
       <div><b id="roF">---</b><span>HZ</span></div>
       <div><b id="roP">-∞</b><span>DBFS</span></div>
       <div><b id="roG">1.0</b><span>GAIN ×</span></div>
     </div>
-  </div>
-  <div class="sec">
-    <h3><span>Log</span></h3>
     <div id="feed" aria-live="polite"></div>
-  </div>
-  <div class="keys"><b>␣</b>play &nbsp;<b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel<br><b>[</b><b>]</b>field &nbsp;<b>M</b>draw &nbsp;<b>C</b>chaos<br><b>G</b>grid &nbsp;<b>T</b>text<br><b>N</b>next &nbsp;<b>B</b>back</div>
+    <div class="keys"><b>␣</b>play &nbsp;<b>N</b><b>B</b>track &nbsp;<b>[</b><b>]</b>field<br><b>H</b>hide &nbsp;<b>F</b>full &nbsp;<b>P</b>panel &nbsp;<b>M</b>draw<br><b>G</b>grid &nbsp;<b>T</b>text</div>
+  </section>
 </aside>
 
 <button class="wake" id="wakeBtn" type="button">Show controls</button>
@@ -394,7 +473,7 @@ body.hide-ui:not(.awake){cursor:none}
   const C = { ink: "", line: "", hl: "", bg: "#000" }; let bgT = 0;   // resolved colours for the canvases
   let patt = null, pattKey = "";
 
-  let morphT = 0;
+  let morphT = 0, BGREADY = false;
   function applyField(key, morph) {
     fieldKey = key; const f = FIELDS[key];
     let fh = f.fh;
@@ -409,8 +488,8 @@ body.hide-ui:not(.awake){cursor:none}
     root.style.setProperty("--fh", fh);
     root.style.colorScheme = f.fl < .6 ? "dark" : "light";
     C.ink = f.ink; C.line = f.line; C.hl = f.hl; patt = null;
-    document.querySelectorAll(".sw").forEach(b => b.setAttribute("aria-pressed", b.dataset.key === key));
     store.set("field", key);
+    if (BGREADY) paintSwatches();
   }
 
   const fWrap = $("#fields");
@@ -419,7 +498,7 @@ body.hide-ui:not(.awake){cursor:none}
     b.type = "button"; b.className = "sw"; b.dataset.key = key; b.title = f.name;
     b.style.background = `oklch(${f.fl} ${f.fc} ${f.fh})`; b.style.color = f.ink;
     b.innerHTML = `<svg viewBox="0 0 60 16" preserveAspectRatio="none" aria-hidden="true"><path d="M0 8 C6 8 8 2 12 2 S18 14 24 14 30 4 34 4 40 11 44 11 50 8 60 8" fill="none" stroke="${f.line}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg><span>${f.name}</span>`;
-    b.onclick = e => switchField(key, e.clientX, e.clientY);
+    b.onclick = e => swatchClick(key, e);
     fWrap.appendChild(b);
   }
 
@@ -444,6 +523,238 @@ body.hide-ui:not(.awake){cursor:none}
   }
   applyField(fieldKey); markAll();
 
+  // ---------- background: one field / cycle through fields / colour generator ----------
+  const BG = { mode: ["field", "cycle", "gen"].includes(store.get("bg")) ? store.get("bg") : "field" };
+  const seg2 = (wrap, opts, get, set) => {
+    const w = $(wrap);
+    const mark = () => w.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(get()) === b.dataset.key));
+    for (const [k, name] of opts) {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.dataset.key = k; b.textContent = name;
+      b.onclick = () => { set(k); mark(); }; w.appendChild(b);
+    }
+    mark(); return mark;
+  };
+
+  // ----- cycle -----
+  let cySet;
+  try { cySet = new Set(JSON.parse(store.get("cyset", "null")) || FKEYS); } catch { cySet = new Set(FKEYS); }
+  [...cySet].forEach(k => { if (!FIELDS[k]) cySet.delete(k); });
+  const CY = { secs: Math.min(60, Math.max(3, +store.get("cysecs", "12") || 12)), shuffle: store.get("cyshuf", "0") === "1",
+               how: store.get("cyhow", "wipe") === "blend" ? "blend" : "wipe", t0: 0, next: null, bag: [], lastCd: "" };
+  const saveSet = () => store.set("cyset", JSON.stringify([...cySet]));
+
+  function paintSwatches() {
+    const cyc = BG.mode === "cycle";
+    document.querySelectorAll(".sw").forEach(b => {
+      const k = b.dataset.key;
+      b.classList.toggle("now", k === fieldKey);
+      b.classList.toggle("out", cyc && !cySet.has(k));
+      b.setAttribute("aria-pressed", cyc ? cySet.has(k) : k === fieldKey);
+      b.title = cyc ? FIELDS[k].name + (cySet.has(k) ? " · in rotation, tap to leave out" : " · left out, tap to add") : FIELDS[k].name;
+    });
+    const cnt = $("#cyCount"); if (cnt) cnt.textContent = pad(cySet.size) + "/" + FKEYS.length;
+  }
+  function swatchClick(key, e) {
+    if (BG.mode === "cycle") {
+      cySet.has(key) ? cySet.delete(key) : cySet.add(key); saveSet(); CY.bag = [];
+      if (!CY.next || !cySet.has(CY.next)) { const had = !!CY.next; planNext(); if (!had) CY.t0 = performance.now(); }
+      paintSwatches(); return;
+    }
+    switchField(key, e.clientX, e.clientY);
+  }
+  $("#cyAll").onclick = () => { FKEYS.forEach(k => cySet.add(k)); saveSet(); CY.bag = []; if (!CY.next) { planNext(); CY.t0 = performance.now(); } paintSwatches(); };
+  $("#cyNone").onclick = () => { cySet.clear(); saveSet(); CY.bag = []; CY.next = null; showNext(); paintSwatches(); };
+
+  function planNext() {
+    const pool = FKEYS.filter(k => cySet.has(k) && k !== fieldKey);
+    CY.next = null;
+    if (pool.length) {
+      if (CY.shuffle) {
+        // a shuffled bag: every selected field shows once before any repeats
+        CY.bag = CY.bag.filter(k => pool.includes(k));
+        if (!CY.bag.length) { CY.bag = pool.slice(); for (let i = CY.bag.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [CY.bag[i], CY.bag[j]] = [CY.bag[j], CY.bag[i]]; } }
+        CY.next = CY.bag.shift();
+      } else {
+        const i = FKEYS.indexOf(fieldKey);
+        for (let d = 1; d <= FKEYS.length; d++) { const k = FKEYS[(i + d) % FKEYS.length]; if (cySet.has(k) && k !== fieldKey) { CY.next = k; break; } }
+      }
+    }
+    showNext();
+  }
+  function showNext() {
+    const el = $("#cyNext"), txt = CY.next ? FIELDS[CY.next].name.toUpperCase() : (cySet.size ? "HOLDING" : "PICK TWO OR MORE");
+    if (el.getAttribute("aria-label") !== txt) decode(el, txt, { speed: 40 });
+  }
+  function cycleNow() {
+    if (!CY.next) { planNext(); if (!CY.next) return; }
+    const k = CY.next;
+    if (CY.how === "blend" || reduced) {
+      applyField(k, !reduced); log("cycle // " + FIELDS[k].name.toLowerCase());
+      decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 300, keep: 1 });
+    } else switchField(k);
+    CY.t0 = performance.now(); planNext();
+  }
+  const cyBar = $("#cyBar"), cyCd = $("#cyCd");
+  function cycleTick(now) {
+    if (!CY.next) { cyBar.style.width = "0"; if (CY.lastCd !== "--") cyCd.textContent = CY.lastCd = "--"; return; }
+    const span = CY.secs * 1000, prog = Math.min(1, (now - CY.t0) / span);
+    cyBar.style.width = Math.floor(prog * 28) / 28 * 100 + "%";          // fills one round pixel at a time
+    const cd = pad(Math.max(0, Math.ceil((span - (now - CY.t0)) / 1000))) + "S";
+    if (cd !== CY.lastCd) cyCd.textContent = CY.lastCd = cd;
+    if (prog >= 1) cycleNow();
+  }
+  const cySecs = $("#cySecs"), cySecsOut = $("#cySecsOut");
+  const showSecs = () => { cySecsOut.textContent = pad(CY.secs) + "S"; cySecs.style.setProperty("--p", (CY.secs - 3) / 57 * 100 + "%"); };
+  cySecs.value = CY.secs; showSecs();
+  cySecs.oninput = () => { CY.secs = +cySecs.value; store.set("cysecs", CY.secs); showSecs(); };
+  seg2("#cyOrder", [["0", "In order"], ["1", "Shuffle"]], () => CY.shuffle ? 1 : 0, k => { CY.shuffle = k === "1"; store.set("cyshuf", k); CY.bag = []; planNext(); log("cycle // " + (CY.shuffle ? "shuffle" : "in order")); });
+  seg2("#cyHow", [["wipe", "Wipe"], ["blend", "Blend"]], () => CY.how, k => { CY.how = k; store.set("cyhow", k); });
+
+  // ----- colour generator (the jerelevance colour generator: drift + marathon aesthetic) -----
+  const GEN = { on: false, style: store.get("gstyle", "marathon") === "drift" ? "drift" : "marathon",
+                amt: Math.min(3, Math.max(0, +store.get("gamt", "1") || 0)), spd: Math.min(2, Math.max(0, +store.get("gspd", "1") || 0)),
+                frozen: false, t: Math.random() * 1000, seed: Math.random() * 360, slot: -1, pal: null, paintT: 0, valT: 0, dark: null, cur: null };
+  const genCv = $("#gen"), gx = genCv.getContext("2d");
+  let gImg = gx.createImageData(genCv.width, genCv.height);
+  const MARA = [[.93, .23, 125, "acid lime"], [.65, .27, 0, "hot pink"], [.45, .29, 266, "cobalt"], [.7, .2, 45, "tangerine"], [.6, .25, 28, "signal red"],
+    [.88, .13, 170, "mint"], [.93, .21, 108, "acid yellow"], [.52, .26, 295, "violet"], [1, 0, 0, "white"], [0, 0, 0, "black"]];
+  const AMT = { 0: [.16, 14, 1.3], 1: [.3, 11, 1.6], 2: [.62, 7, 2.4], 3: [.95, 5, 3] }, SPD = [1.9, 1, .45];
+  function rngFor(n) { let s = (n * 2654435761 + (GEN.seed * 1000 | 0)) >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
+  function oklchRGB(L, Cc, h) {
+    const a = Cc * Math.cos(h * Math.PI / 180), b = Cc * Math.sin(h * Math.PI / 180);
+    const l = Math.pow(L + .3963377774 * a + .2158037573 * b, 3), m = Math.pow(L - .1055613458 * a - .0638541728 * b, 3), s = Math.pow(L - .0894841775 * a - 1.2914855480 * b, 3);
+    return [4.0767416621 * l - 3.3077115913 * m + .2309699292 * s, -1.2684380046 * l + 2.6097574011 * m - .3413193965 * s, -.0041960863 * l - .7034186147 * m + 1.7076147010 * s]
+      .map(v => { v = v <= .0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - .055; return Math.round(Math.max(0, Math.min(1, v)) * 255); });
+  }
+  const hex = c => "#" + c.map(v => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+  // mix around the hue wheel; black and white borrow the other colour's hue so nothing passes through grey
+  function mixC(a, b, f) {
+    const ha = a.C < .01 ? b.h : a.h, hb = b.C < .01 ? a.h : b.h, dh = ((hb - ha + 540) % 360) - 180;
+    let Cc = a.C + (b.C - a.C) * f; if (a.C >= .01 && b.C >= .01) Cc = Math.max(.12, Cc);
+    return { L: a.L + (b.L - a.L) * f, C: Cc, h: (ha + dh * f + 360) % 360, name: f < .5 ? a.name : b.name };
+  }
+  function maraSet(n) {
+    const r = rngFor(n), pool = MARA.slice(0, 8); let pick = [];
+    while (pick.length < 4) pick.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
+    pick.sort((a, b) => a[0] - b[0]); pick = [pick[0], pick[3], pick[1], pick[2]];   // dark, light, dark, light: neighbours always clash
+    const bw = r(); if (bw < .35) pick[0] = MARA[9]; else if (bw < .7) pick[3] = MARA[8]; else if (bw < .9) { pick[0] = MARA[9]; pick[3] = MARA[8]; }
+    return pick.map(c => ({ L: c[0], C: c[1], h: c[2], name: c[3] }));
+  }
+  function maraPalette(time) {
+    const span = AMT[GEN.amt][1] * SPD[GEN.spd], u = time / span, n = Math.floor(u); let f = u - n;
+    if (n !== GEN.slot) { GEN.slot = n; GEN.pal = [maraSet(n), maraSet(n + 1)]; }
+    f = f < .35 ? 0 : (f - .35) / .65; f = f * f * (3 - 2 * f);
+    return GEN.pal[0].map((a, i) => { const c = mixC(a, GEN.pal[1][i], f); c.L = Math.max(0, Math.min(1, c.L + (c.C > .01 ? .03 * Math.sin(time * (.7 + i * .13) + i * 1.7) : 0))); c.rgb = oklchRGB(c.L, c.C, c.h); return c; });
+  }
+  function driftPalette(time) {
+    const base = (GEN.seed + time * 10 / SPD[GEN.spd]) % 360, out = [];
+    const offs = [0, 28 + 10 * Math.sin(time * .5), 62 + 14 * Math.sin(time * .33), 100 + 16 * Math.cos(time * .41)], Ls = [.5, .64, .56, .7];
+    for (let i = 0; i < 4; i++) {
+      const h = (base + offs[i] + 360) % 360, L = Ls[i] + .05 * Math.sin(time * (.7 + i * .13) + i * 1.7), Cc = .17 + .04 * Math.sin(time * (.55 + i * .11) + i * 2.3);
+      out.push({ L, C: Cc, h, rgb: oklchRGB(L, Cc, h) });
+    }
+    return out;
+  }
+  function ramp(p) {
+    const lut = new Uint8ClampedArray(768), stops = [p[0], p[1], p[2], p[3], p[2], p[1], p[0]], mara = GEN.style === "marathon";
+    for (let k = 0; k < 256; k++) {
+      const u = k / 256 * 6, i = Math.floor(u), a = stops[i], b = stops[i + 1]; let f = u - i;
+      f = f * f * (3 - 2 * f);
+      if (mara) { const e = a.C < .01 || b.C < .01 ? 3 + GEN.amt : AMT[GEN.amt][2]; f = f < .5 ? .5 * Math.pow(2 * f, e) : 1 - .5 * Math.pow(2 - 2 * f, e); }
+      const m = mixC(a, b, f), c = oklchRGB(m.L, m.C, m.h);
+      lut[k * 3] = c[0]; lut[k * 3 + 1] = c[1]; lut[k * 3 + 2] = c[2];
+    }
+    return lut;
+  }
+  function fitGen() {
+    const w0 = innerWidth * 1.12, h0 = innerHeight * 1.12;
+    const w = Math.round(Math.sqrt(16000 * w0 / h0)), h = Math.round(16000 / w);
+    if (w !== genCv.width || h !== genCv.height) { genCv.width = w; genCv.height = h; gImg = gx.createImageData(w, h); }
+    const mara = GEN.style === "marathon";
+    genCv.style.filter = `blur(${Math.round(Math.max(w0, h0) / (mara ? 38 : 30))}px) saturate(${mara ? 1.3 : 1.15})`;
+  }
+  addEventListener("resize", () => { if (GEN.on) fitGen(); });
+  // a fluid field: coordinates warped twice by moving sines, so the colour marbles like ink in water
+  function paintGen(p, time) {
+    const lut = ramp(p), w = genCv.width, h = genCv.height, d = gImg.data, T = time * .9, u = .9 / Math.min(w, h), k0 = GEN.style === "marathon" ? AMT[GEN.amt][0] : .36;
+    let lum = 0, n = 0;
+    for (let y = 0; y < h; y++) {
+      const ny = 1 + (y - h / 2) * u;
+      for (let x = 0; x < w; x++) {
+        const nx = .85 + (x - w / 2) * u;
+        const qx = nx + .8 * Math.sin(ny * 1.7 + T * 1.1) + .3 * Math.sin(ny * 3.1 - T * .7);
+        const qy = ny + .8 * Math.cos(nx * 1.5 - T * .9) + .3 * Math.cos(nx * 2.9 + T * .6);
+        const rx = qx + .6 * Math.sin(qy * 2.3 + T * .8), ry = qy + .6 * Math.cos(qx * 2.1 - T * .75);
+        let v = .5 + .5 * Math.sin(rx * 1.3 + ry * 1.1 + T * .5);
+        v = Math.min(.999, Math.max(0, .5 + (v - .5) * k0 + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
+        const k = (v * 255) | 0, o = (y * w + x) * 4;
+        d[o] = lut[k * 3]; d[o + 1] = lut[k * 3 + 1]; d[o + 2] = lut[k * 3 + 2]; d[o + 3] = 255;
+        if (!(x % 6) && !(y % 6)) { lum += .2126 * d[o] + .7152 * d[o + 1] + .0722 * d[o + 2]; n++; }
+      }
+    }
+    gx.putImageData(gImg, 0, 0);
+    return lum / n / 255;
+  }
+  // the interface goes black or white against the gradient, with hysteresis so it doesn't flicker
+  function genTheme(dark) {
+    if (GEN.dark === dark) return; GEN.dark = dark;
+    const T = dark ? { ink: "oklch(1 0 0)", line: "oklch(1 0 0)", on: "oklch(0 0 0)", hl: "oklch(.93 .23 125)", onhl: "oklch(0 0 0)", bg: "#000", gbg: "rgba(0,0,0,.6)" }
+                   : { ink: "oklch(0 0 0)", line: "oklch(0 0 0)", on: "oklch(1 0 0)", hl: "oklch(.65 .27 0)", onhl: "oklch(1 0 0)", bg: "#fff", gbg: "rgba(255,255,255,.66)" };
+    for (const k of ["ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, T[k]);
+    root.style.setProperty("--fsel", T.bg); root.style.setProperty("--gbg", T.gbg); root.style.colorScheme = dark ? "dark" : "light";
+    C.ink = T.ink; C.line = T.line; C.hl = T.hl; C.bg = T.bg; patt = null;
+  }
+  const gVals = $("#gVals"), valBtns = [];
+  for (let i = 0; i < 4; i++) {
+    const b = document.createElement("button"); b.type = "button"; b.innerHTML = "<i></i><b>------</b>";
+    b.onclick = () => { const v = b.lastChild.textContent; if (!v.startsWith("#")) return; try { navigator.clipboard.writeText(v); } catch {} b.lastChild.textContent = "COPIED"; GEN.valT = performance.now() + 800; log("color // copied " + v.toLowerCase()); };
+    gVals.appendChild(b); valBtns.push(b);
+  }
+  function genFrame(now, dt) {
+    if (!GEN.frozen) GEN.t += dt * (reduced ? .2 : .75);
+    if (GEN.frozen ? GEN.paintT : now - GEN.paintT < 33) return;        // ~30 fps is plenty for something this soft
+    GEN.paintT = now;
+    const p = GEN.style === "marathon" ? maraPalette(GEN.t) : driftPalette(GEN.t);
+    GEN.cur = p;
+    const lum = paintGen(p, GEN.t);
+    if (GEN.dark === null) genTheme(lum <= .5);
+    else if (GEN.dark && lum > .6) genTheme(false);
+    else if (!GEN.dark && lum < .4) genTheme(true);
+    if (now > GEN.valT && BG.mode === "gen" && !body.classList.contains("panel-off")) {
+      GEN.valT = now + 250;
+      p.forEach((c, i) => { valBtns[i].firstChild.style.background = `rgb(${c.rgb})`; valBtns[i].lastChild.textContent = hex(c.rgb); valBtns[i].title = (c.name ? c.name + " · " : "") + `oklch ${c.L.toFixed(2)} ${c.C.toFixed(3)} ${Math.round(c.h)}°`; });
+    }
+  }
+  function genOn() { GEN.on = true; GEN.dark = null; GEN.paintT = 0; GEN.valT = 0; fitGen(); body.classList.add("gen"); genFrame(performance.now(), 0); }
+  function genOff() {
+    GEN.on = false; body.classList.remove("gen");
+    root.style.removeProperty("--fsel"); root.style.removeProperty("--gbg");
+    applyField(fieldKey);
+  }
+  seg2("#gStyle", [["drift", "Drift"], ["marathon", "Marathon"]], () => GEN.style, k => { GEN.style = k; GEN.slot = -1; store.set("gstyle", k); if (GEN.on) { fitGen(); GEN.paintT = 0; } log("color // " + k); });
+  seg2("#gAmt", [["0", "Fewer"], ["1", "Few"], ["2", "More"], ["3", "Loads"]], () => GEN.amt, k => { GEN.amt = +k; GEN.slot = -1; store.set("gamt", k); GEN.paintT = 0; });
+  seg2("#gSpd", [["0", "Slow"], ["1", "Normal"], ["2", "Fast"]], () => GEN.spd, k => { GEN.spd = +k; GEN.slot = -1; store.set("gspd", k); });
+  const gFreeze = $("#gFreeze");
+  gFreeze.onclick = () => { GEN.frozen = !GEN.frozen; GEN.paintT = 0; gFreeze.setAttribute("aria-pressed", GEN.frozen); gFreeze.textContent = GEN.frozen ? "Frozen" : "Freeze"; gFreeze.style.color = GEN.frozen ? "var(--line)" : ""; };
+
+  // ----- switching between the three -----
+  function setBg(mode, quiet) {
+    const was = BG.mode, fromCol = GEN.on && GEN.cur ? `rgb(${GEN.cur[0].rgb})` : getComputedStyle(body).backgroundColor;
+    BG.mode = mode; store.set("bg", mode);
+    document.querySelectorAll("#bgTabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.bg === mode));
+    document.querySelectorAll("#side [data-show]").forEach(el => { el.hidden = !el.dataset.show.split(" ").includes(mode); });
+    if (mode === "gen" && !GEN.on) genOn();
+    if (mode !== "gen" && GEN.on) genOff();
+    if (mode === "cycle") { CY.t0 = performance.now(); CY.bag = []; planNext(); }
+    paintSwatches();
+    if (!quiet && was !== mode) {
+      wipe(pick(), fromCol);
+      log("background // " + { field: "single field", cycle: "cycling " + cySet.size + " fields", gen: "generator · " + GEN.style }[mode], true);
+    }
+  }
+  document.querySelectorAll("#bgTabs button").forEach(b => b.onclick = () => setBg(b.dataset.bg));
+  BGREADY = true;
+
   // ---------- layers: dot grid, text, frame furniture ----------
   const LAY = { grid: store.get("grid", "1") === "1", text: store.get("text", "1") === "1", frame: store.get("frame", "1") === "1" };
   const lWrap = $("#layers");
@@ -460,27 +771,6 @@ body.hide-ui:not(.awake){cursor:none}
   }
   function toggleLayer(key) { LAY[key] = !LAY[key]; store.set(key, LAY[key] ? "1" : "0"); applyLayers(); }
   applyLayers();
-
-  // ---------- chaos: off / some / wild ----------
-  const CHAOS = ["Off", "Some", "Wild"];
-  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null, drive: 0, hue: 0, hueT: 0 };
-  const cWrap = $("#chaos");
-  CHAOS.forEach((name, i) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "chip"; b.dataset.key = i; b.textContent = name;
-    b.onclick = () => setChaos(i);
-    cWrap.appendChild(b);
-  });
-  function setChaos(l, quiet) {
-    if (reduced && l) { say("Chaos is off while reduced motion is on.", true); return; }
-    CH.lvl = l; store.set("chaos", l);
-    cWrap.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", +b.dataset.key === l));
-    $("#chaosName").textContent = CHAOS[l].toUpperCase();
-    $("#chaosTag").hidden = !l; $("#chaosTag").textContent = l === 2 ? "Wild" : "Chaos";
-    body.classList.toggle("chaos", !!l);
-    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; HT.rings.length = 0; hg.clearRect(0, 0, W, H); }
-    if (!quiet) log(l ? "chaos // " + CHAOS[l].toLowerCase() + (playing() ? " · locked to signal" : " · armed, waiting for signal") : "chaos // off", !!l);
-  }
 
   // ---------- messages + status ----------
   const hint = $("#hint"), statusEl = $("#status"), statusText = $("#statusText");
@@ -603,14 +893,13 @@ body.hide-ui:not(.awake){cursor:none}
   // ---------- canvases ----------
   const canvas = $("#scope"), g = canvas.getContext("2d");
   const fx = $("#fx"), fg = fx.getContext("2d");
-  const ht = $("#ht"), hg = ht.getContext("2d");
   const eq = $("#eq"), eg = eq.getContext("2d");
   let W = 0, H = 0, dpr = 1;
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     W = innerWidth; H = innerHeight;
-    for (const c of [canvas, fx, ht]) { c.width = W * dpr; c.height = H * dpr; }
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); fg.setTransform(dpr, 0, 0, dpr, 0, 0); hg.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (const c of [canvas, fx]) { c.width = W * dpr; c.height = H * dpr; }
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); fg.setTransform(dpr, 0, 0, dpr, 0, 0);
     patt = null;
   }
   addEventListener("resize", resize); resize();
@@ -745,21 +1034,21 @@ body.hide-ui:not(.awake){cursor:none}
     g.globalAlpha = 1;
   }
 
-  // draws the trace in the current mode; chaos uses it again for ghosts and mirrors
-  function drawTrace(box, col, dx, flip, wm, main) {
+  // draws the trace in the current mode; grow fattens it (the halo over the generator)
+  function drawTrace(box, col, dx, flip, wm, main, grow = 0) {
     const span = box.right - box.left, mid = (box.top + box.bottom) / 2;
     const yIdx = i => flip ? 2 * mid - PY[i] : PY[i];
     const yAt = x => { const f = Math.max(0, Math.min(N - 1, (x - box.left) / span * (N - 1))), i = f | 0, r = f - i; return yIdx(i) * (1 - r) + yIdx(Math.min(N - 1, i + 1)) * r; };
     g.save(); g.translate(dx, 0);
     if (modeKey === "line") {
-      g.strokeStyle = col; g.lineWidth = WIDTHS[widthKey] * wm; g.lineJoin = "round"; g.lineCap = "round";
+      g.strokeStyle = col; g.lineWidth = WIDTHS[widthKey] * wm + grow; g.lineJoin = "round"; g.lineCap = "round";
       g.beginPath();
       for (let i = 0; i < N; i++) { const x = box.left + span * i / (N - 1); i ? g.lineTo(x, yIdx(i)) : g.moveTo(x, yIdx(i)); }
       g.stroke();
     } else if (modeKey === "dots") {
-      const step = { hair: 6, fine: 9, medium: 12, bold: 16 }[widthKey], r = { hair: 1.8, fine: 2.8, medium: 4, bold: 5.8 }[widthKey] * wm;
+      const step = { hair: 6, fine: 9, medium: 12, bold: 16 }[widthKey], r = { hair: 1.8, fine: 2.8, medium: 4, bold: 5.8 }[widthKey] * wm + grow;
       // knock a ring of field colour out behind each dot so it never sinks into the grid
-      if (main) {
+      if (main && !GEN.on) {
         g.fillStyle = C.bg; g.beginPath();
         for (let x = box.left; x <= box.right; x += step) { const y = yAt(x); g.moveTo(x + r + 2.5, y); g.arc(x, y, r + 2.5, 0, 6.2832); }
         g.fill();
@@ -772,18 +1061,18 @@ body.hide-ui:not(.awake){cursor:none}
       const cs = { hair: 7, fine: 10, medium: 14, bold: 20 }[widthKey];
       const h = box.bottom - box.top, cols = Math.floor(span / cs), rows = Math.floor(h / cs);
       const ox = box.left + (span - cols * cs) / 2, oy = box.top + (h - rows * cs) / 2;
-      if (main && LAY.grid) { const a = g.globalAlpha; g.globalAlpha = a * .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = a; }
+      if (main && LAY.grid && !GEN.on) { const a = g.globalAlpha; g.globalAlpha = a * .16; g.fillStyle = gridPattern(cs, ox, oy); g.fillRect(ox, oy, cols * cs, rows * cs); g.globalAlpha = a; }
       const Rw = new Int16Array(cols);
       for (let c = 0; c < cols; c++) Rw[c] = Math.max(0, Math.min(rows - 1, Math.floor((yAt(ox + c * cs + cs / 2) - oy) / cs)));
       g.fillStyle = col;
-      const rad = Math.min(cs * .5, cs * .36 * Math.sqrt(wm));
+      const rad = Math.min(cs * .5, cs * .36 * Math.sqrt(wm)) + grow / 2;
       for (let c = 0; c < cols; c++) {
         const a = c ? Rw[c - 1] : Rw[c], b = Rw[c], lo = Math.min(a, b), hi = Math.max(a, b);
         const turn = c > 0 && c < cols - 1 && ((Rw[c] < Rw[c - 1] && Rw[c] <= Rw[c + 1]) || (Rw[c] > Rw[c - 1] && Rw[c] >= Rw[c + 1]));
         const cx = ox + c * cs + cs / 2;
         for (let r = lo; r <= hi; r++) {
           const cy = oy + r * cs + cs / 2;
-          if (turn && r === b) { const s = cs * .78; g.fillRect(cx - s / 2, cy - s / 2, s, s); }
+          if (turn && r === b) { const s = cs * .78 + grow; g.fillRect(cx - s / 2, cy - s / 2, s, s); }
           else { g.beginPath(); g.arc(cx, cy, rad, 0, 6.2832); g.fill(); }
         }
       }
@@ -791,131 +1080,18 @@ body.hide-ui:not(.awake){cursor:none}
     g.restore();
   }
 
-  // ---------- chaos engine: everything below is driven by the live spectrum ----------
-  const giant = $(".giant"), giantWrap = $(".giant-wrap");
-  const WORDS = ["SCOPE", "SIGNAL", "LOUD", "PEAK", "CLIP", "WAVE", "NOISE", "JERE", "OSC-01", "████", "Δ//Ξ", "CHAOS"];
-  // bass / mids / highs as 0..1, plus a beat when the low end jumps above its own running average
-  function listen(now) {
-    if (!playing()) { CH.b *= .9; CH.m *= .9; CH.h *= .9; return false; }
-    analyser.getByteFrequencyData(fbuf);
-    const sr = ctx.sampleRate, n = fbuf.length;
-    const band = (a, z) => { const i0 = Math.max(1, Math.floor(a / (sr / 2) * n)), i1 = Math.max(i0 + 1, Math.ceil(z / (sr / 2) * n)); let s = 0; for (let i = i0; i < i1; i++) s += fbuf[i]; return s / ((i1 - i0) * 255); };
-    const norm = (v, lo, hi) => Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
-    const b = norm(band(30, 160), .35, .95), m = norm(band(160, 2400), .25, .85), h = norm(band(2400, 12000), .12, .7);
-    CH.b += (b - CH.b) * (b > CH.b ? .7 : .25); CH.m += (m - CH.m) * .3; CH.h += (h - CH.h) * .5;
-    const beat = b > CH.ab * 1.18 + .07 && b > .3 && now - CH.last > 190;
-    CH.ab += (b - CH.ab) * .05;
-    if (beat) CH.last = now;
-    return beat;
-  }
-  function glitchEl(el, amt) {
-    const j = a => Math.round((Math.random() - .5) * a), st = "steps(1,end)";
-    el.animate([
-      { transform: `translate(${j(60 * amt)}px,${j(8 * amt)}px)`, clipPath: "inset(0 0 52% 0)", filter: "hue-rotate(140deg) saturate(1.8)", easing: st },
-      { offset: .35, transform: `translate(${j(30 * amt)}px,0)`, clipPath: `inset(${20 + j(20)}% 0 ${10 + j(10)}% 0)`, filter: "hue-rotate(70deg) saturate(1.8)", easing: st },
-      { offset: .7, transform: `translate(${j(14 * amt)}px,0)`, clipPath: "inset(0 0 0 0)", filter: "hue-rotate(-90deg)", easing: st },
-      { transform: "none", clipPath: "inset(0 0 0 0)", filter: "none" }
-    ], { duration: 160 + 140 * amt });
-  }
-  // gradient invert band sweeping down the screen, instead of a white flash
+  // gradient invert band sweeping down the screen, used by the glitch transition
   const inv = $("#inv");
   function invSweep(dur) {
     if (reduced) return;
     inv.animate([{ transform: "translateY(-30vh)", opacity: 1 }, { transform: "translateY(110vh)", opacity: 1 }], { duration: dur || 320, easing: "steps(7,end)" });
   }
-  function onBeat(now) {
-    const L = CH.lvl, b = CH.b; CH.beats++;
-    glitchEl(canvas, .4 + b * L * .8);
-    // a beat drops a round-pixel ripple into the dot field, and kicks the hue one step
-    HT.rings.push({ x: Math.random() * W, y: Math.random() * H, t: now, s: .55 + b * .45 * L / 2, sp: 520 + 500 * b });
-    if (HT.rings.length > 6) HT.rings.shift();
-    CH.hue += 12 * L;
-    if (CH.beats % (L === 2 ? 4 : 8) === 0 && LAY.text) decode(giant, WORDS[Math.random() * WORDS.length | 0], { frames: 7, speed: 30 });
-    if (L === 2 && now - CH.lastField > 3200 && b > .55 && Math.random() < .5) {
-      CH.lastField = now;
-      let k; do k = FKEYS[Math.random() * FKEYS.length | 0]; while (k === fieldKey);
-      applyField(k, true);
-      log("chaos // morph to " + FIELDS[k].name.toLowerCase(), true);
-      decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 600, keep: 1 });
-    }
-    if (L === 2 && CH.beats % 16 === 0) { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; markAll(); }
-    if (Math.random() < .25 * L) decode(statusText, statusText.getAttribute("aria-label") || statusText.textContent, { frames: 5, speed: 28 });
-  }
-  // ---------- halftone: the dot grid becomes the light show. round pixels in four sizes, stepped bands + ripples ----------
-  const HT = { rings: [], lv: null, cols: 0, rows: 0, t: 0 };
-  function halftone() {
-    const S = 28, L = CH.lvl, b = CH.b, m = CH.m, now = performance.now();
-    const cols = Math.ceil(W / S) + 1, rows = Math.ceil(H / S) + 1;
-    if (!HT.lv || HT.cols !== cols || HT.rows !== rows) { HT.lv = new Uint8Array(cols * rows); HT.cols = cols; HT.rows = rows; HT.t = 0; }
-    if (now - HT.t > 85) {          // recompute at ~12 fps so it moves in steps
-      HT.t = now;
-      const ph = CH.drive, amp = Math.min(1, .25 + m * .9) * (L === 2 ? 1 : .7);
-      HT.rings = HT.rings.filter(r => now - r.t < 2400);
-      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-        const x = c * S, y = r * S;
-        // stepped bands rolling down the field, slightly raked
-        let v = (.5 + .5 * Math.sin((y / H * 3.2 + x / W * .9 - ph) * 6.2832)) * amp * .7;
-        for (const R of HT.rings) {
-          const age = (now - R.t) / 1000, rad = age * R.sp, d = Math.abs(Math.hypot(x - R.x, y - R.y) - rad);
-          if (d < 70) v = Math.max(v, (1 - d / 70) * R.s * Math.max(0, 1 - age / 2.4));
-        }
-        v += b * .22 * L / 2;
-        HT.lv[r * cols + c] = Math.max(0, Math.min(4, Math.floor(v * 5)));
-      }
-    }
-    hg.clearRect(0, 0, W, H);
-    const tones = [C.ink, C.ink, C.ink, C.hl, C.hl], alph = [.22, .32, .5, .7, .9], rad = [1.3, 3.2, 5.6, 8.4, 11.5];
-    for (let lvl = LAY.grid ? 0 : 1; lvl <= 4; lvl++) {
-      hg.fillStyle = tones[lvl]; hg.globalAlpha = alph[lvl]; hg.beginPath();
-      for (let i = 0; i < HT.lv.length; i++) if (HT.lv[i] === lvl) {
-        const x = (i % cols) * S + S / 2, y = (i / cols | 0) * S + S / 2;
-        hg.moveTo(x + rad[lvl], y); hg.arc(x, y, rad[lvl], 0, 6.2832);
-      }
-      hg.fill();
-    }
-    hg.globalAlpha = 1;
-  }
-  function chaosPre(box, dt) {
-    const L = CH.lvl, b = CH.b, m = CH.m, h = CH.h;
-    // hue moves in steps, never a smooth spin: the mids push it, the beats kick it, it lands every ~0.4s
-    CH.hue += dt * m * 18 * L;
-    if (performance.now() - CH.hueT > 400) { CH.hueT = performance.now(); CH.kick = Math.round(CH.hue / 12) * 12 % 360; root.style.setProperty("--kick", CH.kick); }
-    CH.drive += dt * (.2 + m * 1.4) * L;
-    halftone(dt);
-    // shake on the low end
-    const sh = b * b * 9 * L;
-    canvas.style.transform = sh > .6 ? `translate(${((Math.random() - .5) * sh).toFixed(1)}px,${((Math.random() - .5) * sh).toFixed(1)}px)` : "";
-    giantWrap.style.transform = `scale(${(1 + b * .05 * L).toFixed(3)})`;
-    // tears: on highs, a chunk of the trace jumps sideways in time and height
-    if (L === 2 && (CH.tear ? --CH.tear.life > 0 : Math.random() < h * .25)) {
-      if (!CH.tear) CH.tear = { s: Math.random() * N * .8 | 0, n: 40 + Math.random() * 140 | 0, off: (Math.random() - .5) * (box.bottom - box.top) * .5 * (.4 + h), life: 3 + Math.random() * 5 | 0 };
-      const T = CH.tear; for (let i = T.s; i < Math.min(N, T.s + T.n); i++) PY[i] += T.off;
-    } else CH.tear = null;
-    // RGB-ish split: two offset ghosts in the highlight and ink colours
-    const split = b * 18 * L + h * 6 * L;
-    if (split > 2) {
-      g.globalAlpha = .45; drawTrace(box, C.hl, split, false, 1, false);
-      g.globalAlpha = .35; drawTrace(box, C.ink, -split * .7, false, 1, false);
-      g.globalAlpha = 1;
-    }
-  }
-  function chaosPost(box) {
-    const L = CH.lvl, b = CH.b, h = CH.h;
-    if (L === 2 && b > .45) { g.globalAlpha = .5 + b * .4; drawTrace(box, C.hl, 0, true, 1, false); g.globalAlpha = 1; }   // mirror on heavy bass
-    // block noise from the highs: square and round pixels in the field's own colours
-    const n = Math.floor(h * h * 26 * L);
-    const cols = [C.line, C.hl, C.ink];
-    for (let i = 0; i < n; i++) {
-      const s = 4 + Math.random() * (L === 2 ? 46 : 22), x = Math.random() * W, y = box.top + Math.random() * (box.bottom - box.top);
-      g.fillStyle = cols[Math.random() * 3 | 0]; g.globalAlpha = .55 + Math.random() * .45;
-      if (Math.random() < .5) g.fillRect(x, y, s, s * (Math.random() < .3 ? .2 : 1)); else { g.beginPath(); g.arc(x, y, s * .3, 0, 6.2832); g.fill(); }
-    }
-    g.globalAlpha = 1;
-  }
 
   let lastNow = performance.now();
   function frame(now) {
-    const dt = Math.min(.05, (now - lastNow) / 1000); lastNow = now;
+    const dt = Math.min(.1, (now - lastNow) / 1000); lastNow = now;
+    if (GEN.on) genFrame(now, dt);
+    if (BG.mode === "cycle") cycleTick(now);
     g.clearRect(0, 0, W, H);
     const box = frameBox();
     const k = sample();
@@ -928,17 +1104,14 @@ body.hide-ui:not(.awake){cursor:none}
       const d = EDGE > 0 ? Math.min(1, Math.min(t, 1 - t) / EDGE) : 1;        // lasso at the sides
       PY[i] = mid - v * Math.sin(d * Math.PI / 2) * amp;
     }
-    const wild = CH.lvl && !reduced;
-    if (now - bgT > 120) { bgT = now; C.bg = getComputedStyle(body).backgroundColor; }
+    if (!GEN.on && now - bgT > 120) { bgT = now; C.bg = getComputedStyle(body).backgroundColor; }
     if (root.classList.contains("morph")) {
       const cs = getComputedStyle(root);
       C.ink = cs.getPropertyValue("--ink").trim(); C.line = cs.getPropertyValue("--line").trim(); C.hl = cs.getPropertyValue("--hl").trim(); patt = null;
     }
-    const beat = wild ? listen(now) : false;
     if (!body.classList.contains("hide-ui")) chrome(box);
-    if (wild) chaosPre(box, dt);
-    drawTrace(box, C.line, 0, false, wild ? 1 + CH.b * 1.3 * CH.lvl : 1, true);
-    if (wild) { chaosPost(box); if (beat) onBeat(now); }
+    if (GEN.on) drawTrace(box, C.bg, 0, false, 1, false, modeKey === "line" ? 5 : 3);   // a hard halo so the trace reads on any colour
+    drawTrace(box, C.line, 0, false, 1, true);
     eqFrame(now);
     readout(now);
     fxFrame(now);
@@ -1050,17 +1223,22 @@ body.hide-ui:not(.awake){cursor:none}
   }
 
   function switchField(key, x, y, fast) {
+    if (BG.mode === "gen") setBg("field", true);
     if (key === fieldKey) return;
     const old = getComputedStyle(body).backgroundColor, kind = fast ? (Math.random() < .5 ? "glitch" : pick()) : x != null ? (Math.random() < .4 ? "ripple" : pick()) : pick();
     applyField(key);
     wipe(kind, old, x, y, fast);
-    log((fast ? "chaos // " : "field // ") + FIELDS[key].name.toLowerCase() + " · " + kind, !!fast);
+    log("field // " + FIELDS[key].name.toLowerCase() + " · " + kind);
     decode($("#fieldName"), FIELDS[key].name.toUpperCase(), { delay: reduced ? 0 : fast ? 150 : 420, keep: 1 });
   }
-  const cycleField = d => { const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]); };
+  const cycleField = d => {
+    if (BG.mode === "cycle") { cycleNow(); return; }
+    if (BG.mode === "gen") setBg("field", true);
+    const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]);
+  };
 
+  setBg(BG.mode, true);
   requestAnimationFrame(frame);
-  setChaos(CH.lvl, true);
 
   // ---------- panel, focus, fullscreen ----------
   const panelBtn = $("#panelBtn");
@@ -1104,7 +1282,6 @@ body.hide-ui:not(.awake){cursor:none}
     else if (k === "f") toggleFullscreen();
     else if (k === "p") setPanel(body.classList.contains("panel-off"));
     else if (k === "m") { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; store.set("mode", modeKey); markAll(); log("draw // " + modeKey); }
-    else if (k === "c") setChaos((CH.lvl + 1) % 3);
     else if (k === "n") next();
     else if (k === "b") prev();
     else if (k === "g") toggleLayer("grid");
