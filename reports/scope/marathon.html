@@ -193,6 +193,8 @@ body.gen{background-image:none}
 body.gen #gen,body.gen .dotgrid{display:block}
 body.gen.no-grid .dotgrid{display:none}
 body.gen .top,body.gen .deck,body.gen .side{background:var(--gbg);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+/* locked black or white: the same see-through panels as the field backgrounds */
+body.gen.ui-lock .top,body.gen.ui-lock .deck,body.gen.ui-lock .side{background:var(--panel);-webkit-backdrop-filter:none;backdrop-filter:none}
 
 /* layers off */
 body.no-grid{background-image:none}
@@ -295,7 +297,7 @@ body.hide-ui:not(.awake){cursor:none}
       <div class="seg" id="gSpd"></div>
     </div>
     <div class="sec" data-show="gen">
-      <h3><span>Panels</span></h3>
+      <h3><span>Text</span></h3>
       <div class="seg" id="gUi"></div>
     </div>
     <div class="sec" data-show="gen">
@@ -612,7 +614,6 @@ body.hide-ui:not(.awake){cursor:none}
     const T = dark ? { ink: "oklch(1 0 0)", line: "oklch(1 0 0)", on: "oklch(0 0 0)", hl: "oklch(.93 .23 125)", onhl: "oklch(0 0 0)", bg: "#000", gbg: "rgba(0,0,0,.6)" }
                    : { ink: "oklch(0 0 0)", line: "oklch(0 0 0)", on: "oklch(1 0 0)", hl: "oklch(.65 .27 0)", onhl: "oklch(1 0 0)", bg: "#fff", gbg: "rgba(255,255,255,.66)" };
     for (const k of ["ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, T[k]);
-    if (GEN.ui !== "auto") T.gbg = dark ? "rgba(0,0,0,.9)" : "rgba(255,255,255,.92)";   // locked panels are near-solid
     root.style.setProperty("--fsel", T.bg); root.style.setProperty("--gbg", T.gbg); root.style.colorScheme = dark ? "dark" : "light";
     C.ink = T.ink; C.line = T.line; C.hl = T.hl; C.bg = T.bg; patt = null;
   }
@@ -638,7 +639,8 @@ body.hide-ui:not(.awake){cursor:none}
       p.forEach((c, i) => { valBtns[i].firstChild.style.background = `rgb(${c.rgb})`; valBtns[i].lastChild.textContent = hex(c.rgb); valBtns[i].title = (c.name ? c.name + " · " : "") + `oklch ${c.L.toFixed(2)} ${c.C.toFixed(3)} ${Math.round(c.h)}°`; });
     }
   }
-  function genOn() { GEN.on = true; GEN.dark = null; GEN.paintT = 0; GEN.valT = 0; fitGen(); body.classList.add("gen"); genFrame(performance.now(), 0); }
+  const uiLock = () => body.classList.toggle("ui-lock", GEN.ui !== "auto");
+  function genOn() { uiLock(); GEN.on = true; GEN.dark = null; GEN.paintT = 0; GEN.valT = 0; fitGen(); body.classList.add("gen"); genFrame(performance.now(), 0); }
   function genOff() {
     GEN.on = false; body.classList.remove("gen");
     root.style.removeProperty("--fsel"); root.style.removeProperty("--gbg");
@@ -647,7 +649,7 @@ body.hide-ui:not(.awake){cursor:none}
   seg2("#gStyle", [["drift", "Drift"], ["marathon", "Marathon"]], () => GEN.style, k => { GEN.style = k; GEN.slot = -1; store.set("gstyle", k); if (GEN.on) { fitGen(); GEN.paintT = 0; } log("color // " + k); });
   seg2("#gAmt", [["0", "Fewer"], ["1", "Few"], ["2", "More"], ["3", "Loads"]], () => GEN.amt, k => { GEN.amt = +k; GEN.slot = -1; store.set("gamt", k); GEN.paintT = 0; });
   seg2("#gSpd", [["0", "Slow"], ["1", "Normal"], ["2", "Fast"]], () => GEN.spd, k => { GEN.spd = +k; GEN.slot = -1; store.set("gspd", k); });
-  seg2("#gUi", [["auto", "Auto"], ["black", "Black"], ["white", "White"]], () => GEN.ui, k => { GEN.ui = k; store.set("gui", k); GEN.dark = null; GEN.paintT = 0; });
+  seg2("#gUi", [["auto", "Auto"], ["black", "White"], ["white", "Black"]], () => GEN.ui, k => { GEN.ui = k; store.set("gui", k); GEN.dark = null; GEN.paintT = 0; uiLock(); });
   seg2("#gTrace", [["neg", "Negative"], ["white", "White"], ["black", "Black"]], () => GEN.trace, k => { GEN.trace = k; store.set("gtrace", k); log("trace // " + (k === "neg" ? "negative" : k)); });
   const gFreeze = $("#gFreeze");
   gFreeze.onclick = () => { GEN.frozen = !GEN.frozen; GEN.paintT = 0; gFreeze.setAttribute("aria-pressed", GEN.frozen); gFreeze.textContent = GEN.frozen ? "Frozen" : "Freeze"; gFreeze.style.color = GEN.frozen ? "var(--line)" : ""; };
