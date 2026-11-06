@@ -108,6 +108,8 @@ a.ib{color:inherit}
 .sk:disabled{opacity:.3;cursor:default;background:none;color:inherit;border-color:var(--rule)}
 .sk svg{width:10px;height:10px;fill:currentColor}
 .queue{display:grid;gap:4px;border-top:1px solid var(--rule);padding-top:8px}
+.qclr{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid transparent}
+.qclr:hover{color:var(--ink);border-bottom-color:var(--line)}
 .queue ol{list-style:none;margin:0;padding:0;max-height:92px;overflow:auto;scrollbar-width:thin;display:grid;gap:1px}
 .queue li button{width:100%;display:flex;gap:10px;align-items:baseline;padding:2px 6px;text-align:left;font-size:10.5px;letter-spacing:.04em;transition:background .12s,color .12s}
 .queue li button:hover{background:var(--hl);color:var(--onhl)}
@@ -267,7 +269,7 @@ body.hide-ui:not(.awake){cursor:none}
   </div>
   <div class="hint" id="hint">Drop audio anywhere, or load files. More than one makes a queue.</div>
   <div class="queue" id="queue" hidden>
-    <div class="row1"><span class="lbl">Queue</span><span class="lbl" id="qPos">00/00</span></div>
+    <div class="row1"><span class="lbl">Queue · <span id="qPos">00/00</span></span><button class="qclr" id="qClear" type="button" title="Stop and empty the queue">Clear</button></div>
     <ol id="qList"></ol>
   </div>
 </section>
@@ -729,7 +731,7 @@ body.hide-ui:not(.awake){cursor:none}
   function next() { if (qi < Q.length - 1) playAt(qi + 1); }
   function prev() { if (audioEl && audioEl.currentTime > 3) { audioEl.currentTime = 0; return; } if (qi > 0) playAt(qi - 1); }
   function renderQueue() {
-    qBox.hidden = Q.length < 2;
+    qBox.hidden = Q.length < 1;
     prevBtn.disabled = qi < 0; nextBtn.disabled = qi >= Q.length - 1;
     $("#qPos").textContent = pad(qi + 1) + "/" + pad(Q.length);
     qList.innerHTML = "";
@@ -743,6 +745,19 @@ body.hide-ui:not(.awake){cursor:none}
     const cur = qList.children[qi]; if (cur) cur.scrollIntoView({ block: "nearest" });
   }
   prevBtn.onclick = prev; nextBtn.onclick = next;
+  // clear: stop, forget every queued file and release the loaded one
+  function clearQueue() {
+    if (!Q.length) return;
+    const n = Q.length; Q.length = 0; qi = -1;
+    if (audioEl) { audioEl.pause(); audioEl.removeAttribute("src"); audioEl.load(); }
+    if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+    pp.innerHTML = ICON_PLAY; pp.disabled = true; seek.disabled = true; seek.value = 0; seek.style.setProperty("--p", "0%");
+    tCur.textContent = tDur.textContent = "00:00"; $("#fmtLbl").textContent = "— kHz";
+    srcTag.textContent = "IDLE"; srcTag.classList.add("off");
+    decode(trackName, "NO SOURCE"); setLive(false, "");
+    renderQueue(); say("Queue cleared."); log("queue // cleared " + pad(n));
+  }
+  $("#qClear").onclick = clearQueue;
 
   async function playFile(file) {
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
@@ -760,7 +775,7 @@ body.hide-ui:not(.awake){cursor:none}
         if (qi < Q.length - 1) { log("queue // next"); next(); }
         else { log(Q.length > 1 ? "queue // end of queue" : "transport // end of signal"); renderQueue(); }
       });
-      audioEl.addEventListener("error", () => { say("Couldn't decode that file. Try a different format.", true); log("decoder // fault"); });
+      audioEl.addEventListener("error", () => { if (!audioEl.getAttribute("src")) return; say("Couldn't decode that file. Try a different format.", true); log("decoder // fault"); });
     }
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = URL.createObjectURL(file);
@@ -784,7 +799,7 @@ body.hide-ui:not(.awake){cursor:none}
   seek.oninput = () => { if (audioEl?.duration) audioEl.currentTime = seek.value / 1000 * audioEl.duration; seek.style.setProperty("--p", seek.value / 10 + "%"); };
 
   function syncUI() {
-    if (!audioEl) return;
+    if (!audioEl || !audioEl.getAttribute("src")) return;
     pp.innerHTML = audioEl.paused ? ICON_PLAY : ICON_PAUSE;
     pp.setAttribute("aria-label", audioEl.paused ? "Play" : "Pause");
     srcTag.textContent = audioEl.paused ? "HOLD" : "LIVE"; srcTag.classList.toggle("off", audioEl.paused);

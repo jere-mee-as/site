@@ -112,6 +112,8 @@
   .sk:hover:not(:disabled) { color: var(--line); border-color: var(--edge); }
   .sk:disabled { opacity: .35; cursor: default; }
   .sk svg { width: 9px; height: 9px; fill: currentColor; }
+  .clr { height: 22px; padding: 0 8px; background: none; backdrop-filter: none; border-color: transparent; color: var(--muted); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+  .clr:hover { color: var(--line); border-color: var(--edge); }
   .qpos { flex: 1; text-align: center; color: var(--muted); font-size: 10px; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
   .q { grid-column: 1 / -1; list-style: none; margin: 0; padding: 0; max-height: 96px; overflow: auto; scrollbar-width: thin; }
   .q button { width: 100%; display: flex; gap: 8px; padding: 3px 6px; background: none; backdrop-filter: none; border-color: transparent; text-align: left; font-size: 11px; color: var(--muted); }
@@ -181,6 +183,7 @@
     <button class="sk" id="prevBtn" type="button" aria-label="Previous track" title="Previous (B)"><svg viewBox="0 0 10 10"><path d="M1 1h1.6v8H1zM9 1v8L3 5z"/></svg></button>
     <span class="qpos" id="qPos"></span>
     <button class="sk" id="nextBtn" type="button" aria-label="Next track" title="Next (N)"><svg viewBox="0 0 10 10"><path d="M7.4 1H9v8H7.4zM1 1v8l6-4z"/></svg></button>
+    <button class="clr" id="qClear" type="button" title="Stop and empty the queue">Clear</button>
   </div>
   <ol class="q" id="qList" hidden></ol>
 </div>
@@ -364,7 +367,7 @@
   function prev() { if (audioEl && audioEl.currentTime > 3) { audioEl.currentTime = 0; return; } if (qi > 0) playAt(qi - 1); }
   function renderQueue() {
     const many = Q.length > 1;
-    qrow.hidden = qList.hidden = !many;
+    qrow.hidden = !Q.length; qList.hidden = !many;
     prevBtn.disabled = qi < 0; nextBtn.disabled = qi >= Q.length - 1;
     document.getElementById("qPos").textContent = p2(qi + 1) + " / " + p2(Q.length);
     qList.innerHTML = "";
@@ -378,6 +381,16 @@
     const cur = qList.children[qi]; if (cur) cur.scrollIntoView({ block: "nearest" });
   }
   prevBtn.onclick = prev; nextBtn.onclick = next;
+
+  // clear: stop, forget every queued file and release the loaded one
+  function clearQueue() {
+    Q.length = 0; qi = -1;
+    if (audioEl) { audioEl.pause(); audioEl.removeAttribute("src"); audioEl.load(); }
+    if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+    player.hidden = true; setLive(false); renderQueue();
+    say("Queue cleared. Upload songs or drop them anywhere to start again.");
+  }
+  document.getElementById("qClear").onclick = clearQueue;
 
   async function playFile(file) {
     ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
@@ -393,7 +406,7 @@
       analyser.connect(ctx.destination);   // the line is drawn from the same signal you hear
       buf = new Float32Array(analyser.fftSize);
       for (const ev of ["timeupdate", "play", "pause", "loadedmetadata", "ended"]) audioEl.addEventListener(ev, syncUI);
-      audioEl.addEventListener("error", () => say("Couldn't play that file. Try a different format.", true));
+      audioEl.addEventListener("error", () => { if (audioEl.getAttribute("src")) say("Couldn't play that file. Try a different format.", true); });
       audioEl.addEventListener("ended", () => { if (qi < Q.length - 1) next(); else if (Q.length > 1) say("End of the queue."); });
     }
     if (objectUrl) URL.revokeObjectURL(objectUrl);
