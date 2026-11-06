@@ -288,6 +288,16 @@ main{grid-area:main;overflow:auto;padding:16px 22px 26px 34px;min-width:0;positi
 .cg-row b{font-weight:500;letter-spacing:.04em;min-width:62px}
 .cg-row span{opacity:.8}
 .cg-row.copied b::after{content:" copied";opacity:.8}
+.cg-amt{display:none;align-items:center;gap:0;margin-top:6px;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+#colorgen.mara .cg-amt{display:flex}
+.cg-amt span{margin-right:auto;color:var(--dim)}
+.cg-amt button{padding:5px 12px;text-transform:uppercase;letter-spacing:.16em;font-size:10px;border:1.5px solid var(--fg);color:var(--fg)}
+.cg-amt button+button{border-left:0}
+.cg-amt button:hover{background:var(--hl);color:var(--onhl)}
+.cg-amt button[aria-pressed="true"]{background:#000;color:oklch(.93 .23 125);border-color:#000}
+#colorgen:fullscreen .cg-amt,#colorgen.cg-full .cg-amt{position:absolute;right:18px;bottom:18px;z-index:2;margin:0;color:#fff}
+#colorgen:fullscreen .cg-amt span,#colorgen.cg-full .cg-amt span{display:none}
+#colorgen:fullscreen .cg-amt button,#colorgen.cg-full .cg-amt button{color:#fff;border-color:#fff;background:rgba(0,0,0,.35)}
 .cg-tabs{display:grid;grid-template-columns:1fr 1.6fr;margin-top:10px;border:1.5px solid var(--fg)}
 .cg-tabs button{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 12px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg);overflow:hidden}
 .cg-tabs button+button{border-left:1.5px solid var(--fg)}
@@ -300,7 +310,7 @@ main{grid-area:main;overflow:auto;padding:16px 22px 26px 34px;min-width:0;positi
 #colorgen.mara .cg-box{background:#000;border-color:var(--fg)}
 #colorgen.mara .cg-coords{background:#000;padding:10px 12px}
 #colorgen.mara .cg-row{text-shadow:none}
-@media (min-width:721px){:root[data-field="color"] .cg-box{max-height:max(220px,calc(100vh - 420px))}}
+@media (min-width:721px){:root[data-field="color"] .cg-box{max-height:max(220px,calc(100vh - 460px))}}
 #colorgen:fullscreen .cg-tabs,#colorgen.cg-full .cg-tabs{position:absolute;left:18px;bottom:18px;z-index:2;margin:0;width:min(420px,calc(100% - 36px));background:rgba(0,0,0,.35);border-color:#fff}
 #colorgen:fullscreen .cg-tabs button,#colorgen.cg-full .cg-tabs button{color:#fff}
 #colorgen:fullscreen .cg-tabs button+button,#colorgen.cg-full .cg-tabs button+button{border-color:#fff}
@@ -806,6 +816,12 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
             <button type="button" role="tab" id="cg-t-drift" data-cg="drift" aria-selected="true">Drift</button>
             <button type="button" role="tab" id="cg-t-mara" data-cg="marathon" aria-selected="false"><i aria-hidden="true"></i>Marathon aesthetic</button>
           </div>
+          <div class="cg-amt" role="group" aria-label="How many colours at once">
+            <span>Colours at once</span>
+            <button type="button" id="cg-a-1" data-amt="1" aria-pressed="true">Few</button>
+            <button type="button" id="cg-a-2" data-amt="2" aria-pressed="false">More</button>
+            <button type="button" id="cg-a-3" data-amt="3" aria-pressed="false">Loads</button>
+          </div>
         </div>
       </div>
     </section>
@@ -941,7 +957,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
     // Marathon aesthetic: hard, flat, saturated colour plus pure black and white. No greys, no blending.
     var MARA = [[.93, .23, 125, 'acid lime'], [.65, .27, 0, 'hot pink'], [.45, .29, 266, 'cobalt'], [.7, .2, 45, 'tangerine'], [.6, .25, 28, 'signal red'],
       [.88, .13, 170, 'mint'], [.93, .21, 108, 'acid yellow'], [.52, .26, 295, 'violet'], [1, 0, 0, 'white'], [0, 0, 0, 'black']];
-    var mSlot = -1, mPal = null;
+    var mSlot = -1, mPal = null, AMT = { 1: [.3, 11, 1.6], 2: [.62, 7, 2.4], 3: [.95, 5, 3] }, amt = 1;
     function rngFor(n) { var s = (n * 2654435761 + (seed * 1000 | 0)) >>> 0; return function () { s = (s + 0x6D2B79F5) >>> 0; var x = Math.imul(s ^ s >>> 15, 1 | s); x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x; return ((x ^ x >>> 14) >>> 0) / 4294967296; }; }
     // mix two colours around the hue wheel; black and white borrow the other colour's hue, so nothing passes through grey
     function mixC(a, b, f) {
@@ -960,7 +976,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
       return pick.map(function (c) { return { L: c[0], C: c[1], h: c[2], name: c[3] }; });
     }
     function maraPalette(time) {
-      var span = 11, u = time / span, n = Math.floor(u), f = u - n;
+      var span = AMT[amt][1], u = time / span, n = Math.floor(u), f = u - n;
       if (n !== mSlot) { mSlot = n; mPal = [maraSet(n), maraSet(n + 1)]; }
       f = f < .35 ? 0 : (f - .35) / .65; f = f * f * (3 - 2 * f);
       return mPal[0].map(function (a, i) {
@@ -1005,7 +1021,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
       for (var k = 0; k < 256; k++) {
         var u = k / 256 * 6, i = Math.floor(u), f = u - i, a = stops[i], b = stops[i + 1];
         f = f * f * (3 - 2 * f);
-        if (mode === 'marathon') { var e = a.C < .01 || b.C < .01 ? 3 : 1.6; f = f < .5 ? .5 * Math.pow(2 * f, e) : 1 - .5 * Math.pow(2 - 2 * f, e); }
+        if (mode === 'marathon') { var e = a.C < .01 || b.C < .01 ? 3 + amt : AMT[amt][2]; f = f < .5 ? .5 * Math.pow(2 * f, e) : 1 - .5 * Math.pow(2 - 2 * f, e); }
         var m = mixC(a, b, f), c = oklch(m.L, m.C, m.h);
         lut[k * 3] = c[0]; lut[k * 3 + 1] = c[1]; lut[k * 3 + 2] = c[2];
       }
@@ -1033,7 +1049,7 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
           var rx = qx + .6 * Math.sin(qy * 2.3 + T * .8);
           var ry = qy + .6 * Math.cos(qx * 2.1 - T * .75);
           var v = .5 + .5 * Math.sin(rx * 1.3 + ry * 1.1 + T * .5);
-          v = Math.min(.999, Math.max(0, .5 + (v - .5) * (mode === 'marathon' ? .3 : .36) + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
+          v = Math.min(.999, Math.max(0, .5 + (v - .5) * (mode === 'marathon' ? AMT[amt][0] : .36) + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
           var k = (v * 255) | 0, o = (y * w + x) * 4;
           d[o] = lut[k * 3]; d[o + 1] = lut[k * 3 + 1]; d[o + 2] = lut[k * 3 + 2]; d[o + 3] = 255;
         }
@@ -1140,6 +1156,14 @@ html.inv .app{filter:invert(1) hue-rotate(180deg)}
       if (!quiet && window.JRLlog) window.JRLlog('color // ' + (mode === 'marathon' ? 'marathon aesthetic' : 'drift'));
     }
     root.querySelectorAll('.cg-tabs button').forEach(function (b) { b.addEventListener('click', function () { setMode(b.dataset.cg); }); });
+    function setAmt(n, quiet) {
+      amt = AMT[n] ? +n : 1; mSlot = -1;
+      root.querySelectorAll('.cg-amt button').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.amt === amt); });
+      try { localStorage.setItem('cg-amt', amt); } catch (e) {}
+      if (!quiet && window.JRLlog) window.JRLlog('color // ' + ['', 'few', 'more', 'loads'][amt] + ' colours');
+    }
+    root.querySelectorAll('.cg-amt button').forEach(function (b) { b.addEventListener('click', function () { setAmt(b.dataset.amt); }); });
+    try { setAmt(localStorage.getItem('cg-amt') || 1, true); } catch (e) {}
     try { if (localStorage.getItem('cg-mode') === 'marathon') setMode('marathon', true); } catch (e) {}
     back.addEventListener('click', function () { setWall(false); });
     fit();
