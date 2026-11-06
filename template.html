@@ -249,6 +249,8 @@ main{grid-area:main;overflow:auto;padding:16px 22px 26px 34px;min-width:0;positi
 /* image of the day */
 #daily .imgwrap{display:flex;justify-content:center;background:repeating-linear-gradient(-45deg,var(--row) 0 5px,transparent 5px 10px);padding:14px}
 #d-img{display:block;max-width:100%;max-height:min(56vh,560px);width:auto;height:auto}
+:root[data-field="image"] #d-img{max-height:max(160px,calc(100vh - 445px))}
+:root[data-field="image"] #daily .imgwrap{padding:10px}
 .src,.reset{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);overflow-wrap:anywhere;margin-top:10px}
 .src a{color:var(--fg)}
 .src a:hover{background:var(--hl);color:var(--onhl)}
@@ -387,10 +389,12 @@ html.cg-bg #colorgen .cg-coords{display:none}
   :root[data-field="image"] .app{grid-template-columns:minmax(0,1fr) 280px;grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"top top" "main side" "rail rail" "cli cli"}
   :root[data-field="image"] .rail{flex-direction:row;padding:0;gap:0}
   :root[data-field="image"] .mods{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));flex:1;border:0}
-  :root[data-field="image"] .mod{flex-direction:column;align-items:flex-start;justify-content:space-between;min-height:118px;border:0;border-right:1px solid var(--rule);padding:12px}
-  :root[data-field="image"] .mod .ml{flex-direction:column;align-items:flex-start;gap:16px}
-  :root[data-field="image"] .mod .ml svg{width:36px;height:36px}
-  :root[data-field="image"] .rail .prog{width:230px;padding:14px;align-content:center}
+  :root[data-field="image"] .mod{flex-direction:row;align-items:center;justify-content:space-between;min-height:0;border:0;border-right:1px solid var(--rule);padding:9px 12px}
+  :root[data-field="image"] .mod .ml{flex-direction:row;align-items:center;gap:10px}
+  :root[data-field="image"] .mod .ml svg{width:20px;height:20px}
+  :root[data-field="image"] .rail .prog{display:flex;gap:16px;width:auto;padding:0 14px;align-items:center}
+  :root[data-field="image"] .rail .prog>.lbl{display:none}
+  :root[data-field="image"] .rail .prog div{gap:8px}
   /* color: navigation is a spine of vertical tabs, telemetry is a band under the header */
   :root[data-field="color"] .app{grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-areas:"rail top" "rail side" "rail main" "cli cli"}
   :root[data-field="color"] .rail{padding:0;gap:0}
