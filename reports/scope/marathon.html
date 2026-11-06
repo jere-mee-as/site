@@ -11,6 +11,15 @@
 /* Operator scope: full-bleed colour field, the trace in the middle, source deck bottom-left,
    control panel on the right, status strip on top. Every field drifts slowly in hue. */
 @property --drift{syntax:'<number>';inherits:true;initial-value:0}
+@property --fl{syntax:'<number>';inherits:true;initial-value:.46}
+@property --fc{syntax:'<number>';inherits:true;initial-value:.29}
+@property --fh{syntax:'<number>';inherits:true;initial-value:266}
+@property --ink{syntax:'<color>';inherits:true;initial-value:white}
+@property --line{syntax:'<color>';inherits:true;initial-value:lime}
+@property --hl{syntax:'<color>';inherits:true;initial-value:yellow}
+@property --on{syntax:'<color>';inherits:true;initial-value:black}
+@property --onhl{syntax:'<color>';inherits:true;initial-value:black}
+:root.morph{transition:--fl 2.4s ease-in-out,--fc 2.4s ease-in-out,--fh 2.4s ease-in-out,--ink 2.4s ease-in-out,--line 2.4s ease-in-out,--hl 2.4s ease-in-out,--on 2.4s ease-in-out,--onhl 2.4s ease-in-out}
 :root{
   --fl:.46;--fc:.29;--fh:266;
   --ink:oklch(.98 0 0);--line:oklch(.88 .26 142);--on:oklch(.16 0 0);--hl:oklch(.86 .17 85);--onhl:oklch(.15 0 0);
@@ -146,6 +155,9 @@ body.panel-off .side{transform:translateX(102%)}
 body.no-grid{background-image:none}
 body.no-text .giant-wrap{display:none}
 /* chaos */
+#glow{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse 65% 75% at var(--gx,30%) var(--gy,50%),var(--hl),transparent 70%),
+             radial-gradient(ellipse 55% 65% at var(--gx2,72%) var(--gy2,45%),var(--line),transparent 70%)}
 .ctag{background:var(--hl);color:var(--onhl);animation:blink .5s steps(2) infinite}
 body.chaos .status.live i{animation-duration:.3s}
 #inv{position:fixed;left:0;right:0;top:0;height:22vh;z-index:61;pointer-events:none;opacity:0;mix-blend-mode:difference;
@@ -177,6 +189,7 @@ body.hide-ui:not(.awake){cursor:none}
 </style>
 </head>
 <body>
+<div id="glow" aria-hidden="true"></div>
 <div class="giant-wrap" aria-hidden="true"><div class="giant">SCOPE</div></div>
 <canvas id="scope" aria-hidden="true"></canvas>
 
@@ -361,9 +374,19 @@ body.hide-ui:not(.awake){cursor:none}
   const C = { ink: "", line: "", hl: "" };   // resolved colours for the canvases
   let patt = null, pattKey = "";
 
-  function applyField(key) {
+  let morphT = 0;
+  function applyField(key, morph) {
     fieldKey = key; const f = FIELDS[key];
-    for (const k of ["fl", "fc", "fh", "ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, f[k]);
+    let fh = f.fh;
+    if (morph) {
+      // glide the long way round never: pick the nearest equivalent hue
+      const cur = parseFloat(getComputedStyle(root).getPropertyValue("--fh")) || 0;
+      while (fh - cur > 180) fh -= 360; while (cur - fh > 180) fh += 360;
+      root.classList.add("morph"); clearTimeout(morphT);
+      morphT = setTimeout(() => root.classList.remove("morph"), 2600);
+    } else root.classList.remove("morph");
+    for (const k of ["fl", "fc", "ink", "line", "on", "hl", "onhl"]) root.style.setProperty("--" + k, f[k]);
+    root.style.setProperty("--fh", fh);
     root.style.colorScheme = f.fl < .6 ? "dark" : "light";
     C.ink = f.ink; C.line = f.line; C.hl = f.hl; patt = null;
     document.querySelectorAll(".sw").forEach(b => b.setAttribute("aria-pressed", b.dataset.key === key));
@@ -420,7 +443,7 @@ body.hide-ui:not(.awake){cursor:none}
 
   // ---------- chaos: off / some / wild ----------
   const CHAOS = ["Off", "Some", "Wild"];
-  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null };
+  const CH = { lvl: reduced ? 0 : Math.min(2, +store.get("chaos", "0") || 0), b: 0, m: 0, h: 0, ab: 0, last: 0, beats: 0, kick: 0, lastField: 0, tear: null, glow: 0, drive: 0 };
   const cWrap = $("#chaos");
   CHAOS.forEach((name, i) => {
     const b = document.createElement("button");
@@ -435,7 +458,7 @@ body.hide-ui:not(.awake){cursor:none}
     $("#chaosName").textContent = CHAOS[l].toUpperCase();
     $("#chaosTag").hidden = !l; $("#chaosTag").textContent = l === 2 ? "Wild" : "Chaos";
     body.classList.toggle("chaos", !!l);
-    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; }
+    if (!l) { CH.kick = 0; root.style.setProperty("--kick", 0); canvas.style.transform = ""; giantWrap.style.transform = ""; giant.textContent = "SCOPE"; CH.glow = 0; glowEl.style.opacity = 0; }
     if (!quiet) log(l ? "chaos // " + CHAOS[l].toLowerCase() + (playing() ? " · locked to signal" : " · armed, waiting for signal") : "chaos // off", !!l);
   }
 
@@ -708,7 +731,7 @@ body.hide-ui:not(.awake){cursor:none}
   }
 
   // ---------- chaos engine: everything below is driven by the live spectrum ----------
-  const giant = $(".giant"), giantWrap = $(".giant-wrap");
+  const giant = $(".giant"), giantWrap = $(".giant-wrap"), glowEl = $("#glow");
   const WORDS = ["SCOPE", "SIGNAL", "LOUD", "PEAK", "CLIP", "WAVE", "NOISE", "JERE", "OSC-01", "████", "Δ//Ξ", "CHAOS"];
   // bass / mids / highs as 0..1, plus a beat when the low end jumps above its own running average
   function listen(now) {
@@ -728,7 +751,7 @@ body.hide-ui:not(.awake){cursor:none}
     const j = a => Math.round((Math.random() - .5) * a), st = "steps(1,end)";
     el.animate([
       { transform: `translate(${j(60 * amt)}px,${j(8 * amt)}px)`, clipPath: "inset(0 0 52% 0)", filter: "hue-rotate(140deg) saturate(1.8)", easing: st },
-      { offset: .35, transform: `translate(${j(30 * amt)}px,0)`, clipPath: `inset(${20 + j(20)}% 0 ${10 + j(10)}% 0)`, filter: "invert(1)", easing: st },
+      { offset: .35, transform: `translate(${j(30 * amt)}px,0)`, clipPath: `inset(${20 + j(20)}% 0 ${10 + j(10)}% 0)`, filter: "hue-rotate(70deg) saturate(1.8)", easing: st },
       { offset: .7, transform: `translate(${j(14 * amt)}px,0)`, clipPath: "inset(0 0 0 0)", filter: "hue-rotate(-90deg)", easing: st },
       { transform: "none", clipPath: "inset(0 0 0 0)", filter: "none" }
     ], { duration: 160 + 140 * amt });
@@ -742,12 +765,15 @@ body.hide-ui:not(.awake){cursor:none}
   function onBeat(now) {
     const L = CH.lvl, b = CH.b; CH.beats++;
     glitchEl(canvas, .4 + b * L * .8);
-    if (Math.random() < .35 * L) invSweep(220 + Math.random() * 160);
+    CH.glow = Math.min(1, CH.glow + .25 + b * .35);   // a beat swells the colour wash; it eases back on its own
+    CH.drive += .9 + b;                                 // and shoves the wash around
     if (CH.beats % (L === 2 ? 4 : 8) === 0 && LAY.text) decode(giant, WORDS[Math.random() * WORDS.length | 0], { frames: 7, speed: 30 });
-    if (L === 2 && now - CH.lastField > 1700 && b > .55 && Math.random() < .5) {
+    if (L === 2 && now - CH.lastField > 3200 && b > .55 && Math.random() < .5) {
       CH.lastField = now;
       let k; do k = FKEYS[Math.random() * FKEYS.length | 0]; while (k === fieldKey);
-      switchField(k, Math.random() * W, Math.random() * H, true);
+      applyField(k, true);
+      log("chaos // morph to " + FIELDS[k].name.toLowerCase(), true);
+      decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { delay: 600, keep: 1 });
     }
     if (L === 2 && CH.beats % 16 === 0) { const ks = Object.keys(MODES); modeKey = ks[(ks.indexOf(modeKey) + 1) % ks.length]; markAll(); }
     if (Math.random() < .25 * L) decode(statusText, statusText.getAttribute("aria-label") || statusText.textContent, { frames: 5, speed: 28 });
@@ -756,6 +782,15 @@ body.hide-ui:not(.awake){cursor:none}
     const L = CH.lvl, b = CH.b, m = CH.m, h = CH.h;
     // hue spins with the mids, kicks with the bass
     CH.kick = (CH.kick + dt * (m * 50 + b * 40) * L) % 360; root.style.setProperty("--kick", CH.kick.toFixed(1));
+    // colour wash: two soft gradients in the highlight and trace colours, orbiting with the mids, swelling with the bass
+    CH.drive += dt * (.15 + m * 1.2) * L;
+    CH.glow += ((b * .35 + m * .15) * L / 2 - CH.glow) * Math.min(1, dt * 1.6);
+    const gw = Math.min(L === 2 ? .7 : .45, CH.glow), d = CH.drive;
+    glowEl.style.opacity = gw.toFixed(3);
+    glowEl.style.setProperty("--gx", (50 + 38 * Math.sin(d * .7)).toFixed(1) + "%");
+    glowEl.style.setProperty("--gy", (50 + 36 * Math.cos(d * .53)).toFixed(1) + "%");
+    glowEl.style.setProperty("--gx2", (50 + 40 * Math.cos(d * .61 + 2)).toFixed(1) + "%");
+    glowEl.style.setProperty("--gy2", (50 + 34 * Math.sin(d * .47 + 1)).toFixed(1) + "%");
     // shake on the low end
     const sh = b * b * 9 * L;
     canvas.style.transform = sh > .6 ? `translate(${((Math.random() - .5) * sh).toFixed(1)}px,${((Math.random() - .5) * sh).toFixed(1)}px)` : "";
@@ -784,8 +819,6 @@ body.hide-ui:not(.awake){cursor:none}
       g.fillStyle = cols[Math.random() * 3 | 0]; g.globalAlpha = .55 + Math.random() * .45;
       if (Math.random() < .5) g.fillRect(x, y, s, s * (Math.random() < .3 ? .2 : 1)); else { g.beginPath(); g.arc(x, y, s * .3, 0, 6.2832); g.fill(); }
     }
-    // scan tears across the whole width on the loudest highs
-    if (L === 2 && h > .5) { g.fillStyle = C.hl; g.globalAlpha = .8; for (let i = 0; i < 3; i++) g.fillRect(0, Math.random() * H, W, 1 + Math.random() * 3); }
     g.globalAlpha = 1;
   }
 
@@ -805,6 +838,10 @@ body.hide-ui:not(.awake){cursor:none}
       PY[i] = mid - v * Math.sin(d * Math.PI / 2) * amp;
     }
     const wild = CH.lvl && !reduced;
+    if (root.classList.contains("morph")) {
+      const cs = getComputedStyle(root);
+      C.ink = cs.getPropertyValue("--ink").trim(); C.line = cs.getPropertyValue("--line").trim(); C.hl = cs.getPropertyValue("--hl").trim(); patt = null;
+    }
     const beat = wild ? listen(now) : false;
     if (!body.classList.contains("hide-ui")) chrome(box);
     if (wild) chaosPre(box, dt);
