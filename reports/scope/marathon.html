@@ -149,18 +149,12 @@ body.panel-off .side{transform:translateX(102%)}
 .sec h3 .tx{display:flex;gap:12px}
 .sec h3 .tx button{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid transparent}
 .sec h3 .tx button:hover{color:var(--ink);border-bottom-color:var(--line)}
-.tabs{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--rule)}
+.tabs{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--rule)}
 .tabs button{height:40px;font-family:var(--display);font-weight:900;font-stretch:115%;font-size:12px;text-transform:uppercase;letter-spacing:.02em;
   border-left:1px solid var(--rule);transition:background .12s,color .12s}
 .tabs button:first-child{border-left:0}
 .tabs button:hover{background:var(--hl);color:var(--onhl)}
 .tabs button[aria-selected="true"]{background:var(--ink);color:var(--fsel)}
-.cyc{border:1px solid var(--rule);padding:12px 12px 11px;display:grid;gap:9px}
-.cyc .top2{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
-.cyc .nm{font-family:var(--display);font-weight:900;font-stretch:125%;font-size:20px;line-height:1;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cyc .cd{font-family:var(--dot);font-weight:900;font-size:18px;line-height:1}
-.pbar{height:8px;background:radial-gradient(circle,var(--rule) 2.2px,transparent 2.7px) 0 0/10px 8px}
-.pbar i{display:block;height:100%;width:0;background:radial-gradient(circle,var(--line) 2.4px,transparent 2.9px) 0 0/10px 8px}
 .gvals{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
 .gvals button{display:grid;gap:5px;padding:0 0 4px;border:1px solid var(--rule);font-size:9px;letter-spacing:.08em;text-align:left;transition:border-color .12s}
 .gvals button i{display:block;height:30px}
@@ -172,8 +166,6 @@ body.panel-off .side{transform:translateX(102%)}
 .sw{height:36px;position:relative;border:1px solid var(--rule);display:flex;align-items:flex-end;padding:2px 5px;font-size:8px;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;font-weight:700;overflow:hidden;transition:border-color .12s}
 .sw svg{position:absolute;left:0;top:5px;width:100%;height:16px}
 .sw:hover{border-color:var(--hl);border-width:2px;padding:1px 4px}
-.sw.out{opacity:.26;border-style:dashed}
-.sw.out:hover{opacity:.6}
 .sw.now::after{content:"";position:absolute;top:4px;right:4px;width:7px;height:7px;background:currentColor;animation:blink 1.1s steps(2) infinite}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
 .chip{height:28px;border:1px solid var(--rule);font-size:10px;letter-spacing:.14em;text-transform:uppercase;display:grid;place-items:center;transition:background .12s,color .12s,border-color .12s}
@@ -283,31 +275,13 @@ body.hide-ui:not(.awake){cursor:none}
     <header class="gh"><b>01</b><span>Background</span><i></i></header>
     <div class="tabs" role="tablist" aria-label="Background" id="bgTabs">
       <button type="button" role="tab" data-bg="field">Field</button>
-      <button type="button" role="tab" data-bg="cycle">Cycle</button>
       <button type="button" role="tab" data-bg="gen">Generator</button>
     </div>
 
-    <div class="sec" data-show="cycle">
-      <div class="cyc">
-        <div class="top2"><span class="lbl">Next</span><span class="cd" id="cyCd">--</span></div>
-        <div class="nm" id="cyNext">—</div>
-        <div class="pbar"><i id="cyBar"></i></div>
-      </div>
-    </div>
-    <div class="sec" data-show="field cycle">
-      <h3 data-show="field"><span>Current</span><b id="fieldName">SIGNAL</b></h3>
-      <h3 data-show="cycle"><span>In rotation &nbsp;<b id="cyCount">00</b></span><span class="tx"><button type="button" id="cyAll">All</button><button type="button" id="cyNone">None</button></span></h3>
+    <div class="sec" data-show="field">
+      <h3><span>Current</span><b id="fieldName">SIGNAL</b></h3>
       <div class="fields" id="fields"></div>
     </div>
-    <div class="sec" data-show="cycle">
-      <h3><span>Every</span></h3>
-      <div class="sl"><input id="cySecs" type="range" min="3" max="60" step="1" aria-label="Seconds between changes"><output id="cySecsOut">12S</output></div>
-    </div>
-    <div class="sec" data-show="cycle">
-      <h3><span>Order</span></h3>
-      <div class="seg" id="cyOrder"></div>
-    </div>
-
     <div class="sec" data-show="gen">
       <h3><span>Style</span></h3>
       <div class="seg" id="gStyle"></div>
@@ -520,8 +494,8 @@ body.hide-ui:not(.awake){cursor:none}
   }
   applyField(fieldKey); markAll();
 
-  // ---------- background: one field / cycle through fields / colour generator ----------
-  const BG = { mode: ["field", "cycle", "gen"].includes(store.get("bg")) ? store.get("bg") : "field" };
+  // ---------- background: one field, or the colour generator ----------
+  const BG = { mode: store.get("bg") === "gen" ? "gen" : "field" };
   const seg2 = (wrap, opts, get, set) => {
     const w = $(wrap);
     const mark = () => w.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String(get()) === b.dataset.key));
@@ -532,78 +506,10 @@ body.hide-ui:not(.awake){cursor:none}
     mark(); return mark;
   };
 
-  // ----- cycle -----
-  let cySet;
-  try { cySet = new Set(JSON.parse(store.get("cyset", "null")) || FKEYS); } catch { cySet = new Set(FKEYS); }
-  [...cySet].forEach(k => { if (!FIELDS[k]) cySet.delete(k); });
-  const CY = { secs: Math.min(60, Math.max(3, +store.get("cysecs", "12") || 12)), shuffle: store.get("cyshuf", "0") === "1",
-               t0: 0, next: null, bag: [], lastCd: "" };
-  const saveSet = () => store.set("cyset", JSON.stringify([...cySet]));
-
   function paintSwatches() {
-    const cyc = BG.mode === "cycle";
-    document.querySelectorAll(".sw").forEach(b => {
-      const k = b.dataset.key;
-      b.classList.toggle("now", k === fieldKey);
-      b.classList.toggle("out", cyc && !cySet.has(k));
-      b.setAttribute("aria-pressed", cyc ? cySet.has(k) : k === fieldKey);
-      b.title = cyc ? FIELDS[k].name + (cySet.has(k) ? " · in rotation, tap to leave out" : " · left out, tap to add") : FIELDS[k].name;
-    });
-    const cnt = $("#cyCount"); if (cnt) cnt.textContent = pad(cySet.size) + "/" + FKEYS.length;
+    document.querySelectorAll(".sw").forEach(b => { const on = b.dataset.key === fieldKey; b.classList.toggle("now", on); b.setAttribute("aria-pressed", on); });
   }
-  function swatchClick(key, e) {
-    if (BG.mode === "cycle") {
-      cySet.has(key) ? cySet.delete(key) : cySet.add(key); saveSet(); CY.bag = [];
-      if (!CY.next || !cySet.has(CY.next)) { const had = !!CY.next; planNext(); if (!had) CY.t0 = performance.now(); }
-      paintSwatches(); return;
-    }
-    switchField(key, e.clientX, e.clientY);
-  }
-  $("#cyAll").onclick = () => { FKEYS.forEach(k => cySet.add(k)); saveSet(); CY.bag = []; if (!CY.next) { planNext(); CY.t0 = performance.now(); } paintSwatches(); };
-  $("#cyNone").onclick = () => { cySet.clear(); saveSet(); CY.bag = []; CY.next = null; showNext(); paintSwatches(); };
-
-  function planNext() {
-    const pool = FKEYS.filter(k => cySet.has(k) && k !== fieldKey);
-    CY.next = null;
-    if (pool.length) {
-      if (CY.shuffle) {
-        // a shuffled bag: every selected field shows once before any repeats
-        CY.bag = CY.bag.filter(k => pool.includes(k));
-        if (!CY.bag.length) { CY.bag = pool.slice(); for (let i = CY.bag.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [CY.bag[i], CY.bag[j]] = [CY.bag[j], CY.bag[i]]; } }
-        CY.next = CY.bag.shift();
-      } else {
-        const i = FKEYS.indexOf(fieldKey);
-        for (let d = 1; d <= FKEYS.length; d++) { const k = FKEYS[(i + d) % FKEYS.length]; if (cySet.has(k) && k !== fieldKey) { CY.next = k; break; } }
-      }
-    }
-    showNext();
-  }
-  function showNext() {
-    const el = $("#cyNext"), txt = CY.next ? FIELDS[CY.next].name.toUpperCase() : (cySet.size ? "HOLDING" : "PICK TWO OR MORE");
-    if (el.getAttribute("aria-label") !== txt) decode(el, txt, { speed: 40 });
-  }
-  function cycleNow() {
-    if (!CY.next) { planNext(); if (!CY.next) return; }
-    const k = CY.next;
-    applyField(k);                                   // a clean cut: no fade, no wipe
-    log("cycle // " + FIELDS[k].name.toLowerCase());
-    decode($("#fieldName"), FIELDS[k].name.toUpperCase(), { keep: 1 });
-    CY.t0 = performance.now(); planNext();
-  }
-  const cyBar = $("#cyBar"), cyCd = $("#cyCd");
-  function cycleTick(now) {
-    if (!CY.next) { cyBar.style.width = "0"; if (CY.lastCd !== "--") cyCd.textContent = CY.lastCd = "--"; return; }
-    const span = CY.secs * 1000, prog = Math.min(1, (now - CY.t0) / span);
-    cyBar.style.width = Math.floor(prog * 28) / 28 * 100 + "%";          // fills one round pixel at a time
-    const cd = pad(Math.max(0, Math.ceil((span - (now - CY.t0)) / 1000))) + "S";
-    if (cd !== CY.lastCd) cyCd.textContent = CY.lastCd = cd;
-    if (prog >= 1) cycleNow();
-  }
-  const cySecs = $("#cySecs"), cySecsOut = $("#cySecsOut");
-  const showSecs = () => { cySecsOut.textContent = pad(CY.secs) + "S"; cySecs.style.setProperty("--p", (CY.secs - 3) / 57 * 100 + "%"); };
-  cySecs.value = CY.secs; showSecs();
-  cySecs.oninput = () => { CY.secs = +cySecs.value; store.set("cysecs", CY.secs); showSecs(); };
-  seg2("#cyOrder", [["0", "In order"], ["1", "Shuffle"]], () => CY.shuffle ? 1 : 0, k => { CY.shuffle = k === "1"; store.set("cyshuf", k); CY.bag = []; planNext(); log("cycle // " + (CY.shuffle ? "shuffle" : "in order")); });
+  const swatchClick = (key, e) => switchField(key, e.clientX, e.clientY);
 
   // ----- colour generator (the jerelevance colour generator: drift + marathon aesthetic) -----
   const GEN = { on: false, style: store.get("gstyle", "marathon") === "drift" ? "drift" : "marathon",
@@ -740,11 +646,10 @@ body.hide-ui:not(.awake){cursor:none}
     document.querySelectorAll("#side [data-show]").forEach(el => { el.hidden = !el.dataset.show.split(" ").includes(mode); });
     if (mode === "gen" && !GEN.on) genOn();
     if (mode !== "gen" && GEN.on) genOff();
-    if (mode === "cycle") { CY.t0 = performance.now(); CY.bag = []; planNext(); }
     paintSwatches();
     if (!quiet && was !== mode) {
       wipe(pick(), fromCol);
-      log("background // " + { field: "single field", cycle: "cycling " + cySet.size + " fields", gen: "generator · " + GEN.style }[mode], true);
+      log("background // " + (mode === "gen" ? "generator · " + GEN.style : "field"), true);
     }
   }
   document.querySelectorAll("#bgTabs button").forEach(b => b.onclick = () => setBg(b.dataset.bg));
@@ -1086,7 +991,6 @@ body.hide-ui:not(.awake){cursor:none}
   function frame(now) {
     const dt = Math.min(.1, (now - lastNow) / 1000); lastNow = now;
     if (GEN.on) genFrame(now, dt);
-    if (BG.mode === "cycle") cycleTick(now);
     g.clearRect(0, 0, W, H);
     const box = frameBox();
     const k = sample();
@@ -1227,7 +1131,6 @@ body.hide-ui:not(.awake){cursor:none}
     decode($("#fieldName"), FIELDS[key].name.toUpperCase(), { delay: reduced ? 0 : fast ? 150 : 420, keep: 1 });
   }
   const cycleField = d => {
-    if (BG.mode === "cycle") { cycleNow(); return; }
     if (BG.mode === "gen") setBg("field", true);
     const i = FKEYS.indexOf(fieldKey); switchField(FKEYS[(i + d + FKEYS.length) % FKEYS.length]);
   };
