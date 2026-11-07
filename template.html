@@ -855,6 +855,18 @@ html.inv body{filter:invert(1)}
       skitter: function () { if (!ok()) return; var t = AC.currentTime; for (var i = 0; i < 6; i++) nz(t + i * .05 + Math.random() * .03, .006, 'highpass', 7000, .7, .035); bump(.2); },
       wake: function () { if (!ok()) return; var t = AC.currentTime; osc(t, 'sine', 70, 140, .35, .25); nz(t, .3, 'lowpass', 600, .7, .08); bump(.5); },
       doze: function () { if (!ok()) return; osc(AC.currentTime, 'sine', 180, 70, .45, .18); bump(.3); },
+      // root toys: a held tone (morse) and a plucked note (synth)
+      beep: function (f, dur, type, g) {
+        if (!ok()) return; var t = AC.currentTime, o = AC.createOscillator(), gn = AC.createGain(); g = g || .1; dur = dur || .08;
+        o.type = type || 'sine'; o.frequency.value = f; gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(g, t + .005);
+        gn.gain.setValueAtTime(g, t + dur); gn.gain.exponentialRampToValueAtTime(.0001, t + dur + .02); o.connect(gn); gn.connect(master); o.start(t); o.stop(t + dur + .04); bump(.25);
+      },
+      note: function (f, type) {
+        if (!ok()) return; var t = AC.currentTime, o = AC.createOscillator(), fl = AC.createBiquadFilter(), gn = AC.createGain();
+        o.type = type || 'square'; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.setValueAtTime(Math.min(16000, f * 8), t); fl.frequency.exponentialRampToValueAtTime(f * 1.5, t + .4);
+        gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(.13, t + .008); gn.gain.exponentialRampToValueAtTime(.0001, t + .55);
+        o.connect(fl); fl.connect(gn); gn.connect(master); o.start(t); o.stop(t + .6); bump(.4);
+      },
       enter: function () { S.carrier(false); S.thump(); S.swell(); },
       on: function () { return on; },
       set: function (v) { on = !!v; try { localStorage.setItem('jrl-snd', on ? 'on' : 'off'); } catch (e) {} if (master) master.gain.value = on ? .5 : 0; if (!on) S.carrier(false); chip(); if (on) { unlock(); setTimeout(S.click, 40); } },
@@ -2355,7 +2367,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       tline('<span class="tb">[ ok ]</span> uid=0(root) gid=0(root) groups=0(root),4112(babel),78(tarot)'); await sleep(200);
       tline('<span class="tw">[ ok ]</span> <span class="granted">access granted</span>'); flick(); await sleep(260);
       term.skip = false;
-      ttxt("shell is yours. type 'help' to see what it'll do. 'exit' to jack out.", 'tw', { frames: 14, speed: 26 });
+      ttxt("shell is yours. type 'help' to see what it'll do, 'achievements' to see what you've found, 'exit' to jack out.", 'tw', { frames: 14, speed: 26 });
       
     }
     function chaos(on) {
@@ -2376,7 +2388,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
          ['site', 'ls · cat N · open N · go MODULE · song · play · pull · babel TEXT · cats · wall · unwall · tarot'],
          ['dynamics', 'set fx burst|flip|cut|random'],
          ['', 'set decode slow|normal|fast · set breathe on|off · chaos on|off · invert on|off · mode white|dark · mute · color lime|red|cyan|white|amber'],
-         ['fx', 'wipe'], ['danger', 'hack TARGET · sudo CMD · rm -rf / · reboot · exit']].forEach(function (g) { tline((g[0] ? '<span class="ti">' + g[0] + '</span> ' : '         ') + esc(g[1])); });
+         ['fx', 'wipe · colony · colony show · colony feed · life low|full'], ['readouts', 'top · ps · kill PID · scan · ping HOST · weather · decrypt'], ['toys', 'roll NdM · 8ball Q · colonysay TEXT · launch · rain'], ['sound', 'morse TEXT · synth'], ['games', 'snake'], ['', 'achievements · and a few that are not listed'], ['danger', 'hack TARGET · sudo CMD · rm -rf / · reboot · exit']].forEach(function (g) { tline((g[0] ? '<span class="ti">' + g[0] + '</span> ' : '         ') + esc(g[1])); });
       },
       clear: function () { term.out.innerHTML = ''; },
       history: function () { term.hist.forEach(function (h, i) { tline('<span class="tdim">' + String(i + 1).padStart(4, ' ') + '</span>  ' + esc(h)); }); },
@@ -2451,9 +2463,329 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     TC.wipe = function () { ttxt('wipe // invert sweep', 'tb'); term.el.hidden = true; setTimeout(function () { if (window.JRLwipe) JRLwipe(); }, 120); setTimeout(function () { term.el.hidden = false; term.inp.focus(); flick(); }, 2050); };
     TC.root = function () { flick(); ttxt('already root.', 'tdim'); };
     TC.colony = function (a) { if (!window.JRLcolonyUI) return terr('colony offline'); if (/feed/.test(a || '')) JRLcolonyUI.feed(); ttxt(JRLcolonyUI.status(), 'tb'); };
+    /* ---------- root toys (v3.6): games, instruments, readouts, secrets ---------- */
+    var snd = function (k, a, b) { if (window.JRLsfx && JRLsfx[k]) JRLsfx[k](a, b); };
+    var rnd = function (n) { return Math.floor(Math.random() * n); };
+    var pick = function (a) { return a[rnd(a.length)]; };
+    var tick = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };   // frame pacing that keypresses can't skip
+    function etHour() { return +new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: 'numeric', hour12: false }) % 24; }
+    function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(16).padStart(8, '0'); }
+    function seeded(s) { var h = parseInt(hash(s), 16) || 1; return function () { h ^= h << 13; h ^= h >>> 17; h ^= h << 5; return ((h >>> 0) % 1e6) / 1e6; }; }
+    function cols() { return Math.max(24, Math.min(120, Math.floor((term.out.clientWidth - 8) / 7.85))); }
+    function pre(a, b) { var i = 0; while (i < a.length && a[i] === b[i]) i++; return i; }
+    function near(k, keys) { var best = null, bd = 3; keys.forEach(function (c) { var d = lev(k, c); if (d < bd || (d === bd && best && pre(k, c) > pre(k, best))) { bd = d; best = c; } }); return best; }
+    function lev(a, b) { if (Math.abs(a.length - b.length) > 2) return 9; var p = []; for (var j = 0; j <= b.length; j++) p[j] = j;
+      for (var i = 1; i <= a.length; i++) { var q = [i]; for (var j2 = 1; j2 <= b.length; j2++) q[j2] = Math.min(p[j2] + 1, q[j2 - 1] + 1, p[j2 - 1] + (a[i - 1] === b[j2 - 1] ? 0 : 1)); p = q; } return p[b.length]; }
+
+    // interactive mode: while a game runs, every key goes to it; esc or ctrl+c ends it
+    var GAME = null;
+    window.addEventListener('keydown', function (e) {
+      if (!GAME || !term || term.el.hidden) return;
+      e.preventDefault(); e.stopPropagation();
+      if (e.key === 'Escape' || (e.key === 'c' && e.ctrlKey)) return GAME.end('quit');
+      if (!e.repeat || GAME.repeat) GAME.key(e);
+    }, true);
+    function play(g) {
+      return new Promise(function (res) {
+        var end = g.end; g.end = function (why) { if (GAME !== g) return; GAME = null; try { end(why); } catch (err) { console.error(err); } res(); };
+        GAME = g; term.inp.blur();
+      });
+    }
+
+    // typing rhythm, for the biometric scan
+    var KT = [];
+    window.addEventListener('keydown', function (e) { if (e.target && e.target.id === 'tin' && e.key.length === 1) { KT.push(performance.now()); if (KT.length > 40) KT.shift(); } }, true);
+    function cadence() { var d = []; for (var i = 1; i < KT.length; i++) { var x = KT[i] - KT[i - 1]; if (x > 30 && x < 1200) d.push(x); } if (d.length < 4) return 0; d.sort(function (a, b) { return a - b; }); return d[d.length >> 1]; }
+
+    // what's running on this page, for real where it can be
+    function procs() {
+      var col = window.JRLcolony, low = R.dataset.life === 'low', pop = col ? col.pop() : 0, nt = col && col.night(), j = function (v) { return Math.max(0, v * (.8 + Math.random() * .4)); };
+      return [
+        ['1', 'root', 0, .1, 'S', 'init'],
+        ['42', 'jere', j(pop / 55 * (low ? .5 : 1)), pop / 100, nt ? 'D' : 'R', 'colony --day=' + (col ? col.day() : 0) + ' --pop=' + pop],
+        ['77', 'jere', current === 'color' ? j(low ? 9 : 24) : 0, 3.1, current === 'color' ? 'R' : 'S', 'colorgen --fps=' + (low ? 5 : 30)],
+        ['108', 'jere', current === 'culture' ? j(low ? 6 : 15) : 0, 1.4, current === 'culture' ? 'R' : 'S', 'culture --rule=B3/S23'],
+        ['300', 'jere', j(low ? 1 : 3), .4, 'R', 'bursts --frames=3 --hold'],
+        ['1420', 'root', j(.2), .1, 'S', 'carrier --mhz=1420.405'],
+        ['4112', 'babel', j(.3), 9.9, 'S', 'librarian --hexagons=inf'],
+        ['78', 'tarot', 0, .2, 'S', 'tarot-daemon'],
+        ['999', 'root', j(1.2), .3, 'R', 'jsh -i']
+      ].sort(function (a, b) { return b[2] - a[2]; });
+    }
+    function ptable(P) {
+      return '<span style="background:var(--tc);color:var(--k)">  PID USER    %CPU  %MEM S  COMMAND' + ' '.repeat(22) + '</span>\n' + P.map(function (p) {
+        return p[0].padStart(5) + ' ' + p[1].padEnd(7) + p[2].toFixed(1).padStart(5) + ' ' + p[3].toFixed(1).padStart(5) + ' ' + p[4] + '  ' + (p[4] === 'R' ? '<span class="tb">' + esc(p[5]) + '</span>' : esc(p[5]));
+      }).join('\n');
+    }
+
+    // the colony, drawn in text
+    function orgArt(w, h) {
+      var col = window.JRLcolony, c = col && col.cells(); w = w || 10; h = h || 4;
+      if (!c) return ['  ▗▟█▙▖', ' ▟█▛▜█▙', '  ▝▀▀▘'];
+      var W = col.W, H = col.H, best = -1, bx = 0, by = 0;
+      for (var y = 0; y <= H - h; y++) for (var x = 0; x <= W - w; x += 2) { var n = 0; for (var b = 0; b < h; b++) for (var a = 0; a < w; a++) n += c[(y + b) * W + x + a] ? 1 : 0; if (n > best) { best = n; bx = x; by = y; } }
+      var L = []; for (var b2 = 0; b2 < h; b2++) { var s = '    '; for (var a2 = 0; a2 < w; a2++) s += c[(by + b2) * W + bx + a2] ? '█' : ' '; L.push(s); } return L;
+    }
+    function moon() {
+      var syn = 29.530588853, age = (((Date.now() - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % syn + syn) % syn, lit = Math.round((1 - Math.cos(2 * Math.PI * age / syn)) / 2 * 100);
+      var n = ['new', 'waxing crescent', 'first quarter', 'waxing gibbous', 'full', 'waning gibbous', 'last quarter', 'waning crescent', 'new'][Math.floor((age / syn) * 8 + .5)];
+      return n + ' · ' + lit + '% lit';
+    }
+
+    var INTERCEPTS = ['the reports were never the point. the shelves were.', 'if you can read this, the colony outlived the people who built it.', 'the carrier is not a signal. it is a heartbeat.',
+      'we built the terminal of the future and it asked us for a name.', 'do not feed it after midnight. it remembers who did.', 'every color in the generator was somebody\'s favorite once.',
+      'the archive is not nostalgia. it is a backup of who you were.', 'the white register suits whoever runs this place.'];
+    var BALL = ['affirmative.', 'negative.', 'signal unclear. ask again after the next burst.', 'the colony says no.', 'outlook: dithered.', 'yes, but in the other register.',
+      'the library already has a page where that happened.', 'confirmed by 3 of 5 instruments.', 'the tarot card disagrees.', 'cannot compute while the song is playing.', 'yes. obviously.', 'don\'t count on it.'];
+    var DOT = {
+      '.plan': ['make the terminal of the future.', 'let it be alive.', 'don\'t melt anyone\'s laptop.'],
+      '.secrets': ['help doesn\'t list everything.', 'achievements keeps count.', 'try being nice to it.'],
+      '.birthday': ['some dates open doors here.', 'you\'ll have to guess which one.'],
+      '.colony': function () { var c = window.JRLcolony; return [window.JRLcolonyUI ? JRLcolonyUI.status() : 'colony offline', c ? 'genome ' + c.genome(0) + ' ' + c.genome(1) + ' ' + c.genome(2) + ' …' : '']; }
+    };
+
+    // achievements: commands you've found, kept per browser
+    var ACH = ['neofetch', 'fortune', 'skull', 'hack', 'rm', 'top', 'scan', 'ping', 'morse', 'synth', 'snake', 'rain', 'weather', 'roll', '8ball', 'ily', 'launch', 'decrypt',
+      'colonysay', 'kill', 'wipe', 'chaos', 'babel', 'xyzzy', 'make', 'birthday', 'dotfiles', 'hello'];
+    var ALIAS = { sl: 'launch', cowsay: 'colonysay', '<3': 'ily', love: 'ily', hi: 'hello', hey: 'hello', ps: 'top', htop: 'top', matrix: 'rain', forecast: 'weather' };
+    function found() { try { return JSON.parse(store.get('jrl-found') || '[]'); } catch (e) { return []; } }
+    window.JRLach = function (k) {
+      k = ALIAS[k] || k; if (ACH.indexOf(k) < 0 || !term) return; var f = found(); if (f.indexOf(k) > -1) return;
+      f.push(k); store.set('jrl-found', JSON.stringify(f));
+      tline('<span class="tdim">[ + ] discovered: ' + esc(k) + '  (' + f.length + '/' + ACH.length + ')</span>');
+      if (f.length === ACH.length) { snd('chirp'); tline('<span class="granted">every command found. you are part of the machine now.</span>'); }
+    };
+
+    TC.top = TC.htop = function () {
+      var box = tline('', 'tart'), t0 = Math.round(performance.now() / 1000); box.style.color = '#d7d7d2';
+      function draw() {
+        var P = procs(), mem = performance.memory ? (performance.memory.usedJSHeapSize / 1048576).toFixed(1) + ' MiB' : 'sealed', col = window.JRLcolony;
+        box.innerHTML = '<span class="tw">top - ' + esc($('#clock').textContent) + ' up ' + Math.round(performance.now() / 1000) + 's · life support ' + (R.dataset.life || 'full').toUpperCase() + (col ? ' · colony d' + String(col.day()).padStart(3, '0') : '') + '</span>\n' +
+          'tasks: ' + P.length + ' total, ' + P.filter(function (p) { return p[4] === 'R'; }).length + ' running · heap ' + mem + '\n\n' + ptable(P);
+        term.out.scrollTop = term.out.scrollHeight;
+      }
+      draw(); tline('<span class="tdim">q or esc to exit</span>');
+      var iv = setInterval(function () { if (term.el.hidden) return g.end(); draw(); snd('tick', .02); }, 500), to = setTimeout(function () { g.end(); }, 30000);
+      var g = { key: function (e) { if (e.key === 'q') g.end(); }, end: function () { clearInterval(iv); clearTimeout(to); tline('<span class="tdim">top: exited after ' + (Math.round(performance.now() / 1000) - t0) + 's</span>'); } };
+      return play(g);
+    };
+    TC.ps = function () { tline(ptable(procs()), 'tart').style.color = '#d7d7d2'; };
+    TC.kill = function (a) {
+      a = (a || '').replace(/^-\S+\s*/, '').trim(); if (!a) return terr('usage: kill PID|NAME');
+      if (/colony|^42$/.test(a)) return terr('kill: colony: operation not permitted. it is not a process. it is a tenant.');
+      if (a === '1' || a === 'init') return terr('kill: init refuses. someone has to keep the lights on.');
+      if (/carrier|^1420$/.test(a)) return ttxt('carrier silenced for 0.2s. it came back. it always comes back.', 'tdim');
+      if (/librarian|babel|^4112$/.test(a)) return ttxt('the librarian cannot be killed. only re-shelved.', 'tdim');
+      if (/jsh|^999$/.test(a)) { ttxt('jsh: terminated', 'tr'); return TC.exit(); }
+      ttxt('[' + a + '] killed', 'tdim');
+    };
+    TC.scan = async function () {
+      term.skip = false; ttxt('biometric scan // hold still', 'tw'); snd('swell');
+      var b = tline(''); await pbar(b, 1500, 'scanning');
+      var cad = cadence(), bpm = cad ? Math.round(Math.max(48, Math.min(160, 60000 / cad / 4))) : 0, h = etHour(), bat = null;
+      try { if (navigator.getBattery) bat = await Promise.race([navigator.getBattery(), tick(400)]); } catch (e) {}
+      var L = [['subject', 'visitor // currently root'], ['signature', '0x' + hash(navigator.userAgent + screen.width + 'x' + screen.height + (navigator.language || ''))],
+        ['pulse', bpm ? '~' + bpm + ' bpm  (read from your typing rhythm)' : 'unreadable. type more, then scan again.'],
+        ['optics', innerWidth + '×' + innerHeight + ' @' + (Math.round((devicePixelRatio || 1) * 100) / 100) + 'x'], ['cores', String(navigator.hardwareConcurrency || '?')],
+        ['power', bat && bat.level != null ? Math.round(bat.level * 100) + '%' + (bat.charging ? ' · charging' : ' · on battery') : 'sealed'],
+        ['life support', (R.dataset.life || 'full').toUpperCase()], ['circadian', h < 5 ? 'awake past midnight. noted.' : h < 9 ? 'early riser.' : h < 18 ? 'daylight shift.' : 'night shift.'],
+        ['colony bond', window.JRLcolonyUI ? JRLcolonyUI.status() : 'none']];
+      for (var i = 0; i < L.length; i++) { tline('<span class="tdim">' + L[i][0].padEnd(13) + '</span>' + esc(L[i][1])); snd('tick', .04); await sleep(90); }
+      await sleep(260); flick(); snd('chirp');
+      tline('<span class="tw">' + 'verdict'.padEnd(13) + '</span><span class="granted">' + pick(['human. probably.', 'human. mostly.', 'organic. cleared.', 'human (confidence 97.2%)']) + '</span>');
+    };
+    TC.ping = async function (a) {
+      term.skip = false; var h = (a || 'jerelevance.github.io').toLowerCase().replace(/^-\S+\s*/, '').trim() || 'jerelevance.github.io';
+      if (h === 'mars') { ttxt('PING mars: 4–24 light-minutes each way.', 'tb'); await sleep(1400); return terr('ping: mars: request timed out. try again in about 20 minutes.'); }
+      if (h === 'sun') return terr('ping: sun: too bright. no reply.');
+      var base = { moon: 2560, luna: 2560, colony: 2.6, localhost: .04, '127.0.0.1': .04, jere: 0.7 }[h], ip = h === 'colony' ? '10.0.0.42' : /^(localhost|127\.0\.0\.1)$/.test(h) ? '127.0.0.1' : (rnd(222) + 1) + '.' + rnd(256) + '.' + rnd(256) + '.' + rnd(256);
+      ttxt('PING ' + h + ' (' + ip + '): 56 data bytes', 'tb'); var T = [];
+      for (var i = 0; i < 4; i++) {
+        var ms = base != null ? base * (1 + (Math.random() - .5) * .02) : 9 + Math.random() * 38; T.push(ms);
+        await sleep(ms > 1000 ? ms : 420); snd(h === 'colony' ? 'skitter' : 'ping', .25 + i * .12);
+        tline('64 bytes from ' + ip + ': icmp_seq=' + i + ' ttl=' + (h === 'colony' ? 1 : 54) + ' time=' + ms.toFixed(ms < 10 ? 3 : 1) + ' ms' + (h === 'colony' ? '  <span class="tdim">' + pick(['(it twitched)', '(it heard you)', '(a cell blinked)', '(warm)']) + '</span>' : h === 'moon' ? '  <span class="tdim">(light is slow)</span>' : ''));
+      }
+      var mn = Math.min.apply(null, T), mx = Math.max.apply(null, T), av = T.reduce(function (s, x) { return s + x; }, 0) / T.length;
+      tline('<span class="tdim">--- ' + esc(h) + ' ping statistics ---</span>'); tline('4 packets transmitted, 4 received, 0% packet loss');
+      tline('round-trip min/avg/max = ' + [mn, av, mx].map(function (x) { return x.toFixed(3); }).join('/') + ' ms');
+    };
+    TC.morse = async function (a) {
+      if (!a) return terr('usage: morse TEXT');
+      term.skip = false;
+      var M = { a: '.-', b: '-...', c: '-.-.', d: '-..', e: '.', f: '..-.', g: '--.', h: '....', i: '..', j: '.---', k: '-.-', l: '.-..', m: '--', n: '-.', o: '---', p: '.--.', q: '--.-', r: '.-.', s: '...', t: '-',
+        u: '..-', v: '...-', w: '.--', x: '-..-', y: '-.--', z: '--..', 0: '-----', 1: '.----', 2: '..---', 3: '...--', 4: '....-', 5: '.....', 6: '-....', 7: '--...', 8: '---..', 9: '----.', '.': '.-.-.-', '?': '..--..', '!': '-.-.--', ',': '--..--' };
+      var u = 65, line = tline('', 'tw'), s = a.toLowerCase().slice(0, 48);
+      for (var i = 0; i < s.length; i++) {
+        if (s[i] === ' ') { line.textContent += '/ '; await sleep(u * 4); continue; }
+        var m = M[s[i]]; if (!m) continue;
+        for (var j = 0; j < m.length; j++) { var d = m[j] === '.' ? u : u * 3; line.textContent += m[j] === '.' ? '·' : '—'; if (!term.skip) snd('beep', 640, d / 1000, 'sine', .11); await sleep(d + u); }
+        line.textContent += ' '; await sleep(u * 2); term.out.scrollTop = term.out.scrollHeight;
+      }
+      tline('<span class="tdim">transmitted on 1420.405 MHz. somebody out there is decoding it.</span>');
+    };
+    TC.synth = function () {
+      var LO = 'asdfghjkl;', HI = 'qwertyuiop', PENT = [0, 3, 5, 7, 10], WAVES = ['square', 'sawtooth', 'triangle', 'sine'], wv = 0, notes = 0, ht = 0, box = tline('', 'tart');
+      var freq = function (i) { return 220 * Math.pow(2, (Math.floor(i / 5) * 12 + PENT[i % 5]) / 12); };
+      function key(k, lit) { return '<span data-k="' + esc(k) + '" style="cursor:pointer' + (lit ? ';background:var(--tc);color:var(--k)' : '') + '"> ' + esc(k.toUpperCase()) + ' </span>'; }
+      function draw(hit) {
+        box.innerHTML = '<span class="tb">synth // minor pentatonic // 1420 tuning</span>\n\n ' + HI.split('').map(function (k) { return key(k, k === hit); }).join('') + '   <span class="tdim">+1 octave</span>\n ' +
+          LO.split('').map(function (k) { return key(k, k === hit); }).join('') + '\n\n<span class="tdim">wave </span>' + WAVES[wv] + '<span class="tdim">  ·  1–4 change wave  ·  esc exits  ·  notes </span>' + notes;
+      }
+      function hit(k) {
+        var i = LO.indexOf(k), j = HI.indexOf(k), f = i > -1 ? freq(i) : j > -1 ? freq(j + 5) : 0;
+        if (!f) { var n = '1234'.indexOf(k); if (n > -1) { wv = n; draw(); snd('tick', .05); } return; }
+        snd('note', f, WAVES[wv]); notes++; draw(k); clearTimeout(ht); ht = setTimeout(function () { if (GAME === g) draw(); }, 140);
+        if (notes % 24 === 0 && window.JRLcolonyUI) JRLcolonyUI.feed();
+      }
+      box.addEventListener('pointerdown', function (e) { var t = e.target.closest('[data-k]'); if (t && GAME === g) { e.preventDefault(); hit(t.dataset.k); } });
+      var g = { key: function (e) { hit(e.key.toLowerCase()); }, end: function () { tline('synth off · ' + notes + ' notes' + (notes >= 24 ? '<span class="tdim"> · the colony was dancing</span>' : '')); } };
+      draw(); if (window.JRLsfx && !JRLsfx.on()) tline('<span class="tdim">sound is muted. esc, then type mute.</span>');
+      return play(g);
+    };
+    TC.snake = function () {
+      ttxt('snake // eat the pink cells. the colony gets whatever you leave.', 'tw');
+      var W = 28, H = 14, Z = 16, cv = document.createElement('canvas'), wrap = tline(''), info = tline('', 'tdim'), x = cv.getContext('2d');
+      cv.width = W * Z; cv.height = H * Z; cv.style.cssText = 'display:block;width:' + W * Z + 'px;max-width:100%;border:1px solid #2a2a2e;touch-action:none;margin:6px 0'; wrap.appendChild(cv);
+      var tc = getComputedStyle(term.el).getPropertyValue('--tc').trim() || '#c2ff16';
+      var sn = [[6, 7], [5, 7], [4, 7]], dir = [1, 0], nd = [1, 0], food, score = 0, best = +(store.get('jrl-snake') || 0), iv;
+      var K = { arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] };
+      function place() { do { food = [rnd(W), rnd(H)]; } while (sn.some(function (p) { return p[0] === food[0] && p[1] === food[1]; })); }
+      function draw() {
+        x.fillStyle = '#0a0a0b'; x.fillRect(0, 0, cv.width, cv.height); x.fillStyle = '#1f1f24';
+        for (var i = 0; i < W; i++) for (var j = 0; j < H; j++) x.fillRect(i * Z + Z / 2 - 1, j * Z + Z / 2 - 1, 2, 2);
+        x.fillStyle = '#e0216f'; x.fillRect(food[0] * Z + 3, food[1] * Z + 3, Z - 6, Z - 6);
+        sn.forEach(function (p, i) { x.fillStyle = i ? tc : '#f2f2ee'; x.fillRect(p[0] * Z + 1, p[1] * Z + 1, Z - 2, Z - 2); });
+        info.textContent = 'score ' + String(score).padStart(3, '0') + '   best ' + String(Math.max(best, score)).padStart(3, '0') + '   arrows / wasd / swipe · esc quits';
+      }
+      function step() {
+        if (term.el.hidden) return g.end('closed');
+        dir = nd; var h = [sn[0][0] + dir[0], sn[0][1] + dir[1]];
+        if (h[0] < 0 || h[1] < 0 || h[0] >= W || h[1] >= H || sn.slice(0, -1).some(function (p) { return p[0] === h[0] && p[1] === h[1]; })) return g.end('dead');
+        sn.unshift(h);
+        if (h[0] === food[0] && h[1] === food[1]) { score++; snd('feed'); place(); clearInterval(iv); iv = setInterval(step, Math.max(50, 99 - score * 2)); } else sn.pop();
+        draw();
+      }
+      function turn(d) { if (d && !(d[0] === -dir[0] && d[1] === -dir[1])) nd = d; }
+      var tx = 0, ty = 0;
+      cv.addEventListener('touchstart', function (e) { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+      cv.addEventListener('touchend', function (e) { var dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; if (Math.abs(dx) + Math.abs(dy) < 14) return; turn(Math.abs(dx) > Math.abs(dy) ? [dx > 0 ? 1 : -1, 0] : [0, dy > 0 ? 1 : -1]); });
+      var g = { repeat: true, key: function (e) { turn(K[e.key.toLowerCase()]); }, end: function (why) {
+        clearInterval(iv); var nb = score > best; if (nb) store.set('jrl-snake', String(score));
+        if (why === 'dead') { snd('err'); flick(); }
+        tline((why === 'dead' ? '<span class="tr">[ x ]</span> ' : '') + 'score ' + score + (nb ? '  <span class="granted">new best</span>' : ''));
+        if (score > 0 && window.JRLcolonyUI) { JRLcolonyUI.feed(); ttxt('the colony ate your leftovers.', 'tdim'); }
+      } };
+      place(); draw(); term.out.scrollTop = term.out.scrollHeight; iv = setInterval(step, 99);
+      return play(g);
+    };
+    TC.rain = TC.matrix = function () {
+      var box = tline('', 'tart'), C2 = cols(), RN = 14, ch = GLS + '0123456789ABCDEF', drops = [], grid = [], t = 0, low = R.dataset.life === 'low';
+      for (var i = 0; i < C2; i++) drops.push(-rnd(RN * 2));
+      for (var r = 0; r < RN; r++) grid.push(new Array(C2).fill(' '));
+      function frame() {
+        if (term.el.hidden) return g.end();
+        for (var i = 0; i < C2; i++) {
+          var y = drops[i]; if (y >= 0 && y < RN) grid[y][i] = ch[rnd(ch.length)];
+          var tl = y - 7; if (tl >= 0 && tl < RN) grid[tl][i] = ' ';
+          drops[i]++; if (tl >= RN && Math.random() < .3) drops[i] = -rnd(10);
+        }
+        for (var k = 0; k < 12; k++) { var ry = rnd(RN), rx = rnd(C2); if (grid[ry][rx] !== ' ') grid[ry][rx] = ch[rnd(ch.length)]; }
+        box.innerHTML = grid.map(function (row, y) { return row.map(function (c, x) { return drops[x] - 1 === y ? '<span class="tb">' + esc(c) + '</span>' : esc(c); }).join(''); }).join('\n');
+        if (++t % 3 === 0) snd('tick', .015);
+        if (t > (low ? 45 : 90)) g.end();
+      }
+      var iv = setInterval(frame, low ? 132 : 66), g = { key: function () { g.end(); }, end: function () { clearInterval(iv); } };
+      return play(g);
+    };
+    TC.weather = TC.forecast = function () {
+      var day = dayStr(), r = seeded(day), sec = (Math.floor(r() * 0xffff)).toString(16).toUpperCase().padStart(4, '0'), bar = function (v) { var n = Math.round(v * 10); return '█'.repeat(n) + '░'.repeat(10 - n); };
+      var flux = r(), col = window.JRLcolony;
+      var L = [['sky', ''],
+        ['hydrogen', '1420.405 MHz · ' + (r() < .8 ? 'steady' : 'drifting')], ['ion flux', bar(flux) + '  ' + (flux < .33 ? 'calm' : flux < .66 ? 'moderate' : 'storm warning')],
+        ['radiation', (r() * .6 + .05).toFixed(2) + ' mSv/h' + (flux > .66 ? ' · wear the coat' : '')], ['wind', Math.round(r() * 30 + 2) + ' m/s from the carrier'],
+        ['static', Math.round(r() * 60 + 5) + '% chance'], ['visibility', (r() * 2 + .1).toFixed(1) + ' ly'], ['moon', moon() + '  (real)'],
+        ['advisory', col ? (col.night() ? 'the colony is dormant. keep your voice down.' : col.pop() > 260 ? 'the colony is crowded. expect molts.' : col.pop() < 60 ? 'the colony is thin. feed it.' : 'the colony is restless today.') : 'no colony detected.']];
+      L[0][1] = ['overcast with static', 'clear. too clear.', 'dithered haze', 'scattered packets', 'low signal fog'][Math.floor(r() * 5)];
+      ttxt('surface forecast // ' + day + ' // sector ' + sec, 'tw');
+      L.forEach(function (l) { tline('<span class="tdim">' + l[0].padEnd(12) + '</span>' + esc(l[1])); });
+    };
+    TC.roll = async function (a) {
+      var m = /^(\d*)d(\d+)$/i.exec((a || 'd20').trim()); if (!m) return terr('usage: roll [NdM]   e.g. roll 2d6');
+      var n = Math.min(+m[1] || 1, 12), s = Math.min(+m[2], 1000); if (s < 2) return terr('roll: dice need at least 2 sides');
+      var throwN = function () { var r = []; for (var i = 0; i < n; i++) r.push(rnd(s) + 1); return r; }, d = tline(''); snd('roll', 10);
+      for (var f = 0; f < 10; f++) { d.textContent = 'rolling ' + n + 'd' + s + '   ' + throwN().join(' '); await tick(40 + f * 14); }
+      var r = throwN(), tot = r.reduce(function (x, y) { return x + y; }, 0);
+      d.innerHTML = 'rolled ' + n + 'd' + s + '   <span class="tw">' + r.join(' ') + '</span>' + (n > 1 ? '   = <span class="tb">' + tot + '</span>' : ''); snd('click');
+      if (n === 1 && s === 20 && r[0] === 20) { flick(); snd('chirp'); tline('<span class="granted">NAT 20</span> critical. the terminal respects you now.'); }
+      if (n === 1 && s === 20 && r[0] === 1) terr('nat 1. somewhere, the colony laughed.');
+    };
+    TC['8ball'] = function (a) { if (!a) return terr('usage: 8ball QUESTION'); snd('shutter'); ttxt(pick(BALL), 'tw', { frames: 16, speed: 30 }); };
+    TC.decrypt = async function () {
+      term.skip = false; ttxt('intercept // carrier 1420.405 MHz // packet 0x' + rnd(65536).toString(16).toUpperCase().padStart(4, '0'), 'tdim');
+      for (var i = 0; i < 4; i++) { ttxt(hexrow(), 'tdim', { frames: 3, speed: 20 }); await sleep(60); }
+      var b = tline(''); await pbar(b, 900, 'brute-forcing');
+      ttxt('"' + pick(INTERCEPTS) + '"', 'tb', { frames: 26, speed: 34 });
+    };
+    TC.colonysay = function (a) {
+      var t = (a || pick(FORT)).slice(0, 160), lines = [''];
+      t.split(/\s+/).forEach(function (w) { var cur = lines[lines.length - 1]; if ((cur + ' ' + w).trim().length > 38) lines.push(w); else lines[lines.length - 1] = (cur + ' ' + w).trim(); });
+      var m = Math.max.apply(null, lines.map(function (l) { return l.length; }));
+      return art(['┌' + '─'.repeat(m + 2) + '┐'].concat(lines.map(function (l) { return '│ ' + l.padEnd(m) + ' │'; }), ['└──┬' + '─'.repeat(m - 1) + '┘', '   │']).concat(orgArt()));
+    };
+    TC.cowsay = function (a) { ttxt('no cows on this server. the colony will say it.', 'tdim'); return TC.colonysay(a); };
+    TC.launch = async function () {
+      var c = cols(), L = [tline('', 'tart'), tline('', 'tart'), tline('', 'tart')], EX = ['░▒▓', '▒▓█', '░░▒', '▒▒▓'];
+      snd('swell');
+      for (var x = c; x > -34; x -= 2) {
+        var e = pick(EX), SH = ['      ▄▟▀▀▀▀▀▙▄▄       ', ' ◀■■■█ JRL//06 █■■≡≡' + e + '·   ', '      ▀▜▄▄▄▄▄▛▀▀       '];
+        for (var i = 0; i < 3; i++) L[i].textContent = x >= 0 ? ' '.repeat(x) + SH[i] : SH[i].slice(-x);
+        if (x % 8 === 0) snd('crackle'); await tick(33);
+      }
+      L.forEach(function (l) { l.remove(); }); snd('thump', true);
+      ttxt('dropship away. no passengers. eta: unknown.', 'tdim');
+    };
+    TC.sl = function () { ttxt('sl: you meant ls. launching anyway.', 'tdim'); return TC.launch(); };
+    TC.ily = TC.love = TC['<3'] = async function () {
+      term.skip = false;
+      var HRT = ['  ██   ██  ', ' ████ ████ ', ' █████████ ', '  ███████  ', '   █████   ', '    ███    ', '     █     '];
+      for (var i = 0; i < HRT.length; i++) { var d = tline('', 'tart'); d.style.color = 'var(--pink)'; d.textContent = '    ' + HRT[i]; snd('tick', .05); await sleep(70); }
+      snd('feed'); if (window.JRLcolonyUI) JRLcolonyUI.feed();
+      ttxt('ily2. the colony felt that.', 'tw', { frames: 14, speed: 28 });
+    };
+    TC.hello = TC.hi = TC.hey = function () {
+      var h = etHour();
+      ttxt(h < 5 ? 'still up? the colony is asleep. keep your voice down.' : h < 12 ? 'good morning. coffee is not in this shell.' : h < 18 ? 'good afternoon, root.' : 'good evening. the carrier is clearest at night.', 'tw');
+    };
+    TC.xyzzy = function () { ttxt('nothing happens.', 'tdim'); };
+    TC.make = function (a) {
+      if (/sandwich/.test(a || '')) { ttxt('okay. (you\'re root. it had to.)', 'tw'); return art(['   .-----------.', '  (=============)', '   |~~~~~~~~~~~|', '   (___________)']); }
+      terr('make: *** no rule to make target \'' + (a || '') + '\'. stop.');
+    };
+    TC.life = function (a) { if (!window.JRLlife) return terr('life support offline'); var v = a === 'low' || a === 'full' ? a : (JRLlife() === 'low' ? 'full' : 'low'); JRLlife(v); ttxt('life support // ' + v, 'tb'); };
+    TC.achievements = TC.ach = function () {
+      var f = found(); tline('<span class="tw">' + f.length + '/' + ACH.length + ' discovered</span>');
+      var s = ACH.map(function (k) { return f.indexOf(k) > -1 ? k : '?'.repeat(k.length); });
+      for (var i = 0; i < s.length; i += 6) tline(s.slice(i, i + 6).map(function (x) { return x.padEnd(11); }).join(' '), 'tdim');
+      tline(f.length === ACH.length ? '<span class="granted">all found. you are part of the machine now.</span>' : '<span class="tdim">hint: ls -a</span>');
+    };
+    var colony0 = TC.colony;
+    TC.colony = function (a) {
+      if (!/show|look|see|draw/.test(a || '')) return colony0(a);
+      var c = window.JRLcolony; if (!c) return terr('colony offline'); var cells = c.cells(), L = [];
+      for (var y = 0; y < c.H; y++) { var s = ''; for (var x = 0; x < c.W; x++) s += cells[y * c.W + x] ? '█' : '·'; L.push(s); }
+      var d = tline('', 'tart'); d.textContent = L.join('\n'); d.style.color = 'var(--pink)'; ttxt(JRLcolonyUI.status(), 'tb');
+    };
+    var ls0 = TC.ls;
+    TC.ls = function (a) { if (/-\w*a/.test(a || '')) { tline('<span class="tdim">drwx------  root  .</span>'); Object.keys(DOT).forEach(function (k) { tline('<span class="tdim">-r--------  root</span>  <span class="tw">' + k + '</span>'); }); } return ls0(a); };
+    var cat0 = TC.cat;
+    TC.cat = function (a) {
+      a = (a || '').trim(); if (a[0] !== '.') return cat0(a);
+      var d = DOT[a]; if (!d) return terr('cat: ' + a + ': no such file'); if (window.JRLach) JRLach('dotfiles');
+      (typeof d === 'function' ? d() : d).forEach(function (l) { if (l) ttxt(l, 'tb'); });
+    };
     TC.logout = TC.quit = TC.exit; TC.cls = TC.clear; TC.dir = TC.ls; TC.ll = TC.ls; TC.man = TC.help; TC['?'] = TC.help;
     async function bday() {
-      term.busy = true;
+      term.busy = true; if (window.JRLach) JRLach('birthday');
       var CAKE = ["      *  *  *  *", "      ╻  ╻  ╻  ╻", "      ┃  ┃  ┃  ┃", "   ┏━━┻━━┻━━┻━━┻━━┓", "   ┃ 11 . 01 . 98 ┃", " ┏━┻━━━━━━━━━━━━━━┻━┓", " ┃ ~ ~ ~ ~ ~ ~ ~ ~ ~┃", " ┗━━━━━━━━━━━━━━━━━━┛"];
       ttxt('[ ok ] date match: 1998-11-01', 'tb'); await sleep(250);
       ttxt('[ ok ] loading /home/jere/.birthday ...', 'tdim'); await sleep(350);
@@ -2464,14 +2796,15 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       log('tty // happy birthday', true);
     }
     function tfree() {
-      term.busy = false; if (!term.el.hidden) term.inp.focus();
-      var n = term.q.shift(); if (n) { tline('<span class="tw">root@jerelevance:~#</span> ' + esc(n)); term.hist.push(n); term.hi = term.hist.length; trun(n); }
+      term.busy = false; term.skip = false; if (!term.el.hidden) term.inp.focus();
+      var n = term.q.shift(); if (n) { tline('<span class="tw">root@jerelevance:~#</span> ' + esc(n)); term.hist.push(n); term.hi = term.hist.length; trun(n); if (!term.busy && term.q.length) tfree(); }
     }
     function trun(v) {
       if (!v) return; var parts = v.split(/\s+/), k = parts[0].toLowerCase(), arg = parts.slice(1).join(' ');
       if (/^(11[\/\-. ]?0?1[\/\-. ]?(19)?98|1998[\/\-. ]?11[\/\-. ]?0?1)$/.test(v.replace(/\s+/g, ''))) { bday().then(tfree, tfree); return; }
       if (/^\d+$/.test(k)) return TC.cat(k);
-      if (!TC[k]) return terr('jsh: ' + k + ': command not found');
+      if (!TC[k]) { var dm = near(k, Object.keys(TC)); return terr('jsh: ' + k + ': command not found' + (dm ? '. did you mean ' + dm + '?' : '')); }
+      if (window.JRLach) JRLach(k);
       var r; try { r = TC[k](arg); } catch (err) { console.error(err); return terr('jsh: ' + k + ': crashed. try again.'); }
       if (r && r.then) { term.busy = true; r.then(tfree, tfree); }
     }
