@@ -431,8 +431,10 @@ html.inv body{filter:invert(1)}
 .tprompt{display:flex;gap:10px;padding:10px 18px 14px;border-top:1px solid #2a2a2e}
 .tprompt label{color:var(--tc);font-weight:700;white-space:nowrap}
 #tin{flex:1;min-width:0;background:transparent;border:0;outline:0;font:inherit;color:var(--w);caret-color:var(--tc)}
-#term.flick{animation:flick .2s steps(3,end)}
-@keyframes flick{0%{filter:invert(1)}33%{filter:none;transform:translateX(6px)}66%{filter:invert(1);transform:none}100%{filter:none}}
+#term::before,#wipe{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:0;mix-blend-mode:difference;background:linear-gradient(100deg,transparent 0%,#fff 30%,#fff 70%,transparent 100%) 100% 0/320% 100% no-repeat}
+#wipe{position:fixed;z-index:990}
+#term.flick::before,#wipe.go{animation:tsweep 1.8s ease-in-out}
+@keyframes tsweep{0%{opacity:0;background-position:100% 0}25%{opacity:1}75%{opacity:1}100%{opacity:0;background-position:0 0}}
 
 @media (max-width:1300px){.babel-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:1100px){
@@ -766,10 +768,11 @@ html.inv body{filter:invert(1)}
       shutter: function () { if (!ok()) return; var t = AC.currentTime; nz(t, .02, 'lowpass', 3000, .7, .25); nz(t + .045, .025, 'lowpass', 2200, .7, .2); bump(.4); },
       chirp: function () { if (!ok()) return; var t = AC.currentTime; [988, 1319, 1976, 1319].forEach(function (f, i) { osc(t + i * .06, 'square', f, f, .05, .05); }); bump(.4); },
       carrier: function (v) {
+        // faint boot tone; it always switches itself off after 2s so it can never hang
         if (!AC) return;
-        if (v && ok() && !carrier) { var g = AC.createGain(); g.gain.value = .0001; g.gain.exponentialRampToValueAtTime(.01, AC.currentTime + .4); g._o = [];
-          [1180, 2350].forEach(function (f) { var o = AC.createOscillator(); o.frequency.value = f; o.connect(g); o.start(); g._o.push(o); }); g.connect(master); carrier = g; }
-        if (!v && carrier) { var c = carrier; carrier = null; c.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + .3); setTimeout(function () { c._o.forEach(function (o) { try { o.stop(); } catch (e) {} }); c.disconnect(); }, 400); }
+        if (v && ok() && !carrier) { var t = AC.currentTime, g = AC.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.008, t + .4); g.gain.setValueAtTime(.008, t + 1.6); g.gain.exponentialRampToValueAtTime(.0001, t + 2); g.connect(master);
+          [1180, 2350].forEach(function (f) { var o = AC.createOscillator(); o.frequency.value = f; o.connect(g); o.start(t); o.stop(t + 2.05); }); carrier = g; setTimeout(function () { if (carrier === g) carrier = null; }, 2100); }
+        if (!v && carrier) { var c = carrier, n = AC.currentTime; carrier = null; c.gain.cancelScheduledValues(n); c.gain.setValueAtTime(c.gain.value, n); c.gain.linearRampToValueAtTime(0, n + .05); setTimeout(function () { try { c.disconnect(); } catch (e) {} }, 120); }
       },
       enter: function () { S.carrier(false); S.thump(); S.swell(); },
       on: function () { return on; },
@@ -880,6 +883,12 @@ html.inv body{filter:invert(1)}
         k++; setTimeout(step, 50);
       })();
       S.crackle();
+    };
+
+    /* ================= wipe: the old site's invert sweep, a white band in difference blend crossing the whole page ================= */
+    window.JRLwipe = function () {
+      var w = document.getElementById('wipe'); if (!w) { w = document.createElement('div'); w.id = 'wipe'; w.setAttribute('aria-hidden', 'true'); document.body.appendChild(w); }
+      w.classList.remove('go'); void w.offsetWidth; w.classList.add('go'); S.swell();
     };
 
     /* ================= error band: ERROR_ERROR_ across the command line ================= */
@@ -1959,7 +1968,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     var HELP = [
       ['ls', 'list the reports'], ['open N', 'open report N'], ['reports · song · image · babel · color · culture', 'switch module'],
       ['play / pause', 'song of the day'], ['pull', 'new sentence from the library'], ['wall / unwall', 'gradient behind everything'],
-      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['index', 'every section at once (Tab)'], ['feed', 'the event feed (F)'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['ls /archive', 'older versions of this site'], ['1–6 · Q/E · Tab · F · M · /', 'keyboard'], ['clear', 'clear this']
+      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['index', 'every section at once (Tab)'], ['feed', 'the event feed (F)'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['wipe', 'invert sweep'], ['root', 'root terminal'], ['ls /archive', 'older versions of this site'], ['1–6 · Q/E · Tab · F · M · /', 'keyboard'], ['clear', 'clear this']
     ];
     var C = {
       help: function () { HELP.forEach(function (h) { say('<span class="k">' + esc(h[0]) + '</span>  ' + esc(h[1])); }); },
@@ -1996,6 +2005,8 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       say('type open archive/2026-10 to visit one', 'k');
     };
     C.go = function (a) { C.cd(a); };
+    C.wipe = function () { if (window.JRLwipe) JRLwipe(); say('wipe // invert sweep', 'k'); };
+    C.root = function () { say('opening root terminal …', 'k'); setTimeout(openTerm, 250); };
     C.index = function () { if (window.JRLindex) JRLindex.open(); };
     C.feed = function () { $('#side-tog').click(); };
     C.mute = function () { if (!window.JRLsfx) return; JRLsfx.toggle(); say('sound // ' + (JRLsfx.on() ? 'on' : 'muted'), 'k'); };
@@ -2172,6 +2183,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       if (!term.el.hidden) { term.inp.focus(); return; }
       term.out.innerHTML = ''; term.q = []; term.el.hidden = false; setTimeout(function () { term.inp.focus(); }, 30);
       if (!boot.hidden) { boot.classList.add('gone'); setTimeout(function () { boot.hidden = true; }, 600); }
+      if (window.JRLsfx) JRLsfx.carrier(false); setTimeout(flick, 60);
       log('tty // root shell opened', true); login();
     }
     function closeTerm() {
@@ -2222,7 +2234,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
          ['site', 'ls · cat N · open N · go MODULE · song · play · pull · babel TEXT · cats · wall · unwall · tarot'],
          ['dynamics', 'set fx burst|flip|cut|random'],
          ['', 'set decode slow|normal|fast · set breathe on|off · chaos on|off · invert on|off · mode white|dark · mute · color lime|red|cyan|white|amber'],
-         ['danger', 'hack TARGET · sudo CMD · rm -rf / · reboot · exit']].forEach(function (g) { tline((g[0] ? '<span class="ti">' + g[0] + '</span> ' : '         ') + esc(g[1])); });
+         ['fx', 'wipe'], ['danger', 'hack TARGET · sudo CMD · rm -rf / · reboot · exit']].forEach(function (g) { tline((g[0] ? '<span class="ti">' + g[0] + '</span> ' : '         ') + esc(g[1])); });
       },
       clear: function () { term.out.innerHTML = ''; },
       history: function () { term.hist.forEach(function (h, i) { tline('<span class="tdim">' + String(i + 1).padStart(4, ' ') + '</span>  ' + esc(h)); }); },
@@ -2294,6 +2306,8 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     };
     TC.mute = function () { if (window.JRLsfx) { JRLsfx.toggle(); ttxt('sound ' + (JRLsfx.on() ? 'on' : 'muted'), 'tb'); } };
     TC.archive = function () { ttxt('/archive/2026-11-graphic-realism  ·  /archive/2026-10-paper-and-ink', 'tb'); tline('<span class="tdim">exit, then type open archive/2026-10 to visit one</span>'); };
+    TC.wipe = function () { flick(); if (window.JRLwipe) JRLwipe(); ttxt('wipe // invert sweep', 'tb'); };
+    TC.root = function () { flick(); ttxt('already root.', 'tdim'); };
     TC.logout = TC.quit = TC.exit; TC.cls = TC.clear; TC.dir = TC.ls; TC.ll = TC.ls; TC.man = TC.help; TC['?'] = TC.help;
     async function bday() {
       term.busy = true;
