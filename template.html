@@ -464,6 +464,21 @@ html.inv body{filter:invert(1)}
 #iv-cul span{display:block;font:500 11px/1.7 var(--kode);letter-spacing:.06em;text-transform:uppercase}
 #iv-cul b{color:var(--hl)}
 .cul-hud{display:none}
+.in-colony{display:flex;flex-direction:column;gap:8px;padding:12px 16px 14px;border-bottom:1px solid var(--rule)}
+.col-h{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 10px/1.3 var(--kode);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.col-h .chip{min-height:22px;padding:0 8px;font-size:10px}
+#col-cv{display:block;width:100%;aspect-ratio:32/18;image-rendering:pixelated;background:#000;cursor:pointer}
+.instr.notice #col-cv{outline:1px solid var(--hl);outline-offset:3px}
+.instr.notice .led{background:var(--slab-ink)}
+.col-stats{display:flex;flex-wrap:wrap;gap:4px 12px;font:500 10px/1.3 var(--kode);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.col-stats b{color:var(--slab-ink)}
+:root[data-field="culture"] .in-glyphs{display:none}
+.esc{position:absolute;left:0;top:0;width:7px;height:7px;background:var(--ink)}
+:root[data-doze] main{filter:brightness(.8) saturate(.85)}
+:root[data-night]:not([data-doze]) main{filter:brightness(.9) saturate(.9)}
+:root[data-doze] .led{animation:blink 2.4s steps(1) infinite}
+.bs-life{flex:none;align-self:center;padding:4px 6px;font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--k);box-shadow:inset 0 0 0 1px var(--k)}
+.bs-life:hover,:root[data-life="low"] .bs-life{background:var(--k);color:var(--lime)}
 .in-common{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px}
 .in-glyphs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .in-glyphs .glyph{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;aspect-ratio:1}
@@ -695,6 +710,9 @@ html.inv body{filter:invert(1)}
     <aside class="instr pn" id="instr" aria-label="Instruments">
       <div class="ph"><span id="in-h">Instruments // 01</span><i class="led" id="in-led" aria-hidden="true"></i></div>
       <div class="in-body" id="in-body" aria-live="off"></div>
+      <div class="in-colony"><div class="col-h"><span id="col-h">Colony // day 001</span><button type="button" class="chip" id="col-feed" title="Feed the colony">Feed</button></div>
+        <canvas id="col-cv" width="32" height="18" aria-label="The colony. Click to feed it."></canvas>
+        <div class="col-stats"><span>Pop <b id="col-pop">000</b></span><span>Gen <b id="col-gen">0</b></span><span>Energy <b id="col-en">100%</b></span><span>Lost <b id="col-lost">00</b></span></div></div>
       <div class="in-common" aria-hidden="true"><div class="in-glyphs" id="in-glyphs"></div><pre class="in-hex" id="in-hex"></pre><div class="bc" id="in-bc"></div></div>
     </aside>
     </div>
@@ -747,9 +765,10 @@ html.inv body{filter:invert(1)}
     <div class="cli-side"><button type="button" class="chip" id="cli-x">Close · Esc</button><div class="bc" id="bc2" aria-hidden="true"></div></div>
   </footer>
   <div class="bstrip">
-    <span class="bs-l">JRL <i class="bars"></i> × 2026 ≡ <b id="slate-mod">01 / 06 Reports</b></span>
+    <span class="bs-l">JRL <i class="bars"></i> × 2026 ≡ <b id="slate-mod">01 / 06 Reports</b> ≡ <span id="bio-st">colony</span></span>
     <button type="button" class="bs-prompt" id="bs-prompt" title="Terminal (/)"><span class="who">visitor@jerelevance:~$</span><span id="echo"></span><i class="cur" aria-hidden="true"></i></button>
     <span class="bs-r"><b>Tab</b> index · <b>Q</b><b>E</b> · <b>/</b> term · <b>F</b> feed · <b>M</b> mute</span>
+    <button type="button" class="bs-life" id="life" title="Life support: full or low (saves battery)">Life // full</button>
     <div class="bc" id="bc1" aria-hidden="true"></div>
   </div>
 </div>
@@ -788,7 +807,7 @@ html.inv body{filter:invert(1)}
     }
     function bump(v) { meter = Math.min(1, meter + v); }
     function nz(t, dur, type, f, q, g) {
-      var s = AC.createBufferSource(); s.buffer = noise;
+      var s = AC.createBufferSource(); s.buffer = noise; s.loop = true;
       var fl = AC.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q || .7;
       var gn = AC.createGain(); gn.gain.setValueAtTime(g, t); gn.gain.exponentialRampToValueAtTime(.0001, t + dur);
       s.connect(fl); fl.connect(gn); gn.connect(master); s.start(t, Math.random() * .8); s.stop(t + dur + .02);
@@ -829,6 +848,13 @@ html.inv body{filter:invert(1)}
           [1180, 2350].forEach(function (f) { var o = AC.createOscillator(); o.frequency.value = f; o.connect(g); o.start(t); o.stop(t + 2.05); }); carrier = g; setTimeout(function () { if (carrier === g) carrier = null; }, 2100); }
         if (!v && carrier) { var c = carrier, n = AC.currentTime; carrier = null; c.gain.cancelScheduledValues(n); c.gain.setValueAtTime(c.gain.value, n); c.gain.linearRampToValueAtTime(0, n + .05); setTimeout(function () { try { c.disconnect(); } catch (e) {} }, 120); }
       },
+      // the colony's own voice: it only sounds when it does something
+      feed: function () { if (!ok()) return; var t = AC.currentTime; nz(t, .05, 'lowpass', 900, 1, .22); osc(t, 'sine', 220, 80, .18, .4); osc(t + .07, 'sine', 160, 70, .14, .2); bump(.5); },
+      molt: function () { if (!ok()) return; var t = AC.currentTime; for (var i = 0; i < 4; i++) S.crackle(t + i * .04); osc(t + .16, 'triangle', 300, 900, .12, .08); bump(.6); },
+      die: function () { if (!ok()) return; var t = AC.currentTime; osc(t, 'sine', 160, 30, 1.6, .5); nz(t, 1.2, 'bandpass', 600, .5, .06); bump(1); },
+      skitter: function () { if (!ok()) return; var t = AC.currentTime; for (var i = 0; i < 6; i++) nz(t + i * .05 + Math.random() * .03, .006, 'highpass', 7000, .7, .035); bump(.2); },
+      wake: function () { if (!ok()) return; var t = AC.currentTime; osc(t, 'sine', 70, 140, .35, .25); nz(t, .3, 'lowpass', 600, .7, .08); bump(.5); },
+      doze: function () { if (!ok()) return; osc(AC.currentTime, 'sine', 180, 70, .45, .18); bump(.3); },
       enter: function () { S.carrier(false); S.thump(); S.swell(); },
       on: function () { return on; },
       set: function (v) { on = !!v; try { localStorage.setItem('jrl-snd', on ? 'on' : 'off'); } catch (e) {} if (master) master.gain.value = on ? .5 : 0; if (!on) S.carrier(false); chip(); if (on) { unlock(); setTimeout(S.click, 40); } },
@@ -1001,13 +1027,71 @@ html.inv body{filter:invert(1)}
     function wake() { lastIn = Date.now(); if (!idleOn) return; idleOn = false; var m = document.getElementById('main'); if (m) { m.style.removeProperty('--fld'); m.style.removeProperty('--ink'); } flashMain(); }
     ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(function (ev) { document.addEventListener(ev, wake, { capture: true, passive: true }); });
     setInterval(function () {
-      if (reduce || document.hidden || Date.now() - lastIn < 25000) return;
+      if (reduce || document.hidden || R.dataset.life === 'low' || Date.now() - lastIn < 25000) return;
       var f = R.dataset.field, boot = document.getElementById('boot');
       if ((f !== 'color' && f !== 'culture') || R.classList.contains('viewing') || R.classList.contains('cg-bg') || (window.JRLindex && window.JRLindex.isOpen())) return;
       if (boot && !boot.hidden && !boot.classList.contains('gone')) return;
       var m = document.getElementById('main'), c = IDLE[idleI++ % IDLE.length]; if (!m) return;
       idleOn = true; m.style.setProperty('--fld', c); m.style.setProperty('--ink', lum(c) > .25 ? '#0a0a0b' : '#f2f2ee'); flashMain(); S.tick(.03);
     }, 2600);
+    /* ================= life support: FULL, or LOW on weak machines, battery saver, data saver or reduced motion ================= */
+    var lowAuto = reduce || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4) || (navigator.connection && navigator.connection.saveData);
+    function lifePref() { try { return localStorage.getItem('jrl-life'); } catch (e) { return null; } }
+    R.dataset.life = lifePref() || (lowAuto ? 'low' : 'full');
+    if (!lifePref() && navigator.getBattery) navigator.getBattery().then(function (b) {
+      function chk() { if (lifePref()) return; R.dataset.life = lowAuto || (!b.charging && b.level < .2) ? 'low' : 'full'; if (window.JRLlifeChip) window.JRLlifeChip(); }
+      b.addEventListener('levelchange', chk); b.addEventListener('chargingchange', chk); chk();
+    }).catch(function () {});
+    window.JRLlife = function (v) { if (v) { R.dataset.life = v; try { localStorage.setItem('jrl-life', v); } catch (e) {} if (window.JRLlifeChip) window.JRLlifeChip(); } return R.dataset.life; };
+
+    /* ================= the colony: one organism living in the shell =================
+       A 32x18 cell culture. It steps one generation per burst, mutates, grows when you visit,
+       thins out when nobody comes, and dies after 30 days unfed, leaving a memorial count.
+       Its age is shared: colony day 001 is 2026-11-07 for everyone. */
+    var DAYMS = 864e5, EPOCH = Date.UTC(2026, 10, 7), CW = 32, CH = 18;
+    function etDay() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()); }
+    function etHour() { return +new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', hourCycle: 'h23' }).format(new Date()); }
+    function prng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+    window.JRLcolony = (function () {
+      var st = null, cells = new Uint8Array(CW * CH), now = Date.now(), died = null;
+      try { st = JSON.parse(localStorage.getItem('jrl-colony') || 'null'); } catch (e) {}
+      function seedCells(seed) { var r = prng(seed); cells.fill(0); for (var k = 0; k < cells.length; k++) if (r() < .28) cells[k] = 1; }
+      function enc() { var s = ''; for (var i = 0; i < cells.length; i += 4) s += ((cells[i] << 3) | (cells[i + 1] << 2) | (cells[i + 2] << 1) | cells[i + 3]).toString(16); return s; }
+      function dec(s) { for (var i = 0; i < s.length && i * 4 < cells.length; i++) { var v = parseInt(s[i], 16) || 0; for (var b = 0; b < 4; b++) cells[i * 4 + b] = (v >> (3 - b)) & 1; } }
+      function fresh(lost) { st = { seed: (Math.random() * 1e9) | 0, born: etDay(), fed: Date.now(), feeds: 0, gen: 0, lost: lost || 0, mut: 0 }; seedCells(st.seed); }
+      if (!st || !st.seed) fresh(0); else if (st.c) dec(st.c); else seedCells(st.seed);
+      if (now - st.fed > 30 * DAYMS) { died = { days: Math.round((now - st.fed) / DAYMS), lost: (st.lost || 0) + 1 }; fresh(died.lost); }
+      function save() { st.c = enc(); try { localStorage.setItem('jrl-colony', JSON.stringify(st)); } catch (e) {} }
+      function pop() { var n = 0; for (var i = 0; i < cells.length; i++) n += cells[i]; return n; }
+      function energy() { return Math.max(0, 1 - (Date.now() - st.fed) / (30 * DAYMS)); }
+      var moltAt = Math.max(30, pop());
+      function step() {
+        var N = new Uint8Array(cells.length), e = energy(), r = Math.random, ev = null;
+        for (var y = 0; y < CH; y++) for (var x = 0; x < CW; x++) {
+          var c = 0; for (var dy = -1; dy <= 1; dy++) for (var dx = -1; dx <= 1; dx++) { if (dx || dy) c += cells[((y + dy + CH) % CH) * CW + ((x + dx + CW) % CW)]; }
+          var k = y * CW + x, live = cells[k] ? (c === 2 || c === 3) : c === 3;
+          if (live && e < .35 && r() < (.35 - e) * .3) live = false;
+          N[k] = live ? 1 : 0;
+        }
+        if (r() < .35) { N[(r() * N.length) | 0] ^= 1; st.mut++; }
+        cells = N; st.gen++;
+        var p = pop();
+        if (p < 8) { var rr = prng(st.seed + st.gen); for (var q = 0; q < 46; q++) cells[(rr() * cells.length) | 0] = 1; ev = 'bloom'; }
+        else if (p > moltAt * 1.6) { moltAt = p; ev = 'molt'; }
+        else if (p < moltAt * .5) moltAt = Math.max(30, p);
+        save(); return ev;
+      }
+      function feed() { var r = Math.random, cx = (r() * CW) | 0, cy = (r() * CH) | 0;
+        [[0, 1], [1, 2], [2, 0], [2, 1], [2, 2]].forEach(function (p) { cells[((cy + p[0]) % CH) * CW + ((cx + p[1]) % CW)] = 1; });
+        for (var i = 0; i < 8; i++) cells[(r() * cells.length) | 0] = 1; st.fed = Date.now(); st.feeds++; save(); }
+      save();
+      return {
+        W: CW, H: CH, cells: function () { return cells; }, step: step, feed: feed, pop: pop, energy: energy, died: died, state: function () { return st; },
+        day: function () { return Math.max(1, Math.floor((Date.parse(etDay()) - EPOCH) / DAYMS) + 1); },
+        night: function () { return etHour() < 6; },
+        genome: function (row) { var s = ''; for (var x = 0; x < CW; x += 4) { var v = 0; for (var b = 0; b < 4; b++) v = (v << 1) | cells[row * CW + x + b]; s += v.toString(16).toUpperCase(); } return s; }
+      };
+    })();
   })();
 </script>
 <script>
@@ -1241,7 +1325,7 @@ html.inv body{filter:invert(1)}
     function frame(now) {
       requestAnimationFrame(frame);
       var vis = !document.hidden && (document.documentElement.dataset.field === 'color' || document.documentElement.classList.contains('cg-bg') || isFull());
-      if (!vis || now - lastPaint < 33) { if (!vis) last = now; return; }
+      if (!vis || now - lastPaint < (document.documentElement.dataset.life === 'low' ? 200 : 33)) { if (!vis) last = now; return; }
       lastPaint = now;
       var dt = last ? Math.min(100, now - last) : 16; last = now;
       if (!paused) t += dt / 1000 * (reduce ? .2 : .75);
@@ -1780,7 +1864,7 @@ function mountCulture(){const cv=$('#cul');if(!cv)return;if(CU){if(!CU.running){
     if(CUL.mode==='grow')plant(p.x,p.y);if(CUL.mode==='stamp')stampAt(p.x,p.y,CUL.stamp)});
   cv.addEventListener('pointerup',()=>{CU.ptr.down=false});
   CU.running=true;footUI();requestAnimationFrame(loop)}
-function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return}
+function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return}if(R.dataset.life==='low'&&now-(CU.lowT||0)<200){requestAnimationFrame(loop);return}CU.lowT=now;
   const dt=Math.min(.05,(now-(CU.prev||now))/1000);CU.prev=now;const{cols,rows,cs,E,B,A,OX,OY,offX,offY,x}=CU,p=CU.ptr,n=cols*rows;if(!n){requestAnimationFrame(loop);return}
   const mode=CUL.mode,run=!CUL.frozen;
   if(now-CU.colT>300){CU.colT=now;const st=getComputedStyle(main);CU.ink=st.getPropertyValue('--ink').trim();CU.acc=st.getPropertyValue('--acc').trim()}
@@ -2023,7 +2107,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     var HELP = [
       ['ls', 'list the reports'], ['open N', 'open report N'], ['reports · song · image · babel · color · culture', 'switch module'],
       ['play / pause', 'song of the day'], ['pull', 'new sentence from the library'], ['wall / unwall', 'gradient behind everything'],
-      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['index', 'every section at once (Tab)'], ['feed', 'the event feed (F)'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['wipe', 'invert sweep'], ['root', 'root terminal'], ['ls /archive', 'older versions of this site'], ['1–6 · Q/E · Tab · F · M · /', 'keyboard'], ['clear', 'clear this']
+      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['index', 'every section at once (Tab)'], ['feed', 'the event feed (F)'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['colony · colony feed', 'the organism that lives here'], ['life full|low', 'life support (battery)'], ['wipe', 'invert sweep'], ['root', 'root terminal'], ['ls /archive', 'older versions of this site'], ['1–6 · Q/E · Tab · F · M · /', 'keyboard'], ['clear', 'clear this']
     ];
     var C = {
       help: function () { HELP.forEach(function (h) { say('<span class="k">' + esc(h[0]) + '</span>  ' + esc(h[1])); }); },
@@ -2062,6 +2146,8 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     C.go = function (a) { C.cd(a); };
     C.wipe = function () { say('wipe // invert sweep', 'k'); if (window.JRLterm) JRLterm(false); setTimeout(function () { if (window.JRLwipe) JRLwipe(); }, 120); setTimeout(function () { if (window.JRLterm) JRLterm(true); }, 2050); };
     C.root = function () { say('opening root terminal …', 'k'); setTimeout(openTerm, 250); };
+    C.colony = function (a) { if (!window.JRLcolonyUI) return say('colony offline', 'e'); if (/feed/.test(a || '')) JRLcolonyUI.feed(); say(JRLcolonyUI.status(), 'k'); };
+    C.life = function (a) { if (!window.JRLlife) return; var v = a === 'low' || a === 'full' ? a : (JRLlife() === 'low' ? 'full' : 'low'); JRLlife(v); say('life support // ' + v, 'k'); };
     C.index = function () { if (window.JRLindex) JRLindex.open(); };
     C.feed = function () { $('#side-tog').click(); };
     C.mute = function () { if (!window.JRLsfx) return; JRLsfx.toggle(); say('sound // ' + (JRLsfx.on() ? 'on' : 'muted'), 'k'); };
@@ -2111,6 +2197,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
         ['rng', 'tarot.deck.shuffle(fnv1a(visitor ⊕ today)) → 78 cards'],
         ['babel', 'index 25^1312000 pages … lazy-loaded · librarian pid 4112'],
         ['cult', 'spawn culture --grid=round,square --rule=B3/S23 --breathe'],
+        ['bio', window.JRLcolony ? 'colony day ' + String(JRLcolony.day()).padStart(3, '0') + ' · pop ' + JRLcolony.pop() + (JRLcolony.night() ? ' · waking the colony' : ' · colony awake') : 'colony offline'],
         ['dma', h() + ' → ' + h() + '  ' + bar(100)],
         ['sub', 'ping lesymboliste.substack.com … 1 sheep responded'],
         ['diff', '+++ newest: ' + newest.toLowerCase()],
@@ -2363,6 +2450,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     TC.archive = function () { ttxt('/archive/2026-11-graphic-realism  ·  /archive/2026-10-paper-and-ink', 'tb'); tline('<span class="tdim">exit, then type open archive/2026-10 to visit one</span>'); };
     TC.wipe = function () { ttxt('wipe // invert sweep', 'tb'); term.el.hidden = true; setTimeout(function () { if (window.JRLwipe) JRLwipe(); }, 120); setTimeout(function () { term.el.hidden = false; term.inp.focus(); flick(); }, 2050); };
     TC.root = function () { flick(); ttxt('already root.', 'tdim'); };
+    TC.colony = function (a) { if (!window.JRLcolonyUI) return terr('colony offline'); if (/feed/.test(a || '')) JRLcolonyUI.feed(); ttxt(JRLcolonyUI.status(), 'tb'); };
     TC.logout = TC.quit = TC.exit; TC.cls = TC.clear; TC.dir = TC.ls; TC.ll = TC.ls; TC.man = TC.help; TC['?'] = TC.help;
     async function bday() {
       term.busy = true;
@@ -2624,9 +2712,11 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     var GL = $('#in-glyphs'), HX = $('#in-hex'), BC = $('#in-bc'), LED = $('#in-led'), hexLines = [];
     function glyph() { var cols = []; for (var c = 0; c < 3; c++) { var col = []; for (var r = 0; r < 5; r++) col.push(Math.random() < .5); cols.push(col); }
       cols = [cols[0], cols[1], cols[2], cols[1], cols[0]]; var s = ''; for (var r2 = 0; r2 < 5; r2++) for (var c2 = 0; c2 < 5; c2++) s += '<b' + (cols[c2][r2] ? ' class="on"' : '') + '></b>'; return '<div class="glyph">' + s + '</div>'; }
-    function glyphs(n) { if (!GL) return; if (!GL.children.length || n === 4) { GL.innerHTML = glyph() + glyph() + glyph() + glyph() + glyph() + glyph(); return; } var k = rint(GL.children.length); GL.children[k].outerHTML = glyph(); }
+    function glyphs(n) { if (!GL) return; if (!GL.children.length || n === 4) { GL.innerHTML = glyph() + glyph() + glyph() + glyph() + glyph() + glyph(); return; }
+      var g = GL.children[rint(GL.children.length)], b = g.children; for (var i = 0, m = 1 + rint(3); i < m; i++) { var r = rint(5), c = rint(3), on = !b[r * 5 + c].classList.contains('on'); b[r * 5 + c].classList.toggle('on', on); b[r * 5 + 4 - c].classList.toggle('on', on); } }
     function hexLine() { var a = '0x' + rint(65536).toString(16).toUpperCase().padStart(4, '0') + ' '; for (var i = 0; i < 6; i++) a += ' ' + rint(256).toString(16).toUpperCase().padStart(2, '0'); return a; }
-    function hex(n) { if (!HX) return; for (var i = 0; i < n; i++) { hexLines.push(hexLine()); if (hexLines.length > 7) hexLines.shift(); } HX.textContent = hexLines.join('\n'); }
+    var gRow = 0;
+    function hex(n) { if (!HX) return; var C = window.JRLcolony; for (var i = 0; i < n; i++) { hexLines.push(C ? 'R' + pad(gRow) + '  ' + C.genome(gRow).replace(/(.{4})/g, '$1 ') + ' ' + rint(256).toString(16).toUpperCase().padStart(2, '0') : hexLine()); gRow = (gRow + 1) % (C ? C.H : 18); if (hexLines.length > 7) hexLines.shift(); } HX.textContent = hexLines.join('\n'); }
     function barcode() { if (!BC) return; var h = ''; for (var i = 0; i < 44; i++) h += '<span style="width:' + (1 + rint(3)) + 'px;margin-right:' + (1 + rint(3)) + 'px"></span>'; BC.innerHTML = h; }
     glyphs(4); hex(7); barcode();
 
@@ -2660,12 +2750,81 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
               function (f) { ct1.textContent = tagText(); if (f === 2) ct2.textContent = tagText(); }, function () { if (LED) LED.classList.toggle('on'); }];
     (function loop() {
       setTimeout(function () {
+        if (!document.hidden && !R.classList.contains('viewing')) colonyTick();
         if (!document.hidden && !reduce && !R.classList.contains('viewing')) {
           for (var i = 0, n = 1 + rint(3); i < n; i++) (function (fn) { fn(0); setTimeout(function () { fn(1); }, 33); setTimeout(function () { fn(2); }, 66); })(TK[rint(TK.length)]);
         }
         loop();
-      }, 2000 + Math.random() * 2000);
+      }, (2000 + Math.random() * 2000) * (R.dataset.doze ? 3 : 1) * (R.dataset.night ? 1.6 : 1) * (R.dataset.life === 'low' ? 2 : 1));
     })();
+    /* ---------- the colony in the instrument column; Culture is its home ---------- */
+    var C = window.JRLcolony, S = window.JRLsfx, cv = $('#col-cv'), cx = cv && cv.getContext('2d'), instr = $('#instr');
+    var log = function (m, hot) { if (window.JRLlog) window.JRLlog(m, hot); };
+    function draw(flash) {
+      if (!cx || !C) return; var cells = C.cells(), e = C.energy(), st = getComputedStyle(instr), hl = st.getPropertyValue('--hl').trim() || '#c2ff16';
+      cx.fillStyle = '#000'; cx.fillRect(0, 0, C.W, C.H); cx.globalAlpha = .35 + .65 * e; cx.fillStyle = flash ? '#fff' : hl;
+      for (var i = 0; i < cells.length; i++) if (cells[i]) cx.fillRect(i % C.W, (i / C.W) | 0, 1, 1);
+      cx.globalAlpha = 1;
+    }
+    function stats() {
+      if (!C) return; var s0 = C.state(), home = R.dataset.field === 'culture';
+      txt('col-h', 'Colony // day ' + pad(C.day(), 3) + (home ? ' // home' : ''));
+      txt('col-pop', pad(C.pop(), 3)); txt('col-gen', String(s0.gen)); txt('col-en', Math.round(C.energy() * 100) + '%'); txt('col-lost', pad(s0.lost || 0));
+      txt('bio-st', 'colony d' + pad(C.day(), 3) + ' · ' + (R.dataset.doze ? 'dozing' : R.dataset.night ? 'dormant' : 'awake'));
+    }
+    function colonyTick() {
+      if (!C) return; var ev = C.step(); draw(); stats();
+      if (ev === 'molt') { S.molt(); log('colony // molted · pop ' + C.pop(), true); setTimeout(function () { draw(true); setTimeout(draw, 66); }, 0); }
+      else if (ev === 'bloom') { S.crackle(); log('colony // bloomed from its genome'); }
+    }
+    var fedT = 0;
+    function feed(byVisit) {
+      if (!C || Date.now() - fedT < 4000) return; fedT = Date.now(); C.feed(); draw(true); setTimeout(draw, 66); stats(); S.feed();
+      log(byVisit ? 'colony // fed by your visit' : 'colony // fed', true); if (!byVisit && window.JRLecho) window.JRLecho('colony feed');
+    }
+    window.JRLcolonyUI = { feed: function () { feed(false); }, status: function () { var s0 = C.state(); return 'colony day ' + pad(C.day(), 3) + ' · pop ' + C.pop() + ' · gen ' + s0.gen + ' · energy ' + Math.round(C.energy() * 100) + '% · lost ' + (s0.lost || 0); } };
+    if (cv) cv.addEventListener('click', function () { feed(false); });
+    var fb = $('#col-feed'); if (fb) fb.addEventListener('click', function () { feed(false); });
+    draw(); stats();
+    if (C && C.died) setTimeout(function () { log('colony // died after ' + C.died.days + ' days unfed · memorial ' + pad(C.died.lost), true); S.die(); }, 3000);
+    if (C && Date.now() - C.state().fed > 10 * 60e3) setTimeout(function () { feed(true); }, 2600);
+
+    /* it notices you: the column lights up when your cursor comes close */
+    var nq = 0;
+    document.addEventListener('pointermove', function (e) {
+      var now = performance.now(); if (now - nq < 100 || !instr) return; nq = now; var r = instr.getBoundingClientRect();
+      var dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right), dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
+      instr.classList.toggle('notice', Math.hypot(dx, dy) < 160);
+    }, { passive: true });
+
+    /* it dozes after two minutes alone, and wakes with a burst when you come back */
+    var lastAct = Date.now();
+    function act() { lastAct = Date.now(); if (!R.dataset.doze) return; delete R.dataset.doze; if (window.JRLsnap) window.JRLsnap(); S.wake(); log('colony // awake'); stats(); }
+    ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (ev) { document.addEventListener(ev, act, { capture: true, passive: true }); });
+    setInterval(function () {
+      if (!R.dataset.doze && !document.hidden && Date.now() - lastAct > 120000) { R.dataset.doze = '1'; S.doze(); log('colony // dozing'); stats(); }
+      if (C) { if (C.night()) R.dataset.night = '1'; else delete R.dataset.night; }
+    }, 5000);
+    if (C && C.night()) R.dataset.night = '1';
+
+    /* rarely, a few cells escape and crawl across the field */
+    function escape() {
+      if (document.hidden || R.dataset.doze || R.dataset.life === 'low' || reduce || R.classList.contains('viewing') || !instr) return;
+      var mr = main.getBoundingClientRect(), ir = instr.getBoundingClientRect(), x0 = ir.left - mr.left + main.scrollLeft - 8, y0 = ir.top - mr.top + main.scrollTop + 40;
+      var bugs = []; for (var i = 0; i < 4; i++) { var d = document.createElement('i'); d.className = 'esc'; fx.appendChild(d); bugs.push({ el: d, x: x0, y: y0 + i * 14 + rint(20) }); }
+      S.skitter(); log('colony // cells escaped');
+      var n = 0, iv = setInterval(function () {
+        bugs.forEach(function (b) { b.x -= 14; b.y += (rint(3) - 1) * 14; b.el.style.transform = 'translate(' + b.x + 'px,' + b.y + 'px)'; });
+        if (++n > 30 || bugs[0].x < 20) { clearInterval(iv); bugs.forEach(function (b) { b.el.remove(); }); }
+      }, 100);
+    }
+    (function esc() { setTimeout(function () { escape(); esc(); }, 180000 + Math.random() * 180000); })();
+
+    /* life support chip */
+    var lc = $('#life');
+    window.JRLlifeChip = function () { if (lc) lc.textContent = 'Life // ' + (R.dataset.life === 'low' ? 'low' : 'full'); };
+    window.JRLlifeChip();
+    if (lc) lc.addEventListener('click', function () { var v = R.dataset.life === 'low' ? 'full' : 'low'; window.JRLlife(v); log('life support // ' + v, true); if (window.JRLecho) window.JRLecho('life ' + v); });
   })();
 </script>
 </body>
