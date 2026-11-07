@@ -25,7 +25,7 @@
   --sys-bg:var(--k);--sys-fg:var(--w);--sys-dim:#8b8b92;--sys-rule:#2a2a2e;--sys-sig:var(--lime);--sys-on:var(--k);--sys-panel:#151517;
   --reg-light:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M23 28h11M28.5 22.5v11' stroke='%23ffffff' stroke-opacity='.34'/%3E%3C/svg%3E");
   --reg-dark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M23 28h11M28.5 22.5v11' stroke='%23000000' stroke-opacity='.26'/%3E%3C/svg%3E");
-  --c-reports:var(--blue);--c-song:var(--orange);--c-image:var(--bone);--c-babel:var(--pink);--c-color:var(--lime);--c-culture:var(--teal);
+  --c-reports:var(--pink);--c-song:var(--orange);--c-image:var(--bone);--c-babel:var(--lav);--c-color:var(--lime);--c-culture:var(--teal);
   --fld:var(--blue);--ink:var(--w);--slab:var(--k);--slab-ink:var(--w);--acc:var(--lime);--on-acc:var(--k);--hl:var(--lime);
   --tag-bg:var(--acc);--tag-fg:var(--on-acc);--reg:var(--reg-light);--duo-lo:var(--k);--duo-hi:var(--w);
   --card1:var(--w);--card1-ink:var(--k);--card2:var(--acc);--card2-ink:var(--on-acc);--card3:var(--fld);--card3-ink:var(--ink);
@@ -41,7 +41,6 @@
   --sys-bg:var(--fog);--sys-fg:var(--k);--sys-dim:#67666c;--sys-rule:#c9c6c8;--sys-sig:var(--k);--sys-on:var(--fog);--sys-panel:var(--fog2);
   --fld:var(--fog);--ink:var(--k);--slab:var(--k);--slab-ink:var(--w);--acc:var(--pink);--on-acc:var(--w);--hl:var(--pink);
   --tag-bg:var(--k);--tag-fg:var(--fog);--reg:var(--reg-dark);--duo-hi:var(--pink);
-  --c-reports:var(--pink);--c-song:var(--orange);--c-image:var(--bone);--c-babel:var(--lav);--c-color:var(--k);--c-culture:var(--blue);
   --card1:var(--fog);--card1-ink:var(--k);--card2:#ffffff;--card2-ink:var(--k);--card3:var(--pink);--card3-ink:var(--w);
   color-scheme:light;
 }
@@ -80,15 +79,14 @@ a{color:inherit}
 .chip:disabled{opacity:.4;cursor:default}
 
 /* ---------- app grid ---------- */
-.app{position:relative;z-index:1;display:grid;height:100vh;height:100dvh;grid-template-columns:236px minmax(0,1fr) 300px;grid-template-rows:48px minmax(0,1fr) auto;grid-template-areas:"top top top" "rail main side" "cli cli cli"}
-:root[data-side="off"] .app{grid-template-columns:236px minmax(0,1fr) 44px}
+.app{position:relative;z-index:1;display:grid;height:100vh;height:100dvh;grid-template-columns:minmax(0,1fr);grid-template-rows:42px minmax(0,1fr) 30px;grid-template-areas:"top" "main" "bot"}
 
 /* header: system layer */
-.top{grid-area:top;display:flex;align-items:center;gap:16px;padding:0 14px 0 20px;background:var(--sys-bg);color:var(--sys-fg);border-bottom:1px solid var(--sys-rule);min-width:0;--c-fg:var(--sys-fg);--c-bg:var(--sys-bg)}
-.top h1{margin:0;font:500 27px/1 var(--hub);font-stretch:75%;letter-spacing:0;white-space:nowrap}
+.top{grid-area:top;display:flex;align-items:center;gap:12px;padding:0 10px 0 16px;background:var(--sys-bg);color:var(--sys-fg);border-bottom:1px solid var(--sys-rule);min-width:0;--c-fg:var(--sys-fg);--c-bg:var(--sys-bg)}
+.top h1{margin:0;font:500 25px/1 var(--hub);font-stretch:75%;letter-spacing:0;white-space:nowrap}
 #cg-back{min-height:24px;padding:0 6px}
 .top .node{white-space:nowrap}
-.top .mid{flex:1;display:flex;justify-content:center;align-items:center;gap:14px;min-width:0;font:500 10px/1 var(--kode);letter-spacing:.1em;text-transform:uppercase;color:var(--sys-dim);white-space:nowrap;overflow:hidden}
+.top .mid{flex:none;display:flex;justify-content:center;align-items:center;gap:14px;min-width:0;font:500 10px/1 var(--kode);letter-spacing:.1em;text-transform:uppercase;color:var(--sys-dim);white-space:nowrap;overflow:hidden}
 #np{display:flex;gap:8px;align-items:center;color:var(--sys-fg);font:inherit;letter-spacing:inherit;text-transform:inherit}
 #np b{width:7px;height:7px;background:var(--sys-sig);animation:blink 1s steps(1) infinite}
 #np span{max-width:30ch;overflow:hidden;text-overflow:ellipsis}
@@ -99,48 +97,61 @@ a{color:inherit}
 .snd.off .mtr i{visibility:hidden}
 .snd.off .mtr::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:currentColor}
 .snd.off>span:first-child{text-decoration:line-through;text-decoration-thickness:2px}
-.modebtn{min-width:64px}
 
-/* rail: one navigation for every module */
-.rail{grid-area:rail;display:flex;flex-direction:column;gap:16px;padding:16px 12px 14px 14px;background:var(--sys-bg);color:var(--sys-fg);border-right:1px solid var(--sys-rule);overflow:auto;scrollbar-width:none;--c-fg:var(--sys-fg);--c-bg:var(--sys-bg);counter-reset:mod}
-.mods{display:flex;flex-direction:column;gap:2px}
-.mod{counter-increment:mod;position:relative;display:grid;grid-template-columns:22px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;padding:10px 8px;text-align:left;color:var(--sys-fg);clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%)}
-.mod::before{content:counter(mod,decimal-leading-zero);font:700 12px/1 var(--kode);color:var(--sys-dim)}
-.mod .ml{display:flex;align-items:center;gap:10px;min-width:0}
-.mod .ml>span{font:300 23px/1 var(--hub);font-stretch:88%;letter-spacing:-.025em}
-.mod>span:last-child{display:flex;align-items:center;gap:6px;font:700 10px/1 var(--kode);letter-spacing:.08em;text-transform:uppercase;color:var(--sys-dim)}
-.mod>span:last-child::before{content:"";width:8px;height:8px;background:var(--sw)}
+/* tabs: six codes in the top strip; Q/E cycles, Tab opens the index */
+.tabs{flex:1;display:flex;align-items:stretch;justify-content:center;gap:6px;min-width:0;height:100%;counter-reset:mod}
+.qe{align-self:center;padding:3px 5px;font:700 10px/1 var(--kode);color:var(--sys-dim);box-shadow:inset 0 0 0 1px var(--sys-rule)}
+.mods{display:flex;align-items:stretch;gap:2px}
+.mod{counter-increment:mod;position:relative;display:flex;align-items:center;gap:7px;padding:0 10px;color:var(--sys-fg);font:700 11px/1 var(--kode);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.mod::before{content:counter(mod,decimal-leading-zero);color:var(--sys-dim)}
+.mod .ml{display:flex;align-items:center;gap:7px}
+.mod .sym{height:14px;width:auto}
+.mod>span:last-child{display:flex;align-items:center;gap:4px;font:500 9px/1 var(--kode);color:var(--sys-dim)}
+.mod>span:last-child::before{content:"";width:6px;height:6px;background:var(--sw)}
 .mod[data-mod="reports"]{--sw:var(--c-reports)}.mod[data-mod="song"]{--sw:var(--c-song)}.mod[data-mod="image"]{--sw:var(--c-image)}
 .mod[data-mod="babel"]{--sw:var(--c-babel)}.mod[data-mod="color"]{--sw:var(--c-color)}.mod[data-mod="culture"]{--sw:var(--c-culture)}
 .mod:hover{background:var(--sys-fg);color:var(--sys-bg)}
 .mod[aria-selected="true"]{background:var(--sys-sig);color:var(--sys-on)}
 .mod:hover::before,.mod:hover>span:last-child,.mod[aria-selected="true"]::before,.mod[aria-selected="true"]>span:last-child{color:inherit}
-.prog{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid var(--sys-rule)}
+.ichip svg{display:block}
+.prog{display:flex;flex-direction:column;gap:4px}
 .prog div{display:flex;justify-content:space-between;font:500 11px/1.4 var(--kode);letter-spacing:.06em;text-transform:uppercase;color:var(--sys-dim)}
 .prog b{color:var(--sys-fg);font-weight:700}
-.prog b.ok{color:var(--sys-fg);background:var(--sys-sig);color:var(--sys-on);padding:0 4px}
-.keys{font:400 10px/1.7 var(--mono);color:var(--sys-dim)}
-.keys b{font:700 10px var(--kode);color:var(--sys-fg);box-shadow:inset 0 0 0 1px var(--sys-rule);padding:1px 4px}
-.bc{display:flex;align-items:stretch;height:22px;overflow:hidden;margin-top:auto}
+.prog b.ok{background:var(--sys-sig);color:var(--sys-on);padding:0 4px}
+.bc{display:flex;align-items:stretch;height:22px;overflow:hidden}
 .bc span{display:block;height:100%;background:var(--sys-fg);flex:none}
-.chk{width:28px;height:28px;background:repeating-conic-gradient(var(--sys-fg) 0 25%,transparent 0 50%) 0 0/14px 14px}
+
+/* bottom strip: slate + the live prompt. Every click types its command here. */
+.bstrip{grid-area:bot;position:relative;z-index:26;display:flex;align-items:center;gap:14px;padding:0 10px 0 16px;background:var(--lime);color:var(--k);font:700 10px/1 var(--kode);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;min-width:0}
+.bstrip .bars{display:inline-block;width:46px;height:9px;vertical-align:-1px;background:repeating-linear-gradient(90deg,var(--k) 0 2px,transparent 2px 4px,var(--k) 4px 5px,transparent 5px 7px)}
+.bs-prompt{flex:1;min-width:0;align-self:stretch;display:flex;align-items:center;gap:8px;margin:4px 0;padding:0 10px;background:var(--k);color:var(--w);font:400 12px/1 var(--mono);letter-spacing:0;text-transform:none;text-align:left;overflow:hidden}
+.bs-prompt .who{flex:none;font:700 11px/1 var(--kode);color:var(--lime)}
+#echo{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bs-prompt .cur{flex:none;width:7px;height:13px;background:var(--lime);animation:blink 1s steps(1) infinite}
+.bs-prompt:hover{box-shadow:inset 0 0 0 1px var(--lime)}
+.bs-r b{padding:1px 4px;box-shadow:inset 0 0 0 1px var(--k)}
+.bstrip .bc{height:14px;--sys-fg:var(--k)}
+
+/* index: every section at once, like a map screen */
+#index{position:fixed;inset:0;z-index:930;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto repeat(2,minmax(0,1fr));gap:6px;padding:6px;background:var(--k)}
+.ihead{grid-column:1/-1;display:flex;justify-content:space-between;gap:12px;padding:6px 8px;font:700 10px/1 var(--kode);letter-spacing:.1em;text-transform:uppercase;color:#8b8b92}
+.icard{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:16px;text-align:left;background:var(--ib);color:var(--ii);clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,0 100%)}
+.icard .in{font:700 clamp(44px,5vw,76px)/.85 var(--kode)}
+.icard .is{max-width:32ch;padding:6px 9px;background:var(--k);color:var(--w);font:400 12px/1.4 var(--mono)}
+.icard .ic{position:absolute;top:16px;right:28px;padding:3px 6px;background:var(--k);color:var(--w);font:700 10px/1 var(--kode);letter-spacing:.08em;text-transform:uppercase}
+.icard .iw{position:absolute;left:-.05em;bottom:-.2em;font:900 clamp(84px,10.5vw,200px)/1 var(--arch);font-stretch:125%;letter-spacing:-.03em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+.icard:hover,.icard:focus-visible{background:var(--ii);color:var(--ib)}
+.icard[aria-current="true"]{box-shadow:inset 0 0 0 4px var(--lime)}
 
 /* main: the field */
-main{grid-area:main;position:relative;isolation:isolate;overflow:auto;min-width:0;display:flex;flex-direction:column;padding:28px 34px 0 40px;background-color:var(--fld);background-image:var(--reg);background-size:56px 56px;background-position:-28px -28px;color:var(--ink);--c-fg:var(--ink);--c-bg:var(--fld);scrollbar-width:thin;scrollbar-color:var(--ink) transparent}
-.giant-wrap{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}
-.giant{position:absolute;right:-.1em;top:-.05em;writing-mode:vertical-rl;font:900 clamp(140px,27vh,300px)/.8 var(--arch);font-stretch:125%;letter-spacing:-.02em;text-transform:uppercase;white-space:nowrap;color:var(--ink);opacity:.17;user-select:none;animation:breatheG 7s steps(7,jump-none) infinite alternate;-webkit-mask:radial-gradient(circle,#000 1.6px,transparent 2.1px) 0 0/5px 5px;mask:radial-gradient(circle,#000 1.6px,transparent 2.1px) 0 0/5px 5px}
-:root[data-nobreathe] .giant{animation:none}
+main{grid-area:main;position:relative;isolation:isolate;overflow:auto;min-width:0;display:flex;flex-direction:column;padding:30px 34px 6px 40px;background-color:var(--fld);background-image:var(--reg);background-size:56px 56px;background-position:-28px -28px;color:var(--ink);--c-fg:var(--ink);--c-bg:var(--fld);scrollbar-width:thin;scrollbar-color:var(--ink) transparent}
 .mhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px 24px;flex-wrap:wrap;margin-bottom:22px}
 .mh-l{display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-width:0}
-.mh-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .tag{display:inline-block;font:700 11px/1 var(--kode);letter-spacing:.08em;text-transform:uppercase;background:var(--tag-bg);color:var(--tag-fg);padding:5px 7px;white-space:nowrap}
 #mtitle{margin:0;font:300 clamp(64px,8.4vw,148px)/.84 var(--hub);font-stretch:88%;letter-spacing:-.045em;white-space:nowrap}
 #mslog{font:200 clamp(24px,2.4vw,40px)/1.06 var(--hub);letter-spacing:-.035em;max-width:24ch;text-wrap:balance}
-#msub,.mcode{font:500 10px/1 var(--kode);letter-spacing:.1em;text-transform:uppercase;background:var(--slab);color:var(--slab-ink);padding:5px 7px;white-space:nowrap}
 .mpanel{position:relative;flex:none;margin-bottom:28px;min-width:0}
 .mpanel.off{position:absolute;left:40px;right:34px;top:0;max-height:100%;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-2}
-.slate{position:sticky;bottom:0;z-index:3;margin:auto -34px 0 -40px;display:flex;justify-content:space-between;gap:12px;padding:5px 14px 5px 40px;background:var(--lime);color:var(--k);font:700 10px/1.3 var(--kode);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
-.slate .bars{display:inline-block;width:46px;height:9px;vertical-align:-1px;background:repeating-linear-gradient(90deg,var(--k) 0 2px,transparent 2px 4px,var(--k) 4px 5px,transparent 5px 7px)}
 
 /* slabs */
 .pn{position:relative;min-width:0;background:var(--slab);color:var(--slab-ink);--c-fg:var(--slab-ink);--c-bg:var(--slab);--dim:color-mix(in srgb,var(--slab-ink) 62%,transparent);--rule:color-mix(in srgb,var(--slab-ink) 16%,transparent);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
@@ -165,7 +176,7 @@ main{grid-area:main;position:relative;isolation:isolate;overflow:auto;min-width:
 #list li:hover::before,#list li:hover .note{color:inherit}
 #list li:hover time::after{background:var(--slab);color:var(--slab-ink)}
 #list.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:10px;padding:14px}
-#list.cards li{grid-template-columns:minmax(0,1fr);grid-template-areas:"n" "t" "a" "note";align-content:start;row-gap:10px;min-height:230px;padding:14px 14px 0;border:0;background:var(--cb);color:var(--ci);--dim:var(--ci);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
+#list.cards li{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto 1fr;grid-template-areas:"n" "t" "a" "note";row-gap:10px;min-height:230px;padding:14px 14px 0;border:0;background:var(--cb);color:var(--ci);--dim:var(--ci);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%)}
 #list.cards li:nth-child(3n+1){--cb:var(--card1);--ci:var(--card1-ink)}
 #list.cards li:nth-child(3n+2){--cb:var(--card2);--ci:var(--card2-ink)}
 #list.cards li:nth-child(3n){--cb:var(--card3);--ci:var(--card3-ink)}
@@ -297,13 +308,12 @@ html.cg-bg #colorgen .cg-head .take,html.cg-bg #cg-lock,html.cg-bg #cg-play,html
 .stampbtn{padding:4px 6px}
 
 /* side: feed, telemetry */
-.side{grid-area:side;position:relative;display:flex;flex-direction:column;gap:18px;padding:12px 16px 16px;background:var(--sys-bg);color:var(--sys-fg);border-left:1px solid var(--sys-rule);overflow:auto;scrollbar-width:none;min-width:0;--c-fg:var(--sys-fg);--c-bg:var(--sys-bg)}
+.side{position:fixed;top:42px;right:0;bottom:30px;z-index:25;width:min(330px,100vw);display:flex;flex-direction:column;gap:18px;padding:12px 16px 16px;background:var(--sys-bg);color:var(--sys-fg);border-left:1px solid var(--sys-rule);overflow:auto;scrollbar-width:none;min-width:0;--c-fg:var(--sys-fg);--c-bg:var(--sys-bg)}
 .side .lbl{display:flex;align-items:center;gap:6px}
 .side .lbl::before{content:"+";font-weight:700;color:var(--sys-fg)}
-.side-tog{align-self:flex-start}
-:root[data-side="off"] .side{padding:10px 6px;overflow:hidden}
-:root[data-side="off"] .side>*:not(.side-tog){display:none}
-:root[data-side="off"] .side-tog{writing-mode:vertical-rl;min-height:118px;padding:10px 0;width:32px}
+.side-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sess{font:500 10px/1.4 var(--kode);letter-spacing:.08em;text-transform:uppercase;color:var(--sys-fg)}
+:root[data-side="off"] .side{display:none}
 .load{display:flex;flex-direction:column;gap:8px}
 .load .r{display:grid;grid-template-columns:1fr auto;gap:3px 8px;font:500 10px/1.3 var(--kode);letter-spacing:.06em;text-transform:uppercase;color:var(--sys-dim)}
 .load .r b{color:var(--sys-fg);font-weight:700}
@@ -336,11 +346,12 @@ html.cg-bg #colorgen .cg-head .take,html.cg-bg #cg-lock,html.cg-bg #cg-play,html
 .sub .msg small{display:block;margin-top:3px;font:500 10px var(--kode);letter-spacing:.06em;color:var(--sys-dim)}
 .sub:hover .msg small{color:inherit}
 
-/* command line: always a black slab */
-.cli{grid-area:cli;position:relative;display:flex;align-items:stretch;gap:16px;padding:8px 16px 10px 20px;background:var(--k);color:var(--w);border-top:1px solid #2a2a2e;--c-fg:var(--w);--c-bg:var(--k)}
+/* terminal: always a black slab, slides up from the prompt */
+.cli{position:fixed;left:0;right:0;bottom:30px;z-index:24;display:flex;align-items:stretch;gap:16px;height:min(44vh,420px);padding:10px 16px 12px 20px;background:var(--k);color:var(--w);border-top:2px solid var(--lime);--c-fg:var(--w);--c-bg:var(--k)}
+:root:not([data-term="on"]) .cli{display:none}
 .cli-in{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:flex-end}
-#out{max-height:3.3em;overflow:auto;font:400 12px/1.6 var(--mono);color:#a3a3a8;scrollbar-width:none}
-.cli.talk #out{max-height:9.8em}
+.cli-side{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end}
+#out{flex:1;overflow:auto;font:400 12px/1.6 var(--mono);color:#a3a3a8;scrollbar-width:thin}
 #out .c{color:var(--w)}
 #out .k{color:var(--lime)}
 #out .e{color:var(--red-txt)}
@@ -350,7 +361,7 @@ html.cg-bg #colorgen .cg-head .take,html.cg-bg #cg-lock,html.cg-bg #cg-play,html
 .pr{display:flex;gap:10px;align-items:center}
 .pr label{font:700 12px var(--kode);color:var(--lime);white-space:nowrap}
 #cmd{flex:1;min-width:0;background:transparent;border:0;outline:0;padding:3px 0;font:400 13px var(--mono);color:var(--w);caret-color:var(--lime)}
-.cli .bc{align-self:center;margin-top:0;--sys-fg:var(--w)}
+.cli .bc{--sys-fg:var(--w)}
 .errband{position:absolute;left:0;right:0;bottom:100%;height:30px;overflow:hidden;background:var(--red);color:var(--k);font:700 18px/30px var(--kode);letter-spacing:.02em;white-space:nowrap;pointer-events:none;z-index:6}
 .errband span{display:inline-block;animation:errm .6s steps(6,end) forwards}
 .errband b{background:var(--k);color:var(--red-txt);padding:0 4px}
@@ -425,30 +436,23 @@ html.inv body{filter:invert(1)}
 
 @media (max-width:1300px){.babel-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:1100px){
-  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:46px minmax(0,1fr) auto;grid-template-areas:"top" "main" "cli";padding-bottom:calc(62px + env(safe-area-inset-bottom,0px))}
-  :root[data-side="off"] .app{grid-template-columns:minmax(0,1fr)}
-  .top{gap:8px;padding:0 10px}.top h1{font-size:22px;margin-right:auto}
-  .top .node,.top .mid,#cg-back{display:none}
-  #clock{font-size:15px}
+  .app{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
+  .top{gap:8px;padding:0 10px}.top h1{font-size:21px;margin-right:auto}
+  .top .mid,#cg-back,.qe,.bs-r,.bs-l,.bstrip .bc{display:none}
+  #clock{font-size:14px}
   .snd{min-width:0;padding:0 8px}.snd>span:first-child{display:none}
-  .modebtn{min-width:0;padding:0 8px}
-  .rail{position:fixed;left:0;right:0;bottom:0;z-index:20;height:calc(62px + env(safe-area-inset-bottom,0px));flex-direction:row;gap:0;padding:0 0 env(safe-area-inset-bottom,0px);border-right:0;border-top:1px solid var(--sys-rule);overflow:hidden}
-  .rail>.lbl,.prog,.keys,.rail .bc,.rail .chk{display:none}
-  .mods{flex-direction:row;flex:1;gap:0}
-  .mod{flex:1;min-width:0;grid-template-columns:minmax(0,1fr);justify-items:center;gap:4px;padding:8px 2px;clip-path:none}
-  .mod::before{font-size:10px}
+  .ichip span{display:none}.ichip{padding:0 8px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:27;height:calc(56px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--sys-bg);border-top:1px solid var(--sys-rule)}
+  .mods{flex:1;gap:0}
+  .mod{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:4px;padding:6px 2px}
   .mod .ml{flex-direction:column;gap:4px}
-  .mod .ml>span{font-size:13px}
   .mod>span:last-child{display:none}
-  main{padding:18px 16px 0}
-  .slate{margin:auto -16px 0;padding-left:16px}
+  .cli,.side{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+  .side{width:100vw}
+  main{padding:18px 16px 24px}
   .mpanel.off{left:16px;right:16px}
-  .side{display:none}
-  .cli{padding:6px 12px}
-  #out{max-height:1.6em}.cli.talk #out{max-height:6.4em}
-  .cli .bc{display:none}
-  .mh-r{align-items:flex-start}
   #mtitle{font-size:clamp(54px,15vw,92px)}
+  #index{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;grid-auto-rows:minmax(170px,1fr);overflow:auto}
   .totem{display:none}
   #boot{grid-template-columns:minmax(0,1fr)}
 }
@@ -478,6 +482,7 @@ html.inv body{filter:invert(1)}
 </div>
 
 <div id="cg-page" aria-hidden="true"></div>
+<div id="index" role="dialog" aria-label="Index" hidden></div>
 <canvas id="cats" width="768" height="128" aria-hidden="true"></canvas>
 
 <div class="app">
@@ -486,45 +491,30 @@ html.inv body{filter:invert(1)}
     <button id="cg-back" type="button" aria-label="Put the colour back in its box" title="put the colours back" hidden>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>
     </button>
-    <span class="lbl node">Node JRL-01</span>
-    <span class="mid"><span id="sess">Session open</span><button type="button" id="np" hidden><b></b><span id="np-t"></span></button></span>
+    <button type="button" class="chip ichip" id="idx-btn" title="Index (Tab)" aria-haspopup="dialog"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><rect width="5" height="5"/><rect x="7" width="5" height="5"/><rect y="7" width="5" height="5"/><rect x="7" y="7" width="5" height="5"/></svg><span>Index</span></button>
+    <nav class="tabs" aria-label="Sections">
+      <span class="qe" aria-hidden="true">Q</span>
+      <div class="mods" role="tablist" id="mods">
+        <button class="mod" role="tab" data-mod="reports" aria-selected="true" title="Reports (1)"><span>Rep</span><span id="m-count">00</span></button>
+        <button class="mod" role="tab" data-mod="song" aria-selected="false" title="Song (2)"><span>Sng</span><span id="m-song">—</span></button>
+        <button class="mod" role="tab" data-mod="image" aria-selected="false" title="Image (3)"><span>Img</span><span id="m-img">—</span></button>
+        <button class="mod" role="tab" data-mod="babel" aria-selected="false" title="Babel (4)"><span>Bbl</span><span>∞</span></button>
+        <button class="mod" role="tab" data-mod="color" aria-selected="false" title="Color (5)"><span>Clr</span><span>4c</span></button>
+        <button class="mod" role="tab" data-mod="culture" aria-selected="false" title="Culture (6)"><span>Cul</span><span>live</span></button>
+      </div>
+      <span class="qe" aria-hidden="true">E</span>
+    </nav>
+    <span class="mid"><button type="button" id="np" hidden><b></b><span id="np-t"></span></button></span>
     <span id="clock">00:00:00</span>
     <button type="button" class="chip snd" id="snd" aria-pressed="true" aria-label="Mute sound" title="sound (M)"><span>SND</span><span class="mtr" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></button>
-    <button type="button" class="modebtn" id="modebtn" title="white / dark (W)">White</button>
   </header>
 
-  <nav class="rail" aria-label="Modules">
-    <span class="lbl">Index // 06</span>
-    <div class="mods" role="tablist" id="mods">
-      <button class="mod" role="tab" data-mod="reports" aria-selected="true" title="Reports (1)"><span>Reports</span><span id="m-count">00</span></button>
-      <button class="mod" role="tab" data-mod="song" aria-selected="false" title="Song (2)"><span>Song</span><span id="m-song">—</span></button>
-      <button class="mod" role="tab" data-mod="image" aria-selected="false" title="Image (3)"><span>Image</span><span id="m-img">—</span></button>
-      <button class="mod" role="tab" data-mod="babel" aria-selected="false" title="Babel (4)"><span>Babel</span><span>∞</span></button>
-      <button class="mod" role="tab" data-mod="color" aria-selected="false" title="Color (5)"><span>Color</span><span>4c</span></button>
-      <button class="mod" role="tab" data-mod="culture" aria-selected="false" title="Culture (6)"><span>Culture</span><span>live</span></button>
-    </div>
-    <div class="prog" aria-live="polite">
-      <span class="lbl" style="padding:0 0 2px">Trace</span>
-      <div><span>Reports</span><b id="p-n">0</b></div>
-      <div><span>Newest</span><b id="p-new">—</b></div>
-      <div><span>Since</span><b id="p-since" class="ok">—</b></div>
-    </div>
-    <p class="keys"><b>1</b>–<b>6</b> jump · <b>M</b> mute<br><b>W</b> white · <b>/</b> terminal</p>
-    <div class="bc" id="bc1" aria-hidden="true"></div>
-    <div class="chk" aria-hidden="true"></div>
-  </nav>
-
   <main id="main">
-    <div class="giant-wrap" aria-hidden="true"><div class="giant" id="giant">Archive</div></div>
     <div class="mhead">
       <div class="mh-l">
         <span class="tag" id="mtag">01 / Index</span>
         <h2 id="mtitle">Reports</h2>
         <p id="mslog"></p>
-      </div>
-      <div class="mh-r">
-        <span id="msub">reports/ // newest first</span>
-        <span class="mcode" id="mcode">JRL-01 // 30 fps</span>
       </div>
     </div>
 
@@ -652,19 +642,25 @@ html.inv body{filter:invert(1)}
       <div class="cul" id="culpn"></div>
     </section>
 
-    <div class="slate" aria-hidden="true"><span>JRL <i class="bars"></i> × 2026 ≡ <b id="slate-mod">01 / 06 Reports</b></span><span>JERE//LEVANCE</span></div>
   </main>
 
   <section id="viewer" aria-label="Report viewer" hidden>
-    <div class="vbar"><span class="tag" id="v-n">00</span><b id="v-t"></b><a class="chip" id="v-open" target="_blank" rel="noopener">Open alone ↗</a><button type="button" class="chip" id="v-close">Close · Esc</button></div>
+    <div class="vbar"><span class="tag" id="v-n">EXT // 00</span><b id="v-t"></b><a class="chip" id="v-open" target="_blank" rel="noopener">Open alone ↗</a><button type="button" class="chip" id="v-close">Close · Esc</button></div>
     <iframe id="v-frame" title="Report"></iframe>
   </section>
 
-  <aside class="side">
-    <button type="button" class="side-tog" id="side-tog" aria-expanded="true"><span>Feed</span><b>▸</b></button>
+  <aside class="side" aria-label="Feed">
+    <div class="side-head"><span class="lbl">Feed // telemetry</span><button type="button" class="side-tog" id="side-tog" aria-expanded="false"><span>Close</span><b>▸</b></button></div>
+    <div class="sess" id="sess">Session open</div>
     <div>
       <div class="lbl" style="margin-bottom:8px">Event feed</div>
       <div id="feed"></div>
+    </div>
+    <div class="prog" aria-live="polite">
+      <span class="lbl" style="padding:0 0 2px">Trace</span>
+      <div><span>Reports</span><b id="p-n">0</b></div>
+      <div><span>Newest</span><b id="p-new">—</b></div>
+      <div><span>Since</span><b id="p-since" class="ok">—</b></div>
     </div>
     <div class="load">
       <span class="lbl">Clock load</span>
@@ -688,11 +684,17 @@ html.inv body{filter:invert(1)}
 </a></div>
   </aside>
 
-  <footer class="cli">
-    <div class="cli-in"><div id="out"><div>TYPE 'help' FOR COMMANDS.</div></div>
+  <footer class="cli" aria-label="Terminal">
+    <div class="cli-in"><div id="out"><div>TYPE 'help' FOR COMMANDS. EVERY CLICK TYPES ITS COMMAND HERE.</div></div>
     <div class="pr"><label for="cmd">visitor@jerelevance:~$</label><input id="cmd" autocomplete="off" spellcheck="false" aria-label="Command line"></div></div>
-    <div class="bc" id="bc2" aria-hidden="true"></div>
+    <div class="cli-side"><button type="button" class="chip" id="cli-x">Close · Esc</button><div class="bc" id="bc2" aria-hidden="true"></div></div>
   </footer>
+  <div class="bstrip">
+    <span class="bs-l">JRL <i class="bars"></i> × 2026 ≡ <b id="slate-mod">01 / 06 Reports</b></span>
+    <button type="button" class="bs-prompt" id="bs-prompt" title="Terminal (/)"><span class="who">visitor@jerelevance:~$</span><span id="echo"></span><i class="cur" aria-hidden="true"></i></button>
+    <span class="bs-r"><b>Tab</b> index · <b>Q</b><b>E</b> · <b>/</b> term · <b>F</b> feed · <b>M</b> mute</span>
+    <div class="bc" id="bc1" aria-hidden="true"></div>
+  </div>
 </div>
 
 <script>
@@ -777,7 +779,7 @@ html.inv body{filter:invert(1)}
     window.JRLsfx = S;
     var sndBtn = document.getElementById('snd'), bars = sndBtn ? sndBtn.querySelectorAll('.mtr i') : [];
     function chip() { if (!sndBtn) return; sndBtn.setAttribute('aria-pressed', on); sndBtn.setAttribute('aria-label', on ? 'Mute sound' : 'Turn sound on'); sndBtn.classList.toggle('off', !on); }
-    if (sndBtn) sndBtn.addEventListener('click', function () { S.toggle(); if (window.JRLlog) window.JRLlog('sound // ' + (on ? 'on' : 'muted')); });
+    if (sndBtn) sndBtn.addEventListener('click', function () { S.toggle(); if (window.JRLlog) window.JRLlog('sound // ' + (on ? 'on' : 'muted')); if (window.JRLecho) window.JRLecho(on ? 'sfx on' : 'mute'); });
     chip();
     setInterval(function () {
       meter *= .76;
@@ -838,6 +840,12 @@ html.inv body{filter:invert(1)}
       var fs = Math.round(H * .52); cx.font = '900 ' + fs + 'px Archivo, sans-serif'; wide(true);
       cx.fillStyle = inv ? d.fld : d.ink; cx.textBaseline = 'alphabetic'; cx.fillText(String(label).toUpperCase(), W * .16, H * .8); wide(false);
     }
+    /* small move: a hard cut with one inverted frame (33ms). Big moves use the full burst below. */
+    window.JRLsnap = function (low) {
+      var app = document.querySelector('.app');
+      if (!reduce && app) app.animate([{ filter: 'invert(1)' }, { filter: 'invert(1)' }], { duration: 33 });
+      S.crackle(); S.click();
+    };
     function stopCut() { cutT.forEach(clearTimeout); cutT = []; cut.style.display = 'none'; }
     window.JRLcut = function (from, to, o) {
       o = o || {}; stopCut();
@@ -876,7 +884,7 @@ html.inv body{filter:invert(1)}
 
     /* ================= error band: ERROR_ERROR_ across the command line ================= */
     window.JRLerrband = function (word) {
-      var host = document.querySelector('.cli'); if (!host || reduce) return;
+      var host = document.querySelector('.bstrip'); if (!host || reduce) return;
       var b = document.createElement('div'), s = ''; for (var i = 0; i < 6; i++) s += 'ERROR_';
       b.className = 'errband'; b.setAttribute('aria-hidden', 'true');
       b.innerHTML = '<span>' + s + '<b>' + String(word || 'NOT_RECOGNISED').replace(/[<>&]/g, '') + '</b>_' + s + s + '</span>';
@@ -921,7 +929,7 @@ html.inv body{filter:invert(1)}
       t += 420; at(end, t);
     };
 
-    /* ================= idle: after 40s untouched the field steps through the system palette, holding each colour ================= */
+    /* ================= idle: on the living fields (Color, Culture), after 25s untouched the field steps through the system palette ================= */
     var IDLE = ['#441eec', '#e0216f', '#ef4606', '#2ddccd', '#0400f5', '#c2ff16', '#0a0a0b'], idleI = 0, idleOn = false, lastIn = Date.now();
     function lin(v) { return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }
     function lum(hex) { var c = rgb(hex).map(lin); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; }
@@ -929,9 +937,9 @@ html.inv body{filter:invert(1)}
     function wake() { lastIn = Date.now(); if (!idleOn) return; idleOn = false; var m = document.getElementById('main'); if (m) { m.style.removeProperty('--fld'); m.style.removeProperty('--ink'); } flashMain(); }
     ['pointermove', 'pointerdown', 'keydown', 'wheel', 'touchstart', 'scroll'].forEach(function (ev) { document.addEventListener(ev, wake, { capture: true, passive: true }); });
     setInterval(function () {
-      if (reduce || document.hidden || R.dataset.mode === 'white' || Date.now() - lastIn < 40000) return;
+      if (reduce || document.hidden || Date.now() - lastIn < 25000) return;
       var f = R.dataset.field, boot = document.getElementById('boot');
-      if (f === 'color' || f === 'culture' || R.classList.contains('viewing') || R.classList.contains('cg-bg')) return;
+      if ((f !== 'color' && f !== 'culture') || R.classList.contains('viewing') || R.classList.contains('cg-bg') || (window.JRLindex && window.JRLindex.isOpen())) return;
       if (boot && !boot.hidden && !boot.classList.contains('gone')) return;
       var m = document.getElementById('main'), c = IDLE[idleI++ % IDLE.length]; if (!m) return;
       idleOn = true; m.style.setProperty('--fld', c); m.style.setProperty('--ink', lum(c) > .25 ? '#0a0a0b' : '#f2f2ee'); flashMain(); S.tick(.03);
@@ -1486,9 +1494,6 @@ html.inv body{filter:invert(1)}
       $('#p-since').textContent = since <= 0 ? 'Today' : since + 'd ago';
     }
     $('#r-meta').textContent = pad(N) + ' files';
-    (function () { var a0 = document.querySelector('#list li:first-child a'); if (a0) setTimeout(function () { keep(a0, 1, a0.textContent); }, 2600); })();
-    (function () { var sb = document.querySelector('#sub .msg b'); if (!sb) return; var st = sb.textContent;
-      document.getElementById('sub').addEventListener('mouseenter', function () { decode(sb, st, { frames: 12, keep: 1 }); }); })();
     $('#sess').textContent = 'Session open · ' + N + ' reports';
     document.querySelectorAll('#list li').forEach(function (li) {
       li.addEventListener('click', function () {
@@ -1513,7 +1518,7 @@ html.inv body{filter:invert(1)}
     function stamp() { var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
     function log(msg, hot) {
       var d = document.createElement('div');
-      decode(d, stamp() + ' ' + msg, { frames: 9 });
+      d.textContent = stamp() + ' ' + msg;
       if (hot) d.className = 'st';
       feed.insertBefore(d, feed.firstChild);
       while (feed.children.length > 9) feed.lastChild.remove();
@@ -1528,6 +1533,7 @@ html.inv body{filter:invert(1)}
       color: { t: 'Color', tag: '05 / OKLCH', sub: 'four hues // 30 fps', s: 'Four colors at a time.', g: 'Gradient', n: '05' },
       culture: { t: 'Culture', tag: '06 / Live', sub: 'dot matrix // round + square', s: 'Move to stir the field.', g: 'Organism', n: '06' }
     };
+    window.JRLmeta = META;
     var current = 'reports';
     var main = $('#main'), fine = matchMedia('(pointer:fine)').matches;
     var rnd = function (a, b) { return a + Math.random() * (b - a); };
@@ -1558,7 +1564,6 @@ html.inv body{filter:invert(1)}
     document.querySelectorAll('.mod').forEach(function (b) {
       var first = b.firstElementChild, ml = document.createElement('span'); ml.className = 'ml';
       ml.innerHTML = sym(b.dataset.mod, { cell: 2.6, gap: .1, wave: true }); b.insertBefore(ml, first); ml.appendChild(first);
-      var lbt = first.textContent; b.addEventListener('mouseenter', function () { decode(first, lbt, { frames: 9, speed: 42 }); });
     });
     /* module switches use the flash-card cut in the core layer (JRLcut) */
     var lastT = '';
@@ -1604,8 +1609,8 @@ html.inv body{filter:invert(1)}
         else kf = [{ clipPath: 'inset(0 100% 0 0)', filter: 'brightness(2)', easing: 'steps(5,end)' }, { offset: .6, clipPath: 'inset(0 0 0 0)', filter: 'brightness(2)', easing: st }, { clipPath: 'inset(0 0 0 0)', filter: 'none' }];
         li.animate(kf, { duration: dur, delay: d, fill: 'backwards' });
         if (kind !== 'scramble') {
-          var la = li.querySelector('a'); if (la) { if (!la.dataset.t) la.dataset.t = la.textContent; decode(la, la.dataset.t, { delay: d + 33, frames: 10, speed: 33 }); }
-          var nt = li.querySelector('.note'); if (nt && nt.textContent.trim()) { if (!nt.dataset.t) nt.dataset.t = nt.textContent; decode(nt, nt.dataset.t, { delay: d + 66, frames: 10, speed: 33 }); }
+          var la = li.querySelector('a'); if (la) { if (!la.dataset.t) la.dataset.t = la.textContent; la.textContent = la.dataset.t; }
+          var nt = li.querySelector('.note'); if (nt && nt.textContent.trim()) { if (!nt.dataset.t) nt.dataset.t = nt.textContent; nt.textContent = nt.dataset.t; }
         }
         if (kind === 'scramble') {
           var a = li.querySelector('a'); if (!a) return; if (!a.dataset.t) a.dataset.t = a.textContent; var txt = a.dataset.t, f = 0;
@@ -1615,7 +1620,6 @@ html.inv body{filter:invert(1)}
         }
       });
       log('reports // ' + kind);
-      var a0 = document.querySelector('#list li:first-child a'); if (a0) setTimeout(function () { keep(a0, 1, a0.dataset.t || a0.textContent); }, base + 1800);
     }
 
     function go(mod, quiet, how) {
@@ -1625,20 +1629,21 @@ html.inv body{filter:invert(1)}
       var can = changed && !quiet && !reduce && (bootEl.hidden || bootEl.classList.contains('gone')) && !R.classList.contains('cg-bg');
       var ofl = getComputedStyle(R).getPropertyValue('--fld').trim();
       if (window.JRLviewer && JRLviewer.isOpen()) JRLviewer.close(true);
+      var ix = document.getElementById('index'); if (ix) ix.hidden = true;
       current = mod;
       R.dataset.field = mod;
+      setMode(regOf(mod) === 'white');
       if (mod === 'culture') applyPal(); else clearPal();
       if (window.JRLtheme) JRLtheme();
       document.querySelectorAll('.mod').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.mod === mod); });
       document.querySelectorAll('.mpanel').forEach(function (p) { var on = p.dataset.panel === mod; p.classList.toggle('off', !on); p.setAttribute('aria-hidden', !on); });
-      var m = META[mod], D = 0;
-      if (can && window.JRLcut) D = JRLcut(prev, mod, { from: ofl, label: m.t, n: m.n, back: how.pop });
+      // two tiers: entering the living fields (Color, Culture) is a big move and gets the full burst;
+      // everything else is a hard cut with one inverted frame
+      var m = META[mod], D = 0, big = mod === 'color' || mod === 'culture';
+      if (can && big && window.JRLcut) D = JRLcut(prev, mod, { from: ofl, label: m.t, n: m.n, back: how.pop });
+      else if (can && window.JRLsnap) JRLsnap(how.pop);
       else if (changed && !quiet && window.JRLsfx) JRLsfx.click();
       $('#mtitle').textContent = m.t; $('#mtag').textContent = m.tag; $('#mslog').textContent = m.s;
-      decode($('#msub'), m.sub, { frames: quiet ? 1 : 10, speed: 33, delay: D });
-      decode($('#giant'), m.g, { keep: 1, frames: quiet ? 1 : 12, speed: 50, delay: D });
-      document.querySelectorAll('.mpanel[data-panel="' + mod + '"] .ph > span, .mpanel[data-panel="' + mod + '"] .ph > .take').forEach(function (s, i) {
-        if (!s.children.length && s.textContent.trim()) decode(s, s.dataset.t || (s.dataset.t = s.textContent), { frames: quiet ? 1 : 10, speed: 33, delay: D + 33 + i * 33 }); });
       if (mod === 'reports' && changed && !quiet) itemsIn('', D + 33);
       if (mod === 'culture') setTimeout(mountCulture, 30);
       if (mod === 'song') eqKick();
@@ -1646,7 +1651,7 @@ html.inv body{filter:invert(1)}
       if (mod === 'image' && changed && !quiet && window.JRLfx && JRLfx.resolve) setTimeout(function () { var w = document.querySelector('#daily:not([hidden]) .imgwrap'); if (w) JRLfx.resolve(w); }, D);
       $('#main').scrollTop = 0;
       window.dispatchEvent(new Event('resize'));
-      if (!quiet) log('module // ' + mod + (how.pop ? ' (back)' : ''));
+      if (!quiet) { log('module // ' + mod + (how.pop ? ' (back)' : '')); if (window.JRLecho) JRLecho(how.pop ? 'back' : 'go ' + mod); }
       try {
         var st = { jrl: mod }, url = mod === 'reports' ? location.pathname + location.search : '#' + mod;
         if (how.pop) {} else if (quiet || !changed) history.replaceState(st, '', url); else history.pushState(st, '', url);
@@ -1837,22 +1842,18 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     function setSide(off, anim) {
       var app = $('.app'); if (anim && !reduce) { app.classList.add('tg'); setTimeout(function () { app.classList.remove('tg'); }, 560); }
       if (off) R.dataset.side = 'off'; else delete R.dataset.side;
-      if (!off && anim) document.querySelectorAll('.side .lbl').forEach(function (l, i) { if (!l.children.length) { l.dataset.t = l.dataset.t || l.textContent; decode(l, l.dataset.t, { frames: 12, delay: 200 + i * 80 }); } });
       stog.setAttribute('aria-expanded', !off); stog.querySelector('b').textContent = off ? '◂' : '▸';
       store.set('jrl-side', off ? 'off' : 'on');
     }
-    var sp = store.get('jrl-side'); setSide(sp ? sp === 'off' : innerWidth < 1600);
+    setSide(true);
     stog.addEventListener('click', function () { setSide(R.dataset.side !== 'off', true); log(R.dataset.side === 'off' ? 'panel // folded' : 'panel // open'); });
 
     // ---------- grey / dark ----------
-    var modebtn = $('#modebtn');
-    function setMode(w) {
-      if (w) R.dataset.mode = 'white'; else delete R.dataset.mode;
-      modebtn.textContent = w ? 'Dark' : 'White'; if (window.JRLtheme) JRLtheme();
-      store.set('jrl-mode', w ? 'white' : '');
-    }
-    setMode(store.get('jrl-mode') === 'white');
-    modebtn.addEventListener('click', function () { setMode(R.dataset.mode !== 'white'); });
+    // register follows content: reports + babel speak in the white faction voice, song + color + culture in the
+    // dark system voice, and image changes voice every other day
+    function regOf(mod) { if (mod === 'reports' || mod === 'babel') return 'white'; if (mod !== 'image') return 'dark'; var d = new Date(dayStr()); return Math.round((d - new Date(d.getFullYear(), 0, 1)) / 864e5) % 2 ? 'white' : 'dark'; }
+    function setMode(w) { if (w) R.dataset.mode = 'white'; else delete R.dataset.mode; }
+    var modebtn = { click: function () {} };
 
     // ---------- clock + load ----------
     var fmt = new Intl.DateTimeFormat('en-US', { timeZone: ET, hourCycle: 'h23', hour: 'numeric', minute: 'numeric', second: 'numeric', weekday: 'short' });
@@ -1958,7 +1959,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     var HELP = [
       ['ls', 'list the reports'], ['open N', 'open report N'], ['reports · song · image · babel · color · culture', 'switch module'],
       ['play / pause', 'song of the day'], ['pull', 'new sentence from the library'], ['wall / unwall', 'gradient behind everything'],
-      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['mode', 'white or dark'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['ls /archive', 'older versions of this site'], ['1–6 · M · W · /', 'keyboard'], ['clear', 'clear this']
+      ['reboot', 'replay the boot screen'], ['term', '???'], ['view cards / list', 'how reports are laid out'], ['panel', 'show or hide telemetry'], ['cats', 'summon cats'], ['sub', 'substack'], ['index', 'every section at once (Tab)'], ['feed', 'the event feed (F)'], ['mute · sfx on|off', 'sound'], ['back', 'previous section'], ['ls /archive', 'older versions of this site'], ['1–6 · Q/E · Tab · F · M · /', 'keyboard'], ['clear', 'clear this']
     ];
     var C = {
       help: function () { HELP.forEach(function (h) { say('<span class="k">' + esc(h[0]) + '</span>  ' + esc(h[1])); }); },
@@ -1977,7 +1978,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       unwall: function () { if (R.classList.contains('cg-bg')) $('#cg-back').click(); },
       cats: function () { if ($('#tarot').hidden) return say('the cats live behind the tarot card. it hasn\'t been drawn yet.', 'e'); $('#tarot').click(); },
       sub: function () { say('→ lesymboliste.substack.com', 'k'); window.open('https://lesymboliste.substack.com/', '_blank', 'noopener'); },
-      mode: function () { modebtn.click(); },
+      mode: function () { say('the content picks the register now: reports + babel white, song + color + culture dark, image changes daily', 'k'); },
       panel: function () { stog.click(); },
       view: function (a) { setRView(a || ($('#list').classList.contains('cards') ? 'list' : 'cards')); say('reports // ' + ($('#list').classList.contains('cards') ? 'cards' : 'list'), 'k'); },
       clear: function () { out.innerHTML = ''; },
@@ -1994,6 +1995,9 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       ARCH.forEach(function (x) { say('<a href="reports/_archive/' + x[0] + '/">/archive/' + x[0] + '</a>  <span>' + esc(x[1]) + '</span>'); });
       say('type open archive/2026-10 to visit one', 'k');
     };
+    C.go = function (a) { C.cd(a); };
+    C.index = function () { if (window.JRLindex) JRLindex.open(); };
+    C.feed = function () { $('#side-tog').click(); };
     C.mute = function () { if (!window.JRLsfx) return; JRLsfx.toggle(); say('sound // ' + (JRLsfx.on() ? 'on' : 'muted'), 'k'); };
     C.sfx = function (a) { if (!window.JRLsfx) return; JRLsfx.set(a !== 'off'); say('sound // ' + (JRLsfx.on() ? 'on' : 'muted'), 'k'); };
     C.back = function () { history.back(); };
@@ -2004,6 +2008,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       if (e.key !== 'Enter') return;
       var v = cmd.value.trim(); cmd.value = '';
       if (!v) return;
+      window.JRLcmdT = Date.now(); if (window.JRLecho) JRLecho(v, true);
       hist.push(v); hi = hist.length;
       say('<span class="c">$ ' + esc(v) + '</span>');
       var parts = v.split(/\s+/), k = parts[0].toLowerCase(), arg = parts.slice(1).join(' ');
@@ -2013,7 +2018,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       say('unknown: ' + esc(k) + ". type 'help'", 'e'); if (window.JRLsfx) JRLsfx.err(); if (window.JRLerrband) JRLerrband('NOT_RECOGNISED');
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === '/' && document.activeElement !== cmd && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); cmd.focus(); }
+      if (e.key === '/' && document.activeElement !== cmd && !/input|textarea/i.test(document.activeElement.tagName)) { e.preventDefault(); if (window.JRLterm) JRLterm(true); else cmd.focus(); }
     });
 
     // ---------- boot: plays once per browser session and waits for a click; `reboot` replays it ----------
@@ -2080,7 +2085,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       setTimeout(bootPrompt, 380);
     }
     function enterSite() {
-      decode($('#sess'), 'Session open · ' + N + ' reports', { keep: 1 });
+      $('#sess').textContent = 'Session open · ' + N + ' reports';
       if (current === 'reports') setTimeout(function () { itemsIn(); }, 320);
     }
     function finish() {
@@ -2264,7 +2269,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       },
       chaos: function (a) { var on = a !== 'off'; chaos(on); ttxt(on ? 'chaos mode on. the gui will start misbehaving.' : 'chaos contained.', on ? 'tr' : 'tb'); },
       invert: function (a) { R.classList.toggle('inv', a !== 'off'); ttxt('gui ' + (a !== 'off' ? 'inverted' : 'restored'), 'tb'); },
-      mode: function (a) { var w = a === 'grey' || a === 'white'; if ((R.dataset.mode === 'white') !== w) modebtn.click(); ttxt('gui mode: ' + (w ? 'white' : 'dark'), 'tb'); },
+      mode: function () { ttxt('register follows content: reports + babel white · song + color + culture dark · image flips daily', 'tb'); },
       color: function (a) { var m = { lime: 'oklch(.93 .23 125)', red: 'oklch(.66 .27 25)', cyan: 'oklch(.85 .15 200)', white: '#fff', amber: 'oklch(.83 .17 75)' }; if (!m[a]) return terr('color: lime | red | cyan | white | amber'); term.el.style.setProperty('--tc', m[a]); ttxt('ink set to ' + a); },
       hack: async function (a) {
         var tg = a || 'mainframe'; term.busy = true;
@@ -2316,29 +2321,76 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     C.term = C.terminal = function () { say('opening root terminal …', 'k'); setTimeout(openTerm, 250); };
     var seen = false; try { seen = sessionStorage.getItem('jrl-boot'); sessionStorage.setItem('jrl-boot', '1'); } catch (e) {}
     log('session // opened');
-    if (!seen) runBoot(); else { if (current === 'reports') itemsIn('', 150); decode($('#sess'), 'Session open · ' + N + ' reports', { keep: 1 }); }
+    var visited = store.get('jrl-visited'); store.set('jrl-visited', '1');
+    if (!seen && !visited) runBoot();
+    else if (!seen && window.JRLintro) JRLintro(function () { if (window.JRLsfx) JRLsfx.enter(); enterSite(); });
+    else { if (current === 'reports') itemsIn('', 150); $('#sess').textContent = 'Session open · ' + N + ' reports'; }
   })();
 </script>
 <script>
-  // Glue: report viewer, browser history, keyboard, and the sounds attached to everyday actions.
+  // Glue: the shell is the navigation. Every click types its command into the prompt.
+  // Index (Tab), Q/E cycling, feed (F), terminal (/), report viewer, browser history.
   (function () {
     var R = document.documentElement, $ = function (s) { return document.querySelector(s); }, S = window.JRLsfx;
     var MODS = ['reports', 'song', 'image', 'babel', 'color', 'culture'];
     var pad = function (n) { return String(n).padStart(2, '0'); };
+    var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var snap = function (low) { if (window.JRLsnap) window.JRLsnap(low); };
 
-    /* ---------- report viewer: reports open inside the site; Back returns to the list ---------- */
+    /* ---------- the prompt: clicks type their command ---------- */
+    var echoEl = $('#echo'), echoT = 0;
+    window.JRLecho = function (cmd, typed) {
+      if (!typed && Date.now() - (window.JRLcmdT || 0) < 700) return;   // it came from the terminal itself
+      if (echoEl) {
+        clearInterval(echoT); var i = 0; echoEl.textContent = typed ? cmd : '';
+        if (!typed) echoT = setInterval(function () { echoEl.textContent = cmd.slice(0, ++i); if (i >= cmd.length) clearInterval(echoT); }, 22);
+      }
+      if (!typed) { var out = $('#out'); if (out) { var d = document.createElement('div'); d.className = 'c'; d.textContent = '$ ' + cmd; out.appendChild(d); while (out.children.length > 60) out.firstChild.remove(); out.scrollTop = out.scrollHeight; } }
+    };
+    function term(on) {
+      if (on) { R.dataset.term = 'on'; setTimeout(function () { $('#cmd').focus(); var o = $('#out'); o.scrollTop = o.scrollHeight; }, 0); }
+      else { delete R.dataset.term; if (document.activeElement === $('#cmd')) $('#cmd').blur(); }
+    }
+    window.JRLterm = term;
+    $('#bs-prompt').addEventListener('click', function () { term(R.dataset.term !== 'on'); });
+    $('#cli-x').addEventListener('click', function () { term(false); });
+
+    /* ---------- index: every section at once ---------- */
+    var IDX = [['reports', '01', '#e0216f', '#f2f2ee'], ['song', '02', '#ef4606', '#0a0a0b'], ['image', '03', '#c7c2b6', '#0a0a0b'],
+               ['babel', '04', '#8476bf', '#0a0a0b'], ['color', '05', '#0a0a0b', '#c2ff16'], ['culture', '06', '#0a0a0b', '#2ddccd']];
+    var ix = $('#index');
+    function buildIndex() {
+      var M = window.JRLmeta || {};
+      ix.innerHTML = '<div class="ihead"><span>Index // 06 sections</span><span>1–6 or click · Tab or Esc closes</span></div>' + IDX.map(function (c) {
+        var m = M[c[0]] || {}, cnt = $('.mod[data-mod="' + c[0] + '"] > span:last-child'), cur = R.dataset.field === c[0];
+        return '<button type="button" class="icard" data-mod="' + c[0] + '" style="--ib:' + c[2] + ';--ii:' + c[3] + '" aria-current="' + cur + '"><span class="in">' + c[1] + '</span><span class="is">' + esc(m.s || '') + '</span><span class="ic">' + esc(cnt ? cnt.textContent : '') + '</span><span class="iw" aria-hidden="true">' + esc(m.t || c[0]) + '</span></button>';
+      }).join('');
+    }
+    var index = window.JRLindex = {
+      isOpen: function () { return !ix.hidden; },
+      open: function () { if (!ix.hidden) return; buildIndex(); ix.hidden = false; snap(); window.JRLecho('index'); },
+      close: function () { if (ix.hidden) return; ix.hidden = true; snap(); }
+    };
+    ix.addEventListener('click', function (e) { var c = e.target.closest('.icard'); if (!c) return; ix.hidden = true; if (R.dataset.field === c.dataset.mod) snap(); window.JRLgo(c.dataset.mod); });
+    $('#idx-btn').addEventListener('click', function () { if (index.isOpen()) index.close(); else index.open(); });
+
+    /* ---------- report viewer: reports open inside the site as external files; Back returns ---------- */
     var V = $('#viewer'), VF = $('#v-frame'), VT = $('#v-t'), VN = $('#v-n'), VO = $('#v-open'), pushed = false;
     var items = [].slice.call(document.querySelectorAll('#list li')).map(function (li, i, all) {
       var a = li.querySelector('a'); return { n: all.length - i, li: li, href: a ? a.getAttribute('href') : '', title: a ? a.textContent.trim() : '' };
     });
     function find(n) { return items.filter(function (x) { return x.n === +n; })[0]; }
+    // a fresh frame per document: changing an existing frame's src would add browser-history entries,
+    // and Back would then step through the frame instead of closing the viewer
+    function frame(src) { var f = document.createElement('iframe'); f.id = 'v-frame'; f.title = 'Report'; if (src) f.src = src; VF.replaceWith(f); VF = f; }
     var viewer = window.JRLviewer = {
       isOpen: function () { return !V.hidden; },
       open: function (n, o) {
         o = o || {}; var it = find(n); if (!it) return false;
         var was = !V.hidden;
-        VT.textContent = it.title; VN.textContent = pad(it.n); VO.href = it.href;
-        if (VF.getAttribute('src') !== it.href) VF.setAttribute('src', it.href);
+        index.close();
+        VT.textContent = it.title; VN.textContent = 'EXT // ' + pad(it.n); VO.href = it.href;
+        if (VF.getAttribute('src') !== it.href) frame(it.href);
         if (!was) {
           var ofl = getComputedStyle(R).getPropertyValue('--fld').trim();
           R.classList.add('viewing'); V.hidden = false;
@@ -2348,17 +2400,18 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
           var st = { jrl: 'report', n: it.n }, url = '#report-' + pad(it.n);
           if (o.pop) {} else if (o.replace || (history.state && history.state.jrl === 'report')) history.replaceState(st, '', url); else { history.pushState(st, '', url); pushed = true; }
         } catch (e) {}
+        if (!o.quiet) window.JRLecho(o.pop ? 'back' : 'open ' + pad(it.n));
         if (window.JRLlog) window.JRLlog('report // opened ' + pad(it.n));
         return true;
       },
       close: function (silent) {
         if (V.hidden) return;
-        V.hidden = true; R.classList.remove('viewing'); VF.setAttribute('src', 'about:blank');
+        V.hidden = true; R.classList.remove('viewing'); frame('');
         if (window.JRLlog) window.JRLlog('report // closed');
         if (silent) return;
+        window.JRLecho('close'); snap();
         if (pushed && history.state && history.state.jrl === 'report') { pushed = false; history.back(); return; }
         try { var m = R.dataset.field || 'reports'; history.replaceState({ jrl: m }, '', m === 'reports' ? location.pathname + location.search : '#' + m); } catch (e) {}
-        if (S) S.click();
       }
     };
     $('#list').addEventListener('click', function (e) {
@@ -2372,6 +2425,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     /* ---------- history: Back walks back through the sections you visited ---------- */
     window.addEventListener('popstate', function (e) {
       var st = e.state || {}, h = location.hash.slice(1), m = /^report-(\d+)$/.exec(h);
+      index.close();
       if (st.jrl === 'report' || m) { viewer.open(st.n || +m[1], { pop: true }); return; }
       pushed = false; if (viewer.isOpen()) viewer.close(true);
       var mod = st.jrl || (MODS.indexOf(h) > -1 ? h : 'reports');
@@ -2380,28 +2434,30 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     var h0 = /^#report-(\d+)$/.exec(window.JRLh0 || '');
     if (h0) viewer.open(+h0[1], { replace: true, quiet: true });
 
-    /* ---------- keyboard: 1–6 modules, M mute, W white/dark, Esc closes ---------- */
+    /* ---------- keyboard: 1–6, Q/E, Tab index, F feed, M mute, / terminal, Esc backs out ---------- */
     document.addEventListener('keydown', function (e) {
       if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey) return;
       var boot = $('#boot'); if (boot && !boot.hidden && !boot.classList.contains('gone')) return;
-      var term = document.getElementById('term'); if (term && !term.hidden) return;
-      if (e.key === 'Escape' && viewer.isOpen()) { viewer.close(); return; }
-      var a = document.activeElement; if (a && (/^(input|textarea|select)$/i.test(a.tagName) || a.isContentEditable)) { if (e.key === 'Escape') a.blur(); return; }
-      if (/^[1-6]$/.test(e.key)) { e.preventDefault(); if (window.JRLgo) window.JRLgo(MODS[+e.key - 1]); }
-      else if (e.key === 'm' || e.key === 'M') { S.toggle(); if (window.JRLlog) window.JRLlog('sound // ' + (S.on() ? 'on' : 'muted')); }
-      else if (e.key === 'w' || e.key === 'W') { $('#modebtn').click(); }
+      if (document.getElementById('intro')) return;
+      var rt = document.getElementById('term'); if (rt && !rt.hidden) return;
+      var a = document.activeElement;
+      if (a && (/^(input|textarea|select)$/i.test(a.tagName) || a.isContentEditable)) { if (e.key === 'Escape') { a.blur(); if (a.id === 'cmd') term(false); } return; }
+      if (e.key === 'Escape') {
+        if (index.isOpen()) index.close(); else if (viewer.isOpen()) viewer.close(); else if (R.dataset.term === 'on') term(false); else if (R.dataset.side !== 'off') $('#side-tog').click();
+        return;
+      }
+      if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); if (index.isOpen()) index.close(); else index.open(); return; }
+      if (/^[1-6]$/.test(e.key)) { e.preventDefault(); ix.hidden = true; window.JRLgo(MODS[+e.key - 1]); return; }
+      var k = e.key.toLowerCase();
+      if (k === 'q' || k === 'e') { e.preventDefault(); ix.hidden = true; var i = MODS.indexOf(R.dataset.field); window.JRLgo(MODS[(i + (k === 'e' ? 1 : -1) + 6) % 6]); return; }
+      if (k === 'm') { S.toggle(); window.JRLecho(S.on() ? 'sfx on' : 'mute'); if (window.JRLlog) window.JRLlog('sound // ' + (S.on() ? 'on' : 'muted')); return; }
+      if (k === 'f') { $('#side-tog').click(); window.JRLecho('feed'); return; }
     });
 
-    /* ---------- sounds on everyday actions ---------- */
-    var fine = matchMedia('(pointer:fine)').matches, lastH = null;
-    document.addEventListener('pointerover', function (e) {
-      if (!fine || !e.target.closest) return;
-      var el = e.target.closest('button, a, .mod, #list li, .cg-row');
-      if (el && el !== lastH) { lastH = el; S.tick(); } else if (!el) lastH = null;
-    }, { passive: true });
+    /* ---------- sound: only actions make noise, never hovering ---------- */
     document.addEventListener('click', function (e) {
       var el = e.target.closest && e.target.closest('button, a'); if (!el) return;
-      if (el.closest('.mod') || el.closest('#list') || /^(snd|cg-play|cg-lock|b-shuffle|s-play)$/.test(el.id)) return;
+      if (el.closest('.mod') || el.closest('#list') || el.closest('#index') || /^(snd|cg-play|cg-lock|b-shuffle|s-play|idx-btn|v-close)$/.test(el.id)) return;
       S.click();
     }, true);
     document.addEventListener('keydown', function (e) {
@@ -2413,7 +2469,9 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     }, true);
     var libLog = $('#lib-log');
     if (libLog) new MutationObserver(function (ms) { ms.forEach(function (m) { [].forEach.call(m.addedNodes, function (n) { if (n.classList && n.classList.contains('them')) S.roll(8); }); }); }).observe(libLog, { childList: true });
-    $('#s-play').addEventListener('click', function () { var s = $('#song'); if (s && !s.classList.contains('playing')) S.click(); });
+    $('#s-play').addEventListener('click', function () { var s = $('#song'); if (s && !s.classList.contains('playing')) S.click(); window.JRLecho(s && s.classList.contains('playing') ? 'pause' : 'play'); });
+    $('#b-shuffle').addEventListener('click', function () { window.JRLecho('pull'); });
+    $('#side-tog').addEventListener('click', function () { snap(); });
 
     if (window.JRLtheme) window.JRLtheme();
   })();
