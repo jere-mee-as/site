@@ -1469,7 +1469,7 @@ html.inv body{filter:invert(1)}
         if (el._dec !== id) return;
         var iv = setInterval(function () {
           if (el._dec !== id) { clearInterval(iv); return; }
-          f++; var prog = f / tot;
+          f++; var prog = f / tot; if (window.JRLsfx && !o.mute) JRLsfx.tick(.035);
           el.textContent = txt.split('').map(function (ch, i) { return ch === ' ' || ch === '\n' || prog * 1.35 > i / txt.length + seeds[i] ? ch : gl(); }).join('');
           if (f >= tot) { clearInterval(iv); el.textContent = txt; if (o.keep) keep(el, o.keep, txt); }
         }, (o.speed || 68) * FX.dspd);
@@ -2144,7 +2144,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     function ttxt(text, cls, o) { var d = tline('', cls); tdec(d, text, o); return d; }
     function terr(text) { if (window.JRLsfx) JRLsfx.err(); return tline('<span class="tr">' + esc(text) + '</span>'); }
     async function art(lines, cls) { for (var i = 0; i < lines.length; i++) { var d = tline('', 'tart ' + (cls || '')); tdec(d, lines[i], { frames: 7, speed: 26 }); await sleep(110); } }
-    function typeInto(el, s, ms) { return new Promise(function (res) { var i = 0; (function k() { if (i >= s.length) { res(); return; } el.textContent += s[i++]; setTimeout(k, reduce ? 0 : ms * (.5 + Math.random())); })(); }); }
+    function typeInto(el, s, ms) { return new Promise(function (res) { var i = 0; (function k() { if (i >= s.length) { res(); return; } el.textContent += s[i++]; if (window.JRLsfx) JRLsfx.key(); setTimeout(k, reduce ? 0 : ms * (.5 + Math.random())); })(); }); }
     function spin(el, ms) { var f = '|/-\\', i = 0, base = el.textContent; return new Promise(function (res) { var iv = setInterval(function () { el.textContent = base + f[i++ % 4] + ' ' + '.'.repeat(i % 12); }, 80); setTimeout(function () { clearInterval(iv); res(); }, reduce ? 0 : ms); }); }
     function pbar(el, ms, label) { var t0 = performance.now(); return new Promise(function (res) { if (reduce) { el.textContent = '[100%] ' + '█'.repeat(30) + ' ' + (label || ''); res(); return; }
       var iv = setInterval(function () { var p = Math.min(1, (performance.now() - t0) / ms), n = Math.round(p * 30); el.textContent = '[' + String(Math.round(p * 100)).padStart(3, ' ') + '%] ' + '█'.repeat(n) + '░'.repeat(30 - n) + ' ' + (label || ''); if (p >= 1) { clearInterval(iv); res(); } }, 45); }); }
@@ -2357,7 +2357,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       if (!typed && Date.now() - (window.JRLcmdT || 0) < 700) return;   // it came from the terminal itself
       if (echoEl) {
         clearInterval(echoT); var i = 0; echoEl.textContent = typed ? cmd : '';
-        if (!typed) echoT = setInterval(function () { echoEl.textContent = cmd.slice(0, ++i); if (i >= cmd.length) clearInterval(echoT); }, 22);
+        if (!typed) echoT = setInterval(function () { echoEl.textContent = cmd.slice(0, ++i); if (i % 2 && S) S.key(); if (i >= cmd.length) clearInterval(echoT); }, 33);
       }
       if (!typed) { var out = $('#out'); if (out) { var d = document.createElement('div'); d.className = 'c'; d.textContent = '$ ' + cmd; out.appendChild(d); while (out.children.length > 60) out.firstChild.remove(); out.scrollTop = out.scrollHeight; } }
     };
