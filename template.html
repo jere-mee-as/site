@@ -2005,7 +2005,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       say('type open archive/2026-10 to visit one', 'k');
     };
     C.go = function (a) { C.cd(a); };
-    C.wipe = function () { if (window.JRLwipe) JRLwipe(); say('wipe // invert sweep', 'k'); };
+    C.wipe = function () { say('wipe // invert sweep', 'k'); if (window.JRLterm) JRLterm(false); setTimeout(function () { if (window.JRLwipe) JRLwipe(); }, 120); setTimeout(function () { if (window.JRLterm) JRLterm(true); }, 2050); };
     C.root = function () { say('opening root terminal …', 'k'); setTimeout(openTerm, 250); };
     C.index = function () { if (window.JRLindex) JRLindex.open(); };
     C.feed = function () { $('#side-tog').click(); };
@@ -2306,7 +2306,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     };
     TC.mute = function () { if (window.JRLsfx) { JRLsfx.toggle(); ttxt('sound ' + (JRLsfx.on() ? 'on' : 'muted'), 'tb'); } };
     TC.archive = function () { ttxt('/archive/2026-11-graphic-realism  ·  /archive/2026-10-paper-and-ink', 'tb'); tline('<span class="tdim">exit, then type open archive/2026-10 to visit one</span>'); };
-    TC.wipe = function () { flick(); if (window.JRLwipe) JRLwipe(); ttxt('wipe // invert sweep', 'tb'); };
+    TC.wipe = function () { ttxt('wipe // invert sweep', 'tb'); term.el.hidden = true; setTimeout(function () { if (window.JRLwipe) JRLwipe(); }, 120); setTimeout(function () { term.el.hidden = false; term.inp.focus(); flick(); }, 2050); };
     TC.root = function () { flick(); ttxt('already root.', 'tdim'); };
     TC.logout = TC.quit = TC.exit; TC.cls = TC.clear; TC.dir = TC.ls; TC.ll = TC.ls; TC.man = TC.help; TC['?'] = TC.help;
     async function bday() {
