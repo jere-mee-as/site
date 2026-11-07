@@ -151,7 +151,7 @@ main{grid-area:main;position:relative;isolation:isolate;overflow:auto;min-width:
 #mtitle{margin:0;font:300 clamp(64px,8.4vw,148px)/.84 var(--hub);font-stretch:88%;letter-spacing:-.045em;white-space:nowrap}
 #mslog{font:200 clamp(24px,2.4vw,40px)/1.06 var(--hub);letter-spacing:-.035em;max-width:24ch;text-wrap:balance}
 .mpanel{position:relative;flex:none;margin-bottom:28px;min-width:0}
-.mpanel.off{position:absolute;left:40px;right:34px;top:0;max-height:100%;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-2}
+.mpanel.off{position:absolute;left:0;right:0;top:0;max-height:100%;overflow:hidden;visibility:hidden;pointer-events:none;z-index:-2}
 
 /* slabs */
 .pn{position:relative;min-width:0;background:var(--slab);color:var(--slab-ink);--c-fg:var(--slab-ink);--c-bg:var(--slab);--dim:color-mix(in srgb,var(--slab-ink) 62%,transparent);--rule:color-mix(in srgb,var(--slab-ink) 16%,transparent);clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
@@ -436,6 +436,51 @@ html.inv body{filter:invert(1)}
 #term.flick::before,#wipe.go{animation:tsweep 1.8s ease-in-out}
 @keyframes tsweep{0%{opacity:0;background-position:100% 0}25%{opacity:1}75%{opacity:1}100%{opacity:0;background-position:0 0}}
 
+/* stage: the object in 8 columns, instruments in 4; the field carries rulers and tags */
+.mhead{position:relative;z-index:1}
+.stage{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,8fr) minmax(250px,4fr);gap:22px;align-items:start;max-width:1560px}
+.hero{position:relative;min-width:0}
+.instr{position:sticky;top:0;display:flex;flex-direction:column;margin-bottom:28px}
+.instr .ph{flex-wrap:nowrap}
+.led{width:9px;height:9px;flex:none;background:var(--hl)}
+.led.on{background:transparent;box-shadow:inset 0 0 0 1px var(--hl)}
+.in-body{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;border-bottom:1px solid var(--rule)}
+.in-big{font:700 64px/.9 var(--kode);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.in-big.dot{font:800 44px/1 var(--dot);letter-spacing:.02em;color:var(--hl)}
+.in-cap{font:500 10px/1.3 var(--kode);letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.in-row{display:flex;justify-content:space-between;gap:10px;font:500 11px/1.5 var(--kode);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.in-row b{max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right;color:var(--slab-ink);font-weight:700}
+.in-bars{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;height:76px}
+.in-bars div{display:flex;flex-direction:column;justify-content:flex-end;gap:4px}
+.in-bars i{display:block;min-height:2px;background:var(--hl)}
+.in-bars span{font:500 9px/1 var(--kode);text-transform:uppercase;color:var(--dim);text-align:center}
+.in-marq{font:700 13px/1.3 var(--kode);color:var(--hl);white-space:nowrap;overflow:hidden}
+.in-freq{display:grid;grid-template-columns:repeat(25,1fr);gap:1px;align-items:end;height:44px}
+.in-freq i{display:block;background:var(--slab-ink)}
+.in-cols{display:flex;flex-direction:column;gap:9px}
+.in-col{display:grid;grid-template-columns:16px minmax(0,1fr);grid-template-rows:auto 4px 4px;column-gap:9px;row-gap:3px;align-items:center;font:700 11px/1 var(--kode);letter-spacing:.04em}
+.in-col i{grid-row:1/4;width:16px;height:100%}
+.lv{display:block;height:4px;background:linear-gradient(90deg,var(--slab-ink) calc(var(--v) * 100%),var(--rule) 0)}
+#iv-cul span{display:block;font:500 11px/1.7 var(--kode);letter-spacing:.06em;text-transform:uppercase}
+#iv-cul b{color:var(--hl)}
+.cul-hud{display:none}
+.in-common{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px}
+.in-glyphs{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.in-glyphs .glyph{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;aspect-ratio:1}
+.in-glyphs .glyph b.on{background:var(--slab-ink)}
+.in-hex{margin:0;font:400 10px/1.5 var(--mono);color:var(--dim);white-space:pre;overflow:hidden}
+.instr .bc{height:18px}
+.instr .bc span{background:var(--slab-ink)}
+.fieldfx{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;color:var(--ink)}
+.ruler-x,.ruler-y{position:absolute;left:0;top:0;font:500 9px/1 var(--kode);letter-spacing:.04em}
+.ruler-x{right:0;height:10px;background:linear-gradient(90deg,currentColor 1px,transparent 1px) 0 0/56px 10px repeat-x,linear-gradient(90deg,currentColor 1px,transparent 1px) 0 0/14px 4px repeat-x;opacity:.6}
+.ruler-y{bottom:0;width:10px;background:linear-gradient(currentColor 1px,transparent 1px) 0 0/10px 56px repeat-y,linear-gradient(currentColor 1px,transparent 1px) 0 0/4px 14px repeat-y;opacity:.6}
+.ruler-x span{position:absolute;top:13px;transform:translateX(-50%)}
+.ruler-y span{position:absolute;left:13px;transform:translateY(-50%)}
+.ctag,.reticle{position:absolute;padding:3px 5px;background:var(--slab);color:var(--slab-ink);font:700 9px/1 var(--kode);letter-spacing:.06em;white-space:nowrap}
+.ctag{margin:4px 0 0 4px}
+.reticle{left:0;top:0;margin:8px 0 0 8px}
+.reticle::before{content:"";position:absolute;left:-15px;top:-15px;width:15px;height:15px;background:linear-gradient(var(--ink),var(--ink)) 7px 0/1px 15px no-repeat,linear-gradient(var(--ink),var(--ink)) 0 7px/15px 1px no-repeat}
 @media (max-width:1300px){.babel-grid{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:1100px){
   .app{padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
@@ -452,8 +497,10 @@ html.inv body{filter:invert(1)}
   .cli,.side{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
   .side{width:100vw}
   main{padding:18px 16px 24px}
-  .mpanel.off{left:16px;right:16px}
   #mtitle{font-size:clamp(54px,15vw,92px)}
+  .stage{grid-template-columns:minmax(0,1fr)}
+  .instr{position:relative}
+  .in-common,.fieldfx{display:none}
   #index{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto;grid-auto-rows:minmax(170px,1fr);overflow:auto}
   .totem{display:none}
   #boot{grid-template-columns:minmax(0,1fr)}
@@ -520,6 +567,7 @@ html.inv body{filter:invert(1)}
       </div>
     </div>
 
+    <div class="stage"><div class="hero">
     <section class="mpanel" data-panel="reports">
       <div class="pn">
         <div class="ph"><span>Archive // reports</span><span class="rview" role="group" aria-label="Report view"><button type="button" id="rv-cards" data-v="cards" aria-pressed="true">Cards</button><button type="button" id="rv-list" data-v="list" aria-pressed="false">List</button></span><span id="r-meta">auto-built</span></div>
@@ -643,6 +691,13 @@ html.inv body{filter:invert(1)}
     <section class="mpanel off" data-panel="culture" aria-hidden="true">
       <div class="cul" id="culpn"></div>
     </section>
+    </div>
+    <aside class="instr pn" id="instr" aria-label="Instruments">
+      <div class="ph"><span id="in-h">Instruments // 01</span><i class="led" id="in-led" aria-hidden="true"></i></div>
+      <div class="in-body" id="in-body" aria-live="off"></div>
+      <div class="in-common" aria-hidden="true"><div class="in-glyphs" id="in-glyphs"></div><pre class="in-hex" id="in-hex"></pre><div class="bc" id="in-bc"></div></div>
+    </aside>
+    </div>
 
   </main>
 
@@ -1190,7 +1245,7 @@ html.inv body{filter:invert(1)}
       lastPaint = now;
       var dt = last ? Math.min(100, now - last) : 16; last = now;
       if (!paused) t += dt / 1000 * (reduce ? .2 : .75);
-      var p = mara() ? maraPalette(t) : palette(t);
+      var p = mara() ? maraPalette(t) : palette(t); window.JRLcolorNow = p;
       paint(p, t);
       // values update while visible: frozen when paused, live when locked and playing
       if ((paused || locked) && now - shown > 90) { showValues(p); shown = now; }
@@ -1363,7 +1418,7 @@ html.inv body{filter:invert(1)}
       art.src = cover.src = 'https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg';
     }
     function show(s) {
-      song = s; showText(s);
+      song = s; showText(s); window.JRLsongInfo = { i: h, n: pool ? pool.length : 0 };
       sec.hidden = false;
       var tag = document.createElement('script');
       tag.src = 'https://www.youtube.com/iframe_api';
@@ -1378,7 +1433,7 @@ html.inv body{filter:invert(1)}
           onError: function () {
             // that one won't play here (removed, or no embedding); take the next song instead
             if (!pool || tries++ > 8) { sec.hidden = true; return; }
-            h = (h + 1) % pool.length; song = pool[h]; primed = false;
+            h = (h + 1) % pool.length; song = pool[h]; window.JRLsongInfo = { i: h, n: pool.length }; primed = false;
             showText(song); player.cueVideoById(song.id);
             if (playing) setTimeout(function () { player.playVideo(); }, 300);
           },
@@ -2488,6 +2543,129 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     $('#side-tog').addEventListener('click', function () { snap(); });
 
     if (window.JRLtheme) window.JRLtheme();
+  })();
+</script>
+<script>
+  // Instruments and the living field. The stage is 12 columns: the object in 8, instruments in 4.
+  // Rulers and coordinate tags sit on the field; small things update in 3-frame bursts, then hold.
+  (function () {
+    var R = document.documentElement, $ = function (s) { return document.querySelector(s); };
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var pad = function (n, w) { return String(n).padStart(w || 2, '0'); };
+    var rint = function (n) { return Math.floor(Math.random() * n); };
+    var main = $('#main'), body = $('#in-body'), head = $('#in-h');
+    var NUM = { reports: '01', song: '02', image: '03', babel: '04', color: '05', culture: '06' };
+    function row(k, id, v) { return '<div class="in-row"><span>' + k + '</span><b' + (id ? ' id="' + id + '"' : '') + '>' + (v || '—') + '</b></div>'; }
+    var VIEW = {
+      reports: function () { return '<div class="in-big" id="iv-big">00</div><div class="in-cap">reports on file</div>' + row('Newest', 'iv-new') + row('Since', 'iv-since') + '<div class="in-cap">uploads // last 6 months</div><div class="in-bars" id="iv-bars"></div>'; },
+      song: function () { return '<div class="in-big dot" id="iv-tc">00:00</div><div class="in-cap" id="iv-state">no signal</div>' + row('Track', 'iv-trk') + row('Seed', 'iv-seed') + row('Speed', '', '33⅓ rpm'); },
+      image: function () { return '<div class="in-big dot" id="iv-cd">00:00:00</div><div class="in-cap">until the image resets</div>' + row('Block', 'iv-blk') + row('Channel', 'iv-ch') + row('Reset', '', '00:00 ET'); },
+      babel: function () { return '<div class="in-cap">hexagon</div><div class="in-marq" id="iv-hex">—</div>' + row('Wall', 'iv-w') + row('Shelf', 'iv-s') + row('Volume', 'iv-v') + row('Page', 'iv-p') + '<div class="in-cap">letters on this line</div><div class="in-freq" id="iv-freq"></div>'; },
+      color: function () { return '<div class="in-cap" id="iv-mode">drift</div><div class="in-cols" id="iv-cols"></div>'; },
+      culture: function () { return '<div class="in-cap">field telemetry</div><div id="iv-cul"></div>'; }
+    };
+    var cur = '', hexAddr = '', hexOff = 0, lastLine = '';
+    function txt(id, v) { var e = document.getElementById(id); if (e && v != null && e.textContent !== String(v)) e.textContent = v; }
+    function fnv(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    function bars() {
+      var el = document.getElementById('iv-bars'); if (!el) return;
+      var now = new Date(day + 'T12:00:00'), months = [];
+      for (var k = 5; k >= 0; k--) { var d = new Date(now.getFullYear(), now.getMonth() - k, 1); months.push({ key: d.getFullYear() + '-' + pad(d.getMonth() + 1), lab: d.toLocaleString('en-US', { month: 'short' }), n: 0 }); }
+      document.querySelectorAll('#list li time').forEach(function (t) { var key = (t.getAttribute('datetime') || '').slice(0, 7); months.forEach(function (m) { if (m.key === key) m.n++; }); });
+      var max = Math.max(1, Math.max.apply(null, months.map(function (m) { return m.n; })));
+      el.innerHTML = months.map(function (m) { return '<div><i style="height:' + (Math.ceil(m.n / max * 5) * 20) + '%"></i><span>' + m.lab + '</span></div>'; }).join('');
+    }
+    function build() {
+      var m = R.dataset.field; if (m === cur || !body) return; cur = m; lastLine = '';
+      head.textContent = 'Instruments // ' + (NUM[m] || '00'); body.innerHTML = VIEW[m] ? VIEW[m]() : '';
+      if (m === 'reports') bars(); update();
+    }
+    function update() {
+      var m = cur;
+      if (m === 'reports') { txt('iv-big', ($('#p-n') || {}).textContent); txt('iv-new', ($('#p-new') || {}).textContent); txt('iv-since', ($('#p-since') || {}).textContent); }
+      else if (m === 'song') {
+        var s = $('#song'), tc = (($('#s-tc') || {}).textContent || '00:00').split(' / ')[0], I = window.JRLsongInfo;
+        txt('iv-tc', tc); txt('iv-state', s && s.classList.contains('playing') ? 'playing // side a' : s && !s.hidden ? 'cued // press play' : 'no signal');
+        txt('iv-trk', I ? pad(I.i + 1, 4) + ' / ' + pad(I.n, 4) : '—'); txt('iv-seed', fnv('song' + day).toString(16).toUpperCase().padStart(8, '0'));
+      }
+      else if (m === 'image') {
+        var ms = parseInt((($('#d-ms') || {}).textContent || '').replace(/\D/g, ''), 10), a = $('#d-link');
+        if (!isNaN(ms)) { var sec = Math.floor(ms / 1000); txt('iv-cd', pad(Math.floor(sec / 3600)) + ':' + pad(Math.floor(sec / 60) % 60) + ':' + pad(sec % 60)); }
+        txt('iv-blk', a && a.getAttribute('href') ? ((a.getAttribute('href').match(/(\d+)$/) || [])[1] || '—') : '—');
+        txt('iv-ch', ((($('#d-src') || {}).textContent || '—').replace(/^are\.na\//, '')).slice(0, 24));
+      }
+      else if (m === 'babel') {
+        var loc = $('#b-loc'), t = loc ? loc.textContent : '', g = function (k) { var r = new RegExp(k + ' (\\d+)', 'i').exec(t); return r ? r[1] : '—'; };
+        txt('iv-w', g('Wall')); txt('iv-s', g('Shelf')); txt('iv-v', g('Volume')); txt('iv-p', g('Page'));
+        var full = loc && loc.title ? loc.title.replace(/^Hexagon /, '') : ''; if (full && full !== hexAddr) { hexAddr = full; hexOff = 0; }
+        if (hexAddr) { var loop = hexAddr + ' · '; hexOff = (hexOff + 1) % loop.length; txt('iv-hex', (loop + loop).slice(hexOff, hexOff + 22)); }
+        var line = (($('#b-line') || {}).textContent || '');
+        if (line !== lastLine && !/[▀-▟■-▪]/.test(line)) {
+          lastLine = line; var A = 'abcdefghijlmnopqrstuvx ,.', c = {}, max = 1; A.split('').forEach(function (ch) { c[ch] = 0; });
+          line.split('').forEach(function (ch) { if (ch in c) { c[ch]++; if (c[ch] > max) max = c[ch]; } });
+          var f = document.getElementById('iv-freq'); if (f) f.innerHTML = A.split('').map(function (ch) { return '<i title="' + (ch === ' ' ? 'space' : ch) + '" style="height:' + Math.max(4, Math.ceil(c[ch] / max * 5) * 20) + '%"></i>'; }).join('');
+        }
+      }
+      else if (m === 'color') {
+        var P = window.JRLcolorNow, el = document.getElementById('iv-cols'), cg = $('#colorgen');
+        txt('iv-mode', cg ? (cg.classList.contains('dith') ? 'dither // 4 colours' : cg.classList.contains('mara') ? 'marathon // 4 colours' : 'drift // 4 colours') : '');
+        if (P && el) el.innerHTML = P.map(function (p, i) {
+          var hex = '#' + p.rgb.map(function (v) { return v.toString(16).padStart(2, '0'); }).join('').toUpperCase();
+          return '<div class="in-col"><i style="background:' + hex + '"></i><b>C-0' + (i + 1) + ' ' + hex + '</b><span class="lv" style="--v:' + (Math.round(p.L * 10) / 10) + '"></span><span class="lv" style="--v:' + Math.min(1, Math.round(p.C / .3 * 10) / 10) + '"></span></div>';
+        }).join('');
+      }
+      else if (m === 'culture') { var h = $('#culhud'), d = document.getElementById('iv-cul'); if (h && d && d.innerHTML !== h.innerHTML) d.innerHTML = h.innerHTML; }
+    }
+    new MutationObserver(build).observe(R, { attributes: true, attributeFilter: ['data-field'] });
+    build(); setInterval(function () { if (!document.hidden) update(); }, 250);
+
+    /* ---------- the common instruments: glyphs, a hex column, a barcode, a status light ---------- */
+    var GL = $('#in-glyphs'), HX = $('#in-hex'), BC = $('#in-bc'), LED = $('#in-led'), hexLines = [];
+    function glyph() { var cols = []; for (var c = 0; c < 3; c++) { var col = []; for (var r = 0; r < 5; r++) col.push(Math.random() < .5); cols.push(col); }
+      cols = [cols[0], cols[1], cols[2], cols[1], cols[0]]; var s = ''; for (var r2 = 0; r2 < 5; r2++) for (var c2 = 0; c2 < 5; c2++) s += '<b' + (cols[c2][r2] ? ' class="on"' : '') + '></b>'; return '<div class="glyph">' + s + '</div>'; }
+    function glyphs(n) { if (!GL) return; if (!GL.children.length || n === 4) { GL.innerHTML = glyph() + glyph() + glyph() + glyph() + glyph() + glyph(); return; } var k = rint(GL.children.length); GL.children[k].outerHTML = glyph(); }
+    function hexLine() { var a = '0x' + rint(65536).toString(16).toUpperCase().padStart(4, '0') + ' '; for (var i = 0; i < 6; i++) a += ' ' + rint(256).toString(16).toUpperCase().padStart(2, '0'); return a; }
+    function hex(n) { if (!HX) return; for (var i = 0; i < n; i++) { hexLines.push(hexLine()); if (hexLines.length > 7) hexLines.shift(); } HX.textContent = hexLines.join('\n'); }
+    function barcode() { if (!BC) return; var h = ''; for (var i = 0; i < 44; i++) h += '<span style="width:' + (1 + rint(3)) + 'px;margin-right:' + (1 + rint(3)) + 'px"></span>'; BC.innerHTML = h; }
+    glyphs(4); hex(7); barcode();
+
+    /* ---------- the field: rulers, coordinate tags, a reticle that snaps to the grid ---------- */
+    var G = 56, fx = document.createElement('div'); fx.className = 'fieldfx'; fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML = '<div class="ruler-x"></div><div class="ruler-y"></div><span class="ctag" id="ct1"></span><span class="ctag" id="ct2"></span><span class="reticle" id="reticle" hidden></span>';
+    main.insertBefore(fx, main.firstChild);
+    var ct1 = fx.querySelector('#ct1'), ct2 = fx.querySelector('#ct2'), ret = fx.querySelector('#reticle');
+    function tagText() { return pad(rint(99)) + '·' + pad(rint(99)) + ' // ' + (Math.random() * 9).toFixed(3); }
+    function layout() {
+      var w = main.clientWidth, h = main.clientHeight, cols = Math.floor(w / G), hx = '', hy = '';
+      for (var x = G * 2; x < w; x += G * 2) hx += '<span style="left:' + x + 'px">' + pad(x / G) + '</span>';
+      for (var y = G * 2; y < h; y += G * 2) hy += '<span style="top:' + y + 'px">' + pad(y / G) + '</span>';
+      fx.querySelector('.ruler-x').innerHTML = hx; fx.querySelector('.ruler-y').innerHTML = hy;
+      ct1.style.left = (G * Math.max(2, cols - 5)) + 'px'; ct1.style.top = G + 'px';
+      ct2.style.left = (G * Math.max(3, cols - 3)) + 'px'; ct2.style.top = (G * 2) + 'px';
+      if (!ct1.textContent) { ct1.textContent = tagText(); ct2.textContent = tagText(); }
+    }
+    layout(); addEventListener('resize', layout);
+    var rq = 0;
+    main.addEventListener('pointermove', function (e) {
+      var t = e.target; if (!t.classList || !(t === main || t.classList.contains('stage') || t.classList.contains('mhead') || t.classList.contains('hero') || t.classList.contains('mh-l'))) { ret.hidden = true; return; }
+      var now = performance.now(); if (now - rq < 33) return; rq = now;
+      var r = main.getBoundingClientRect(), c = Math.round((e.clientX - r.left + main.scrollLeft) / G), rr = Math.round((e.clientY - r.top + main.scrollTop) / G);
+      ret.hidden = false; ret.style.transform = 'translate(' + (c * G) + 'px,' + (rr * G) + 'px)'; ret.textContent = 'C ' + pad(c) + ' · R ' + pad(rr);
+    });
+    main.addEventListener('pointerleave', function () { ret.hidden = true; });
+
+    /* ---------- bursts: every 2–4s, one to three things update over 3 frames (33ms), then everything holds ---------- */
+    var TK = [function (f) { glyphs(f === 2 ? 0 : 1); }, function () { hex(1); }, function (f) { if (f !== 1) barcode(); },
+              function (f) { ct1.textContent = tagText(); if (f === 2) ct2.textContent = tagText(); }, function () { if (LED) LED.classList.toggle('on'); }];
+    (function loop() {
+      setTimeout(function () {
+        if (!document.hidden && !reduce && !R.classList.contains('viewing')) {
+          for (var i = 0, n = 1 + rint(3); i < n; i++) (function (fn) { fn(0); setTimeout(function () { fn(1); }, 33); setTimeout(function () { fn(2); }, 66); })(TK[rint(TK.length)]);
+        }
+        loop();
+      }, 2000 + Math.random() * 2000);
+    })();
   })();
 </script>
 </body>
