@@ -223,15 +223,24 @@ def main():
     # Newest upload on top (highest number); oldest at the bottom is 01
     items.sort(key=lambda i: i["ts"], reverse=True)
 
-    rows = "\n".join(
-        f'    <li><a href="{html.escape(i["href"])}">{html.escape(i["title"])}</a>'
-        f'<span class="note">{html.escape(i["comment"])}</span>'
-        f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
-        for i in items
-    )
-    page = (ROOT / "template.html").read_text().replace("<!-- LIST -->", rows)
+    def rows_for(prefix=""):
+        return "\n".join(
+            f'    <li><a href="{html.escape(prefix + i["href"])}">{html.escape(i["title"])}</a>'
+            f'<span class="note">{html.escape(i["comment"])}</span>'
+            f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
+            for i in items
+        )
+    page = (ROOT / "template.html").read_text().replace("<!-- LIST -->", rows_for())
     (ROOT / "index.html").write_text(page)
     print(f"Built index.html with {len(items)} entries")
+
+    # Older versions of the site, kept for nostalgia: archive/<name>/template.html is
+    # rendered to reports/_archive/<name>/index.html (the deploy step copies reports/).
+    for t in sorted((ROOT / "archive").glob("*/template.html")):
+        out = REPORTS / "_archive" / t.parent.name / "index.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(t.read_text().replace("<!-- LIST -->", rows_for("../../../")))
+        print(f"Built archive {t.parent.name}")
 
 
 if __name__ == "__main__":

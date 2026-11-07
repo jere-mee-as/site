@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jerelevance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f2ea;
+    --ink: #16130f;
+    --muted: #7a7166;
+    --rule: #e2dbcf;
+    --hover: #8a2b1d;
+    --card: #fffdf8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #121110;
+      --ink: #ece6da;
+      --muted: #8f877b;
+      --rule: #25221f;
+      --hover: #d98a6c;
+      --card: #1c1a17;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "EB Garamond", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+  }
+  main {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 48px 20px 72px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-areas: "head side" "list side" "song side";
+    grid-template-rows: auto auto 1fr;
+    column-gap: 64px;
+  }
+  .title { grid-area: head; display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  ol { grid-area: list; align-self: start; }
+  /* Daily image */
+  .side {
+    grid-area: side;
+    align-self: start;
+    position: sticky;
+    top: 48px;
+    padding-top: 14px;
+  }
+  /* Library of Babel */
+  #babel { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  .babel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+  .babel-head .take { margin: 0; }
+  #b-shuffle {
+    flex: none;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color .2s, border-color .2s, transform .5s cubic-bezier(.3,1.5,.5,1);
+  }
+  #b-shuffle:hover { color: var(--hover); border-color: var(--hover); }
+  #b-shuffle:focus-visible { outline: 2px solid var(--hover); outline-offset: 2px; }
+  #b-shuffle.spin { transform: rotate(180deg); }
+  .b-loc {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .b-line {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink);
+    word-break: break-all;
+    white-space: pre-wrap;
+    transition: opacity .25s ease;
+  }
+  .b-line.fade { opacity: 0; }
+  #daily[hidden] { display: none; }
+  .take {
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+  #d-img {
+    display: block;
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    border: 1px solid var(--rule);
+  }
+  .src {
+    margin-top: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+  .src a { color: var(--muted); font-weight: 400; }
+  .reset {
+    margin-top: 3px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .src a:hover { color: var(--hover); }
+  @media (max-width: 880px) {
+    main {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "head" "side" "list" "song";
+      grid-template-rows: auto;
+    }
+    .side { position: static; padding-top: 0; margin-bottom: 28px; max-width: 340px; }
+    #d-img { max-height: 300px; }
+  }
+  h1 {
+    font-family: "Pinyon Script", cursive;
+    font-weight: 400;
+    font-size: clamp(52px, 11vw, 80px);
+    line-height: 1;
+    text-align: left;
+    filter: url(#ink);
+  }
+  ol {
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+  li {
+    counter-increment: item -1;
+    display: grid;
+    grid-template-columns: 2.2em auto 1fr auto;
+    align-items: baseline;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+    min-width: 0;
+  }
+  li::before {
+    content: counter(item, decimal-leading-zero);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  a {
+    color: var(--ink);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color .15s;
+  }
+  a:hover { color: var(--hover); }
+  .note {
+    font-style: italic;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  time {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  @media (max-width: 520px) {
+    li { grid-template-columns: 2em minmax(0, 1fr) auto; }
+    li a { overflow: hidden; text-overflow: ellipsis; }
+    .note { display: none; }
+  }
+  /* Substack sheep tab */
+  .sub-wrap {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 20;
+    padding: 0 18px 18px 0;
+  }
+  .sub-wrap::before {
+    /* invisible pad so the corner itself belongs to the hover zone */
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 22px;
+    height: 22px;
+  }
+  .sub {
+    position: relative;
+    left: 18px;
+    bottom: 0;
+    margin-bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 68px;
+    max-width: 68px;
+    padding: 6px;
+    border-radius: 999px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+    overflow: hidden;
+    font-weight: 400;
+    transform: translate(-30px, 30px) rotate(12deg);
+    transition:
+      max-width .55s cubic-bezier(.2,.9,.25,1),
+      padding .55s cubic-bezier(.2,.9,.25,1),
+      transform .45s cubic-bezier(.3,1.5,.5,1),
+      box-shadow .4s ease;
+  }
+  .sub img {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform .5s cubic-bezier(.3,1.6,.5,1);
+  }
+  .sub .msg {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    line-height: 1.2;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity .2s ease, transform .35s ease;
+  }
+  .sub .msg b {
+    font-weight: 500;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink);
+  }
+  .sub .msg small {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .sub-wrap:hover .sub, .sub:focus-visible, .sub.open {
+    max-width: 480px;
+    padding-right: 26px;
+    transform: none;
+    box-shadow: 0 10px 34px rgba(0,0,0,.16);
+    outline: none;
+  }
+  .sub-wrap:hover .sub img, .sub:focus-visible img, .sub.open img { transform: rotate(-10deg) scale(1.06); }
+  .sub-wrap:hover .msg, .sub:focus-visible .msg, .sub.open .msg {
+    opacity: 1;
+    transform: none;
+    transition-delay: .15s, .1s;
+  }
+  .sub:hover .msg small { color: var(--hover); }
+  @media (prefers-reduced-motion: reduce) {
+    .sub, .sub img, .sub .msg { transition: none; }
+  }
+
+  /* Tomato plants */
+  :root { --stem: #6f8a52; --tomato: #de3a22; --bloom: #d8a51c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --stem: #8fa86f; --tomato: #ff5f45; --bloom: #ecc34f; }
+  }
+  main { position: relative; z-index: 1; }
+  #garden {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+  }
+  #garden .plant { transition: opacity 1.4s ease; }
+  #garden .plant.gone { opacity: 0; }
+  .stem { fill: none; stroke: var(--stem); stroke-linecap: round; stroke-linejoin: round; }
+  .hair { fill: none; stroke: var(--stem); stroke-width: .4; stroke-linecap: round; opacity: .7; }
+  .leaf { fill: var(--stem); fill-opacity: .07; stroke: var(--stem); stroke-width: .6; stroke-linejoin: round; }
+  .vein { fill: none; stroke: var(--stem); stroke-width: .35; opacity: .8; }
+  .calyx { fill: none; stroke: var(--stem); stroke-width: .7; stroke-linecap: round; stroke-linejoin: round; }
+  .fruit { fill: var(--tomato); fill-opacity: .55; stroke: var(--tomato); stroke-width: .9; }
+  .crease { fill: none; stroke: var(--tomato); stroke-width: .6; stroke-linecap: round; }
+  .shine { fill: none; stroke: #fff; stroke-width: .9; stroke-linecap: round; opacity: .75; }
+  .flower { fill: none; stroke: var(--bloom); stroke-width: .8; stroke-linecap: round; stroke-linejoin: round; }
+  .grow { animation: grow-in .8s cubic-bezier(.3,1.4,.5,1) both; }
+  .shrink { animation: shrink-out .28s ease-in forwards !important; }
+  @keyframes grow-in { from { transform: scale(0); } to { transform: scale(1); } }
+  @keyframes shrink-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0); opacity: 0; } }
+  .garden-btn {
+    position: fixed;
+    left: 4px;
+    z-index: 25;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: top 1s cubic-bezier(.4,1.25,.5,1), transform .35s cubic-bezier(.3,1.6,.5,1), opacity .4s ease;
+  }
+  .garden-btn svg { overflow: visible; }
+  .garden-btn:hover { transform: scale(1.18) rotate(-8deg); }
+  .garden-btn:active { transform: scale(.9); }
+  .garden-btn:focus-visible { outline: 1px dashed var(--muted); outline-offset: 2px; border-radius: 50%; }
+  #seed { top: 46%; }
+  #seed svg { animation: breathe 3.4s ease-in-out infinite; }
+  #slurp { top: 12px; opacity: 0; pointer-events: none; }
+  #slurp.on { opacity: .8; pointer-events: auto; }
+  #slurp.on:hover { opacity: 1; transform: scale(1.15) rotate(200deg); }
+  /* Tarot card: one per visitor per day */
+  #tarot {
+    position: absolute;
+    left: 46px;
+    top: 132px;
+    z-index: 2;
+    width: clamp(48px, calc((100vw - 1120px) / 2 - 34px), 92px);
+  }
+  #tarot[hidden] { display: none; }
+  #tarot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.14);
+    transform: rotate(-3deg);
+    transition: transform .45s cubic-bezier(.3,1.5,.5,1), box-shadow .3s;
+  }
+  #tarot img { cursor: default; }
+  #tarot img:hover { transform: rotate(0) scale(1.06); box-shadow: 0 10px 26px rgba(0,0,0,.2); }
+  @media (max-width: 1219px) {
+    #tarot { left: auto; right: 18px; top: 24px; width: 54px; }
+  }
+  @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
+  @media (prefers-reduced-motion: reduce) {
+    .grow, .shrink, #seed svg { animation: none; }
+  }
+
+  /* Color generator */
+  #colorgen { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--rule); }
+  .cg-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .cg-head .take { margin: 0 auto 0 0; }
+  .cg-btn {
+    flex: none;
+    width: 30px; height: 30px;
+    display: grid; place-items: center;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color .2s, border-color .2s, opacity .35s ease, transform .35s cubic-bezier(.3,1.5,.5,1);
+  }
+  .cg-btn:hover { color: var(--hover); border-color: var(--hover); }
+  .cg-btn:focus-visible { outline: 2px solid var(--hover); outline-offset: 2px; }
+  #cg-lock { opacity: 0; transform: scale(.6); pointer-events: none; }
+  #colorgen.paused #cg-lock, #colorgen.locked #cg-lock { opacity: 1; transform: none; pointer-events: auto; }
+  #colorgen.locked #cg-lock { color: var(--ink); border-color: var(--ink); }
+  #cg-lock .shackle { transition: transform .3s cubic-bezier(.3,1.5,.5,1); transform-origin: 16px 10px; }
+  #colorgen.locked #cg-lock .shackle { transform: translateY(2px); }
+  #colorgen:not(.locked) #cg-lock .shackle { transform: rotate(-28deg) translate(1px, -1px); }
+  .cg-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 8 / 9;
+    max-height: 400px;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+    background: #ccc;
+  }
+  #cg-canvas { position: absolute; inset: -8%; width: 116%; height: 116%; display: block; filter: blur(10px) saturate(1.15); }
+  .cg-grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: .14; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .cg-coords {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 12px 12px 10px;
+    display: flex; flex-direction: column; gap: 5px;
+    background: linear-gradient(transparent, rgba(0,0,0,.28));
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .5s ease, transform .5s ease;
+    pointer-events: none;
+  }
+  #colorgen.paused .cg-coords, #colorgen.locked .cg-coords { opacity: 1; transform: none; pointer-events: auto; }
+  .cg-row {
+    display: flex; align-items: center; gap: 8px;
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.35);
+    background: none; border: 0; padding: 0; cursor: copy; text-align: left; font-variant-numeric: tabular-nums;
+  }
+  .cg-row i { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,.85); flex: none; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+  .cg-row b { font-weight: 400; letter-spacing: .04em; min-width: 62px; }
+  .cg-row span { opacity: .8; }
+  .cg-row.copied b::after { content: " copied"; opacity: .8; }
+  #colorgen:fullscreen, #colorgen.cg-full {
+    position: fixed; inset: 0; z-index: 1000; margin: 0; padding: 0; border: 0; background: #000;
+  }
+  #colorgen:fullscreen .cg-box, #colorgen.cg-full .cg-box {
+    width: 100%; height: 100%; max-height: none; aspect-ratio: auto; border: 0;
+  }
+  #colorgen:fullscreen .cg-head, #colorgen.cg-full .cg-head {
+    position: absolute; top: 18px; right: 18px; z-index: 2; margin: 0;
+  }
+  #colorgen:fullscreen .cg-head .take, #colorgen.cg-full .cg-head .take { display: none; }
+  #colorgen:fullscreen .cg-btn, #colorgen.cg-full .cg-btn {
+    width: 38px; height: 38px; color: #fff; border-color: rgba(255,255,255,.45); background: rgba(0,0,0,.18);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  #colorgen:fullscreen .cg-coords, #colorgen.cg-full .cg-coords { padding: 24px 24px 22px; gap: 8px; }
+  #colorgen:fullscreen .cg-row, #colorgen.cg-full .cg-row { font-size: 13px; }
+  #colorgen:fullscreen .cg-row i, #colorgen.cg-full .cg-row i { width: 15px; height: 15px; }
+
+  /* Song of the day: a record that slides out of its sleeve and spins */
+  #song { grid-area: song; align-self: start; margin-top: 96px; }
+  #song[hidden] { display: none; }
+  #song .take { margin-bottom: 14px; }
+  .deck { position: relative; width: 340px; max-width: 100%; height: 206px; }
+  .vinyl {
+    position: absolute; left: 12px; top: 5px; width: 196px; height: 196px; border-radius: 50%;
+    background:
+      radial-gradient(circle, transparent 0 31%, rgba(255,255,255,.05) 31.5% 32%, transparent 32.5%),
+      repeating-radial-gradient(circle, #121212 0 1.6px, #1d1d1d 1.6px 2.6px),
+      #141414;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.06);
+    transition: transform 1s cubic-bezier(.5,0,.2,1);
+    will-change: transform;
+  }
+  .vinyl::after {
+    /* a soft sheen that stays put while the record turns under it */
+    content: ""; position: absolute; inset: 0; border-radius: 50%;
+    background: conic-gradient(from 30deg, transparent 0 8%, rgba(255,255,255,.09) 12%, transparent 18% 58%, rgba(255,255,255,.07) 62%, transparent 68%);
+    pointer-events: none;
+  }
+  .vinyl .label {
+    position: absolute; left: 50%; top: 50%; width: 66px; height: 66px; margin: -33px 0 0 -33px;
+    border-radius: 50%; overflow: hidden; background: #333; box-shadow: 0 0 0 2px #0d0d0d;
+  }
+  .vinyl .label img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.4); }
+  .vinyl .label::after {
+    content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px;
+    border-radius: 50%; background: var(--paper);
+  }
+  #song.out .vinyl { transform: translateX(118px); }
+  .sleeve {
+    position: absolute; left: 0; top: 0; width: 206px; height: 206px; background: #0d0d0d;
+    box-shadow: 0 8px 22px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,255,255,.04);
+    padding: 3px; z-index: 1;
+  }
+  .sleeve iframe, .sleeve > div { width: 200px; height: 200px; display: block; border: 0; }
+  /* the cover sits on the sleeve until the song starts, and comes back when it stops */
+  .sleeve .cover {
+    position: absolute; left: 3px; top: 3px; width: 200px; height: 200px; object-fit: cover;
+    background: #0d0d0d; cursor: pointer; transition: opacity .6s ease;
+  }
+  #song.playing .sleeve .cover { opacity: 0; pointer-events: none; }
+  .song-row { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
+  #s-play {
+    flex: none; width: 34px; height: 34px; display: grid; place-items: center;
+    border: 1px solid var(--rule); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer;
+    transition: color .2s, border-color .2s, transform .3s cubic-bezier(.3,1.5,.5,1);
+  }
+  #s-play:hover { color: var(--hover); border-color: var(--hover); transform: scale(1.06); }
+  #s-play:focus-visible { outline: 2px solid var(--hover); outline-offset: 2px; }
+  #s-play[disabled] { opacity: .4; cursor: default; }
+  .song-name { font-style: italic; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .song-name em { font-style: normal; color: var(--muted); }
+  @media (max-width: 880px) { #song { margin-top: 64px; } }
+  @media (prefers-reduced-motion: reduce) { .vinyl { transition: none; } }
+
+
+  /* Color generator as the page's background */
+  #cg-page { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity .9s ease; }
+  html.cg-bg #cg-page { opacity: 1; }
+  html.cg-bg body { background: #888; }
+  /* the gradient is bright in both themes, so the type goes dark and the greys get stronger */
+  html.cg-bg { --ink: #16130f; --muted: rgba(22,19,15,.66); --rule: rgba(255,255,255,.5); --hover: #6e1d10; }
+  html.cg-bg #colorgen .cg-head { visibility: hidden; }
+  html.cg-bg #colorgen .cg-box { background: transparent; border-color: var(--ink); }
+  html.cg-bg #colorgen .cg-coords { display: none; }
+  #cg-back { opacity: 0; transform: scale(.6); transition: opacity .5s ease .3s, transform .5s cubic-bezier(.3,1.5,.5,1) .3s; }
+  html.cg-bg #cg-back { opacity: 1; transform: none; color: var(--ink); border-color: var(--ink); }
+  /* (no hints) */
+  #cats {
+    position: fixed; left: max(0px, calc(50vw - 560px)); bottom: 0; z-index: 900;
+    width: min(100vw, 760px); height: auto; aspect-ratio: 6 / 1;
+    transform: translateY(105%); transition: transform .55s cubic-bezier(.3,1.35,.5,1);
+    pointer-events: none;
+  }
+  #cats.up { transform: none; pointer-events: auto; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="ink">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" result="noise"/>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.6"/>
+  </filter>
+</svg>
+
+<div id="tarot" hidden><img id="t-img" alt="Today's tarot card"></div>
+<svg id="garden" aria-hidden="true"></svg>
+<button id="seed" class="garden-btn" type="button" aria-label="Plant a tomato" title="plant a tomato">
+  <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+    <path class="fruit" d="M12 7.2 C 17.6 6.4, 20.6 10.4, 19.6 14.6 C 18.6 19, 14.6 20.8, 11.4 20.4 C 6.6 20, 3.8 16.4, 4.6 12.2 C 5.3 8.8, 8.4 7.2, 12 7.2 Z"/>
+    <path class="shine" d="M7.4 12.4 C 7.6 10.8, 8.6 9.8, 10 9.4"/>
+    <path class="calyx" d="M12 7.6 L 12.4 3.4 M12 7.6 L 8.4 6.2 M12 7.6 L 15.8 6 M12 7.6 L 9 9.4 M12 7.6 L 15.2 9.2"/>
+  </svg>
+</button>
+<button id="slurp" class="garden-btn" type="button" aria-label="Slurp the plants back up" title="slurp them back up">
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+    <path class="stem" stroke-width="1.2" d="M12 12.4 C 13.4 12.4, 13.6 10.6, 12.2 10.4 C 10.2 10.2, 9.8 13.2, 11.6 14.2 C 14.2 15.6, 16.8 13, 16 10.2 C 15 6.8, 9.8 6.4, 7.8 9.6 C 5.6 13, 7.6 18.2, 12 18.6 C 16.4 19, 20.2 15.6, 20 11.2"/>
+  </svg>
+</button>
+
+<div id="cg-page" aria-hidden="true"></div>
+<canvas id="cats" width="768" height="128" aria-hidden="true"></canvas>
+
+<main>
+  <div class="title">
+    <h1>Jerelevance</h1>
+    <button id="cg-back" class="cg-btn" type="button" aria-label="Put the colour back in its box" title="put the colours back" hidden>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>
+    </button>
+  </div>
+
+  <!-- Generated automatically from the reports/ folder. Don't edit the list by hand. -->
+  <ol id="list">
+<!-- LIST -->
+  </ol>
+
+  <section id="song" hidden>
+    <p class="take">Song of the day &mdash; check back tomorrow!</p>
+    <div class="deck">
+      <div class="vinyl" id="s-vinyl"><div class="label"><img id="s-art" alt=""></div></div>
+      <div class="sleeve"><div id="s-player"></div><img class="cover" id="s-cover" alt=""></div>
+    </div>
+    <div class="song-row">
+      <button id="s-play" type="button" aria-label="Play" title="play" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path class="i-play" d="M8 5.5v13l11-6.5z"/><g class="i-pause" style="display:none"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></g></svg>
+      </button>
+      <p class="song-name" id="s-name"></p>
+    </div>
+  </section>
+
+  <div class="side">
+  <aside id="daily" hidden>
+    <p class="take">Here, take this with you:</p>
+    <a id="d-link" target="_blank" rel="noopener"><img id="d-img" alt="Today's image from Are.na"></a>
+    <p class="src">source: <a id="d-src" target="_blank" rel="noopener"></a></p>
+    <p class="reset">Image resets in <span id="d-ms">…</span> milliseconds</p>
+  </aside>
+
+  <section id="babel">
+    <div class="babel-head">
+      <p class="take">Random sentence from the Library of Babel</p>
+      <button id="b-shuffle" type="button" aria-label="Pull a different sentence" title="Somewhere else in the library">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      </button>
+    </div>
+    <p class="b-loc" id="b-loc"></p>
+    <p class="b-line" id="b-line"></p>
+  </section>
+
+  <section id="colorgen">
+    <div class="cg-head">
+      <p class="take">Color generator</p>
+      <button id="cg-lock" class="cg-btn" type="button" aria-pressed="false" aria-label="Keep the colour values showing" title="keep the values showing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path class="shackle" d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      </button>
+      <button id="cg-play" class="cg-btn" type="button" aria-label="Pause the gradient" title="pause">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><g class="i-pause"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></g><path class="i-play" d="M8 5.5v13l11-6.5z" style="display:none"/></svg>
+      </button>
+      <button id="cg-wall" class="cg-btn" type="button" aria-label="Make it the background of the whole page" title="make it the background">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><rect x="7" y="8" width="10" height="8" rx="1" fill="currentColor" stroke="none" opacity=".45"/></svg>
+      </button>
+      <button id="cg-full" class="cg-btn" type="button" aria-label="Full screen" title="full screen">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="i-open"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></g><g class="i-close" style="display:none"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></g></svg>
+      </button>
+    </div>
+    <div class="cg-box">
+      <canvas id="cg-canvas" width="120" height="135" aria-hidden="true"></canvas>
+      <div class="cg-grain"></div>
+      <div class="cg-coords" id="cg-coords" aria-live="polite"></div>
+    </div>
+  </section>
+  </div>
+</main>
+
+<div class="sub-wrap"><a class="sub" id="sub" href="https://lesymboliste.substack.com/" target="_blank" rel="noopener" aria-label="Follow me on Substack">
+  <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACgAKADASIAAhEBAxEB/8QAHQAAAQUBAQEBAAAAAAAAAAAABQIDBAYHAQAICf/EADkQAAIBAwMCBQEFCAEFAQEAAAECAwAEEQUSITFBBhMiUWFxMoGRobEHFBUjQsHR8OEWM0NS8WJy/8QAGQEAAgMBAAAAAAAAAAAAAAAAAQIDBAUA/8QAIxEAAgICAwACAwEBAAAAAAAAAAECEQMSBCExE1EiQWEUMv/aAAwDAQACEQMRAD8AuOr+JNO0Q7LmQmYjcIk5bHufYVXpf2m2scuz9wwDzlpv8CgX7RtOmtPEUGoncba5QIT2V16j7xg/jVA1a1voZw0e5lHGVPAAPH9qfPysqm4roODjwlBSZsdv+0exkdVmtJE3d0kDfrijdj4j0vUWCQXIWQ8BJfSSfYdq+cjq0yygSZHlnGdvAPv708mvT2cu4yLKrDDNnv8ANLHlZV72PLi43/D6bQGnlWs9/Zx4zfUIBaajICy4Ebls4GOAT3q7nVFguCrrlMduoq5HlQlHZ9FSXHknRO2cdK6E5pUU0Ewysi/j0rlzc21lG0s8yxoBnJ/t71J8sfsj0l9Hilc20L/6v0ffs/eGyOxQ5qMnizT/AN/Ym6AtWX+oEEPx+XWkfIh9jrBN/oNlKQyVCi8Q2M0j7ZQY8ja3vxzU+NxMgcdCM806yRfjFeOS9Q0VrhUe1PMlI2804g3tru2l7a6FoWERs5r22nAtd2/FcEbAru2nAvxXQvPShYQJ4g0KDX9Lmsbjjd6o37xuOh/3tWSJFPZTXGmXi7LiBip44B9x7/8ANbi6VTvG/haS/T+KWEZa9iXEkY/88Y7f/wBDt79Paq/MwbraPqJeJn0lrLxmP63FbkvEWRH3ZXpuPsKo9072ly8buzFs5yMZJq/a5p0N3bLIzGJS3VWOOT3qiazaCCUh5ndcYUk/Z+Pms7EX8qLR4H1SS0ZXDPmJtpKnoO1a8NejvbWO48zDjh8HBz2r528NXTx3rWyEnzR6flq1CwksvDiLJq12DNIo8u3jcbgMdfakyqmNjdovEGuPIZGVnSJeM55Y1XdU8Qz6pO4aeQFCAqA9s5/QVNvbmC10zfbglXG9c9SD3NVOK5VSJdm4lucf79Ki2fg9IPRXYYLl8MwKmQ8k9MjPbrUJ0Uxu8YEfPJOBiosVxDLGjbnjCvuMY7gjOaMQ7TuXPmxj+W2UO4A/HtzQsZCdE1SaF5PPwQh2rgHpjofnNG7fxY+n3JaGVlyADnlcfSgsluq4CvlkViSvfrk496gXcRIYqqebjAx0PTFFMDjZp9j4/wBNnCpMzCQ9WGNtGrXU0vQGjARTjGeSc/3+KwS6sJ8tcq5XBzlWyfpV38B6zFbSQLdCRt2VyTgKSOpzVzHy5dKRVnxo02kakq5GaVtr0OXjDHHq5GOmO35U5g1qJqjOaGwvNK20oLSttc2EbC0rbTgSlhPilCRSmaQYMmpoiz2rknl28Zkk4VeSfapW/sgSKJ4u/Z9HqolvbBore6ZSZI39Mc3yfZvnv3rC/EPhCOwuPLubSSBh2JIB+R2I+lbz4p8SwzzG0j3+URxIjZDH2qlYTWpzDKszwIDuErAj6Ae9ZPJcd7gavHUtKmYzZ6a1tcSXMEUmV4UjkfNHNeuItLczXukm8vLuKEws2SsceNpJI+ydytgfee1Xm90K2szFZ20KgySDJHJA71B1HQria4nt5L5xbSOztEBjIJyRu6gcngf3qt8lvssaddEizu5Nc8OWH7vu8xwRk9sEjn/Ndk0tLOFEChnX86d0Z47SwFpF6RC5jXHZeoz+OKIIuN0jMZFXBbeO1RNdjrwriwvJMixxbZEPIYEHHvnuKOQJMEZow3o5VTyT74J+M08IVhJ80M8HOzjG3Ix27f3p+zc+WyNgssTcHqzAZx9/FAKG1Ty3ZlVNrhnZe6kHqPccjI+aj6ta+UBs+y2DyM8+30o3EkcrwlU4ZyCNvXdkfpuFNXmnLLbi3Yky4IJA5zx/bihY1AKIRNBHyryP6V54A78YxUuW3Fq4KLtfg5Xv9eaVdaZ5dxbqiBVCbz0HwAB70OS8BklhlIUg+nb3PfjrQs6jT/BGui+i/cpWJlXJU+471bNtZH4HupIdZtiV/qIHGTg9ea1yC5huSRGxyOxUj9a1eHlTjq2ZvKxVLZCgtKC04EpapVyyrQ2E+KWqU5s+KUqULGBF9rthp0bM06My/wBIOTmqPqXiW71BnfJW25AAbrQq6vNsg3uCrD1t3zQ26u1tomjgWRmIL7c4B5rPycmUy3DjqA3eXbLMVjMxckDao4HzxRS2ht9PtlS3RnbJJYjuag6JZzvcvPJFgFSVV8L16cd6k3czrKsO5nk2kEgen7qrSddliKI9l/Nu5rq4ZRsyqJ+uaVqaxwWbT5BkYHC/B9qCG4nbUFhUALnOcd+9GjGpZ/PZdo4APeoU+yb9ALwtZXLyXJkIO5gQoI9JqwraqZSF3H0kEqcAfHt/8olBpsFlbBVjA3+sgZyPrjtS3tkkTcq7SpyONpPfPxTtipAo2ewLCzKwJ2lc9e/6E/hTcSrFGrq+WCghwM47E/Tv+NSZV9UgzjJADMPg/wCaTFbt61IOMHA69egqNsdIlWzFDEhQgMzbgDnY20n+xqbDH+8yOWwD0OOme+e//wBpjTiPPKyLnGCVH9R55/M0RtIVhfy0EiKxJG8g7R8/j+dI2MQrzT3fe0fmuxwAyqNqKPc9fft3qn6xYPHIX3MAPsjBBH/2tIiMgmEeBkxtk9hxn8TQLW7CO9tvQCSsmGIIGB1JPtxQ2C10QPBsSWsjzjO4LwSfs5q+adq9nFhmvIomB58wnmsws/FEdlq2nWdrEstnfymF7hSH3ccjjpxnn4oBqviE6ZdTWcs5LROVAfknn/elWceydkE6ao+gj4s0JSAdTg+vOB9+KJWV9a36b7S4hnX3jcGvlwa9eXrjaqbc4AeQjH3Cj+h6zeWTrMH8iVDkNG/NXlyZL1FT/Kn4z6PVc06qfFUrwj49TUQltqjxxzNhUm6K59m7A/NXpEOeasQyKatFeUHB0z5zkuhHHJJI6H08LnioiyPqt/bW8fmvkrvCngjuT8VH1WYTwx21uwGfTzjCL3OO9GfDEkMNldy7t86pt3njgVlI0GTLK8SbxBdQqYv5CEgoeT29XyKkz2wCvKqcnq3fn57VC0aAm5mneMu8hVQ/YA9aN3SmK0ZYlCsMk89TSyHgivwww27FnUbjySaJ6LZLqd4m1WaOP1uQTjH+TQSOG5ubjG4kMfrirpY2R0vTti4MsrDJA6Z7UkSRjlxGd5woYE44P2fpUCZnLE7dxHXjB+7/ABTlwko3eY56jHFIWPzCpcsQ3yeSPrSt2ckRJkTaSCTkjbj3pLrI8m+N9q56Dsc4/LNSriJGVigDHg/fXIYS7AKgAJztbv2oDI7BbvuO/CsWGD7DIovarujUkF36A9+Pf/e1NW4JOc/1AgnnHGMVMEWxgEHpC4INRsZIXaRP5rO3OVwO4OAMH9apnidpm0TULa33NkfzCBjeCeVH3Zq9CaSSzu9vpliiZh75wcGq9Fpii0Teu5x/MPycf80Lp2NXRjlvZ3/hZnFncySCWQzRo65C54Bz/wC2ODjp0oTLCmpTySyArdM2X3cHPzW7N+zi58QaaJIJfLuUJJSRdqP34bt14qoat+zvVLC6Etxaz274w0gTKN94yDWhGcktpIqOMW9Uyi2VgCBi4EMmeVfkHjtVgtdLuUAaSWPnHqVice5x3o3DodsxBmCrIMZZRijVhaNv22tvLO2cgRRs2fwoPJfhJHGo/wDRW7a6axu1hb1qDtD+4+lbn+zzXZdX09rW5bfNbAbWzksh6fh0/CqJF4D1jWJVlj0KWE8HfOAin5Oea0PwH4Fn8MyTXd7dpNcTLs8uIehBnPXuamwqW1pFfkSg41Z806kFtbRh+87Mn1rj1Yqy+GGsbnS7g2ytu4jZiTlu9Ui//lwMVkJ3MZC7nHmfFXvwWtr/AAHcimJSCxUNk/PPeqw4U0qztre6jELs79DGW4XHU4/LmiWoOZk2qCNucnPJNDEuI7S3LWo2oRw3XPyT3ohpbC8lcoOn2j7/AF+aSQ8SJpFt5t+keDjcCe1H9Xv2tPMEY5Ax707oOml9UklIGyNM5Hv2/vStR0xJZX2ks55I5wKVeDP0AQzT3uHZeuM7hkU/cW5ZRsmkTb88UTTSGUjzrkAY4GME1E1HTXVg0bBgOBjqPjrQoNg6LzNzJLkN0yPyP61LgMqSMccK3OOc5qDK8wkUMpJQnn7qft70YAIwd4YjHsD/AH/Sgwph6xAdSruoLMSQO2eoFT9iPGckEDAJ6AdqhQjzYkcEKwUEkr0zRKzbcqwgKCehHII+KiHETIYNNuf6j5eG+CSOPzoNDNtLR5LN9nB9u9H78pDaTFmK7jjBPBYc8VW9I8uUru67zkjOPxrqt0NdKzRvDJaTTx6w6A4Hx8UY8vPHaoui2Udpp8SoXbIzljmiSr8VvYk4wSMTK7m2iOLOFj6ooj9UBqRFCIxhAqj2UY/SnVT4p5UHtTCKxCRnNPLFSkT4p1U+K6wpHw5f2E+xLy98oRuMwWqLnbnu3vV08DaXBFohumRYxI5O5hlmXsoz0H61UtfiN3LJJHceXCkaiMRrjP8AvtVk8BXf8SL29zIxS3jUBd4wSvQcVlGkwhrtzCV3B1ICYWNSMggd6e/Z1dfvLzEpjAxVf8QRS3N7MFRUZVwCOi5+O5+atXgC2S1slVlUSDhm7njvSSHiaHHJHp+mq7Lgt/MfHU/6KC6rrCW8MnlFQ4BYnHIorfqTCqrjywoH0GKp2rWiSo/lyE7R9kEjb80broFFBvPH+o6n4itrO3lZVjYvOS2coo/Dk4H31cbLWZL1NxyehOe3uKyLWrZdF8SzXUm94LsBCy5BU54P++9WHTNfeSZbYuzxLld0fIyD0+enWppQ/G0RKfdMur6iyylgM9yPf4/tRKKSGfaCMMVByD79f8VV5LmNlAZ9zf1YbJBJHHzxRfRJAZFywwxLBepwB3/H8qrSiTRkXrT7dXtnmQ4KoGcDmuXl+ILi3WLv0Ze4+K9oviK2gnFrdEbrphFHHj7Zxn7gB+oqd/ChHqkm9F/d4V3JgYKrjJFQtMmTAni2+lkvbeyQ7AqB5Pkn/jFWDwxYyI9riLJ2kk4zigVpb/xLWJNSdcKTnGPyrSfD1sYdPUNG6O3JD81a4uLaVkHJyaxonxoQAOPuFPoma6iZp5Y61zK9PKlOqldRKeSOg2ESiU8q0pUpwJ8UlhPhCbU/4zqIt5ZzFYxgyP5YPq//ADux717Q9fTQtY8uziiijlxHJtX/ALYJ+0fu96VeXPl2MdtCpTzASDwQi+x9qCXk1vaQNiOaV2JY7B3HGT8Vmo0WaD4luBJGJtPcOH6yJ6sDOODUjwLq6w3YtZDtLAtyfuqm+FtT/g1uVu2ke3k58oNu8sdR91WK5tUiK6jZeqW4AZQ39PccUrXdBT/Zst45ZI+PTtU/lQm88o4BZApyDxkn76ckuWfSra68ws0sSnPbdjmqne66IVZDIsWeuRyje+K59sNlJ/adAsLEOQu48Y5/Os603Urq3vQRJJtb0k/+pA4OK0/xPN/FLGRbhJHkHqUJyNueDn+1UC7tLNLGe6CGORCB5eMlm96tY5dUyDJF3aDVv4n8lIoijMFY5bcOehyM8Yo7o3iCEXAa4vIoII/ssgLs3Q7RjqccYqnx6DBf2NtdSXsVxGw9KREhl68MCOD9K1Twb4EtDpkc08O1yAUI4xx2HbOajyapDwTY5oqahrPiWy1QM0NhArLFJIR62PXIHTpgfStXutQhk027vAx8twIB7g5C4qtW1jDFbrCNuc9h17cjv0ou0Xnaba2JjMqSyAsCDwo6fn+lVbvwseE7whaNqFxkRssCN1HYitCji2gAZOKH6DosWk25VM5fBINGUT4rUwY/jjT9M3NPeX8EpHTypSlSnlQe1TNkSEolPKorqpSwKRsKRwDFKAxXq7QsY/PuK6hnLyPLIixA7gq42c9waQzLIJ2G059CsXGD8ffUgW1qlvIVgihjB3MinJYZ9jSZ7iPKkoqQngDZnPFZ9l0iNHeGNpQqbG9Kow28D9an6ZfXVrLEzXKlwhQISWVV/LnNRWVrmJrhy6wxqSCCcHPFR2tDa7JWKu4wpA6Hv+nejVgNt8C67/1D4Zlt5QPNtSAFPXae5x85queKjLYylbyJngPpWWMZZR7EdCKrXgzxKfD+oxXkokMbHypYxwoQ9enUgdM9xWm6lHZatYI8LpNA6l0lz1++kk6Yy7MudGVme1ljuYscvHyQR09Px+tVu30ttW1d42VhAh2MM4Lcc/X2qxax4WQTGW1MkQKnG04zz0pzR9K1a1QRSR/vMbHd0wQOoweuTyc1IsiSsGrfQT8O6XbW7iK3gV0ZRvQHHyGHXritR0+6aOFbdovLQL1bg89x2NVfQPCDXOCFuYCSSF4YfQYxxWhWvhKGxjQyzPJIcHY3Cr359/pVeeTYnjCgVHbQ2kTzzs0qn/txr/5D7k9gO5q++D9HkjZr+SUMZPYcH/FD9C02C81FVeNsJkbse3b6VfoYFjAVAAo7CrPExJ/mytyslfgjqL8U+i15I6fVfitCyicVacVa8FpxRS2FI8BSq9XqUY9Xq8K7XHH54TRRWkqy3NyiyE4Kp2B7H2pEF/JqJ8xYfSpwqryABxuHvnikCM3Fp5Xkl7nrIw6Bh7k0T0wR2yylRunKKWxj05POPwqgXBt5WiidTvbeAuO2c84H4U3M8ccaqYWMkgbAHJIpydZXRpRgvK4XaOMADJz9KbkuFt3tp2kVyxI9Iz1Hf765HDbq6Rqn8wlgzeWcEZ9qMeEfFup6O37tcrvtJMlIZeQWPfA6Y+PehipDqSyyyErKzbFReiAdfvPej1t4et0neFNpKqrhnOdq9cf770spJLsaEW/C3yS6VdRiOWY2c7Mo2Ou9V9PPI6df+asGnSaDpKAPetdiVykQij4UhQR6icZwaqvhuzmvdUy6plJWjkfbyEJOSPuNFf4PDBbpE6SPp07iEENzCzY2tg9jgj4J+aozmrLsIGi2GsRPcmC1gSBdgZCfttkc/Q57VH06a51CJzNcOswlYE4xyOnHcUK0uFVKCRTFMgwE6kDsf70e0+GSVYYpUEc7MVypz360ibbJKSVst3g2BjJcStnG1QMirdHHUbSrBLC0jgQcAc/JokicVv4YfHBRMLNPebaErH8U4FxSgK9ipLEo5iuivYrtAJ6vCu4r1ccer1er1ccf/9k=" alt="">
+  <span class="msg"><b>hey! follow me on substack idiot</b><small>lesymboliste.substack.com &rarr;</small></span>
+</a></div>
+
+<script>
+  // Sets the count so numbering runs down to 01 at the bottom
+  var l = document.getElementById('list');
+  l.style.counterReset = 'item ' + (l.children.length + 1);
+
+  // Sheep tab: on touch screens, first tap opens it, second tap follows the link
+  (function () {
+    var t = document.getElementById('sub');
+    if (!window.matchMedia('(hover: none)').matches) return;
+    t.addEventListener('click', function (e) {
+      if (!t.classList.contains('open')) { e.preventDefault(); t.classList.add('open'); }
+    });
+    document.addEventListener('click', function (e) { if (!t.contains(e.target)) t.classList.remove('open'); });
+  })();
+
+  // Library of Babel: 22 letters + space, comma, period; 80 characters per line.
+  // Each hexagon: 4 walls, 5 shelves per wall, 32 books per shelf, 410 pages, 40 lines per page.
+  (function () {
+    var SYM = 'abcdefghijlmnopqrstuvx ,.';
+    function rnd(n) { var a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; }
+    function hexagon() {
+      var c = '0123456789abcdefghijklmnopqrstuvwxyz', s = '';
+      for (var i = 0; i < 40; i++) s += c[rnd(36)];
+      return s;
+    }
+    var loc = document.getElementById('b-loc'), line = document.getElementById('b-line'),
+        btn = document.getElementById('b-shuffle');
+    function pull() {
+      var hx = hexagon(), t = '';
+      for (var i = 0; i < 80; i++) t += SYM[rnd(25)];
+      loc.textContent = 'Hexagon ' + hx.slice(0, 6) + '…' + hx.slice(-4) +
+        ' · Wall ' + (rnd(4) + 1) + ' · Shelf ' + (rnd(5) + 1) +
+        ' · Volume ' + (rnd(32) + 1) + ' · Page ' + (rnd(410) + 1) + ' · Line ' + (rnd(40) + 1);
+      loc.title = 'Hexagon ' + hx;
+      line.textContent = t;
+    }
+    pull();
+    btn.addEventListener('click', function () {
+      btn.classList.toggle('spin');
+      line.classList.add('fade');
+      setTimeout(function () { pull(); line.classList.remove('fade'); }, 220);
+    });
+  })();
+
+  // Tomato plants: click the tomato in the left margin; a fuzzy stem grows, wanders,
+  // curls, puts out leaves and little yellow flowers (sometimes a side shoot), and
+  // ends in a hanging truss of tomatoes. The swirl at the top slurps them all back up.
+  (function () {
+    var NS = 'http://www.w3.org/2000/svg', STEP = 3, PAD = 36;
+    var garden = document.getElementById('garden'), seed = document.getElementById('seed'),
+        slurpBtn = document.getElementById('slurp');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var plants = [], last = 0, running = false;
+    function R(a, b) { return a + Math.random() * (b - a); }
+    function el(tag, attrs, parent) {
+      var e = document.createElementNS(NS, tag);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      parent.appendChild(e);
+      return e;
+    }
+    function f(n) { return n.toFixed(1); }
+    function turn(want, h) { return Math.atan2(Math.sin(want - h), Math.cos(want - h)); }
+    function at(p, deg, sc) {
+      return 'translate(' + f(p[0]) + ' ' + f(p[1]) + ') rotate(' + f(deg) + ') scale(' + sc.toFixed(2) + ')';
+    }
+
+    // Boxes of the things on the page, so stems lean around them (but can still cross)
+    function obstacles() {
+      var out = [], M = 4;
+      var h1 = document.querySelector('h1');
+      if (h1 && h1.firstChild) {
+        var rg = document.createRange(); rg.selectNodeContents(h1); out.push(rg.getBoundingClientRect());
+      }
+      document.querySelectorAll('#list li a, #list li time, #list li .note, #daily:not([hidden]) #d-img, #daily:not([hidden]) p, #babel p, #b-shuffle, .sub, #tarot:not([hidden]) img')
+        .forEach(function (e) { var r = e.getBoundingClientRect(); if (r.width && r.height) out.push(r); });
+      return out.map(function (r) { return { l: r.left - M, t: r.top - M, r: r.right + M, b: r.bottom + M }; });
+    }
+
+    // Push away from nearby content: returns a direction and how crowded it is
+    function repel(x, y, obs, NEAR) {
+      var ox = 0, oy = 0, crowd = 0;
+      for (var j = 0; j < obs.length; j++) {
+        var o = obs[j], cx = Math.max(o.l, Math.min(x, o.r)), cy = Math.max(o.t, Math.min(y, o.b));
+        var dx = x - cx, dy = y - cy, dist = Math.hypot(dx, dy), w;
+        if (dist === 0) {
+          var el_ = x - o.l, er = o.r - x, et = y - o.t, eb = o.b - y, m = Math.min(el_, er, et, eb);
+          dx = m === el_ ? -1 : m === er ? 1 : 0; dy = m === et ? -1 : m === eb ? 1 : 0; w = 1;
+        } else if (dist < NEAR) { dx /= dist; dy /= dist; w = 1 - dist / NEAR; }
+        else continue;
+        ox += dx * w; oy += dy * w; crowd = Math.max(crowd, w);
+      }
+      return { x: ox, y: oy, w: crowd, m: Math.min(1, Math.hypot(ox, oy)) };
+    }
+
+    // Tomato stems grow in a zigzag: fairly straight runs between nodes, with a kink
+    // at each node (where a leaf comes off), alternating sides. The path stays inside
+    // the window and leans away from the page's content.
+    function walk(x, y, h, len) {
+      var W = innerWidth, H = innerHeight, pts = [[x, y, h]], nodes = [], obs = obstacles();
+      var n = Math.round(len / STEP), M = 110, side = Math.random() < .5 ? 1 : -1;
+      var inter = Math.round(R(10, 18)), k = R(-1, 1) / 140, drift = 0;
+      for (var i = 0; i < n; i++) {
+        var o = repel(x, y, obs, 30), steer = 0;
+        if (--inter <= 0 && i < n - 8) {
+          drift = Math.max(-.5, Math.min(.5, drift * .6 + R(-.45, .45)));
+          var kink = side * R(.2, .45) + drift; side = -side;
+          if (o.w) kink += Math.max(-.6, Math.min(.6, turn(Math.atan2(o.y, o.x), h) * .5 * o.m));
+          h += kink; nodes.push(i + 1);
+          inter = Math.round(R(12, 22)); k = R(-1, 1) / 140;
+        }
+        if (o.w) steer += turn(Math.atan2(o.y, o.x), h) * (i > n * .85 ? .07 : .018) * o.m;
+        var sx = 0, sy = 0;
+        if (x < PAD + M) sx += (PAD + M - x) / M;
+        if (x > W - PAD - M) sx -= (x - (W - PAD - M)) / M;
+        if (y < PAD + M) sy += (PAD + M - y) / M;
+        if (y > H - PAD - M) sy -= (y - (H - PAD - M)) / M;
+        var push = Math.hypot(sx, sy);
+        if (push) steer += turn(Math.atan2(sy, sx), h) * 0.08 * Math.min(1.4, push);
+        h += k * STEP + steer;
+        x = Math.max(PAD, Math.min(W - PAD, x + Math.cos(h) * STEP));
+        y = Math.max(PAD, Math.min(H - PAD, y + Math.sin(h) * STEP));
+        pts.push([x, y, h]);
+      }
+      return { pts: pts, nodes: nodes };
+    }
+
+    function stem(x, y, h, len, scale, depth, parent, atIdx) {
+      var w = walk(x, y, h, len);
+      var s = { pts: w.pts, drawn: 0, scale: scale, depth: depth, len: len,
+                ev: 0, events: [], segs: [], decos: [], kids: [], mode: 'grow', parent: parent, at: atIdx };
+      s.g = el('g', { 'class': 'plant', filter: 'url(#ink)' }, garden);
+      var n = s.pts.length, SEG = 26;
+      for (var a = 0; a < n - 1; a += SEG) {
+        var t = a / n;
+        s.segs.push({ a: a, b: Math.min(n - 1, a + SEG), shown: -1,
+          p: el('path', { 'class': 'stem', 'stroke-width': ((1.4 - .65 * t) * scale).toFixed(2) }, s.g) });
+      }
+      // a leaf at each node, on the outside of the kink; a flower truss now and then
+      // between nodes; one side shoot from a node partway up
+      var side = 1;
+      w.nodes.forEach(function (ni, idx) {
+        if (ni < 10 || ni > n - 10) return;
+        var dh = Math.atan2(Math.sin(s.pts[Math.min(n - 1, ni + 2)][2] - s.pts[ni - 2][2]), Math.cos(s.pts[Math.min(n - 1, ni + 2)][2] - s.pts[ni - 2][2]));
+        side = dh > 0 ? -1 : 1;
+        s.events.push({ i: ni, type: 'leaf', side: side });
+        var next = w.nodes[idx + 1];
+        if (next && idx > 1 && Math.random() < .3) s.events.push({ i: Math.round((ni + next) / 2), type: 'flower', side: -side });
+      });
+      for (var j = Math.round(R(4, 8)); j < n - 6; j += Math.round(R(5, 9))) {
+        s.events.push({ i: j, type: 'hair', side: Math.random() < .5 ? 1 : -1 });
+      }
+      var mids = w.nodes.filter(function (ni) { return ni > n * .3 && ni < n * .6; });
+      if (depth === 0 && mids.length && Math.random() < 0.7) {
+        s.events.push({ i: mids[Math.floor(Math.random() * mids.length)], type: 'branch', side: Math.random() < .5 ? 1 : -1 });
+      }
+      s.events.sort(function (a, b) { return a.i - b.i; });
+      plants.push(s);
+      return s;
+    }
+
+    // Decorations hang off a point on the stem; each one remembers where,
+    // so slurping can pull it in as the tip passes
+    function deco(s, i, g) { s.decos.push({ i: i, g: g }); return g; }
+
+    // A tomato leaf: a petiole with pairs of serrated leaflets and one at the tip
+    var LEAFLET = 'M0 0 C 1.6 -3.6, 5 -5.6, 8.4 -5.4 L 9.6 -6.4 L 10.6 -5 L 12.6 -5.2 L 13 -3.8 L 15 -3.2 L 14.8 -1.8 L 17.4 0 L 14.8 1.8 L 15 3.2 L 13 3.8 L 12.6 5.2 L 10.6 5 L 9.6 6.4 L 8.4 5.4 C 5 5.6, 1.6 3.6, 0 0 Z';
+    function leaflet(par, x, rot, sz) {
+      var g = el('g', { transform: 'translate(' + f(x) + ' 0) rotate(' + f(rot) + ') scale(' + sz.toFixed(2) + ')' }, par);
+      el('path', { 'class': 'leaf', d: LEAFLET }, g);
+      el('path', { 'class': 'vein', d: 'M1 0 L 15 0 M5 0 L 8 -3 M9 0 L 12 -3 M5 0 L 8 3 M9 0 L 12 3' }, g);
+    }
+    function leaf(s, i, side) {
+      var p = s.pts[i], ang = (p[2] + side * R(.7, 1.1)) * 180 / Math.PI, sc = s.scale * R(.75, 1);
+      var g = deco(s, i, el('g', { transform: at(p, ang, sc) }, s.g));
+      var inner = el('g', { 'class': 'grow' }, g), bend = -side * R(1, 3);
+      el('path', { 'class': 'stem', 'stroke-width': '.6', d: 'M0 0 Q 13 ' + f(bend) + ' 26 ' + f(bend * .6) }, inner);
+      leaflet(inner, 26, R(-8, 8), R(.85, 1.05));
+      [[8, .5], [17, .72]].forEach(function (pr) {
+        leaflet(inner, pr[0], -R(52, 66), pr[1] * R(.85, 1.1));
+        leaflet(inner, pr[0], R(52, 66), pr[1] * R(.85, 1.1));
+      });
+      if (Math.random() < .6) { leaflet(inner, 12.5, -R(70, 85), .28); leaflet(inner, 12.5, R(70, 85), .28); }
+    }
+    // Fuzz: tomato stems are hairy
+    function hair(s, i, side) {
+      var p = s.pts[i], g = deco(s, i, el('g', { transform: at(p, p[2] * 180 / Math.PI, s.scale) }, s.g));
+      var d = -side, L = R(1.6, 2.8);
+      el('path', { 'class': 'hair grow', d: 'M0 0 L ' + f(R(-.6, .8)) + ' ' + f(d * L) + ' M' + f(R(1, 2)) + ' 0 L ' + f(R(1.2, 2.6)) + ' ' + f(-d * L * .8) }, g);
+    }
+    // A small yellow star flower nodding on a stalk
+    function flower(s, i, side) {
+      var p = s.pts[i], ang = (p[2] + side * R(.9, 1.3)) * 180 / Math.PI;
+      var g = deco(s, i, el('g', { transform: at(p, ang, s.scale * R(.9, 1.1)) }, s.g));
+      var inner = el('g', { 'class': 'grow' }, g);
+      el('path', { 'class': 'stem', 'stroke-width': '.55', d: 'M0 0 Q 5 ' + f(-side * 2) + ' 10 0' }, inner);
+      var c = el('g', { transform: 'translate(12 0)' }, inner), d = '';
+      for (var k = 0; k < 5; k++) {
+        var a = k * 72 * Math.PI / 180 + R(-.15, .15), b = R(4.2, 5.4);
+        d += 'M' + f(Math.cos(a - .28) * 1.2) + ' ' + f(Math.sin(a - .28) * 1.2) + ' L ' + f(Math.cos(a) * b) + ' ' + f(Math.sin(a) * b) +
+             ' L ' + f(Math.cos(a + .28) * 1.2) + ' ' + f(Math.sin(a + .28) * 1.2) + ' ';
+      }
+      el('path', { 'class': 'flower', d: d }, c);
+      el('path', { 'class': 'flower', d: 'M-1 0 L 1 0 M0 -1 L 0 1' }, c);
+    }
+
+    function draw(path, delay) {
+      if (reduce) return;
+      var L = path.getTotalLength();
+      path.style.strokeDasharray = L;
+      path.style.strokeDashoffset = L;
+      path.getBoundingClientRect();
+      path.style.transition = 'stroke-dashoffset ' + (0.3 + L / 140).toFixed(2) + 's ease-out ' + delay.toFixed(2) + 's';
+      path.style.strokeDashoffset = 0;
+    }
+    // The end of the stem: a truss of one to three tomatoes hanging down.
+    // Tomatoes are squat and wide, creased into lobes, with a star of sepals on top.
+    function tomato(par, tx, ty, r, delay) {
+      var w = r * R(1.18, 1.32), top = ty - r;
+      var body = 'M' + f(tx) + ' ' + f(top + r * .14) +
+        ' C ' + f(tx + w * .35) + ' ' + f(top - r * .1) + ', ' + f(tx + w * 1.02) + ' ' + f(top + r * .05) + ', ' + f(tx + w) + ' ' + f(ty + r * .05) +
+        ' C ' + f(tx + w * .98) + ' ' + f(ty + r * .75) + ', ' + f(tx + w * .45) + ' ' + f(ty + r) + ', ' + f(tx) + ' ' + f(ty + r) +
+        ' C ' + f(tx - w * .45) + ' ' + f(ty + r) + ', ' + f(tx - w * .98) + ' ' + f(ty + r * .75) + ', ' + f(tx - w) + ' ' + f(ty + r * .05) +
+        ' C ' + f(tx - w * 1.02) + ' ' + f(top + r * .05) + ', ' + f(tx - w * .35) + ' ' + f(top - r * .1) + ', ' + f(tx) + ' ' + f(top + r * .14) + ' Z';
+      draw(el('path', { 'class': 'fruit', d: body }, par), delay);
+      // lobe creases and a shine
+      draw(el('path', { 'class': 'crease', d: 'M' + f(tx - w * .3) + ' ' + f(top + r * .12) + ' C ' + f(tx - w * .55) + ' ' + f(ty) + ', ' + f(tx - w * .45) + ' ' + f(ty + r * .6) + ', ' + f(tx - w * .22) + ' ' + f(ty + r * .9) +
+        ' M' + f(tx + w * .3) + ' ' + f(top + r * .12) + ' C ' + f(tx + w * .55) + ' ' + f(ty) + ', ' + f(tx + w * .45) + ' ' + f(ty + r * .6) + ', ' + f(tx + w * .22) + ' ' + f(ty + r * .9) }, par), delay + .25);
+      draw(el('path', { 'class': 'shine', d: 'M' + f(tx - w * .78) + ' ' + f(ty - r * .05) + ' C ' + f(tx - w * .76) + ' ' + f(ty - r * .4) + ', ' + f(tx - w * .62) + ' ' + f(ty - r * .55) + ', ' + f(tx - w * .5) + ' ' + f(ty - r * .62) }, par), delay + .35);
+      // star calyx: sepals spread flat across the shoulders, tips curling
+      var cal = '', cy = top + r * .16;
+      for (var c = 0; c < 6; c++) {
+        var a = Math.PI + c * Math.PI / 5 + R(-.12, .12), L = r * R(.6, .85), up = R(-.25, .15) * r;
+        var ex = tx + Math.cos(a) * L, ey = cy + Math.sin(a) * L * .32 + up;
+        cal += 'M' + f(tx) + ' ' + f(cy) + ' Q ' + f(tx + Math.cos(a) * L * .55) + ' ' + f(cy - r * .2) + ' ' + f(ex) + ' ' + f(ey) +
+               ' q ' + f(Math.cos(a) * 1.2) + ' ' + f(-1.3) + ' ' + f(Math.cos(a) * .4) + ' ' + f(-2.2) + ' ';
+      }
+      draw(el('path', { 'class': 'calyx', d: cal }, par), delay + .4);
+    }
+    function truss(s) {
+      var p = s.pts[s.pts.length - 1], sc = s.scale * R(1, 1.18);
+      var g = el('g', { transform: 'translate(' + f(p[0]) + ' ' + f(p[1]) + ') scale(' + sc.toFixed(2) + ')' }, s.g);
+      s.fruit = el('g', { 'class': 'grow' }, g);
+      var count = Math.random() < .3 ? 1 : Math.random() < .6 ? 2 : 3, delay = 0;
+      var dir = Math.cos(p[2]) >= 0 ? 1 : -1, x = 0;
+      for (var k = 0; k < count; k++) {
+        var r = R(7, 9) * (k ? R(.78, .92) : 1), ex = x + dir * R(1, 3), ey = R(4, 7) + k * R(2, 5);
+        // a short, knuckled stalk
+        draw(el('path', { 'class': 'stem', 'stroke-width': '.85', d: 'M0 0 Q ' + f(ex * .5) + ' ' + f(ey * .1) + ' ' + f(ex * .85) + ' ' + f(ey * .55) + ' L ' + f(ex) + ' ' + f(ey) }, s.fruit), delay);
+        tomato(s.fruit, ex, ey + r * .95, r, delay + .12);
+        x += dir * r * R(2.3, 2.7);
+        delay += .3;
+      }
+    }
+
+    function render(s) {
+      var upto = Math.floor(s.drawn);
+      s.segs.forEach(function (sg) {
+        var end = Math.min(sg.b, upto);
+        if (end === sg.shown) return;
+        var d = '';
+        if (end > sg.a) {
+          d = 'M' + f(s.pts[sg.a][0]) + ' ' + f(s.pts[sg.a][1]);
+          for (var i = sg.a + 1; i <= end; i++) d += ' L' + f(s.pts[i][0]) + ' ' + f(s.pts[i][1]);
+        }
+        sg.p.setAttribute('d', d);
+        sg.shown = end;
+      });
+      if (s.mode !== 'grow') return;
+      while (s.ev < s.events.length && s.events[s.ev].i <= s.drawn) {
+        var e = s.events[s.ev++], p = s.pts[e.i];
+        if (e.type === 'leaf') leaf(s, e.i, e.side);
+        else if (e.type === 'hair') hair(s, e.i, e.side);
+        else if (e.type === 'flower') flower(s, e.i, e.side);
+        else s.kids.push(start(stem(p[0], p[1], p[2] + e.side * R(.6, 1), s.len * R(.4, .6), s.scale * .82, 1, s, e.i)));
+      }
+    }
+
+    function start(s) {
+      if (reduce) { s.drawn = s.pts.length - 1; render(s); truss(s); s.mode = 'done'; return s; }
+      if (!running) { running = true; last = 0; requestAnimationFrame(frame); }
+      return s;
+    }
+
+    function frame(t) {
+      var raw = last ? t - last : 16, dt = Math.min(50, raw); last = t;
+      var busy = false;
+      plants.slice().forEach(function (s) {
+        var n = s.pts.length;
+        if (s.mode === 'grow') {
+          busy = true;
+          var prog = s.drawn / n, ease = prog < .06 ? .45 + prog * 9 : prog > .85 ? 1 - (prog - .85) * 4.3 : 1;
+          s.drawn = Math.min(n - 1, s.drawn + (s.depth ? .34 : .4) * ease * dt / STEP);
+          render(s);
+          if (s.drawn >= n - 1) { truss(s); s.mode = 'done'; }
+        } else if (s.mode === 'slurp') {
+          busy = true;
+          s.el_ += Math.min(250, raw);
+          var q = Math.min(1, s.el_ / s.dur), e = q * q;
+          s.drawn = s.from * (1 - e);
+          render(s);
+          s.decos.forEach(function (dc) {
+            if (!dc.gone && dc.i > s.drawn) {
+              dc.gone = true;
+              var target = dc.g.querySelector('.grow') || dc.g;
+              target.classList.remove('grow'); target.classList.add('shrink');
+              setTimeout(function () { dc.g.remove(); }, 300);
+            }
+          });
+          if (q >= 1) { s.mode = 'gone'; s.g.remove(); plants.splice(plants.indexOf(s), 1); }
+        }
+      });
+      slurpBtn.classList.toggle('on', plants.some(function (s) { return s.mode !== 'slurp'; }));
+      if (busy) requestAnimationFrame(frame); else running = false;
+    }
+
+    // Slurp: every plant reels back into where it came from, tip first.
+    // Side shoots finish just as the main stem's tip reaches their base.
+    function slurp() {
+      var roots = plants.filter(function (s) { return !s.parent && s.mode !== 'slurp'; });
+      function reel(s, dur) {
+        s.mode = 'slurp'; s.from = s.drawn; s.el_ = 0; s.dur = dur;
+        if (s.fruit) { s.fruit.classList.remove('grow'); s.fruit.classList.add('shrink'); }
+        s.kids.forEach(function (k) {
+          var frac = s.from > 0 ? Math.max(0, 1 - k.at / s.from) : 0;
+          reel(k, Math.max(120, dur * Math.sqrt(frac) * .92));
+        });
+      }
+      roots.forEach(function (s) { reel(s, R(1100, 1500)); });
+      if (reduce) { plants.slice().forEach(function (s) { s.g.remove(); }); plants = []; }
+      else if (!running) { running = true; last = 0; requestAnimationFrame(frame); }
+      slurpBtn.classList.remove('on');
+    }
+    slurpBtn.addEventListener('click', slurp);
+
+    seed.addEventListener('click', function () {
+      var b = seed.getBoundingClientRect(), x = b.right - 6, y = b.top + b.height / 2;
+      var size = Math.sqrt(innerWidth * innerHeight);
+      start(stem(x, y, R(-0.75, 0.75), size * R(1, 1.65), size < 700 ? .85 : 1, 0, null, 0));
+      slurpBtn.classList.add('on');
+      var roots = plants.filter(function (s) { return !s.parent && s.mode !== 'slurp'; });
+      if (roots.length > 14) {
+        var old = roots[0], fam = [old].concat(old.kids);
+        fam.forEach(function (s) { s.mode = 'gone'; s.g.classList.add('gone'); plants.splice(plants.indexOf(s), 1); });
+        setTimeout(function () { fam.forEach(function (s) { s.g.remove(); }); }, 1500);
+      }
+      var top = Math.min(R(.16, .78) * innerHeight, innerHeight - 150);
+      setTimeout(function () { seed.style.top = top + 'px'; }, 450);
+    });
+  })();
+
+  // Tarot: one card per visitor per day. The visitor is identified by their IP
+  // address (looked up with ipify), falling back to a random id kept in this browser.
+  (function () {
+    var card = document.getElementById('tarot'), img = document.getElementById('t-img');
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    function hash(str) {
+      var h = 2166136261;
+      for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+      h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h ^= h >>> 13;
+      return h >>> 0;
+    }
+    function localId() {
+      try {
+        var id = localStorage.getItem('jerelevance-visitor');
+        if (!id) { id = Math.random().toString(36).slice(2); localStorage.setItem('jerelevance-visitor', id); }
+        return id;
+      } catch (e) { return 'anon'; }
+    }
+    var who = fetch('https://api.ipify.org?format=json')
+      .then(function (r) { return r.json(); })
+      .then(function (j) { return j.ip || localId(); })
+      .catch(localId);
+    Promise.all([fetch('../../../tarot.json').then(function (r) { return r.json(); }), who]).then(function (res) {
+      var deck = res[0], id = res[1];
+      if (!deck.length) return;
+      img.onload = function () { card.hidden = false; };
+      img.src = deck[hash(id + '|' + day) % deck.length].src;
+    }).catch(function () {});
+  })();
+
+  // Color generator: a soft gradient of four colours drifting and slowly changing.
+  // Pause it to see the colours' values; the lock keeps them showing while it plays.
+  (function () {
+    var root = document.getElementById('colorgen');
+    if (!root) return;
+    var cv = document.getElementById('cg-canvas'), cx = cv.getContext('2d'),
+        play = document.getElementById('cg-play'), lock = document.getElementById('cg-lock'),
+        coords = document.getElementById('cg-coords');
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var t = Math.random() * 1000, last = 0, paused = false, locked = false, seed = Math.random() * 360;
+
+    // OKLCH to sRGB, so colours stay even in brightness as the hue turns
+    function oklch(L, C, h) {
+      var a = C * Math.cos(h * Math.PI / 180), b = C * Math.sin(h * Math.PI / 180);
+      var l = Math.pow(L + .3963377774 * a + .2158037573 * b, 3),
+          m = Math.pow(L - .1055613458 * a - .0638541728 * b, 3),
+          s = Math.pow(L - .0894841775 * a - 1.2914855480 * b, 3);
+      var rgb = [4.0767416621 * l - 3.3077115913 * m + .2309699292 * s,
+                 -1.2684380046 * l + 2.6097574011 * m - .3413193965 * s,
+                 -.0041960863 * l - .7034186147 * m + 1.7076147010 * s];
+      return rgb.map(function (v) {
+        v = v <= .0031308 ? 12.92 * v : 1.055 * Math.pow(v, 1 / 2.4) - .055;
+        return Math.round(Math.max(0, Math.min(1, v)) * 255);
+      });
+    }
+    function hex(c) { return '#' + c.map(function (v) { return v.toString(16).padStart(2, '0'); }).join('').toUpperCase(); }
+
+    // Four bright colours spread around the wheel. They turn together, each breathing a little.
+    function palette(time) {
+      var base = (seed + time * 10) % 360, out = [];
+      var offs = [0, 28 + 10 * Math.sin(time * .5), 62 + 14 * Math.sin(time * .33), 100 + 16 * Math.cos(time * .41)];
+      var Ls = [.5, .64, .56, .7];
+      for (var i = 0; i < 4; i++) {
+        var h = (base + offs[i] + 360) % 360,
+            L = Ls[i] + .05 * Math.sin(time * (.7 + i * .13) + i * 1.7),
+            C = .17 + .04 * Math.sin(time * (.55 + i * .11) + i * 2.3);
+        out.push({ L: L, C: C, h: h, rgb: oklch(L, C, h) });
+      }
+      return out;
+    }
+    // A ramp of 256 colours through the four, blended around the hue wheel (not straight
+    // across it) with chroma held up, so the in-between colours never go grey
+    function ramp(p) {
+      var lut = new Uint8ClampedArray(256 * 3), stops = [p[0], p[1], p[2], p[3], p[2], p[1], p[0]];
+      for (var k = 0; k < 256; k++) {
+        var u = k / 256 * 6, i = Math.floor(u), f = u - i, a = stops[i], b = stops[i + 1];
+        f = f * f * (3 - 2 * f);
+        var dh = ((b.h - a.h + 540) % 360) - 180;
+        var c = oklch(a.L + (b.L - a.L) * f, Math.max(.12, a.C + (b.C - a.C) * f), a.h + dh * f);
+        lut[k * 3] = c[0]; lut[k * 3 + 1] = c[1]; lut[k * 3 + 2] = c[2];
+      }
+      return lut;
+    }
+    // A fluid field: the coordinates are warped twice by moving sine waves, which
+    // gives marbled, ink-in-water swirls that never sit still
+    var img = cx.createImageData(cv.width, cv.height), box = root.querySelector('.cg-box');
+    function fit() {
+      var r = cv.parentNode.getBoundingClientRect(), aspect = (r.width || 320) / (r.height || 360);
+      var w = Math.round(Math.sqrt(16000 * aspect)), h = Math.round(16000 / w);
+      if (w !== cv.width || h !== cv.height) { cv.width = w; cv.height = h; img = cx.createImageData(w, h); }
+      // melt: blur in proportion to the box, so fullscreen is as soft as the small box
+      cv.style.filter = 'blur(' + Math.round(Math.max(r.width, r.height) / 30) + 'px) saturate(1.15)';
+    }
+    window.addEventListener('resize', fit);
+    function paint(p, time) {
+      var lut = ramp(p), w = cv.width, h = cv.height, d = img.data, T = time * .9, u = .9 / Math.min(w, h);
+      for (var y = 0; y < h; y++) {
+        var ny = 1 + (y - h / 2) * u;
+        for (var x = 0; x < w; x++) {
+          var nx = .85 + (x - w / 2) * u;
+          var qx = nx + .8 * Math.sin(ny * 1.7 + T * 1.1) + .3 * Math.sin(ny * 3.1 - T * .7);
+          var qy = ny + .8 * Math.cos(nx * 1.5 - T * .9) + .3 * Math.cos(nx * 2.9 + T * .6);
+          var rx = qx + .6 * Math.sin(qy * 2.3 + T * .8);
+          var ry = qy + .6 * Math.cos(qx * 2.1 - T * .75);
+          var v = .5 + .5 * Math.sin(rx * 1.3 + ry * 1.1 + T * .5);
+          v = Math.min(.999, Math.max(0, .5 + (v - .5) * .36 + .06 * Math.sin(rx * .7 - ry * .9 + T * .3) + .32 * Math.sin(T * .23)));
+          var k = (v * 255) | 0, o = (y * w + x) * 4;
+          d[o] = lut[k * 3]; d[o + 1] = lut[k * 3 + 1]; d[o + 2] = lut[k * 3 + 2]; d[o + 3] = 255;
+        }
+      }
+      cx.putImageData(img, 0, 0);
+    }
+    var rows = [];
+    function buildRows() {
+      coords.innerHTML = '';
+      rows = [];
+      for (var i = 0; i < 4; i++) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'cg-row'; b.title = 'copy';
+        b.innerHTML = '<i></i><b></b><span></span>';
+        b.addEventListener('click', function (e) {
+          var btn = e.currentTarget, v = btn.querySelector('b').textContent;
+          try { navigator.clipboard.writeText(v); } catch (err) {}
+          btn.classList.add('copied');
+          setTimeout(function () { btn.classList.remove('copied'); }, 900);
+        });
+        coords.appendChild(b); rows.push(b);
+      }
+    }
+    function showValues(p) {
+      p.forEach(function (c, i) {
+        var r = rows[i];
+        r.querySelector('i').style.background = 'rgb(' + c.rgb + ')';
+        r.querySelector('b').textContent = hex(c.rgb);
+        r.querySelector('span').textContent = 'oklch ' + c.L.toFixed(2) + ' ' + c.C.toFixed(3) + ' ' + Math.round(c.h) + '°';
+      });
+    }
+    var shown = 0;
+    function frame(now) {
+      var dt = last ? Math.min(100, now - last) : 16; last = now;
+      if (!paused) t += dt / 1000 * (reduce ? .2 : .75);
+      var p = palette(t);
+      paint(p, t);
+      // values update while visible: frozen when paused, live when locked and playing
+      if ((paused || locked) && now - shown > 90) { showValues(p); shown = now; }
+      requestAnimationFrame(frame);
+    }
+    function setPaused(v) {
+      paused = v;
+      root.classList.toggle('paused', v);
+      play.querySelector('.i-pause').style.display = v ? 'none' : '';
+      play.querySelector('.i-play').style.display = v ? '' : 'none';
+      play.setAttribute('aria-label', v ? 'Play the gradient' : 'Pause the gradient');
+      play.title = v ? 'play' : 'pause';
+      if (v) showValues(palette(t));
+    }
+    play.addEventListener('click', function () { setPaused(!paused); });
+    lock.addEventListener('click', function () {
+      locked = !locked;
+      root.classList.toggle('locked', locked);
+      lock.setAttribute('aria-pressed', locked);
+      lock.title = locked ? 'unlock: hide the values while it plays' : 'keep the values showing';
+    });
+    // full screen: the real thing where the browser allows it, a fixed overlay where it
+    // doesn't (iPhone Safari only lets videos go full screen)
+    var full = document.getElementById('cg-full');
+    function isFull() { return document.fullscreenElement === root || document.webkitFullscreenElement === root || root.classList.contains('cg-full'); }
+    function syncFull() {
+      var on = isFull();
+      full.querySelector('.i-open').style.display = on ? 'none' : '';
+      full.querySelector('.i-close').style.display = on ? '' : 'none';
+      full.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen');
+      full.title = on ? 'exit full screen' : 'full screen';
+      requestAnimationFrame(fit);
+    }
+    full.addEventListener('click', function () {
+      if (isFull()) {
+        if (root.classList.contains('cg-full')) { root.classList.remove('cg-full'); document.body.style.overflow = ''; }
+        else (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else if (root.requestFullscreen) root.requestFullscreen().catch(function () { root.classList.add('cg-full'); syncFull(); });
+      else if (root.webkitRequestFullscreen) root.webkitRequestFullscreen();
+      else { root.classList.add('cg-full'); document.body.style.overflow = 'hidden'; }
+      syncFull();
+    });
+    document.addEventListener('fullscreenchange', syncFull);
+    document.addEventListener('webkitfullscreenchange', syncFull);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('cg-full')) { root.classList.remove('cg-full'); document.body.style.overflow = ''; syncFull(); } });
+    // the whole page as the canvas: the gradient moves behind everything, and an empty
+    // outline stays where the box was; the button by the title puts it back
+    var page = document.getElementById('cg-page'), wall = document.getElementById('cg-wall'),
+        back = document.getElementById('cg-back'), grain = root.querySelector('.cg-grain');
+    function setWall(on) {
+      if (on && isFull()) full.click();
+      document.documentElement.classList.toggle('cg-bg', on);
+      if (on) { page.appendChild(cv); page.appendChild(grain); setPaused(false); }
+      else { box.insertBefore(grain, coords); box.insertBefore(cv, grain); }
+      back.hidden = !on;
+      fit();
+      try { localStorage.setItem('cg-bg', on ? '1' : ''); } catch (e) {}
+    }
+    wall.addEventListener('click', function () { setWall(true); });
+    back.addEventListener('click', function () { setWall(false); });
+    fit();
+    buildRows();
+    try { if (localStorage.getItem('cg-bg')) setWall(true); } catch (e) {}
+    requestAnimationFrame(frame);
+  })();
+
+  // ...
+  (function () {
+    var card = document.getElementById('tarot'), cv = document.getElementById('cats');
+    if (!card || !cv) return;
+    var cx = cv.getContext('2d'), sheet = new Image(), tints = [], frame = 0, timer = null;
+    var colours = [[150, 150, 150], [255, 255, 255], [255, 235, 100], [255, 153, 153], [153, 204, 255], [170, 255, 170]];
+    sheet.onload = function () {
+      colours.forEach(function (c) {
+        var t = document.createElement('canvas'); t.width = 128; t.height = 896;
+        var tx = t.getContext('2d'); tx.drawImage(sheet, 0, 0);
+        var d = tx.getImageData(0, 0, 128, 896), p = d.data;
+        for (var i = 0; i < p.length; i += 4) {
+          if (p[i] === 255 && p[i + 1] === 255 && p[i + 2] === 255 && p[i + 3] === 255) { p[i] = c[0]; p[i + 1] = c[1]; p[i + 2] = c[2]; }
+        }
+        tx.putImageData(d, 0, 0); tints.push(t);
+      });
+    };
+    sheet.src = 'data:image/png;base64,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';
+    function draw() {
+      cx.clearRect(0, 0, 768, 128);
+      tints.forEach(function (t, i) { cx.drawImage(t, 0, frame * 128, 128, 128, i * 128, 0, 128, 128); });
+      frame = (frame + 1) % 7;
+    }
+    function toggle(on) {
+      cv.classList.toggle('up', on);
+      clearInterval(timer);
+      if (on) { draw(); timer = setInterval(draw, 20); }
+      else setTimeout(function () { if (!cv.classList.contains('up')) clearInterval(timer); }, 600);
+    }
+    card.addEventListener('click', function () { toggle(!cv.classList.contains('up')); });
+    cv.addEventListener('click', function () { toggle(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && cv.classList.contains('up')) toggle(false); });
+  })();
+
+  // Song of the day: one song from the playlist each day, the same for everyone.
+  // YouTube's player is the sleeve (it has to stay visible, at least 200 x 200);
+  // the record slides out of it and spins while the song plays.
+  (function () {
+    var sec = document.getElementById('song');
+    if (!sec) return;
+    var btn = document.getElementById('s-play'), vinyl = document.getElementById('s-vinyl'),
+        art = document.getElementById('s-art'), label = vinyl.querySelector('.label'), cover = document.getElementById('s-cover'), name = document.getElementById('s-name');
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    var h = 2166136261;
+    var key = 'song' + day;
+    for (var i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h = (h ^ (h >>> 13)) >>> 0;
+    var player, playing = false, song, pool, tries = 0;
+
+    // the record's turn: eases up to 33 1/3 rpm and winds down when paused
+    var angle = 0, speed = 0, last = 0;
+    function turn(t) {
+      var dt = last ? Math.min(.05, (t - last) / 1000) : 0; last = t;
+      var target = playing ? 200 : 0;
+      speed += (target - speed) * Math.min(1, dt * (playing ? 2.2 : 1.1));
+      angle = (angle + speed * dt) % 360;
+      label.style.transform = 'rotate(' + angle.toFixed(1) + 'deg)';
+      requestAnimationFrame(turn);
+    }
+    function setPlaying(v) {
+      playing = v;
+      sec.classList.toggle('playing', v);
+      if (v) sec.classList.add('out'); else setTimeout(function () { if (!playing) sec.classList.remove('out'); }, 1400);
+      btn.querySelector('.i-play').style.display = v ? 'none' : '';
+      btn.querySelector('.i-pause').style.display = v ? '' : 'none';
+      btn.setAttribute('aria-label', v ? 'Pause' : 'Play');
+      btn.title = v ? 'pause' : 'play';
+    }
+    function showText(s) {
+      name.innerHTML = '';
+      name.appendChild(document.createTextNode(s.title + ' '));
+      var em = document.createElement('em'); em.textContent = '– ' + s.artist; name.appendChild(em);
+      art.src = cover.src = 'https://i.ytimg.com/vi/' + s.id + '/hqdefault.jpg';
+    }
+    function show(s) {
+      song = s; showText(s);
+      sec.hidden = false;
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player('s-player', {
+        width: 200, height: 200, videoId: song.id, host: 'https://www.youtube-nocookie.com',
+        playerVars: { controls: 0, disablekb: 1, fs: 0, rel: 0, playsinline: 1, iv_load_policy: 3, modestbranding: 1, cc_load_policy: 0 },
+        events: {
+          onReady: function () { btn.disabled = false; },
+          onError: function () {
+            // that one won't play here (removed, or no embedding); take the next song instead
+            if (!pool || tries++ > 8) { sec.hidden = true; return; }
+            h = (h + 1) % pool.length; song = pool[h]; primed = false;
+            showText(song); player.cueVideoById(song.id);
+            if (playing) setTimeout(function () { player.playVideo(); }, 300);
+          },
+          onStateChange: function (e) {
+            if (e.data === YT.PlayerState.PLAYING) setPlaying(true);
+            if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) setPlaying(false);
+          }
+        }
+      });
+    };
+    function toggle() {
+      if (!player || !player.playVideo) return;
+      if (playing) player.pauseVideo(); else { player.playVideo(); setPlaying(true); }
+    }
+    btn.addEventListener('click', toggle);
+    cover.addEventListener('click', toggle);
+    fetch('../../../songs.json').then(function (r) { return r.json(); }).then(function (list) {
+      if (list.length) { pool = list; h = h % list.length; show(list[h]); }
+    }).catch(function () {});
+    requestAnimationFrame(turn);
+  })();
+
+  // Image of the day: same pick for everyone, changes at midnight Eastern
+  (function () {
+    var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
+    var h = 2166136261;
+    for (var i = 0; i < day.length; i++) { h ^= day.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+    fetch('../../../images.json').then(function (r) { return r.json(); }).then(function (pool) {
+      if (!pool.length) return;
+      var tries = 0, idx = h % pool.length;
+      var img = document.getElementById('d-img');
+      function show() {
+        var p = pool[idx];
+        img.onload = function () { document.getElementById('daily').hidden = false; };
+        img.onerror = function () { if (++tries < 5) { idx = (idx + 1) % pool.length; show(); } };
+        img.src = p.src;
+        document.getElementById('d-link').href = 'https://www.are.na/block/' + p.id;
+        var a = document.getElementById('d-src');
+        a.href = p.channel;
+        a.textContent = p.channel.replace(/^https?:\/\/(www\.)?/, '');
+      }
+      show();
+    }).catch(function () {});
+
+    // Countdown to midnight Eastern, in milliseconds
+    var fmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hourCycle: 'h23',
+      hour: 'numeric', minute: 'numeric', second: 'numeric' });
+    var out = document.getElementById('d-ms');
+    function tick() {
+      var now = new Date(), parts = {};
+      fmt.formatToParts(now).forEach(function (x) { parts[x.type] = +x.value; });
+      var into = ((parts.hour * 60 + parts.minute) * 60 + parts.second) * 1000 + now.getMilliseconds();
+      out.textContent = (86400000 - into).toLocaleString('en-US');
+      if (new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(now) !== day) { location.reload(); return; }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+</script>
+
+<a href="../../../" style="position:fixed;right:12px;bottom:12px;z-index:2147483647;padding:7px 10px;background:#0a0a0b;color:#c2ff16;font:700 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;box-shadow:inset 0 0 0 1px #c2ff16">Archived 2026.10 &middot; back to live &#8599;</a>
+</body>
+</html>
