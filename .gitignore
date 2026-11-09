@@ -1,0 +1,7 @@
+# Made by build.py / tools/package_site.py, never committed
+_site/
+images.json
+tarot.json
+songs.json
+reports/_archive/
+__pycache__/
