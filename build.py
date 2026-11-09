@@ -31,7 +31,7 @@ def first_added(path):
 
 
 def from_html(path):
-    text = path.read_text(errors="ignore")
+    text = path.read_text(encoding="utf-8", errors="ignore")
     t = re.search(r"<title[^>]*>(.*?)</title>", text, re.S | re.I)
     d = re.search(r'<meta\s+name=["\']description["\']\s+content=["\'](.*?)["\']', text, re.I)
     return (html.unescape(t.group(1).strip()) if t else None,
@@ -65,7 +65,7 @@ def build_image_pool(list_file="channels.txt", out_file="images.json"):
     path = ROOT / list_file
     if not path.exists():
         return
-    links = [l.strip().rstrip("/") for l in path.read_text().splitlines()
+    links = [l.strip().rstrip("/") for l in path.read_text(encoding="utf-8").splitlines()
              if l.strip() and not l.strip().startswith("#")]
     pool, seen = [], set()
     for link in links:
@@ -91,7 +91,7 @@ def build_image_pool(list_file="channels.txt", out_file="images.json"):
             page += 1
             time.sleep(0.5)
         time.sleep(0.5)
-    (ROOT / out_file).write_text(json.dumps(pool))
+    (ROOT / out_file).write_text(json.dumps(pool), encoding="utf-8")
     print(f"{out_file}: {len(pool)} images from {len(links)} channels")
 
 
@@ -121,8 +121,7 @@ def _ytm(body, tries=3):
                 data=json.dumps(body).encode(), method="POST",
                 headers={"Content-Type": "application/json", "Origin": "https://music.youtube.com",
                          "Referer": "https://music.youtube.com/",
-                         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-                                       "(KHTML, like Gecko) Chrome/130.0 Safari/537.36"})
+                         "User-Agent": "jerelevance-site (personal playlist reader)"})
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r)
         except Exception as e:
@@ -148,7 +147,7 @@ def build_songs(list_file="playlist.txt", out_file="songs.json"):
     path = ROOT / list_file
     if not path.exists():
         return
-    lines = [l.strip() for l in path.read_text().splitlines() if l.strip() and not l.startswith("#")]
+    lines = [l.strip() for l in path.read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")]
     pid = re.search(r"list=([\w-]+)", lines[0]).group(1) if lines else None
     if not pid:
         return
@@ -182,7 +181,7 @@ def build_songs(list_file="playlist.txt", out_file="songs.json"):
     if len(songs) < 10:
         print(f"{out_file}: YouTube gave {len(songs)} songs, keeping the old list")
         return
-    (ROOT / out_file).write_text(json.dumps(songs, ensure_ascii=False))
+    (ROOT / out_file).write_text(json.dumps(songs, ensure_ascii=False), encoding="utf-8")
     print(f"{out_file}: {len(songs)} songs")
 
 
@@ -193,7 +192,7 @@ def pretty(name):
 def main():
     overrides = {}
     if (REPORTS / "_meta.json").exists():
-        overrides = json.loads((REPORTS / "_meta.json").read_text())
+        overrides = json.loads((REPORTS / "_meta.json").read_text(encoding="utf-8"))
 
     sidecars = {p for p in REPORTS.glob("*.txt")
                 if any(q.stem == p.stem and q.suffix != ".txt" for q in REPORTS.iterdir())}
@@ -209,7 +208,7 @@ def main():
             title, comment = from_pdf(f)
         side = f.with_suffix(".txt")
         if side in sidecars:
-            comment = side.read_text().strip() or comment
+            comment = side.read_text(encoding="utf-8").strip() or comment
         o = overrides.get(f.name, {})
         ts = first_added(f)
         items.append({
@@ -230,8 +229,8 @@ def main():
             f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
             for i in items
         )
-    page = (ROOT / "template.html").read_text().replace("<!-- LIST -->", rows_for())
-    (ROOT / "index.html").write_text(page)
+    page = (ROOT / "template.html").read_text(encoding="utf-8").replace("<!-- LIST -->", rows_for())
+    (ROOT / "index.html").write_text(page, encoding="utf-8")
     print(f"Built index.html with {len(items)} entries")
 
     # Older versions of the site, kept for nostalgia: archive/<name>/template.html is
@@ -239,12 +238,16 @@ def main():
     for t in sorted((ROOT / "archive").glob("*/template.html")):
         out = REPORTS / "_archive" / t.parent.name / "index.html"
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(t.read_text().replace("<!-- LIST -->", rows_for("../../../")))
+        out.write_text(t.read_text(encoding="utf-8").replace("<!-- LIST -->", rows_for("../../../")), encoding="utf-8")
         print(f"Built archive {t.parent.name}")
 
 
 if __name__ == "__main__":
+    import os
     main()
-    build_image_pool()                          # daily image
-    build_image_pool("tarot.txt", "tarot.json")  # tarot deck
-    build_songs()                               # song of the day
+    if os.environ.get("JRL_OFFLINE"):          # quick local build: skip the network
+        print("JRL_OFFLINE set: skipped Are.na images, tarot deck and playlist")
+    else:
+        build_image_pool()                          # daily image
+        build_image_pool("tarot.txt", "tarot.json")  # tarot deck
+        build_songs()                               # song of the day
