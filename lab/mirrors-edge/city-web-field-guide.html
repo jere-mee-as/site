@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>City Web Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=Barlow:wght@300;400;500;600&family=Lexend+Exa:wght@100..500&family=Noto+Sans+JP:wght@300;500&display=swap">
+<style>
+/* Layout: an internal standard from the City itself. White sheet, navy text, one green, a civic notice band that never goes away. Long single column with wide specimen rows. */
+:root{
+  --paper:#f7f9fa; --sheet:#ffffff; --ink:#18203a; --mute:#5b6679; --line:#dfe5ec;
+  --green:#8fd11e; --greendk:#4f7d07; --navy:#1a2140; --haze:#e4eef7; --red:#e3120b;
+  --f-ui:"Lexend Exa",system-ui,sans-serif; --f-body:"Barlow",system-ui,sans-serif; --f-num:"Barlow Condensed","Arial Narrow",sans-serif; --f-jp:"Noto Sans JP",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.62 var(--f-body);-webkit-font-smoothing:antialiased}
+.notice{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--navy);color:#dfe7f5;font:300 10px/1 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;overflow:hidden;white-space:nowrap}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--navy)}
+.notice .run{display:inline-block;padding:9px 0;animation:tick 60s linear infinite}
+.notice b{color:var(--green);font-weight:400;margin:0 18px}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.notice .run{animation:none}}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{padding-block:70px 46px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,var(--paper))}
+.eyebrow{font:400 11px/1.4 var(--f-ui);letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+h1{font:100 clamp(40px,7vw,92px)/1 var(--f-ui);letter-spacing:-.01em;margin:18px 0 18px}
+h1 i{font-style:normal;display:inline-block;width:.32em;height:.32em;background:var(--green);vertical-align:.12em;margin-left:.12em}
+.lede{font-size:19px;font-weight:300;max-width:62ch;color:#2b3550}
+h2{font:200 clamp(24px,3.4vw,36px)/1.15 var(--f-ui);letter-spacing:.01em;margin:0 0 6px;text-wrap:balance}
+h3{font:400 12px/1.3 var(--f-ui);letter-spacing:.18em;text-transform:uppercase;margin:0 0 8px}
+section{padding-block:64px;border-bottom:1px solid var(--line)}
+.sec{display:grid;grid-template-columns:180px minmax(0,1fr);gap:36px}
+.sec>.lab{font:500 64px/.85 var(--f-num);color:var(--greendk)}
+.sec>.lab small{display:block;font:400 10px/1.4 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-top:10px}
+@media (max-width:800px){.sec{grid-template-columns:1fr;gap:12px}.sec>.lab{font-size:48px}}
+p{margin:0 0 12px;max-width:66ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:22px}
+.cell{background:var(--sheet);padding:20px;min-width:0}
+.cell p{font-size:15px;color:#2f3953}
+.rule{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;padding:16px 0;border-top:1px solid var(--line)}
+.rule .n{font:500 26px/1 var(--f-num);color:var(--greendk)}
+.rule b{font-weight:600}
+.quote{font:200 22px/1.45 var(--f-ui);letter-spacing:.01em;border-left:3px solid var(--green);padding-left:18px;margin:22px 0;max-width:46ch}
+/* pop-up specimens */
+.pops{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-top:22px}
+.spec{background:linear-gradient(180deg,#dfeaf6,#f4f8fb);padding:22px;min-height:230px;position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;min-width:0}
+.spec .tag{position:absolute;left:12px;top:10px;font:500 10px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+.p-bar{width:100%;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);border-top:3px solid var(--navy);padding:14px;font-size:13px;display:grid;gap:10px}
+.p-bar .row{display:flex;gap:8px;flex-wrap:wrap}
+.pill{font:400 10px/1 var(--f-ui);letter-spacing:.14em;text-transform:uppercase;padding:9px 12px;border-radius:999px;border:1px solid var(--navy);background:transparent;color:var(--navy)}
+.pill.g{background:var(--green);border-color:var(--green);color:var(--navy)}
+.pill.n{background:var(--navy);color:#fff}
+.p-modal{align-self:center;width:88%;background:#fff;padding:20px;box-shadow:0 30px 60px -30px rgba(20,40,90,.45)}
+.p-modal .h{font:100 26px/1.1 var(--f-ui)}
+.p-modal small{display:block;margin-top:10px;font-size:12px;color:var(--mute);text-decoration:underline}
+.p-chat{align-self:flex-end;margin-left:auto;width:78%;background:#fff;box-shadow:0 20px 40px -24px rgba(20,40,90,.5)}
+.p-chat .hd{background:var(--navy);color:#fff;padding:9px 12px;font:300 11px var(--f-ui);letter-spacing:.12em;display:flex;justify-content:space-between}
+.p-chat .m{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+.p-chat .m.me{text-align:right;background:var(--haze)}
+.p-toast{align-self:flex-start;margin-left:auto;width:80%;background:rgba(255,255,255,.92);border-left:4px solid var(--green);padding:12px 14px;font-size:13px;box-shadow:0 14px 30px -20px rgba(20,40,90,.5)}
+.p-toast b{display:block;font:400 10px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-bottom:4px}
+.p-exit{align-self:center;width:90%;background:var(--navy);color:#fff;padding:20px}
+.p-exit .h{font:100 24px/1.15 var(--f-ui)}
+.p-red{align-self:center;width:90%;background:#fff;border:2px solid var(--red);padding:16px;color:var(--red);font:500 13px/1.5 var(--f-ui);letter-spacing:.06em;text-transform:uppercase;transform:rotate(-1.4deg)}
+.p-red span{display:block;font:400 12px/1.5 var(--f-body);letter-spacing:0;text-transform:none;color:var(--ink);margin-top:8px}
+/* palette */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:18px}
+.sw div{min-width:0}
+.sw i{display:block;aspect-ratio:3/2;max-width:100%;border:1px solid var(--line)}
+.sw b{display:block;font:400 10px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;margin-top:8px}
+.sw span{font-size:13px;color:var(--mute)}
+.type{border-top:1px solid var(--line);padding-block:20px;display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;align-items:baseline}
+@media (max-width:700px){.type{grid-template-columns:1fr}}
+.type .k{font-size:13px;color:var(--mute)}
+/* music */
+.bars{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:16px}
+.bars div{background:var(--sheet);border:1px solid var(--line);padding:12px;min-width:0}
+.bars b{font:500 26px/1 var(--f-num)}
+.bars span{display:block;font-size:12px;color:var(--mute);margin-top:4px}
+.track{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 14px;margin-top:18px;font-size:14px}
+.track dt{font:400 10px/2 var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+.track dd{margin:0;border-bottom:1px solid var(--line);padding-bottom:6px}
+/* mock */
+.mock{margin-top:24px;border:1px solid var(--line);background:#fff;overflow:hidden;container-type:inline-size}
+.mock .tick{background:var(--navy);color:#cfd9ee;font:300 1.1cqw var(--f-ui);letter-spacing:.2em;padding:.7cqw 1.4cqw;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.mock .nav{display:flex;justify-content:space-between;align-items:center;padding:1.3cqw 2cqw;font:300 1.2cqw var(--f-ui);letter-spacing:.12em;text-transform:uppercase;gap:1cqw}
+.mock .logo{font:200 2.1cqw var(--f-ui);letter-spacing:.02em;text-transform:none;display:flex;align-items:center;gap:.6cqw}
+.mock .logo i{width:1.2cqw;height:1.2cqw;background:var(--green);display:block}
+.mock .hero{position:relative;aspect-ratio:16/7;max-width:100%;background:linear-gradient(180deg,#1468ea,#5aa7f3 45%,#d9ebfa 78%,#fff)}
+.mock .tower{position:absolute;left:58%;bottom:0;width:9%;height:92%;background:linear-gradient(90deg,#fff 0 60%,#c3d7ef 60%)}
+.mock .tower::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,transparent 0 6px,rgba(110,160,225,.35) 6px 8px)}
+.mock .tower::after{content:"";position:absolute;left:0;right:0;top:4%;height:4%;background:var(--green)}
+.mock .others i{position:absolute;bottom:0;background:linear-gradient(90deg,#fff 0 60%,#c9dbf0 60%);display:block}
+.mock .copy{position:absolute;left:4cqw;top:18%;color:#fff}
+.mock .copy .h{font:100 6.6cqw/1 var(--f-ui)}
+.mock .copy .s{font:300 1.3cqw var(--f-ui);letter-spacing:.24em;text-transform:uppercase;margin-top:1.6cqw}
+.mock .copy .b{display:inline-block;margin-top:2cqw;background:var(--green);color:var(--navy);font:400 1.1cqw var(--f-ui);letter-spacing:.14em;text-transform:uppercase;padding:1cqw 1.6cqw;border-radius:99px}
+.mock .floor{position:absolute;right:2cqw;top:50%;transform:translateY(-50%);font:500 3cqw/1 var(--f-num);color:var(--navy);background:rgba(255,255,255,.8);padding:.6cqw .9cqw}
+.mock .floor small{display:block;font:300 .8cqw var(--f-ui);letter-spacing:.2em}
+.mock .cbar{position:absolute;left:0;right:0;bottom:0;background:rgba(255,255,255,.88);border-top:.3cqw solid var(--navy);padding:1cqw 2cqw;font:400 1.15cqw var(--f-body);display:flex;justify-content:space-between;align-items:center;gap:1cqw}
+.mock .cbar span.p{font:400 .9cqw var(--f-ui);letter-spacing:.14em;text-transform:uppercase;padding:.7cqw 1.2cqw;border-radius:99px;background:var(--green);color:var(--navy)}
+.mock .bub{position:absolute;right:2cqw;bottom:6cqw;width:5cqw;height:5cqw;border-radius:50%;background:var(--navy);display:grid;place-items:center;color:#fff;font:200 1.2cqw var(--f-ui)}
+.cap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font:400 10px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin-top:10px}
+.sitemap{display:grid;gap:0;margin-top:18px;border-top:1px solid var(--line)}
+.sitemap div{display:grid;grid-template-columns:70px 170px minmax(0,1fr);gap:14px;padding:12px 0;border-bottom:1px solid var(--line);align-items:baseline}
+.sitemap .fl{font:500 22px var(--f-num);color:var(--greendk)}
+.sitemap b{font:400 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase}
+@media (max-width:640px){.sitemap div{grid-template-columns:52px minmax(0,1fr)}.sitemap div span:last-child{grid-column:2}}
+footer{padding-block:34px 60px;font:300 10px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+code{font:500 14px var(--f-num);letter-spacing:.04em;background:var(--haze);padding:1px 5px}
+</style>
+</head><body>
+
+
+<div class="notice" aria-label="Civic notice"><span class="run">This document is monitored by the Civic Transparency Office<b>■</b>Air quality 98 · excellent<b>■</b>1,204 days without incident<b>■</b>Rooftop access restricted<b>■</b>Thank you for your cooperation<b>■</b>This document is monitored by the Civic Transparency Office<b>■</b>Air quality 98 · excellent<b>■</b>1,204 days without incident<b>■</b>Rooftop access restricted<b>■</b>Thank you for your cooperation<b>■</b></span></div>
+
+<header class="top"><div class="wrap">
+  <div class="eyebrow">Field guide · for the jere.ing runner world · 2026.11.08</div>
+  <h1>the city web<i></i></h1>
+  <p class="lede">What an ordinary website looks like in a city that is clean, quiet and watched. Who builds them, what they're legally required to show you, how they move, what they sound like. Then one brief: the website for a residential tower called vesta 9.</p>
+</div></header>
+
+<main class="wrap">
+
+<section class="sec"><div class="lab">01<small>The premise</small></div><div>
+  <h2>Every site is a lobby</h2>
+  <p>The City has no ugly websites. Building permits and web licenses come from the same office, and both require the same thing: calm. A site is treated like the ground floor of a tower. White marble, one plant, a receptionist who smiles and writes your name down.</p>
+  <p>Underneath, every page is monitored. The law says sites must tell you so, and they do, very nicely. Runners exist because nothing typed into a City website is private.</p>
+  <div class="quote">"Your comfort is our infrastructure."<br><span style="font-size:13px;color:var(--mute);letter-spacing:.14em;text-transform:uppercase">Standard footer line, Central District</span></div>
+</div></section>
+
+<section class="sec"><div class="lab">02<small>Design law</small></div><div>
+  <h2>Seven rules every City site follows</h2>
+  <div class="rule"><span class="n">1</span><div><b>White means trust.</b> Pages are white or the palest blue. Dark sites read as hiding something and don't get licensed for residential use.</div></div>
+  <div class="rule"><span class="n">2</span><div><b>One brand color. Never red.</b> Red belongs to emergency services by statute. In practice red belongs to runners, which is why a red mark on a City page means someone got in.</div></div>
+  <div class="rule"><span class="n">3</span><div><b>Lowercase is calm.</b> Brand names are lowercase and hairline thin: vesta 9, halden logistics, meridian. Capitals are for labels and legal text only.</div></div>
+  <div class="rule"><span class="n">4</span><div><b>Motion is slow and level.</b> Drone shots, gentle reveals, an elevator that glides. Nothing shakes, flashes or bounces, unless something is wrong.</div></div>
+  <div class="rule"><span class="n">5</span><div><b>Numbers prove safety.</b> Days without incident, air quality, compliance percentage. Every site carries at least one counting-up number.</div></div>
+  <div class="rule"><span class="n">6</span><div><b>The notice never leaves.</b> A monitoring line runs across the top of every page, and a consent bar meets you at the bottom. You can accept. You can accept all.</div></div>
+  <div class="rule"><span class="n">7</span><div><b>Two scripts.</b> English first, Japanese beneath, in labels and signage. The City is bilingual on its walls, so its sites are too.</div></div>
+</div></section>
+
+<section class="sec"><div class="lab">03<small>Pop-ups</small></div><div>
+  <h2>Six things that will interrupt you</h2>
+  <p>In order of appearance on a typical visit. All six are on the vesta 9 site.</p>
+  <div class="pops">
+    <div class="spec"><span class="tag">A · Monitoring consent · on load</span><div class="p-bar">This session is observed by CivicSafe to keep residents safe.<div class="row"><span class="pill g">Accept</span><span class="pill">Accept all</span><span class="pill" style="border-color:transparent;text-decoration:underline">Preferences</span></div></div></div>
+    <div class="spec"><span class="tag">B · Civic toast · every 20–40s</span><div class="p-toast"><b>Air · 大気</b>Air quality on floor 61 is 98. Excellent.</div></div>
+    <div class="spec"><span class="tag">C · Concierge · always there</span><div class="p-chat"><div class="hd"><span>vesta concierge</span><span>●</span></div><div class="m">Good afternoon. How can I make your day quieter?</div><div class="m me">is the roof open</div><div class="m">Rooftop access is limited to licensed maintenance staff.</div></div></div>
+    <div class="spec"><span class="tag">D · The Quiet List · 30s or half-scroll</span><div class="p-modal"><div class="h">join the quiet list</div><p style="font-size:13px;margin-top:8px">Viewings, openings, nothing urgent.</p><span class="pill g">Join</span><small>No thanks, I prefer noise</small></div></div>
+    <div class="spec"><span class="tag">E · Exit intent · cursor leaves</span><div class="p-exit"><div class="h">before you go</div><p style="font-size:13px;margin-top:8px;color:#cfd9ee">A residence on floor 72 opened four minutes ago.</p><span class="pill g">See floor 72</span></div></div>
+    <div class="spec"><span class="tag">F · The intrusion · once, unannounced</span><div class="p-red">they read what you type here<span>A red mark appears on the page. Click it and a runner's note opens. The concierge notices.</span></div></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="lab">04<small>Lobby audio</small></div><div>
+  <h2>Music that sounds like a clean floor</h2>
+  <p>Every residential site plays lobby audio once you've touched the page. It's generative, so it never loops the same way twice, and it ducks under anything the site wants you to read. Synthesized in the browser, no files.</p>
+  <div class="bars"><div><b>Dmaj9</b><span>2 bars</span></div><div><b>Bm9</b><span>2 bars</span></div><div><b>Gmaj9</b><span>2 bars</span></div><div><b>Asus2</b><span>2 bars</span></div></div>
+  <dl class="track">
+    <dt>Tempo</dt><dd>92 bpm, half-time feel</dd>
+    <dt>Pad</dt><dd>Detuned saws through a slow-breathing lowpass, 2s attack, long tail into a 3s hall.</dd>
+    <dt>Arp</dt><dd>Glass plucks on chord tones, two octaves up, about a third of the sixteenths, dotted-eighth echo.</dd>
+    <dt>Low end</dt><dd>Sine bass on each chord change. A soft felt kick on 1 and 3. Air-tick hats on the off-beats.</dd>
+    <dt>Behaviour</dt><dd>Ducks and goes muffled under any modal. A two-note elevator chime marks each section you scroll into. On the intrusion, the music drops a semitone and stutters, then recovers.</dd>
+    <dt>Control</dt><dd>A small equalizer in the header. Click to mute. Preference remembered.</dd>
+  </dl>
+</div></section>
+
+<section class="sec"><div class="lab">05<small>Motion</small></div><div>
+  <h2>The elevator</h2>
+  <div class="grid">
+    <div class="cell"><h3>Drone hero</h3><p>A slow orbit around the tower in the same white city as the run. One revolution every four minutes.</p></div>
+    <div class="cell"><h3>Scrolling is an elevator</h3><p>A floor indicator on the right counts 01 to 96 as you go down the page. Each section is a floor. A chime plays when you arrive.</p></div>
+    <div class="cell"><h3>Reveals</h3><p>Blocks rise 18px and settle in 420ms on a soft curve. Headlines unmask upward. Numbers count up once.</p></div>
+    <div class="cell"><h3>Ticker</h3><p>The civic line drifts left forever at reading speed.</p></div>
+    <div class="cell"><h3>Cameras</h3><p>Live feed tiles with grain and a clock. Mostly CLEAR. Sometimes MOTION · ROOF EAST for a second, then CLEAR again.</p></div>
+    <div class="cell"><h3>When it breaks</h3><p>The intrusion is the only sharp motion on the site: a 2-frame jolt, a red mark, then stillness.</p></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="lab">06<small>Voice</small></div><div>
+  <h2>Euphemism, gently</h2>
+  <p>Second person, short, warm. Nothing is ever a problem; it's an <em>incident</em>. People aren't watched; they're <em>looked after</em>. The roof isn't closed; access is <em>limited to licensed staff</em>. Runners are never named. They're <em>unlicensed rooftop activity</em>.</p>
+  <div class="grid">
+    <div class="cell"><h3>Says</h3><p>Peace of mind, by design. · Your file has been forwarded. · We noticed unusual activity. · Quiet is a feature.</p></div>
+    <div class="cell"><h3>Never says</h3><p>Surveillance. Police. Free. Exciting. Anything with an exclamation mark.</p></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="lab">07<small>The brand</small></div><div>
+  <h2>vesta 9</h2>
+  <p>Residences at Tower Nine, Central District. 96 floors, 312 homes, four sky gardens. The tower has a green crown band you can see from the run.</p>
+  <div class="sw">
+    <div><i style="background:#ffffff"></i><b>Marble</b><span>#FFFFFF · ground</span></div>
+    <div><i style="background:#e4eef7"></i><b>Lobby air</b><span>#E4EEF7 · panels</span></div>
+    <div><i style="background:#1a2140"></i><b>Night desk</b><span>#1A2140 · text, ticker</span></div>
+    <div><i style="background:#8fd11e"></i><b>Crown green</b><span>#8FD11E · the one color</span></div>
+    <div><i style="background:#4f7d07"></i><b>Deep green</b><span>#4F7D07 · green text</span></div>
+    <div><i style="background:#e3120b"></i><b>Not ours</b><span>#E3120B · only runners use it</span></div>
+  </div>
+  <div class="type" style="margin-top:26px"><span class="k">Brand · Lexend Exa 100–200, lowercase</span><span style="font:100 48px/1 var(--f-ui)">live above it all.</span></div>
+  <div class="type"><span class="k">Labels · Lexend Exa 300–400, caps</span><span style="font:400 12px var(--f-ui);letter-spacing:.2em;text-transform:uppercase">Residences · amenities · safety · neighborhood · apply</span></div>
+  <div class="type"><span class="k">Body · Barlow 300–500</span><span style="font-size:17px;font-weight:300">Floor-to-ceiling glass, sealed and filtered. Every residence faces the light.</span></div>
+  <div class="type"><span class="k">Figures · Barlow Condensed 500</span><span style="font:500 52px/1 var(--f-num)">1,204 <span style="font-size:22px;color:var(--mute)">days without incident</span></span></div>
+  <div class="type"><span class="k">Second script · Noto Sans JP</span><span style="font:300 22px var(--f-jp);letter-spacing:.2em">上に住む · 静けさ</span></div>
+</div></section>
+
+<section class="sec"><div class="lab">08<small>Sitemap</small></div><div>
+  <h2>One page, eight floors</h2>
+  <div class="sitemap">
+    <div><span class="fl">01</span><b>Lobby</b><span>Drone hero, headline, book a viewing, tower stats.</span></div>
+    <div><span class="fl">12</span><b>Residences</b><span>Four plans with floor drawings, tabs, prices in credits, reserve.</span></div>
+    <div><span class="fl">36</span><b>Amenities</b><span>Sky garden, lap pool at 88, quiet floors, secure delivery by halden logistics.</span></div>
+    <div><span class="fl">54</span><b>Safety</b><span>Days without incident, four live camera tiles, rooftop sensors.</span></div>
+    <div><span class="fl">68</span><b>Neighborhood</b><span>Blue district map with meridian, halden T3, kuro &amp; assoc., Central station.</span></div>
+    <div><span class="fl">80</span><b>Residents</b><span>Three short quotes from the people upstairs.</span></div>
+    <div><span class="fl">90</span><b>Apply</b><span>Household, preferred floor, move-in month. Monitoring consent pre-ticked and locked.</span></div>
+    <div><span class="fl">96</span><b>Footer</b><span>Legal, the Compact, the monitoring line. A tiny note that this is fiction.</span></div>
+  </div>
+</div></section>
+
+<section class="sec"><div class="lab">09<small>Mockup</small></div><div>
+  <h2>First frame</h2>
+  <div class="mock" aria-label="Mockup of the vesta 9 home page">
+    <div class="tick">Central District · 21°C · Air 98 · Civic index +0.4 · Rooftop access restricted · 1,204 days without incident</div>
+    <div class="nav"><span class="logo"><i></i>vesta 9</span><span>Residences · Amenities · Safety · Neighborhood</span><span style="background:var(--green);padding:.8cqw 1.4cqw;border-radius:99px">Book a viewing</span></div>
+    <div class="hero">
+      <div class="others"><i style="left:8%;width:8%;height:48%"></i><i style="left:20%;width:6%;height:70%"></i><i style="left:30%;width:10%;height:36%"></i><i style="left:72%;width:9%;height:58%"></i><i style="left:84%;width:7%;height:76%"></i></div>
+      <div class="tower"></div>
+      <div class="copy"><div class="h">live above<br>it all.</div><div class="s">312 residences · 96 floors · 上に住む</div><span class="b">Book a viewing</span></div>
+      <div class="floor"><small>FLOOR</small>01</div>
+      <div class="bub">●</div>
+      <div class="cbar"><span>This session is observed by CivicSafe to keep residents safe.</span><span class="p">Accept</span></div>
+    </div>
+  </div>
+  <div class="cap"><span>Lobby · ticker, nav, drone hero, floor gauge, concierge, consent bar</span><span>All six layers live on load</span></div>
+</div></section>
+
+<section class="sec"><div class="lab">10<small>Revision 2</small></div><div>
+  <h2>The thin paper</h2>
+  <p>After an audit, the first build still followed today's web: a long scroll, pill buttons, cards, glass blur, fade-ups, a chat bubble, corner toasts. Revision 2 keeps it a website and drops those habits.</p>
+  <div class="grid">
+    <div class="cell"><h3>Fixed screens</h3><p>No scrolling. Six floors, each one screen. A tall slab menu in the floor's color; hard cuts with a short tone between floors. Long content pages inside the frame.</p></div>
+    <div class="cell"><h3>The gate</h3><p>Entry replaces the cookie bar. Enter, or Enter and accept all. Every preference reads Required.</p></div>
+    <div class="cell"><h3>Surveillance as structure</h3><p>Thin brackets lock onto whatever you rest on and time your dwell. The comfort record writes down every move. Your interests come back to you in announcements.</p></div>
+    <div class="cell"><h3>The thin paper</h3><p>Pure white surface, and it stays that way. Press on a pale floor number and the paper gives: the cursor backlights it, showing resident files, camera cones over the floor plans, the perimeter, your own name. Press again to let it settle. Only the runner's note on the roof tells you how.</p></div>
+    <div class="cell"><h3>White-out</h3><p>Some lines are printed white on white. Select them to read. The site notices, and after the second time it asks you to stop.</p></div>
+    <div class="cell"><h3>The roof</h3><p>A locked floor in the menu. When a runner gets in it turns red and opens: wind, the dossier showing through, a note. When you come back down, the building has noticed.</p></div>
+  </div>
+  <p style="margin-top:18px">Also: announcements as a full-width band with a chime and an optional spoken voice; the concierge as an intercom on the lobby; the application as a five-step kiosk with a floor keypad; idle mode after a minute; room tone per floor.</p>
+</div></section>
+
+<section class="sec"><div class="lab">11<small>Guardrails</small></div><div>
+  <h2>Fiction, built honestly</h2>
+  <p>vesta 9, CivicSafe, halden logistics and the rest are invented. No real company, logo or game asset. The forms ask for nothing sensitive and send nothing anywhere: the application takes a name, household size, floor and month, and the Quiet List takes an email it never stores. The footer says it's fiction.</p>
+</div></section>
+</main>
+<footer class="wrap">jere.ing · city web field guide · rev. 9 · your comfort is our infrastructure</footer>
+
+</body></html>

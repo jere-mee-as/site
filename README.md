@@ -1,10 +1,24 @@
 # JERE.ING
 
-A personal static site: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal.
+Everything I build, in one repo. The root is the live site at https://jere.ing: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal. The folders around it hold the other projects.
+
+| Folder | What | Live? |
+|---|---|---|
+| `/` (template.html, build.py, reports/) | The site: Uplink, the runner's shell between runs | yes, jere.ing |
+| `lab/` | Design explorations: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | not yet |
+| `launcher/` | JRL Launcher, Android home screen: Kotlin shell, web UI, previews v0–v4 | not yet |
+| `switchboard/` | Switchboard, a chat-app-layout Android launcher concept | not yet |
+| `kept/` | Kept, a local AI file manager for Windows | not yet |
+| `place/` | Jere's Place, a keyboard-first second brain (app only, never the notes) | not yet |
+| `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, plus the v3.x previews | built into reports/_archive/ |
+| `docs/` | Site plans and decision records | no |
+| `legacy/` | The old GitHub Pages workflow, parked so it can't run | no |
+
+Read `PUBLISHING.md` before making anything else public.
 
 ## About the "root" / "hack" stuff
 
-The terminal on this site is **set dressing**. The look comes from the *Marathon* "graphic realism" style. Commands like `root`, `scan`, `ping`, `top`, `ps`, `kill` and `decrypt` are toys written in the page's own JavaScript. They print made-up text and play sounds. None of them:
+The terminal on this site is **set dressing**. The look comes from the *Marathon* "graphic realism" style (the front page is Uplink, the second pass at it; the first pass is archived). Commands like `root`, `scan`, `ping`, `top`, `ps`, `kill` and `decrypt` are toys written in the page's own JavaScript. They print made-up text and play sounds. None of them:
 
 - touch your computer, your files or your network,
 - scan, probe or contact anything except the site's own files,

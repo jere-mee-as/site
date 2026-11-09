@@ -1,0 +1,1163 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>JRL Uplink</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hubot+Sans:wdth,wght@75..125,200..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@200..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&display=swap">
+<style>
+/* Layout: one fixed 1600x900 stage (720x1280 handheld on portrait screens), scaled to fit and letterboxed. Rooms cut; nothing scrolls. */
+:root{
+  color-scheme:dark;
+  --ink:#0a0a0b; --white:#f2f2ee; --fog:#f1f0f0; --panel:#e1dfe0; --lime:#c2ff16;
+  --blue:#0400f5; --orange:#ef4606; --pink:#e0216f; --bone:#c7c2b6; --teal:#2ddccd;
+  --lav:#8476bf; --mint:#cce4dc; --red:#e9042b; --yel:#eae00b; --dim:#6f706c; --void:#050506;
+  --sel:var(--lime);
+  --f-disp:"Hubot Sans","Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-giant:"Archivo","Hubot Sans","Arial Black",sans-serif;
+  --f-code:"Kode Mono","JetBrains Mono",ui-monospace,monospace;
+  --f-ui:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --f-dot:"Doto","Kode Mono",monospace;
+  --f-serif:"EB Garamond",Garamond,Georgia,serif;
+  --f-jp:"DotGothic16","Noto Sans JP",sans-serif;
+  --f-cn:"ZCOOL QingKe HuangYou","Noto Sans SC",sans-serif;
+  --f-sten:"Saira Stencil One","Archivo",sans-serif;
+}
+html,body{height:100%}
+body{background:var(--void);color:var(--white);overflow:hidden;font-family:var(--f-ui);cursor:crosshair}
+*{box-sizing:border-box}
+::selection{background:var(--sel);color:var(--ink)}
+button,input,a{font:inherit;color:inherit}
+button{background:none;border:0;padding:0;cursor:pointer;text-align:left}
+a{text-decoration:none}
+:focus{outline:none}
+#vp{position:fixed;inset:0;overflow:hidden}
+.lb{position:absolute;font:400 9px/1.4 var(--f-ui);letter-spacing:.14em;color:#3a3b38;text-transform:uppercase;white-space:nowrap}
+#stage{position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;overflow:hidden;background:var(--fog);color:var(--ink)}
+#stage.P{width:720px;height:1280px}
+
+/* ---------- system layer ---------- */
+#top{position:absolute;left:0;right:0;top:0;height:44px;background:var(--ink);color:var(--white);display:flex;align-items:stretch;z-index:20}
+#top > *{display:flex;align-items:center;gap:10px;padding:0 14px;border-right:1px solid #222}
+#top .id{background:var(--sel);color:var(--ink);font:700 15px/1 var(--f-code);padding:0 12px}
+#wm{font:500 21px/1 var(--f-disp);font-stretch:var(--sig,105%);letter-spacing:.01em;white-space:nowrap}
+.dots{display:flex;gap:3px}.dots i{width:6px;height:6px;background:#333;display:block}.dots i.on{background:var(--sel)}
+#top .loc{flex:1;font:500 11px/1 var(--f-ui);letter-spacing:.16em;text-transform:uppercase;color:#b4b5af;min-width:0;overflow:hidden;white-space:nowrap}
+#top .loc b{color:var(--white);font-weight:600}
+#top .loc .jp{font-family:var(--f-jp);letter-spacing:.2em;color:var(--sel)}
+#clock{font:500 22px/1 var(--f-dot);letter-spacing:.02em}
+#tdate{font:400 10px/1.2 var(--f-ui);letter-spacing:.12em;color:#8b8c86}
+#snd{font:700 12px/1 var(--f-code);gap:8px!important;border-right:0!important}
+#snd .m{display:flex;gap:2px;align-items:flex-end;height:14px}
+#snd .m i{width:3px;background:var(--sel);display:block;height:2px}
+#snd[aria-pressed="false"] .m i{background:#555}
+#prompts{position:absolute;left:0;right:0;bottom:0;height:52px;background:var(--ink);color:var(--white);display:flex;align-items:center;gap:6px;padding:0 14px;z-index:20}
+#prompts .sp{flex:1}
+.pr{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;font:600 12px/1 var(--f-ui);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+.pr:hover{background:#1c1d1e}
+.k{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:50%;background:var(--white);color:var(--ink);font:700 12px/1 var(--f-code);letter-spacing:0}
+.k.sh{border-radius:3px}
+.k.sel{background:var(--sel)}
+#prompts .tc{font:400 10px/1.3 var(--f-ui);letter-spacing:.12em;color:#7d7e78;text-align:right;white-space:nowrap}
+#status{position:absolute;left:0;right:0;bottom:52px;height:22px;background:var(--sel);color:var(--ink);font:700 12px/22px var(--f-code);padding:0 14px;z-index:19;white-space:nowrap;overflow:hidden}
+#status[hidden]{display:none}
+
+#rooms{position:absolute;left:0;right:0;top:44px;bottom:52px}
+.room{position:absolute;inset:0;padding:26px 36px 24px;overflow:hidden}
+.P .room{padding:22px 22px 20px}
+.gi{position:absolute;font-family:var(--f-giant);font-weight:900;font-stretch:125%;letter-spacing:-.05em;line-height:.76;white-space:nowrap;pointer-events:none;user-select:none}
+.tag{font:700 12px/1 var(--f-code);letter-spacing:.04em}
+.lab{font:500 11px/1.3 var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+.micro{font:400 8px/1.3 var(--f-ui);letter-spacing:.1em;text-transform:uppercase}
+.jp{font-family:var(--f-jp);letter-spacing:.2em}
+.ttl{font-family:var(--f-disp);font-weight:300;font-stretch:88%;letter-spacing:-.03em;line-height:.92;margin:0}
+.slog{font:200 22px/1.15 var(--f-disp);letter-spacing:-.02em;margin:0}
+.txt{font:400 17px/1.42 var(--f-disp);margin:0}
+.P .txt{font-size:20px}
+.code{font-family:var(--f-code);font-weight:700}
+.dither{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.chev{background-image:repeating-linear-gradient(135deg,transparent 0 46px,rgba(10,10,11,.045) 46px 92px),repeating-linear-gradient(45deg,transparent 0 46px,rgba(10,10,11,.03) 46px 92px)}
+.cutc{clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.rh{display:flex;flex-direction:column;gap:8px}
+.rh .row{display:flex;gap:14px;align-items:baseline}
+.inv{background:var(--ink);color:var(--white)}
+[data-f]{cursor:pointer}
+.btnA{display:inline-flex;align-items:center;gap:10px;background:var(--ink);color:var(--white);padding:10px 16px 10px 10px;font:700 14px/1 var(--f-code);letter-spacing:.08em}
+.btnA .k{background:var(--sel);color:var(--ink)}
+.btnA.on,.btnA:active{background:var(--sel);color:var(--ink)}
+.btnA.on .k{background:var(--ink);color:var(--sel)}
+
+/* focus brackets: snap, never animate */
+#brk{position:absolute;pointer-events:none;z-index:30;display:none;--c:var(--ink)}
+#brk.on{display:block}
+#brk{background:
+ linear-gradient(var(--c),var(--c)) 0 0/18px 3px no-repeat,linear-gradient(var(--c),var(--c)) 0 0/3px 18px no-repeat,
+ linear-gradient(var(--c),var(--c)) 100% 0/18px 3px no-repeat,linear-gradient(var(--c),var(--c)) 100% 0/3px 18px no-repeat,
+ linear-gradient(var(--c),var(--c)) 0 100%/18px 3px no-repeat,linear-gradient(var(--c),var(--c)) 0 100%/3px 18px no-repeat,
+ linear-gradient(var(--c),var(--c)) 100% 100%/18px 3px no-repeat,linear-gradient(var(--c),var(--c)) 100% 100%/3px 18px no-repeat}
+#brk .hold{position:absolute;left:0;bottom:-10px;height:4px;background:var(--c);width:0}
+
+/* ---------- SHELL ---------- */
+#r-shell{background:var(--fog);display:grid;grid-template-columns:420px 1fr 340px;gap:24px}
+.P #r-shell{grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:16px}
+.card{background:var(--white);padding:22px 22px 18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.card .rk{display:flex;justify-content:space-between;align-items:flex-start}
+.card .big{font:200 112px/.8 var(--f-disp);letter-spacing:-.045em;margin:4px 0 0 -4px}
+.card .cs{font:500 34px/1 var(--f-disp);font-stretch:75%;letter-spacing:.01em}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;border-top:2px solid var(--ink);padding-top:12px}
+.stats .v{font:700 34px/1 var(--f-code)}
+.stats .v small{font-size:14px}
+.badge{display:grid;place-items:center;width:66px;height:66px;background:var(--sel);font:700 26px/1 var(--f-code);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.P .card{display:grid;grid-template-columns:1fr auto;gap:8px 16px;padding:16px}
+.P .card .big{font-size:80px}
+.P .card .cs{font-size:28px}
+.P .card .stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}
+.P .card .stats .v{font-size:26px}
+.P .card .hide-p{display:none}
+.loadout{display:grid;grid-template-columns:1fr 340px 1fr;grid-template-rows:repeat(3,1fr) 88px;grid-template-areas:"s1 core s4" "s2 core s5" "s3 core s6" "s7 s7 s7";gap:12px;min-width:0;min-height:0}
+.P .loadout{grid-template-columns:1fr 1fr;grid-template-rows:420px repeat(3,1fr) 84px;grid-template-areas:"core core" "s1 s4" "s2 s5" "s3 s6" "s7 s7"}
+.slot{position:relative;background:var(--white);outline:1px solid rgba(10,10,11,.22);outline-offset:-1px;display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px;min-width:0;overflow:hidden}
+.slot .t{display:flex;justify-content:space-between;font:700 12px/1 var(--f-code)}
+.slot .nm{font:300 34px/.95 var(--f-disp);font-stretch:88%;letter-spacing:-.025em}
+.slot .ct{font:400 11px/1.3 var(--f-ui);letter-spacing:.06em;color:#4b4c47}
+.slot .ic{position:absolute;right:14px;top:34px;width:34px;height:34px}
+.slot .sw{position:absolute;left:0;top:0;bottom:0;width:6px}
+.slot.sel{background:var(--sel)}
+.slot.sel .ct{color:var(--ink)}
+.slot.s7{flex-direction:row;align-items:center;gap:18px;background:var(--ink);color:var(--white)}
+.slot.s7 .ct{color:#9a9b95}
+.slot.s7.sel{background:var(--sel);color:var(--ink)}
+.slot.s7 .ic{position:static}
+.corep{grid-area:core;background:var(--ink);position:relative;display:grid;place-items:center;overflow:hidden}
+.corep #bust{position:absolute;inset:34px 0 26px;width:100%;height:calc(100% - 60px);cursor:grab;touch-action:pan-y}
+.corep .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(61,107,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(61,107,255,.07) 1px,transparent 1px);background-size:24px 24px}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:screen;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.corep .rt{position:absolute;right:12px;top:10px;color:#7b7c76}
+.corep .lt{position:absolute;left:12px;top:10px;color:var(--sel)}
+.corep .lb2{position:absolute;left:12px;bottom:10px;right:12px;color:#7b7c76;display:flex;justify-content:space-between}
+.side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.P .side{display:none}
+.win{height:330px;position:relative;background:var(--ink);padding:10px}
+.win .fr{position:absolute;left:10px;right:10px;top:30px;bottom:10px;overflow:hidden}
+.win .hd{display:flex;justify-content:space-between;color:#8b8c86}
+.ad{position:absolute;inset:0;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+.det{flex:1;background:var(--white);padding:18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.det .nm{font:300 58px/.9 var(--f-disp);font-stretch:88%;letter-spacing:-.03em}
+
+/* ---------- VAULT ---------- */
+#r-vault{background:var(--white);display:grid;grid-template-columns:1fr 440px;gap:26px}
+.P #r-vault{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;gap:16px}
+.stash{display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(3,1fr);grid-auto-flow:dense;gap:10px;min-height:0;margin-top:18px;flex:1}
+.P .stash{grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,128px);margin-top:0}
+.item{position:relative;background:var(--fog);outline:1px solid rgba(10,10,11,.18);outline-offset:-1px;padding:12px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-width:0}
+.item .band{position:absolute;left:0;right:0;bottom:0;height:5px}
+.item .gl{position:absolute;right:12px;top:12px;width:30px;height:42px}
+.item .gl svg{width:100%;height:100%}
+.item .nm{font:300 23px/1 var(--f-disp);font-stretch:88%;letter-spacing:-.02em;padding-right:36px}
+.item.w2 .nm,.item.h2 .nm{font-size:30px}
+.item.h2.w2 .nm{font-size:40px}
+.P .item .nm{font-size:19px}.P .item.w2 .nm{font-size:22px}.P .item.h2.w2 .nm{font-size:28px}
+.item .meta{display:flex;justify-content:space-between;font:400 11px/1 var(--f-ui);letter-spacing:.06em}
+.item.w2{grid-column:span 2}.item.h2{grid-row:span 2}
+.item.sel{background:var(--ink);color:var(--white)}
+.item.q{background:repeating-linear-gradient(-45deg,var(--yel) 0 14px,var(--ink) 14px 28px)}
+.item.q .qi{position:absolute;inset:10px;background:var(--ink);color:var(--yel);padding:10px;display:flex;flex-direction:column;justify-content:space-between}
+.item.q.open{background:var(--fog)}
+.item.q.open .qi{display:none}
+.item.empty{background:repeating-linear-gradient(-45deg,rgba(10,10,11,.5) 0 1px,transparent 1px 7px);outline-style:dashed;cursor:default}
+.insp{background:var(--ink);color:var(--white);display:flex;flex-direction:column;gap:14px;padding:22px;position:relative;overflow:hidden;min-width:0}
+.insp .nm{font:300 42px/.95 var(--f-disp);font-stretch:88%;letter-spacing:-.03em;text-wrap:balance}
+.insp dl{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;margin:0;font:400 12px/1.35 var(--f-ui)}
+.insp dt{color:#8b8c86;letter-spacing:.1em;text-transform:uppercase}
+.insp dd{margin:0}
+.insp canvas{width:150px;height:150px;position:absolute;right:16px;top:16px}
+.P .insp canvas{width:110px;height:110px}
+.insp .act{margin-top:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ---------- COMMS ---------- */
+#r-comms{background:var(--orange);display:grid;grid-template-columns:1.25fr 1fr;gap:30px}
+.P #r-comms{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}
+#freq{font:300 190px/.8 var(--f-dot);letter-spacing:-.04em}
+.P #freq{font-size:140px}
+.dial{position:relative;height:96px;background:var(--ink);color:var(--orange)}
+.dial .sc{position:absolute;inset:0 0 auto;height:40px;background:repeating-linear-gradient(90deg,var(--orange) 0 2px,transparent 2px 14px) 0 0/100% 18px no-repeat,repeating-linear-gradient(90deg,var(--orange) 0 2px,transparent 2px 70px) 0 0/100% 34px no-repeat}
+.dial .nd{position:absolute;top:0;bottom:0;width:4px;background:var(--white)}
+.dial .lk{position:absolute;top:0;width:14px;height:40px;background:var(--blue);opacity:.0}
+.dial .ln{position:absolute;left:12px;bottom:10px;right:12px;display:flex;justify-content:space-between;font:700 12px/1 var(--f-code)}
+#osc{width:100%;height:150px;display:block;background:var(--ink)}
+.tx-card{background:var(--ink);color:var(--white);padding:22px;display:flex;flex-direction:column;gap:14px}
+.tx-card.lock{background:var(--blue)}
+
+/* ---------- SALVAGE ---------- */
+#r-salvage{background:var(--bone);display:grid;grid-template-columns:1fr 420px;gap:26px}
+.P #r-salvage{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;gap:14px}
+.crates{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:10px;margin-top:18px;flex:1;min-height:0}
+.P .crates{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,104px);margin-top:0}
+.crate{position:relative;background:var(--white);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-width:0;border:3px solid var(--ink)}
+.crate .sn{font:400 26px/.95 var(--f-sten);text-transform:uppercase;overflow-wrap:anywhere}
+.P .crate .sn{font-size:18px}
+.crate .t{display:flex;justify-content:space-between;font:700 11px/1 var(--f-code)}
+.crate .hz{position:absolute;left:0;right:0;bottom:0;height:8px;background:repeating-linear-gradient(-45deg,var(--orange) 0 6px,var(--ink) 6px 12px)}
+.crate.sel{background:var(--ink);color:var(--white)}
+.scanp{background:var(--ink);color:var(--white);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden}
+.scanw{position:relative;flex:1;background:var(--orange);overflow:hidden;min-height:180px}
+.scanw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.4);mix-blend-mode:multiply}
+.scanw canvas{position:absolute;inset:0;width:100%;height:100%}
+.scanw .st{position:absolute;left:10px;top:10px;background:var(--ink);color:var(--orange);padding:5px 7px}
+
+/* ---------- CIPHER ---------- */
+#r-cipher{background:var(--lav);color:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.P #r-cipher{grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:16px}
+.lib{font:italic 400 44px/1.12 var(--f-serif);margin:0;text-wrap:balance}
+.P .lib{font-size:34px}
+.phr{display:flex;background:var(--ink);align-items:stretch}
+.phr input{flex:1;min-width:0;background:transparent;border:0;color:var(--white);font:400 20px/1 var(--f-ui);padding:16px;caret-color:var(--mint)}
+.phr input::placeholder{color:#6d6e69}
+.phr button{background:var(--mint);color:var(--ink);padding:0 16px;display:flex;align-items:center;gap:8px;font:700 13px/1 var(--f-code)}
+.addr{display:flex;flex-direction:column;gap:10px;min-width:0}
+.slab{background:var(--ink);color:var(--white);padding:14px 16px}
+.hex{font:400 13px/1.45 var(--f-code);color:var(--mint);word-break:break-all;height:190px;overflow:hidden}
+.P .hex{height:150px}
+.coords{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.coords .slab .v{font:700 44px/1 var(--f-code)}
+
+/* ---------- PAINT ---------- */
+#r-paint{background:var(--ink);color:var(--white);display:grid;grid-template-columns:1fr 400px;gap:26px}
+.P #r-paint{grid-template-columns:1fr;grid-template-rows:auto 420px 1fr;gap:14px}
+#gen{width:100%;height:100%;display:block}
+.genw{position:relative;min-height:0;outline:1px solid #2a2b29}
+.ways{display:flex;flex-direction:column;gap:8px}
+.way{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;padding:8px;background:#151617}
+.way .sw{display:flex;height:34px}.way .sw i{flex:1;display:block}
+.way .nm{font:600 13px/1.2 var(--f-ui);letter-spacing:.1em;text-transform:uppercase}
+.way.sel{background:var(--white);color:var(--ink)}
+.way .eq{font:700 11px/1 var(--f-code);color:var(--sel)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:700 11px/1 var(--f-code);padding:8px 10px 8px 8px;display:flex;gap:6px;align-items:center;background:#1c1d1e;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,0 100%)}
+.chip i{width:12px;height:12px;display:block}
+
+/* ---------- SCAN ---------- */
+#r-scan{background:var(--ink);color:var(--white);display:grid;grid-template-columns:1fr 380px;gap:26px}
+.P #r-scan{grid-template-columns:1fr;grid-template-rows:520px 1fr;gap:12px}
+#cloud{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.anoms{display:flex;flex-direction:column;gap:4px;min-height:0}
+.an{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:7px 8px;border-left:3px solid transparent;font:400 13px/1.25 var(--f-disp)}
+.an .c{font:700 12px/1 var(--f-code);color:var(--teal)}
+.an .ll{font:400 10px/1 var(--f-code);color:#7b7c76}
+.an.sel{background:var(--teal);color:var(--ink);border-color:var(--white)}
+.an.sel .c,.an.sel .ll{color:var(--ink)}
+.P .an{padding:5px 8px}
+
+/* ---------- DIAG terminal ---------- */
+#term{position:absolute;left:0;right:0;bottom:52px;height:46%;background:var(--ink);color:var(--white);z-index:25;display:flex;flex-direction:column;border-top:3px solid var(--sel)}
+.P #term{height:52%}
+#term[hidden]{display:none}
+#term .th{display:flex;justify-content:space-between;padding:8px 16px;font:700 12px/1 var(--f-code);color:var(--sel);border-bottom:1px solid #222}
+#tout{flex:1;overflow:hidden;padding:10px 16px;font:400 14px/1.5 var(--f-ui);display:flex;flex-direction:column;justify-content:flex-end}
+#tout .e{color:var(--red)}#tout .ok{color:var(--sel)}#tout .d{color:#8b8c86}
+#tin{display:flex;gap:10px;padding:10px 16px 12px;font:600 15px/1 var(--f-ui);align-items:center}
+#tin input{flex:1;background:none;border:0;color:var(--white);font:400 15px/1 var(--f-ui);caret-color:var(--sel);min-width:0}
+
+/* ---------- burst + boot ---------- */
+#burst{position:absolute;inset:0;z-index:40;pointer-events:none}
+#burst[hidden]{display:none}
+#burst .cd{position:absolute;inset:0;overflow:hidden}
+#boot{position:absolute;inset:0;z-index:50;background:var(--ink);color:var(--white)}
+#boot[hidden]{display:none}
+#boot canvas{position:absolute;inset:0;width:100%;height:100%}
+#boot .bwm{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font:500 96px/1 var(--f-disp);font-stretch:75%;color:var(--lime);white-space:nowrap;visibility:hidden}
+#boot .log{position:absolute;left:50%;top:56%;transform:translateX(-50%);font:400 14px/1.6 var(--f-ui);color:#9a9b95;width:440px}
+#boot .log .ok{color:var(--lime)}
+#boot .skip{position:absolute;right:20px;bottom:18px;font:600 11px/1 var(--f-ui);letter-spacing:.14em;color:#6f706c}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+
+<div id="vp">
+  <span class="lb" id="lb1">JRL UPLINK · STAGE 1600×900 · LETTERBOX</span>
+  <span class="lb" id="lb2">⊠ 08·11·2850 · TCR</span>
+  <div id="stage" data-room="shell">
+    <header id="top">
+      <span class="id">JRL</span>
+      <span><span id="wm">JERE.ING</span><span class="dots" id="sigd" aria-label="Signal strength"></span></span>
+      <span class="loc" id="loc"><b>HANGAR</b>&nbsp;· BAY 04 · TAU CETI IV HIGH ORBIT&nbsp;&nbsp;<span class="jp">格納庫</span></span>
+      <span style="flex-direction:column;align-items:flex-start;justify-content:center;gap:3px"><span id="clock">00:00:00</span><span id="tdate">TCR 08·11·2850</span></span>
+      <button id="snd" aria-pressed="true" title="Sound (M)"><span class="m"><i></i><i></i><i></i><i></i><i></i></span>SND</button>
+    </header>
+
+    <main id="rooms">
+      <!-- SHELL -->
+      <section class="room chev" id="r-shell" aria-label="Runner shell">
+        <div class="card cutc">
+          <div class="rk"><span class="lab">Runner profile · <span class="jp">ランナー</span></span><span class="badge" title="Cores logged">08</span></div>
+          <div><div class="big">Runner</div><div class="cs">JERE.ING</div></div>
+          <p class="txt hide-p" style="font-size:15px;color:#3c3d39">Between runs. Everything pulled out of the zone is stored on this shell. Pick a slot and equip it.</p>
+          <div class="stats">
+            <div><div class="micro">Data cores</div><div class="v">08</div></div>
+            <div><div class="micro">Salvage feeds</div><div class="v">12</div></div>
+            <div><div class="micro">Last extract</div><div class="v">11·02</div></div>
+            <div><div class="micro">Time in hangar</div><div class="v" id="tih">00:00</div></div>
+            <div class="hide-p"><div class="micro">Visits logged</div><div class="v" id="runs">001</div></div>
+            <div class="hide-p"><div class="micro">Shell paint</div><div class="v" id="paintnm" style="font-size:18px;padding-top:10px">STOCK</div></div>
+          </div>
+        </div>
+        <div class="loadout" id="loadout">
+          <div class="corep"><i class="grid"></i><canvas id="bust" aria-label="Shell schematic: a wireframe body scan of the runner shell. Drag to turn it."></canvas><i class="grain"></i><span class="lab lt">Shell schematic · 04</span><span class="micro rt jp" style="letter-spacing:.3em">身体走査</span><span class="micro lb2"><span id="tric">MESH — TRI · RIG 11</span><span>DRAG TO TURN</span></span></div>
+        </div>
+        <div class="side">
+          <div class="win"><div class="hd micro"><span>Hangar window · ext feed</span><span id="adn">01/03</span></div><div class="fr" id="adframe"></div></div>
+          <div class="det" id="det"></div>
+        </div>
+      </section>
+
+      <!-- VAULT -->
+      <section class="room" id="r-vault" hidden aria-label="Vault: reports">
+        <div style="display:flex;flex-direction:column;min-height:0;min-width:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 01</span><span class="jp" style="font-size:15px">保管庫</span><span class="lab" style="color:var(--pink)">08 cores · 01 quarantined</span></div><h2 class="ttl" style="font-size:64px">Vault</h2><p class="slog">Everything extracted, logged, numbered. Item size is file size.</p></div>
+          <div class="stash" id="stash"></div>
+        </div>
+        <div class="insp" id="insp"></div>
+      </section>
+
+      <!-- COMMS -->
+      <section class="room" id="r-comms" hidden aria-label="Comms: song of the day">
+        <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 02</span><span class="jp" style="font-size:15px">通信</span></div><h2 class="ttl" style="font-size:64px">Comms</h2><p class="slog">Today's transmission. Tune until the carrier locks.</p></div>
+          <div style="display:flex;align-items:flex-end;gap:16px"><span id="freq">100.0</span><span class="code" style="font-size:22px;padding-bottom:10px">MHz</span></div>
+          <div class="dial" id="dial" data-f tabindex="0" role="slider" aria-label="Tuning dial" aria-valuemin="88" aria-valuemax="108" aria-valuenow="100"><div class="sc"></div><div class="lk" id="lk"></div><div class="nd" id="nd"></div><div class="ln"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div></div>
+          <canvas id="osc" width="600" height="150"></canvas>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="tx-card" id="txc">
+            <div style="display:flex;justify-content:space-between"><span class="tag" id="txs">CARRIER · SEARCHING</span><span class="micro" style="color:#8b8c86" id="txf">LOCK ±0.4</span></div>
+            <div class="ttl" style="font-size:44px" id="txh">No lock yet.</div>
+            <p class="txt" style="color:#c9cac4">The song of the day comes from your YouTube Music playlist and plays on the live uplink. Turn the dial with ← → or drag it. Static drops as you get close.</p>
+            <a class="btnA" id="txa" data-f href="https://music.youtube.com/playlist?list=PLatbUHOLE1e0" target="_blank" rel="noopener"><span class="k">A</span>OPEN THE FREQUENCY ↗</a>
+          </div>
+          <div class="micro" style="line-height:1.6">Lock frequency changes daily · carrier 2.8kHz · static bed band-passed at 1.8kHz · sound wakes on first input</div>
+        </div>
+        <div class="gi" style="left:-24px;bottom:-40px;font-size:270px;color:var(--ink);opacity:.12" aria-hidden="true">COMMS</div>
+      </section>
+
+      <!-- SALVAGE -->
+      <section class="room" id="r-salvage" hidden aria-label="Salvage: Are.na channels">
+        <div style="display:flex;flex-direction:column;min-height:0;min-width:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 03</span><span class="jp" style="font-size:15px">回収</span><span class="lab">12 feeds · Are.na</span></div><h2 class="ttl" style="font-size:64px">Salvage</h2><p class="slog">Crates from twelve channels. The daily image is pulled from one of them.</p></div>
+          <div class="crates" id="crates"></div>
+        </div>
+        <div class="scanp">
+          <div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--orange)" id="scn">SV-01</span><span class="micro" style="color:#8b8c86">Salvage scan · duotone</span></div>
+          <div class="ttl" style="font-size:40px" id="scnm">mefr</div>
+          <div class="scanw" id="scanw"><canvas class="dither" width="64" height="48" id="noise"></canvas><span class="tag st" id="scst">SEARCHING</span></div>
+          <a class="btnA" data-f id="scl" href="#" target="_blank" rel="noopener"><span class="k">A</span>OPEN CRATE ON ARE.NA ↗</a>
+        </div>
+      </section>
+
+      <!-- CIPHER -->
+      <section class="room" id="r-cipher" hidden aria-label="Cipher: Library of Babel">
+        <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 04</span><span class="jp" style="font-size:15px">暗号</span></div><h2 class="ttl" style="font-size:64px">Cipher</h2></div>
+          <p class="lib" id="lib">Every sentence you could type is already shelved. I only tell you where.</p>
+          <form class="phr" id="phr" autocomplete="off"><input id="phrase" data-f maxlength="120" placeholder="type a phrase" aria-label="Phrase to locate"><button type="submit" data-f id="loc8"><span class="k" style="background:var(--ink);color:var(--mint)">A</span>LOCATE</button></form>
+          <p class="slab txt" style="font-size:14px">Coordinates are computed on the shell. To read the actual page, search the real Library of Babel. <a href="https://libraryofbabel.info/search.html" target="_blank" rel="noopener" data-f style="color:var(--mint)">libraryofbabel.info ↗</a></p>
+        </div>
+        <div class="addr">
+          <div class="slab"><div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--mint)">HEXAGON</span><span class="micro" style="color:#8b8c86" id="hexn">— chars</span></div></div>
+          <div class="slab hex" id="hex">awaiting phrase</div>
+          <div class="coords"><div class="slab"><div class="micro">Wall</div><div class="v" id="cw">–</div></div><div class="slab"><div class="micro">Shelf</div><div class="v" id="cs">–</div></div><div class="slab"><div class="micro">Volume</div><div class="v" id="cv">–</div></div><div class="slab"><div class="micro">Page</div><div class="v" id="cp">–</div></div></div>
+        </div>
+        <div class="gi" style="right:-20px;bottom:-30px;font-size:230px;color:var(--white);opacity:.16" aria-hidden="true">CIPHER</div>
+      </section>
+
+      <!-- PAINT -->
+      <section class="room" id="r-paint" hidden aria-label="Paint: color generator">
+        <div class="genw"><canvas id="gen" class="dither" width="192" height="108" aria-label="Dithered colorway field"></canvas><span class="tag" style="position:absolute;left:12px;top:12px;background:var(--ink);color:var(--sel);padding:6px 8px">PAINT BOOTH · 192×108 · ORDERED DITHER</span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+          <div class="rh"><div class="row"><span class="tag" style="color:var(--sel)">SLOT 05</span><span class="jp" style="font-size:15px">塗装</span></div><h2 class="ttl" style="font-size:58px">Paint</h2><p class="slog" style="font-size:18px">Pick a colorway. Applying it repaints your shell's signal color everywhere.</p></div>
+          <div class="ways" id="ways"></div>
+          <div class="chips" id="chips"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btnA" data-f id="apply" style="background:var(--white);color:var(--ink)"><span class="k">A</span>APPLY TO SHELL</button><button class="btnA" data-f id="roll" style="background:#1c1d1e"><span class="k" style="background:var(--white)">X</span>ROLL</button></div>
+        </div>
+      </section>
+
+      <!-- SCAN -->
+      <section class="room" id="r-scan" hidden aria-label="Scan: the zone">
+        <div style="position:relative;min-height:0"><canvas id="cloud" width="1100" height="760" aria-label="Rotating point-cloud scan of the zone"></canvas><span class="tag" style="position:absolute;left:0;top:0;color:var(--teal)">ZONE SCAN · TAU CETI IV · DRAG TO ROTATE</span><span class="micro" id="scanro" style="position:absolute;left:0;bottom:0;color:#7b7c76"></span></div>
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0">
+          <div class="rh"><div class="row"><span class="tag" style="color:var(--teal)">SLOT 06</span><span class="jp" style="font-size:15px">走査</span></div><h2 class="ttl" style="font-size:58px">Scan</h2><p class="slog" style="font-size:18px">Where each core was recovered. Select one and the scan turns to face it.</p></div>
+          <div class="anoms" id="anoms"></div>
+        </div>
+      </section>
+    </main>
+
+    <div id="status" hidden></div>
+    <div id="term" hidden aria-label="Diagnostics terminal">
+      <div class="th"><span>SLOT 07 · DIAGNOSTICS · <span class="jp">診断</span></span><span>[B] CLOSE</span></div>
+      <div id="tout" aria-live="polite"></div>
+      <form id="tin" autocomplete="off"><span style="color:var(--sel)">runner@jrl:~$</span><input id="tcmd" aria-label="Command" spellcheck="false"></form>
+    </div>
+    <footer id="prompts"></footer>
+    <div id="burst" hidden></div>
+    <div id="boot"><canvas width="160" height="90" class="dither"></canvas><div class="bwm">JERE.ING</div><div class="log"></div><div class="skip">ANY KEY · SKIP</div></div>
+    <i id="brk"><i class="hold"></i></i>
+    <div class="sr" aria-live="polite" id="sr"></div>
+  </div>
+</div>
+
+<script>
+/* ===== JRL shared lib: rng, pixel icons, glyphs, dither core, point cloud, sfx ===== */
+const JRL = (() => {
+  const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+
+  /* ---- 9x9 pixel pictograms ---- */
+  const ICONS = {
+    noscroll: ["....#....","....#....","....#....","..#####..","...###...","....#....",".........","#########","#########"],
+    compose:  [".#######.",".#.....#.",".#.###.#.",".#.#.#.#.",".#.###.#.",".#.....#.",".#.###.#.",".#.....#.",".#######."],
+    slot:     ["###...###","#.......#","#.......#","...###...","...###...","...###...","#.......#","#.......#","###...###"],
+    spatial:  ["....#....","...###...","....#....",".#.....#.","###.#.###",".#.....#.","....#....","...###...","....#...."],
+    cut:      ["####.....","####.....","####.....","####.....","....#####","....#####","....#####","....#####","....#####"],
+    wait:     ["#########",".#.....#.","..#...#..","...#.#...","....#....","...#.#...","..#.#.#..",".#.###.#.","#########"],
+    type:     ["#####....","..#......","..#......","..#..###.","..#...#..","..#...#..","......#..",".........","#.#.#.#.#"],
+    place:    ["..#####..",".##...##.",".#..#..#.",".##...##.","..##.##..","...###...","....#....",".........","#########"],
+    sound:    ["...#.....","..##..#..","####...#.","####.#.#.","####.#.#.","####...#.","..##..#..","...#.....","........."],
+    cube:     ["...###...",".##...##.","#...#...#","#.##.##.#","#...#...#","#...#...#",".##.#.##.","...###...","........."],
+    vault:    [".#######.",".#.....#.",".#######.",".........",".#######.",".#.....#.",".#######.",".........","#########"],
+    comms:    ["#...#...#",".#..#..#.","..#.#.#..","....#....","...###...","....#....","....#....","...###...","..#####.."],
+    salvage:  ["#########","#.......#","#.#...#.#","#..#.#..#","#...#...#","#..#.#..#","#.#...#.#","#.......#","#########"],
+    cipher:   [".........",".###.....","#...#....","#...#####","#...#.#.#",".###..#.#",".........",".........","#########"],
+    paint:    ["###.###..","###.###..","###.###..",".........","###.###..","###.#.#..","###.###..",".........","#########"],
+    scan:     ["..#####..",".#.....#.","#...#...#","#..#.#..#","#.#.##..#","#...#...#","#.......#",".#.....#.","..#####.."],
+    diag:     ["#########","#.......#","#.#.....#","#..#....#","#.#.....#","#....##.#","#.......#","#########","........."],
+    skull:    ["..#####..",".#######.","##..#..##","##..#..##",".#######.","..##.##..","..#.#.#..","..#####..","........."],
+    wheat:    ["....#....","...#.#...","..#.#.#..","...#.#...","..#.#.#..","...#.#...","....#....","....#....","...###..."],
+    helix:    ["##.....##",".##...##.","..##.##..","...###...","..##.##..",".##...##.","##.....##",".##...##.","..#####.."],
+    hazard:   ["....#....","...###...","...#.#...","..##.##..","..##.##..",".###.###.",".#######.","####.####","#########"]
+  };
+  function icon(name, cls) {
+    const m = ICONS[name] || ICONS.cube; let r = '';
+    m.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] === '#') r += `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`; });
+    return `<svg class="${cls || 'px'}" viewBox="0 0 9 9" shape-rendering="crispEdges" aria-hidden="true" fill="currentColor">${r}</svg>`;
+  }
+
+  /* ---- procedural block glyphs (made-up symbol set) ---- */
+  function glyph(seed, w = 5, h = 7) {
+    const R = rng(seed); const mirror = R() < .55; const cells = [];
+    for (let y = 0; y < h; y++) { const row = []; for (let x = 0; x < w; x++) row.push(R() < .46); cells.push(row); }
+    if (mirror) cells.forEach(row => { for (let x = 0; x < w / 2; x++) row[w - 1 - x] = row[x]; });
+    if (R() < .4) { const y = 1 + (R() * (h - 2) | 0); cells[y] = cells[y].map(() => true); }
+    let r = '';
+    cells.forEach((row, y) => row.forEach((on, x) => { if (on) r += `<rect x="${x}" y="${y}" width="1.02" height="1.02"/>`; }));
+    return `<svg class="gl" viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" aria-hidden="true" fill="currentColor">${r}</svg>`;
+  }
+
+  /* ---- ordered-dither "lit object" renderer ---- */
+  const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16);
+  function hex2rgb(h) { h = h.replace('#', ''); return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]; }
+  function coreMesh(kind) {
+    const L = kind === 'crate'
+      ? [[-1, .9], [-.92, 1], [.92, 1], [1, .9]]
+      : [[-1.15, .5], [-.95, .95], [-.3, .95], [-.18, .78], [.18, .78], [.3, .95], [.95, .95], [1.15, .5]];
+    const n = kind === 'crate' ? 4 : 10, V = [], F = [];
+    L.forEach(([y, r]) => { for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2 + Math.PI / n; V.push([Math.cos(a) * r * (kind === 'crate' ? 1.25 : 1), y * (kind === 'crate' ? .9 : 1.15), Math.sin(a) * r]); } });
+    for (let i = 0; i < L.length - 1; i++) for (let k = 0; k < n; k++) { const k1 = (k + 1) % n; F.push({ v: [i * n + k, i * n + k1, (i + 1) * n + k1, (i + 1) * n + k], seam: kind !== 'crate' && (i === 2 || i === 4), acc: kind !== 'crate' && i === 3 && (k % 5 === 0) }); }
+    F.push({ v: [...Array(n).keys()] }); F.push({ v: [...Array(n).keys()].map(k => (L.length - 1) * n + k) });
+    // orient outward
+    F.forEach(f => { const c = cen(f.v.map(i => V[i])), nn = nrm(f.v.map(i => V[i])); if (dot(nn, c) < 0) f.v.reverse(); });
+    return { V, F };
+  }
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const crs = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const nz = a => { const l = Math.hypot(...a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  const cen = P => P.reduce((s, p) => [s[0] + p[0] / P.length, s[1] + p[1] / P.length, s[2] + p[2] / P.length], [0, 0, 0]);
+  const nrm = P => nz(crs(sub(P[1], P[0]), sub(P[2], P[0])));
+
+  function Core(canvas, o = {}) {
+    const W = canvas.width, H = canvas.height, g = canvas.getContext('2d', { willReadFrequently: true });
+    const mesh = coreMesh(o.kind || 'core'); let inks = (o.inks || ['#0a0a0b', '#e1dfe0', '#f2f2ee']).map(hex2rgb); let acc = hex2rgb(o.accent || '#c2ff16');
+    const Ld = nz([-.55, .65, -.55]);
+    function draw(t) {
+      const ry = t * .55 + (o.phase || 0), rx = -.38 + Math.sin(t * .31) * .08, cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
+      const P = mesh.V.map(([x, y, z]) => { let X = x * cy + z * sy, Z = -x * sy + z * cy, Y = y; const Y2 = Y * cx - Z * sx, Z2 = Y * sx + Z * cx; return [X, Y2, Z2 + 4.2]; });
+      const f = (o.zoom || 1.55) * W;
+      const faces = [];
+      mesh.F.forEach(F => {
+        const pts = F.v.map(i => P[i]); const n = nrm(pts), c = cen(pts);
+        if (dot(n, c) >= 0) return;
+        let lum = Math.max(0, dot(n, Ld)); lum = .06 + .94 * Math.pow(lum, .85);
+        if (F.seam) lum *= .45;
+        faces.push({ z: c[2], pts, lum, acc: F.acc });
+      });
+      faces.sort((a, b) => b.z - a.z);
+      g.clearRect(0, 0, W, H);
+      faces.forEach(F => {
+        g.beginPath(); F.pts.forEach(([x, y, z], i) => { const px = W / 2 + x / z * f, py = H / 2 - y / z * f; i ? g.lineTo(px, py) : g.moveTo(px, py); }); g.closePath();
+        const v = Math.round(F.lum * 255); g.fillStyle = F.acc ? `rgb(255,${v},0)` : `rgb(${v},${v},${v})`; g.fill();
+      });
+      const im = g.getImageData(0, 0, W, H), d = im.data, n = inks.length - 1;
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const i = (y * W + x) * 4; if (d[i + 3] < 128) { d[i + 3] = 0; continue; }
+        const th = BAYER[(y & 3) * 4 + (x & 3)];
+        if (d[i] === 255 && d[i + 2] === 0 && d[i + 1] !== 255) { const c = (d[i + 1] / 255) > th * .9 ? acc : inks[0]; d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255; continue; }
+        const v = d[i] / 255 * n, b = Math.floor(v), fr = v - b, k = Math.min(n, fr > th ? b + 1 : b), c = inks[k];
+        d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+      }
+      g.putImageData(im, 0, 0);
+    }
+    let vis = true; new IntersectionObserver(e => vis = e[0].isIntersecting).observe(canvas);
+    draw(o.t0 || .6);
+    return {
+      draw, setInks(a, b) { inks = a.map(hex2rgb); if (b) acc = hex2rgb(b); draw(JRL.time()); },
+      get vis() { return vis && !document.hidden; }
+    };
+  }
+
+  /* ---- wireframe "shell schematic" bust: white mesh, orange key + cradle, blue rig ---- */
+  function Bust(canvas, o = {}) {
+    const g = canvas.getContext('2d');
+    /* Head built from horizontal slices with real proportions (head height = 1, chin y=0, crown y=1, front = +z in
+       definition space): eyes at 1/2, brow .54, nose base .26, mouth .165, ears between brow and nose base,
+       skull width ~.72, depth ~.9, jaw angle under the ear, neck tilting into a trapezius/shoulder line. */
+    const sm = t => t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t), G = (a, b) => Math.exp(-(a + b));
+    const curve = pts => y => { // pts sorted by descending y; Catmull-Rom in y
+      if (y >= pts[0][0]) return pts[0][1]; const n = pts.length; if (y <= pts[n - 1][0]) return pts[n - 1][1];
+      let i = 0; while (pts[i + 1][0] > y) i++;
+      const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(n - 1, i + 2)];
+      const h = p1[0] - p2[0], u = (p1[0] - y) / h;
+      const m1 = (p2[1] - p0[1]) / (p0[0] - p2[0] || 1) * -h, m2 = (p3[1] - p1[1]) / (p1[0] - p3[0] || 1) * -h;
+      const u2 = u * u, u3 = u2 * u; return (2 * u3 - 3 * u2 + 1) * p1[1] + (u3 - 2 * u2 + u) * m1 + (-2 * u3 + 3 * u2) * p2[1] + (u3 - u2) * m2;
+    };
+    const Wd = curve([[1.0, .0], [.985, .1], [.95, .2], [.9, .27], [.82, .33], [.72, .36], [.62, .365], [.54, .355], [.46, .35], [.38, .34], [.3, .315], [.22, .29], [.15, .265], [.08, .23], [.02, .2], [-.06, .185], [-.13, .19], [-.21, .225], [-.29, .32], [-.37, .48], [-.45, .66], [-.55, .83], [-.67, .95], [-.84, 1.03], [-1.1, 1.06]]);
+    const ZF = curve([[1.0, -.02], [.985, .08], [.95, .2], [.88, .31], [.78, .38], [.68, .41], [.6, .42], [.55, .43], [.5, .4], [.44, .405], [.36, .41], [.3, .415], [.25, .405], [.19, .435], [.165, .41], [.13, .425], [.09, .4], [.05, .415], [.02, .38], [-.02, .29], [-.06, .18], [-.12, .12], [-.22, .09], [-.32, .1], [-.42, .18], [-.55, .28], [-.75, .36], [-1.1, .38]]);
+    const ZB = curve([[1.0, -.02], [.985, .1], [.95, .25], [.88, .37], [.78, .44], [.66, .47], [.56, .47], [.46, .44], [.38, .4], [.31, .34], [.24, .27], [.12, .24], [0, .225], [-.2, .25], [-.4, .32], [-.6, .38], [-.8, .4], [-1.1, .4]]);
+    const ZC = curve([[1, -.01], [.7, -.03], [.4, -.05], [.2, -.06], [0, -.06], [-.4, -.04], [-1.1, .0]]);
+    const NF = curve([[1, 2.2], [.75, 2.3], [.62, 2.4], [.5, 2.5], [.36, 2.45], [.28, 2.3], [.2, 1.85], [.13, 1.55], [.05, 1.45], [-.01, 1.7], [-.08, 2.0], [-.4, 2.1], [-.6, 2.6], [-1.1, 3.0]]);
+    const NB = curve([[1, 2.1], [.3, 2.1], [-.3, 2.0], [-.6, 2.6], [-1.1, 3.0]]);
+    const NH = curve([[.53, 0], [.49, .012], [.44, .035], [.38, .065], [.33, .1], [.3, .125], [.285, .125], [.27, .1], [.255, .05], [.245, 0]]);
+    const NW = curve([[.53, .03], [.42, .032], [.34, .042], [.29, .055], [.26, .06], [.24, .06]]);
+    function surf(y, t) {
+      const s = Math.sin(t), c = Math.cos(t), front = c > 0, n = front ? NF(y) : NB(y), ex = 2 / n, zc = ZC(y);
+      const R = front ? ZF(y) - zc : ZB(y) + zc, w = Wd(y);
+      let x = w * Math.sign(s) * Math.pow(Math.abs(s), ex), z = zc + (front ? 1 : -1) * R * Math.pow(Math.abs(c), ex);
+      if (front && y > -.1 && y < .8) {
+        const wf = Math.pow(Math.max(0, c), 1.5);
+        z += NH(y) * Math.exp(-(x * x) / (NW(y) ** 2));                                           // nose
+        for (const sg of [-1, 1]) {
+          z -= .055 * G((x - sg * .125) ** 2 / .0045, (y - .47) ** 2 / .0028) * wf;              // eye sockets
+          z += .03 * G((x - sg * .06) ** 2 / .0009, (y - .275) ** 2 / .0006);                   // nostril wings
+          const ck = .028 * G((x - sg * .22) ** 2 / .006, (y - .39) ** 2 / .004); z += ck * wf; x += sg * ck * .6; // cheekbones
+        }
+        z += .03 * G(0, (y - .545) ** 2 / .0011) * sm((.27 - Math.abs(x)) / .08) * wf;           // brow ridge
+        z += .022 * G(x * x / .006, (y - .19) ** 2 / .0012);                                      // upper lip
+        z -= .016 * G(x * x / .004, (y - .168) ** 2 / .00025);                                    // mouth line
+        z += .02 * G(x * x / .005, (y - .145) ** 2 / .0012);                                      // lower lip
+        z += .018 * G(x * x / .006, (y - .05) ** 2 / .002);                                       // chin pad
+      }
+      return [x, y, -z];
+    }
+    const LON = 46, V = [], rings = [], YS = [];
+    for (let y = 1.0; y > .64; y -= .05) YS.push(y);
+    for (let y = .64; y > -.12; y -= .026) YS.push(y);
+    for (let y = -.12; y >= -1.1; y -= .06) YS.push(y);
+    YS.forEach(y => { const ring = []; for (let j = 0; j < LON; j++) { ring.push(V.length); V.push(surf(y, j / LON * Math.PI * 2)); } rings.push(ring); });
+    const Q = [];
+    const addQ = (a, b, c, d, ref, i, j) => { const A = V[a], B = V[b], D = V[d]; let n = nz(crs(sub(B, A), sub(D, A))); if (dot(n, ref) < 0) n = n.map(v => -v); Q.push({ a, b, c, d, n, y: (A[1] + V[c][1]) / 2, dg: (i + j) % 2, h: ((i * 7919 + j * 104729) % 97) / 97 }); };
+    for (let i = 0; i < rings.length - 1; i++) for (let j = 0; j < LON; j++) {
+      const a = rings[i][j], b = rings[i][(j + 1) % LON], c = rings[i + 1][(j + 1) % LON], d = rings[i + 1][j];
+      const A = V[a]; addQ(a, b, c, d, [A[0], 0, A[2] + ZC(A[1])], i, j);
+    }
+    // ears: cupped flaps between brow and nose base, set behind the jaw hinge, tilted back
+    for (const sg of [-1, 1]) {
+      const yc = .405, cz = -.085, ctr = [sg * (Wd(yc) - .01), yc, cz], tb = .26;
+      const A = [0, Math.sin(tb), Math.cos(tb)], B = [0, Math.cos(tb), -Math.sin(tb)], N = nz([sg, 0, -.45]);
+      const EU = 14, EV = 3, base = V.length;
+      for (let v = 0; v <= EV; v++) for (let u = 0; u < EU; u++) { const an = u / EU * Math.PI * 2, r = v / EV, cup = .045 * r * r * (Math.cos(an) < 0 ? 1.25 : .8); const q = [0, 1, 2].map(k => ctr[k] + A[k] * Math.cos(an) * .062 * r + B[k] * Math.sin(an) * .135 * r + N[k] * (cup - .005)); V.push([q[0], q[1], -q[2]]); }
+      for (let v = 0; v < EV; v++) for (let u = 0; u < EU; u++) { const a = base + v * EU + u, b = base + v * EU + (u + 1) % EU, c = base + (v + 1) * EU + (u + 1) % EU, d = base + (v + 1) * EU + u; addQ(a, b, c, d, [N[0], N[1], -N[2]], v, u); }
+    }
+    // orange cortex cradle: lattice following the back of the skull, then hanging
+    const CU = 7, CV = 30, CR = [];
+    for (let v = 0; v <= CV; v++) { const y0 = .99 - v / CV * 1.7, yy = Math.max(.3, y0), row = []; for (let u = 0; u <= CU; u++) { const t = 2.05 + u / CU * .62, p = surf(yy, t), dx = p[0], dz = p[2] + ZC(yy), l = Math.hypot(dx, dz) || 1; row.push([p[0] + dx / l * .045 + (y0 < .3 ? (.3 - y0) * .03 : 0), y0, p[2] + dz / l * .045]); } CR.push(row); }
+    // eyes sit in the sockets
+    const EYES = [-1, 1].map(sg => { const p = surf(.47, Math.asin(Math.min(1, .125 / Wd(.47)))); return [sg * .125, .47, p[2] + .012]; });
+    const J = { SKULL: [0, .72, .02], 'OPT-L': EYES[0], 'OPT-R': EYES[1], 'JAW-L': [-.28, .3, .0], 'JAW-R': [.28, .3, .0], C1: [0, .27, .13], C7: [0, -.36, .12], 'CLAV-L': [-.36, -.5, -.12], 'CLAV-R': [.36, -.5, -.12], 'SHLD-L': [-.92, -.78, .0], 'SHLD-R': [.92, -.78, .0] };
+    const BONES = [['SKULL', 'C1'], ['C1', 'C7'], ['C7', 'CLAV-L'], ['CLAV-L', 'SHLD-L'], ['C7', 'CLAV-R'], ['CLAV-R', 'SHLD-R'], ['JAW-L', 'C1'], ['JAW-R', 'C1']];
+    const LABELS = o.labels === false ? [] : [['OPT-L', 'OPT-L · OPTIC'], ['JAW-L', 'MANDIBLE HINGE'], ['C1', 'C1 MOUNT'], ['SHLD-R', 'SHLD-R · 2 DOF'], ['SKULL', 'CORTEX CRADLE']];
+    const Lo = nz([-.9, .3, -.32]);
+    let yawOff = 0, drag = null, born = -100, vis = true;
+    new IntersectionObserver(e => vis = e[0].isIntersecting).observe(canvas);
+    canvas.addEventListener('pointerdown', e => { drag = [e.clientX, yawOff]; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener('pointermove', e => { if (drag) yawOff = drag[1] + (e.clientX - drag[0]) / (canvas.getBoundingClientRect().width || 300) * 4; });
+    canvas.addEventListener('pointerup', () => drag = null);
+    const tri = Q.length * 2;
+    function draw(t) {
+      const r = canvas.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+      const W = Math.max(2, Math.round(r.width * dpr)), H = Math.max(2, Math.round(r.height * dpr));
+      if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; }
+      const ks = W / (canvas.clientWidth || r.width || 1), lw = Math.max(1, dpr * .85);
+      const ry = (o.yaw ?? .46) + (RM ? 0 : Math.sin(t * .3) * .3) + yawOff, rx = .07, cy = Math.cos(ry), sy = Math.sin(ry), cx = Math.cos(rx), sx = Math.sin(rx);
+      const Dz = 6.4, f = Math.min(H * Dz / 1.8, W * Dz / 1.6) * (o.zoom || 1), ox = W / 2, oy = H / 2;
+      const T = p => { const X = p[0] * cy + p[2] * sy, Z = -p[0] * sy + p[2] * cy, Y = p[1] - .2; return [X, Y * cx - Z * sx, Y * sx + Z * cx + Dz]; };
+      const Pr = p => [ox + p[0] / p[2] * f, oy - p[1] / p[2] * f, p[2]];
+      const R3 = n => { const X = n[0] * cy + n[2] * sy, Z = -n[0] * sy + n[2] * cy; return [X, n[1] * cx - Z * sx, n[1] * sx + Z * cx]; };
+      const C = V.map(T), S = C.map(Pr);
+      const age = t - born, res = RM ? 9 : Math.min(9, age / 1.3 * 2.4), cut = 1.05 - res;
+      const sp = 7.5, ph = ((t - born - 1.4) % sp + sp) % sp, scanY = ph < 2.2 ? 1.05 - ph / 2.2 * 2.2 : 99;
+      const pB = new Path2D(), pW = new Path2D(), pO = new Path2D(), pS = new Path2D();
+      const seg = (P, i, k) => { P.moveTo(S[i][0], S[i][1]); P.lineTo(S[k][0], S[k][1]); };
+      for (const q of Q) {
+        if (V[q.a][1] < cut && V[q.d][1] < cut) continue;
+        const n = R3(q.n), c = C[q.a]; const front = n[0] * c[0] + n[1] * c[1] + n[2] * c[2] < 0;
+        let P = front ? (dot(n, Lo) > .34 + .34 * q.h ? pO : pW) : pB;
+        if (Math.abs(q.y - scanY) < .016 && !RM) P = pS;
+        seg(P, q.a, q.b); seg(P, q.a, q.d); q.dg ? seg(P, q.a, q.c) : seg(P, q.b, q.d);
+      }
+      g.clearRect(0, 0, W, H); g.lineJoin = 'round';
+      g.lineWidth = lw; g.strokeStyle = 'rgba(242,242,238,.085)'; g.stroke(pB);
+      // cradle lattice
+      if (res > 1.2) {
+        const CP = CR.map(row => row.map(p => Pr(T(p)))); g.beginPath();
+        CP.forEach(row => row.forEach((p, u) => u ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1])));
+        for (let u = 0; u <= CU; u++) CP.forEach((row, v) => v ? g.lineTo(row[u][0], row[u][1]) : g.moveTo(row[u][0], row[u][1]));
+        g.strokeStyle = 'rgba(239,70,6,.75)'; g.lineWidth = lw; g.stroke();
+      }
+      g.lineWidth = lw; g.strokeStyle = 'rgba(242,242,238,.72)'; g.stroke(pW);
+      g.strokeStyle = 'rgba(255,128,74,.9)'; g.stroke(pO);
+      g.lineWidth = lw * 1.6; g.strokeStyle = (o.scan && o.scan()) || '#c2ff16'; g.stroke(pS);
+      // eyes
+      EYES.forEach(e => { const c = T(e), p = Pr(c); const n = R3([e[0] * .3, 0, -1]); if (n[2] > .15) return; const rr = .03 * f / c[2]; g.fillStyle = '#3d6bff'; g.beginPath(); g.ellipse(p[0], p[1], rr * Math.max(.35, -n[2]), rr * .78, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(242,242,238,.9)'; g.fillRect(p[0] - rr * .3, p[1] - rr * .35, Math.max(1, rr * .22), Math.max(1, rr * .22)); });
+      if (res < 1.6) return;
+      // rig: bones, gizmos, labels
+      const JP = {}; for (const k in J) { const c = T(J[k]); JP[k] = { p: Pr(c), c }; }
+      g.strokeStyle = 'rgba(61,107,255,.95)'; g.lineWidth = lw * 1.2; g.beginPath(); BONES.forEach(([a, b]) => { g.moveTo(JP[a].p[0], JP[a].p[1]); g.lineTo(JP[b].p[0], JP[b].p[1]); }); g.stroke();
+      const rr = 7 * ks;
+      for (const k in JP) {
+        const { p, c } = JP[k]; g.beginPath(); g.arc(p[0], p[1], rr, 0, 7);
+        [[.075, 0, 0], [0, .075, 0], [0, 0, .075]].forEach(ax => { const q = Pr(T([J[k][0] + ax[0], J[k][1] + ax[1], J[k][2] + ax[2]])); const dx = q[0] - p[0], dy = q[1] - p[1]; g.moveTo(p[0] - dx * .6, p[1] - dy * .6); g.lineTo(q[0], q[1]); g.moveTo(q[0] - dy * .12, q[1] + dx * .12); g.lineTo(q[0] + dy * .12, q[1] - dx * .12); });
+        g.stroke(); g.fillStyle = '#3d6bff'; g.fillRect(p[0] - lw * 1.5, p[1] - lw * 1.5, lw * 3, lw * 3);
+      }
+      g.font = `700 ${10 * ks}px "Kode Mono", monospace`; g.textBaseline = 'middle';
+      const side = { l: [], r: [] };
+      LABELS.forEach(([k, txt]) => { const { p } = JP[k]; (p[0] > ox ? side.r : side.l).push({ p, txt, right: p[0] > ox }); });
+      const gap = 24 * ks, top = 40 * ks, bot = H - 40 * ks;
+      Object.values(side).forEach(arr => { arr.sort((a, b) => a.p[1] - b.p[1]); let last = -1e9; arr.forEach(L => { L.y = Math.min(bot, Math.max(top, Math.max(L.p[1] - 26 * ks, last + gap))); last = L.y; }); });
+      [...side.l, ...side.r].forEach(L => {
+        const { p, txt, right } = L, tw = g.measureText(txt).width, ex = right ? W - 10 * ks : 10 * ks, el = right ? ex - tw - 8 * ks : ex + tw + 8 * ks, kx = p[0] + (right ? 1 : -1) * 18 * ks;
+        g.strokeStyle = 'rgba(242,242,238,.6)'; g.lineWidth = lw; g.beginPath(); g.moveTo(p[0] + (right ? rr : -rr), p[1]); g.lineTo(kx, L.y); g.lineTo(el, L.y); g.stroke();
+        g.fillStyle = 'rgba(10,10,11,.88)'; g.fillRect(right ? ex - tw - 5 * ks : ex - 5 * ks, L.y - 8 * ks, tw + 10 * ks, 16 * ks);
+        g.fillStyle = '#f2f2ee'; g.textAlign = right ? 'right' : 'left'; g.fillText(txt, ex, L.y);
+      });
+    }
+    draw(o.t0 || 2.2);
+    return { draw, tri, reveal() { born = time(); }, get vis() { return vis && !document.hidden; } };
+  }
+
+  /* ---- 30fps shared tick ---- */
+  const subs = new Set(); let t0 = performance.now(), last = 0;
+  function time() { return (performance.now() - t0) / 1000; }
+  function loop(now) { if (now - last >= 33.3) { last = now; const t = time(); subs.forEach(fn => fn(t)); } requestAnimationFrame(loop); }
+  if (!RM) requestAnimationFrame(loop);
+  function every(fn) { subs.add(fn); return () => subs.delete(fn); }
+
+  /* ---- synthesized UI sound ---- */
+  const SFX = (() => {
+    let ctx = null, master, noise, on = true, humNodes = null;
+    try { on = localStorage.getItem('jrl-snd') !== 'off'; } catch (e) { }
+    function init() {
+      if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return true; }
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = on ? .55 : 0; master.connect(ctx.destination);
+      noise = ctx.createBuffer(1, ctx.sampleRate * 1, ctx.sampleRate); const ch = noise.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+      return true;
+    }
+    function nz(dur, f1, q, gain, when = 0, type = 'bandpass') {
+      const t = ctx.currentTime + when, s = ctx.createBufferSource(); s.buffer = noise;
+      const bp = ctx.createBiquadFilter(); bp.type = type; bp.frequency.value = f1; bp.Q.value = q;
+      const g = ctx.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      s.connect(bp); bp.connect(g); g.connect(master); s.start(t, Math.random() * .5); s.stop(t + dur + .02);
+    }
+    function osc(type, f0, f1, dur, gain, when = 0) {
+      const t = ctx.currentTime + when, o = ctx.createOscillator(), g = ctx.createGain(); o.type = type;
+      o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(1, f1), t + dur);
+      g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + .02);
+    }
+    const api = {
+      get on() { return on; },
+      init,
+      set(v) { on = v; try { localStorage.setItem('jrl-snd', v ? 'on' : 'off'); } catch (e) { } if (ctx) master.gain.setTargetAtTime(v ? .55 : 0, ctx.currentTime, .01); },
+      tick() { if (!init()) return; nz(.018, 6200, 2, .35); },
+      move() { if (!init()) return; nz(.03, 3400, 6, .3); osc('square', 1800, 1700, .025, .03); },
+      thump() { if (!init()) return; osc('sine', 120, 38, .22, .9); nz(.05, 900, .7, .25); },
+      confirm() { if (!init()) return; osc('sine', 110, 40, .2, .8); osc('square', 2400, 2400, .04, .05, .0); osc('square', 3200, 3200, .05, .05, .06); },
+      back() { if (!init()) return; osc('sine', 80, 30, .2, .7); nz(.04, 1800, 1, .2); },
+      crackle(n = 5) { if (!init()) return; for (let i = 0; i < n; i++) nz(.03 + Math.random() * .03, 800 + Math.random() * 7000, .6, .32, i * .034); },
+      swell() { if (!init()) return; const t = ctx.currentTime, o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = 55; f.type = 'lowpass'; f.frequency.setValueAtTime(80, t); f.frequency.exponentialRampToValueAtTime(900, t + .9); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.35, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.3); o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + 1.35); },
+      carrier() { if (!init()) return; osc('sine', 2794, 2794, 1.2, .04); },
+      buzz() { if (!init()) return; osc('sawtooth', 58, 55, .35, .35); nz(.25, 2500, .5, .25); },
+      hum(start) {
+        if (!init()) return;
+        if (start && !humNodes) { const g = ctx.createGain(); g.gain.value = 0; g.gain.setTargetAtTime(.07, ctx.currentTime, .4); const a = ctx.createOscillator(), b = ctx.createOscillator(), f = ctx.createBiquadFilter(); a.frequency.value = 49; b.frequency.value = 98.4; b.type = 'triangle'; f.type = 'lowpass'; f.frequency.value = 240; a.connect(f); b.connect(f); f.connect(g); g.connect(master); a.start(); b.start(); humNodes = { g, a, b }; }
+        if (!start && humNodes) { const h = humNodes; humNodes = null; h.g.gain.setTargetAtTime(0, ctx.currentTime, .1); setTimeout(() => { h.a.stop(); h.b.stop(); }, 500); }
+      },
+      tone(freq, gain) { if (!init()) return null; const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = freq; g.gain.value = gain; o.connect(g); g.connect(master); o.start(); return { o, g, ctx }; },
+      noiseBed(gain) { if (!init()) return null; const s = ctx.createBufferSource(); s.buffer = noise; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = .4; const g = ctx.createGain(); g.gain.value = gain; s.connect(f); f.connect(g); g.connect(master); s.start(); return { s, g, f, ctx }; }
+    };
+    return api;
+  })();
+
+  return { RM, rng, hash, icon, ICONS, glyph, Core, Bust, every, time, SFX };
+})();
+
+</script>
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+function openURL(u) { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove(); }
+const S = JRL.SFX, RM = JRL.RM;
+const stage = $('#stage');
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
+
+/* ============ DATA (from jere-ing-main) ============ */
+const BASE = location.protocol === 'file:' ? 'https://jere.ing/reports/' : 'https://jere.ing/reports/';
+const CORES = [
+ { c:'DC-01', f:'phil-chat-connectome.html', t:'Phil Chat Connectome', ty:'CONNECTOME', kb:66.6, src:'Phil Chat', n:'Who is wired to whom in the chat: the whole network at a glance, individual wiring, then a lightning round.', w:2, h:1, col:'pink' },
+ { c:'DC-02', f:'phil-chat-field-report.html', t:'Asking Claude to be a master sociologist', ty:'FIELD REPORT', kb:45.4, src:'Phil Chat', n:'A sociology of the Phil Chat: strong ties, weak ties, the bridges between clusters, and how much weight the claims can bear.', w:1, h:1, col:'orange', q:'Trash, don\'t look at this', d:'10·27' },
+ { c:'DC-03', f:'phil-chat-weak-ties-oct21-27.html', t:'Phil Chat Weak Ties, Oct 21–27', ty:'WEAK TIES', kb:74.9, src:'Phil Chat · week of Oct 21', n:'The strength of weak ties for one week: tie counts by chatter, the strong ties, six groups.', w:2, h:1, col:'blue' },
+ { c:'DC-04', f:'metaphors-we-live-by-connectome.html', t:'Metaphors We Live By', ty:'BOOK CONNECTOME', kb:44.7, src:'George Lakoff & Mark Johnson', n:'How the book thinks. Thought runs on borrowed structure.', w:1, h:1, col:'pink' },
+ { c:'DC-05', f:'philosophical-investigations-connectome.html', t:'Philosophical Investigations', ty:'BOOK CONNECTOME', kb:42.4, src:'Ludwig Wittgenstein', n:'How the book thinks: an album of remarks, mapped.', w:1, h:1, col:'pink' },
+ { c:'DC-06', f:'timaeus-connectome.html', t:'Republic · Timaeus · Critias', ty:'BOOK CONNECTOME', kb:62.6, src:'Plato · requested by aura', n:'How the trilogy thinks. One city, three days.', w:2, h:1, col:'pink' },
+ { c:'DC-07', f:'rio.html', t:'RIO — Duran Duran', ty:'TRIBUTE', kb:347.7, src:'Duran Duran · Patrick Nagel', n:'A strobing, cursor-driven fan tribute to the 1982 album Rio and Nagel\'s cover art. Move the mouse, scroll hard, click.', w:2, h:2, col:'lime' },
+ { c:'DC-08', f:'scope.html', t:'Scope', ty:'TOOL', kb:31.7, src:'Shell instrument', n:'An oscilloscope for any audio file you drop in.', w:1, h:1, col:'teal', d:'11·02' }
+];
+const CHANNELS = ['mefr','looks-cool-pbablczh_ns','trite-core','terminally-online-core','react-idy-90yzjms','erm-frankly','current-ideology','consciousness-the-self-psychology','interesting-xbamsf7yld4','lost-in-the-maze','weird-wmqjiy6vkzy','truuuuuuuue'].map((s, i) => ({ s, n: ['mefr','looks cool','trite core','terminally online core','react idy','erm frankly','current ideology','consciousness, the self, psychology','interesting','lost in the maze','weird','truuuuuuuue'][i], c: 'SV-' + String(i + 1).padStart(2, '0') }));
+const SLOTS = [
+ { id:'vault', c:'01', n:'Vault', jp:'保管庫', ic:'vault', ct:'08 data cores', d:'Reports, stored as data cores. Item size is file size. One is quarantined.', col:'pink', area:'s1' },
+ { id:'comms', c:'02', n:'Comms', jp:'通信', ic:'comms', ct:'01 frequency', d:'The song of the day. Tune the dial until the carrier locks.', col:'orange', area:'s2' },
+ { id:'salvage', c:'03', n:'Salvage', jp:'回収', ic:'salvage', ct:'12 feeds', d:'Twelve Are.na channels as crates. The daily image comes from one of them.', col:'bone', area:'s3' },
+ { id:'cipher', c:'04', n:'Cipher', jp:'暗号', ic:'cipher', ct:'∞ shelves', d:'Babel. Type any phrase and the librarian gives you its shelf.', col:'lav', area:'s4' },
+ { id:'paint', c:'05', n:'Paint', jp:'塗装', ic:'paint', ct:'06 colorways', d:'The color generator. Painting the shell changes the signal color on every screen.', col:'lime', area:'s5' },
+ { id:'scan', c:'06', n:'Scan', jp:'走査', ic:'scan', ct:'zone · 08 cores', d:'Culture as a zone scan. Every core marks where it was recovered.', col:'teal', area:'s6' },
+ { id:'diag', c:'07', n:'Diagnostics', jp:'診断', ic:'diag', ct:'terminal · /', d:'The shell terminal. Opens over any room.', col:'ink', area:'s7' }
+];
+const ROOMLOC = { shell:['HANGAR','BAY 04 · TAU CETI IV HIGH ORBIT','格納庫'], vault:['VAULT','SLOT 01 · DATA CORES','保管庫'], comms:['COMMS','SLOT 02 · CARRIER BAND','通信'], salvage:['SALVAGE','SLOT 03 · ARE.NA FEEDS','回収'], cipher:['CIPHER','SLOT 04 · HEXAGON INDEX','暗号'], paint:['PAINT','SLOT 05 · BOOTH','塗装'], scan:['SCAN','SLOT 06 · ZONE','走査'] };
+const ROOMCOL = { shell:'fog', vault:'white', comms:'orange', salvage:'bone', cipher:'lav', paint:'ink', scan:'ink' };
+
+/* ============ STAGE FIT ============ */
+let scale = 1, portrait = false;
+function fit() {
+  const w = innerWidth, h = innerHeight; portrait = w / h < .82;
+  stage.classList.toggle('P', portrait);
+  const W = portrait ? 720 : 1600, H = portrait ? 1280 : 900;
+  scale = Math.min(w / W, h / H);
+  const x = (w - W * scale) / 2, y = (h - H * scale) / 2;
+  stage.style.transform = `translate(${x}px,${y}px) scale(${scale})`;
+  $('#lb1').style.cssText = `left:${Math.max(6, x + 4)}px;top:${Math.max(4, y - 16)}px`;
+  $('#lb2').style.cssText = `right:${Math.max(6, x + 4)}px;bottom:${Math.max(4, y - 16)}px`;
+  $('#lb1').textContent = `JRL UPLINK · STAGE ${W}×${H} · ${portrait ? 'HANDHELD' : 'CONSOLE'} · ×${scale.toFixed(2)}`;
+  placeBrk();
+}
+addEventListener('resize', fit);
+
+/* ============ SOUND CHIP ============ */
+const sndB = $('#snd'), bars = $$('#snd .m i'); let lvl = 0;
+function play(n, ...a) { if (!S.on) return; S[n](...a); lvl = Math.min(1, lvl + (n === 'tick' || n === 'move' ? .35 : .9)); }
+function setSnd(v) { S.set(v); sndB.setAttribute('aria-pressed', v); if (v) { S.init(); if (room === 'shell') S.hum(true); } else S.hum(false); say(v ? 'Sound on' : 'Sound off'); }
+sndB.addEventListener('click', () => setSnd(!S.on));
+sndB.setAttribute('aria-pressed', S.on);
+
+/* ============ CLOCK / SIGNAL / TIMERS ============ */
+const t0 = Date.now(); let sig = 5;
+const visits = (parseInt(store.get('jrl-visits', '0')) || 0) + 1; store.set('jrl-visits', visits); $('#runs').textContent = String(visits).padStart(3, '0');
+function pad(n) { return String(n).padStart(2, '0'); }
+function tickClock() {
+  const d = new Date(); $('#clock').textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  $('#tdate').textContent = `TCR ${pad(d.getDate())}·${pad(d.getMonth() + 1)}·${d.getFullYear() + 824}`;
+  const s = (Date.now() - t0) / 1000 | 0; $('#tih').textContent = `${pad(s / 60 | 0)}:${pad(s % 60)}`;
+}
+function setSig(v) { sig = Math.max(1, Math.min(6, v)); stage.style.setProperty('--sig', (75 + (sig - 1) * 10) + '%'); $('#sigd').innerHTML = [1,2,3,4,5,6].map(i => `<i class="${i <= sig ? 'on' : ''}"></i>`).join(''); }
+const conn = navigator.connection; setSig(conn && conn.effectiveType ? ({ 'slow-2g': 1, '2g': 2, '3g': 4, '4g': 6 })[conn.effectiveType] || 5 : 5);
+setInterval(() => { tickClock(); }, 1000); tickClock();
+setInterval(() => { if (Math.random() < .35) setSig(sig + (Math.random() < .5 ? -1 : 1)); }, 3000);
+JRL.every(() => { lvl *= .82; bars.forEach((b, i) => b.style.height = (2 + Math.max(0, lvl * 12 - i * 1.6 + Math.random() * 3 * lvl)) + 'px'); });
+
+function say(m) { $('#sr').textContent = m; }
+let stT; function status(m, ms = 2400) { const el = $('#status'); el.textContent = m; el.hidden = false; clearTimeout(stT); stT = setTimeout(() => el.hidden = true, ms); }
+
+/* ============ PAINT (shell signal color) ============ */
+const WAYS = [
+ { n:'Stock', k:['fog','ink','lime'], acc:'#c2ff16' },
+ { n:'Vault rose', k:['white','ink','pink'], acc:'#e0216f' },
+ { n:'Hazard', k:['orange','ink','blue'], acc:'#ef4606' },
+ { n:'Dust', k:['bone','ink','orange'], acc:'#c7c2b6' },
+ { n:'Somatic', k:['lav','white','mint'], acc:'#cce4dc' },
+ { n:'Scan', k:['ink','white','teal'], acc:'#2ddccd' }
+];
+const HEX = { ink:'#0a0a0b', white:'#f2f2ee', fog:'#f1f0f0', panel:'#e1dfe0', lime:'#c2ff16', blue:'#0400f5', orange:'#ef4606', pink:'#e0216f', bone:'#c7c2b6', teal:'#2ddccd', lav:'#8476bf', mint:'#cce4dc', yel:'#eae00b' };
+let wayIdx = Math.min(5, parseInt(store.get('jrl-paint', '0')) || 0), wayPrev = wayIdx;
+let selHex = '#c2ff16';
+function applyPaint(i) { const w = WAYS[i]; selHex = w.acc; document.documentElement.style.setProperty('--sel', w.acc); $('#paintnm').textContent = w.n.toUpperCase(); }
+
+/* ============ SHELL ============ */
+const lo = $('#loadout');
+SLOTS.forEach((s, i) => {
+  const b = document.createElement('button'); b.className = 'slot' + (s.id === 'diag' ? ' s7' : ''); b.style.gridArea = s.area; b.dataset.f = ''; b.dataset.slot = i;
+  b.innerHTML = s.id === 'diag'
+    ? `<span class="ic">${JRL.icon(s.ic)}</span><span class="t" style="gap:12px"><span>SLOT ${s.c}</span></span><span class="nm">${s.n}</span><span class="jp" style="font-size:14px">${s.jp}</span><span class="ct" style="margin-left:auto">${s.ct} · [Y]</span>`
+    : `<i class="sw" style="background:var(--${s.col})"></i><span class="t"><span>SLOT ${s.c}</span><span class="ak"></span></span><span class="ic">${JRL.icon(s.ic)}</span><span><span class="jp" style="font-size:14px;display:block;margin-bottom:4px">${s.jp}</span><span class="nm">${s.n}</span></span><span class="ct">${s.ct}</span>`;
+  b.setAttribute('aria-label', `Slot ${s.c}: ${s.n}. ${s.d}`);
+  b.addEventListener('click', () => { if (selSlot === i) equip(i); else { selectSlot(i); setFocus(b); } });
+  lo.appendChild(b);
+});
+let selSlot = 0;
+function selectSlot(i, silent) {
+  selSlot = (i + SLOTS.length) % SLOTS.length;
+  $$('.slot').forEach((b, k) => { b.classList.toggle('sel', k === selSlot); const ak = b.querySelector('.ak'); if (ak) ak.textContent = k === selSlot ? '[A] EQUIP' : ''; });
+  const s = SLOTS[selSlot];
+  $('#det').innerHTML = `<div style="display:flex;justify-content:space-between"><span class="tag">SLOT ${s.c} · ${s.ct.toUpperCase()}</span><span style="width:34px;height:34px;color:var(--${s.col === 'ink' ? 'ink' : s.col})">${JRL.icon(s.ic)}</span></div><div><div class="jp" style="font-size:16px">${s.jp}</div><div class="nm">${s.n}</div></div><p class="txt" style="font-size:16px">${s.d}</p><button class="btnA" data-f style="margin-top:auto;align-self:flex-start" id="eqb"><span class="k">A</span>EQUIP</button><div class="gi" style="right:-14px;bottom:-22px;font-size:120px;color:var(--${s.col === 'ink' ? 'ink' : s.col});opacity:.18">${s.c}</div>`;
+  $('#eqb').addEventListener('click', () => equip(selSlot));
+  if (!silent) play('move');
+}
+function equip(i) { const s = SLOTS[i]; play('confirm'); if (s.id === 'diag') return openTerm(); go(s.id); }
+
+/* hangar window ads */
+const ADS = [
+ `<div class="ad" style="background:var(--pink);color:var(--white)"><div style="display:flex;justify-content:space-between"><span style="font:600 14px/1.1 var(--f-disp)">Vitagran<br>Agricultural</span><span style="font:15px var(--f-cn)">维他谷农业</span></div><div style="font:58px/1 var(--f-cn)">永远生长</div><div style="display:flex;justify-content:space-between;align-items:end"><span style="font:600 italic 26px/1 var(--f-disp);letter-spacing:-.03em">Always growing.</span><span class="code" style="font-size:40px">204</span></div></div>`,
+ `<div class="ad" style="background:var(--mint);color:var(--ink)"><div style="display:flex;justify-content:space-between"><span style="font:italic 400 17px/1.1 var(--f-serif)">Hosokawa<br>Somatics</span><span class="micro">細川</span></div><div style="font:52px/1 var(--f-jp);color:var(--lav)">新しい皮膚</div><div style="font:italic 400 30px/1.05 var(--f-serif)">A new skin.<br>Same tenant.</div></div>`,
+ `<div class="ad" style="background:var(--yel);color:var(--ink)"><div style="display:flex;justify-content:space-between"><span style="font:800 14px/1.1 var(--f-disp);font-stretch:125%">BARRACUDA</span><span class="micro">ARMAMENT</span></div><div style="font:900 46px/.86 var(--f-giant);font-stretch:125%;letter-spacing:-.04em">LOAD®<br>AIM®<br>SPEND®<br>AGAIN</div><div style="height:16px;background:repeating-linear-gradient(-45deg,var(--yel) 0 10px,var(--ink) 10px 20px)"></div></div>`
+];
+let adI = 0; function showAd(i) { $('#adframe').innerHTML = ADS[i]; $('#adn').textContent = `0${i + 1}/03`; }
+showAd(0);
+setInterval(() => { if (room !== 'shell' || document.hidden) return; const f = $('#adframe'); f.style.filter = 'invert(1)'; setTimeout(() => { f.style.filter = ''; adI = (adI + 1) % 3; showAd(adI); }, 33); }, 2800);
+
+/* shell schematic */
+const bust = JRL.Bust($('#bust'), { scan: () => selHex });
+$('#tric').textContent = `MESH ${bust.tri.toLocaleString('en-US')} TRI · RIG 11`;
+JRL.every(t => { if (room === 'shell' && bust.vis) bust.draw(t); });
+
+/* ============ VAULT ============ */
+let selCore = 0; const opened = new Set();
+const stash = $('#stash');
+CORES.forEach((c, i) => {
+  const el = document.createElement('div'); el.className = `item ${c.w > 1 ? 'w2' : ''} ${c.h > 1 ? 'h2' : ''} ${c.q ? 'q' : ''}`; el.dataset.f = ''; el.tabIndex = 0; el.dataset.i = i; el.setAttribute('role', 'button');
+  el.setAttribute('aria-label', `${c.c} ${c.t}, ${c.ty}`);
+  el.innerHTML = `<i class="band" style="background:var(--${c.col})"></i><span class="gl">${JRL.glyph(JRL.hash(c.t))}</span><span class="tag">${c.c}</span><span class="nm">${c.t}</span><span class="meta"><span>${c.ty}</span><span>${c.kb.toFixed(1)}KB</span></span>${c.q ? `<span class="qi"><span class="tag">⚠ QUARANTINE · ${c.c}</span><span style="font:italic 400 20px/1.1 var(--f-serif)">“${c.q}”</span><span class="micro" style="font-size:10px">HOLD [X] TO OVERRIDE</span></span>` : ''}`;
+  el.addEventListener('click', () => { if (selCore === i && room === 'vault') { const a = $('#extract'); if (a && !CORES[i].q || opened.has(i)) a && a.click(); } selectCore(i); setFocus(el); });
+  stash.appendChild(el);
+});
+const emp = document.createElement('div'); emp.className = 'item empty'; emp.innerHTML = '<span class="tag">— EMPTY —</span><span class="micro">slot reserved for the next extract</span>'; stash.appendChild(emp);
+let vaultCore = null;
+function selectCore(i, silent) {
+  selCore = i; const c = CORES[i];
+  $$('.item[data-i]').forEach(el => el.classList.toggle('sel', +el.dataset.i === i));
+  const locked = c.q && !opened.has(i);
+  $('#insp').innerHTML = `<canvas class="dither" width="64" height="64" id="vcore"></canvas><span class="tag" style="color:var(--${c.col === 'lime' ? 'sel' : c.col})">${c.c} · ${c.ty}</span><div class="nm" style="padding-right:160px">${c.t}</div><p class="txt" style="font-size:16px;color:#c9cac4">${c.n}</p><dl><dt>Source</dt><dd>${c.src}</dd><dt>Size</dt><dd>${c.kb.toFixed(1)} KB · ${c.w * c.h} cell${c.w * c.h > 1 ? 's' : ''}</dd><dt>Logged</dt><dd>${c.d || '— not on record'}</dd><dt>Status</dt><dd style="color:${locked ? 'var(--yel)' : 'var(--sel)'}">${locked ? '⚠ QUARANTINED · hold [X] to override' : 'CLEAN · ready to extract'}</dd></dl><div class="act">${locked ? `<button class="btnA" data-f id="ovr" style="background:var(--yel);color:var(--ink)"><span class="k" style="background:var(--ink);color:var(--yel)">X</span>HOLD TO OVERRIDE</button>` : `<a class="btnA" data-f id="extract" href="${BASE + c.f}" target="_blank" rel="noopener"><span class="k">A</span>EXTRACT · OPEN ↗</a>`}<span class="micro" style="color:#7b7c76">opens in a new tab</span></div><div class="gi" style="right:-20px;bottom:-26px;font-size:150px;color:var(--${c.col === 'lime' ? 'sel' : c.col});opacity:.22">${c.c.slice(3)}</div>`;
+  vaultCore = JRL.Core($('#vcore'), { kind: 'crate', inks: ['#0a0a0b', HEX[c.col] || '#e0216f', '#f2f2ee'], accent: '#c2ff16', phase: i });
+  const ov = $('#ovr'); if (ov) { ov.addEventListener('pointerdown', e => { e.preventDefault(); startHold(ov); }); ['pointerup', 'pointerleave'].forEach(ev => ov.addEventListener(ev, endHold)); }
+  const ex = $('#extract'); if (ex) ex.addEventListener('click', () => { play('thump'); status(`EXTRACTING ${c.c} · ${c.t.toUpperCase()}`); });
+  if (!silent) play('move');
+}
+JRL.every(t => { if (room === 'vault' && vaultCore && vaultCore.vis) vaultCore.draw(t); });
+
+/* hold-to-override */
+let holdT = null, holdEl = null, holdStart = 0;
+function startHold(el) {
+  if (holdT) return; holdEl = el; holdStart = performance.now(); const bar = $('#brk .hold'); setFocus(el);
+  holdT = setInterval(() => { const p = Math.min(1, (performance.now() - holdStart) / 600); bar.style.width = (p * 100) + '%'; if (Math.random() < .5) play('tick'); if (p >= 1) { endHold(); override(); } }, 33);
+}
+function endHold() { clearInterval(holdT); holdT = null; holdEl = null; $('#brk .hold').style.width = '0'; }
+function override() { opened.add(selCore); const el = $(`.item[data-i="${selCore}"]`); el.classList.add('open'); play('buzz'); setTimeout(() => play('confirm'), 160); status('QUARANTINE OVERRIDDEN · YOU WERE WARNED'); selectCore(selCore, true); setFocus($('#extract')); }
+
+/* ============ COMMS ============ */
+const day = Math.floor(Date.now() / 864e5); const lockF = 88 + (JRL.hash('jrl' + day) % 190) / 10 + 0.5;
+let freq = 96.3; const dial = $('#dial');
+$('#lk').style.left = `calc(${(lockF - 88) / 20 * 100}% - 7px)`;
+let bed = null, car = null;
+function setFreq(f, user) {
+  freq = Math.max(88, Math.min(108, Math.round(f * 10) / 10)); $('#freq').textContent = freq.toFixed(1);
+  $('#nd').style.left = `calc(${(freq - 88) / 20 * 100}% - 2px)`; dial.setAttribute('aria-valuenow', freq);
+  const dist = Math.abs(freq - lockF), locked = dist <= .4;
+  $('#txc').classList.toggle('lock', locked); $('#txs').textContent = locked ? 'CARRIER · LOCKED' : dist < 2 ? 'CARRIER · CLOSE' : 'CARRIER · SEARCHING';
+  $('#txh').textContent = locked ? 'Transmission locked.' : dist < 2 ? 'Something is there.' : 'No lock yet.';
+  $('#lk').style.opacity = locked ? 1 : 0;
+  if (user && S.on) {
+    if (!bed) { bed = S.noiseBed(.0); car = S.tone(2794, 0); }
+    if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(.12 * n + .01, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(locked ? .035 : Math.max(0, .02 * (1 - dist / 2)), car.ctx.currentTime, .05); }
+    if (locked && !setFreq.wasLocked) { play('confirm'); status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); }
+  }
+  setFreq.wasLocked = locked;
+}
+function stopComms() { if (bed) { bed.g.gain.setTargetAtTime(0, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(0, car.ctx.currentTime, .05); const b = bed, c = car; setTimeout(() => { try { b.s.stop(); c.o.stop(); } catch (e) { } }, 300); bed = car = null; } }
+setFreq(freq);
+let dragging = false;
+function dialAt(e) { const r = dial.getBoundingClientRect(); setFreq(88 + Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 20, true); }
+dial.addEventListener('pointerdown', e => { dragging = true; dial.setPointerCapture(e.pointerId); dialAt(e); setFocus(dial); });
+dial.addEventListener('pointermove', e => { if (dragging) dialAt(e); });
+dial.addEventListener('pointerup', () => dragging = false);
+const osc = $('#osc'), og = osc.getContext('2d');
+JRL.every(t => {
+  if (room !== 'comms') return; const W = osc.width, H = osc.height, dist = Math.abs(freq - lockF), cl = Math.max(0, 1 - dist / 3);
+  og.fillStyle = '#0a0a0b'; og.fillRect(0, 0, W, H); og.fillStyle = '#ef4606';
+  for (let x = 0; x < W; x += 4) { const y = H / 2 + Math.sin(x * .05 + t * 9) * 40 * cl + (Math.random() - .5) * 110 * (1 - cl); og.fillRect(x, y | 0, 3, 3); }
+  og.fillStyle = '#333'; for (let x = 0; x < W; x += 60) og.fillRect(x, 0, 1, H);
+});
+
+/* ============ SALVAGE ============ */
+const crates = $('#crates'); let selCh = 0;
+CHANNELS.forEach((ch, i) => {
+  const b = document.createElement('button'); b.className = 'crate'; b.dataset.f = ''; b.dataset.i = i;
+  b.innerHTML = `<span class="t"><span>${ch.c}</span><span>${JRL.icon('salvage').replace('class="px"', 'class="px" style="width:14px;height:14px"')}</span></span><span class="sn"${ch.n.length > 18 ? ' style="font-size:.72em"' : ''}>${ch.n}</span><i class="hz"></i>`;
+  b.setAttribute('aria-label', `Crate ${ch.c}: ${ch.n}`);
+  b.addEventListener('click', () => { if (selCh === i && room === 'salvage') $('#scl').click(); selectCh(i); setFocus(b); });
+  crates.appendChild(b);
+});
+const scanCache = {};
+function selectCh(i, silent) {
+  selCh = i; const ch = CHANNELS[i]; $$('.crate').forEach((b, k) => b.classList.toggle('sel', k === i));
+  $('#scn').textContent = ch.c; $('#scnm').textContent = ch.n; $('#scl').href = `https://www.are.na/jere-mi-as/${ch.s}`;
+  const w = $('#scanw'); const old = w.querySelector('img'); if (old) old.remove(); $('#scst').textContent = 'SEARCHING · ' + ch.c;
+  if (!silent) play('move');
+  const show = url => { if (selCh !== i) return; if (!url) { $('#scst').textContent = 'NO SIGNAL · scans load on the live uplink'; return; } const im = new Image(); im.alt = ''; im.onload = () => { if (selCh !== i) return; w.appendChild(im); $('#scst').textContent = 'SCAN · ' + ch.c; }; im.onerror = () => $('#scst').textContent = 'NO SIGNAL'; im.src = url; };
+  if (ch.s in scanCache) return show(scanCache[ch.s]);
+  fetch(`https://api.are.na/v2/channels/${ch.s}/contents?per=12&direction=desc`).then(r => r.ok ? r.json() : Promise.reject()).then(j => { const b = (j.contents || []).filter(x => x.image).pop(); scanCache[ch.s] = b ? (b.image.display || b.image.thumb).url : null; show(scanCache[ch.s]); }).catch(() => { scanCache[ch.s] = null; show(null); });
+}
+const ncv = $('#noise'), ng = ncv.getContext('2d');
+JRL.every(() => { if (room !== 'salvage') return; const d = ng.createImageData(64, 48); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() < .5 ? 10 : 239; d.data[i] = v; d.data[i + 1] = v < 100 ? 10 : 70; d.data[i + 2] = v < 100 ? 11 : 6; d.data[i + 3] = $('#scanw img') ? 40 : 255; } ng.putImageData(d, 0, 0); });
+
+/* ============ CIPHER ============ */
+const LIB = ['Every sentence you could type is already shelved. I only tell you where.', 'This one has been on the shelf longer than the hangar.', 'Someone asked for this exact phrase before you. I won\'t say who.', 'Most of the page is noise. Your phrase is the only clean line on it.', 'You will not find a typo here that wasn\'t also written correctly, two shelves over.'];
+let decodeT = null;
+$('#phr').addEventListener('submit', e => {
+  e.preventDefault(); const p = $('#phrase').value.trim().toLowerCase(); if (!p) { play('tick'); status('TYPE A PHRASE · THE LIBRARIAN IS LISTENING'); setFocus($('#phrase')); return; }
+  const R = JRL.rng(JRL.hash(p)); const A = 'abcdefghijklmnopqrstuvwxyz0123456789'; let hx = ''; for (let i = 0; i < 520; i++) hx += A[R() * 36 | 0];
+  const target = { w: 1 + (R() * 4 | 0), s: 1 + (R() * 5 | 0), v: 1 + (R() * 32 | 0), p: 1 + (R() * 410 | 0) };
+  $('#hexn').textContent = '3260 chars · showing 520'; $('#lib').textContent = LIB[JRL.hash(p) % LIB.length];
+  clearInterval(decodeT); let k = 0; play('swell');
+  decodeT = setInterval(() => {
+    k++; const done = Math.min(520, k * 40); let out = hx.slice(0, done); for (let i = done; i < 520; i++) out += A[Math.random() * 36 | 0];
+    $('#hex').textContent = out;
+    const r = (n, m) => k > n ? m : (1 + Math.random() * m | 0);
+    $('#cw').textContent = r(4, target.w); $('#cs').textContent = r(6, target.s); $('#cv').textContent = pad(r(9, target.v)); $('#cp').textContent = r(12, target.p);
+    if (k % 2) play('tick');
+    if (done >= 520 && k > 12) { clearInterval(decodeT); play('confirm'); status(`SHELVED · WALL ${target.w} · SHELF ${target.s} · VOL ${pad(target.v)} · PAGE ${target.p}`); }
+  }, RM ? 1 : 33);
+});
+
+/* ============ PAINT ============ */
+const gen = $('#gen'), gg = gen.getContext('2d'); const BAY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16);
+function rgb(h) { return [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); }
+let genInks = WAYS[wayIdx].k.map(k => rgb(HEX[k])), seed = 1;
+function drawGen(t) {
+  const W = gen.width, H = gen.height, im = gg.createImageData(W, H), d = im.data, n = genInks.length - 1;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const u = x / W, v = y / H;
+    let f = Math.sin(u * 6.2 + t * .6 + seed) + Math.sin(v * 5.1 - t * .45 + seed * 2) + Math.sin((u + v) * 7.3 + t * .3) + Math.sin(Math.hypot(u - .6, v - .4) * 14 - t * 1.1);
+    f = (f + 4) / 8; const q = f * n, b = Math.floor(q), fr = q - b, k = Math.min(n, fr > BAY[(y & 3) * 4 + (x & 3)] ? b + 1 : b), c = genInks[k], i = (y * W + x) * 4;
+    d[i] = c[0]; d[i + 1] = c[1]; d[i + 2] = c[2]; d[i + 3] = 255;
+  }
+  gg.putImageData(im, 0, 0);
+}
+function renderWays() {
+  $('#ways').innerHTML = WAYS.map((w, i) => `<button class="way${i === wayPrev ? ' sel' : ''}" data-f data-w="${i}"><span class="sw">${w.k.map(k => `<i style="background:${HEX[k]}"></i>`).join('')}</span><span class="nm">${w.n}</span><span class="eq">${i === wayIdx ? 'ON SHELL' : ''}</span></button>`).join('');
+  $$('.way').forEach(b => b.addEventListener('click', () => { if (wayPrev === +b.dataset.w) return doApply(); previewWay(+b.dataset.w); setFocus($(`.way[data-w="${wayPrev}"]`)); }));
+  const w = WAYS[wayPrev];
+  $('#chips').innerHTML = w.k.map((k, j) => `<button class="chip" data-f data-hex="${HEX[k]}"><i style="background:${HEX[k]}"></i>C-0${j + 1} ${HEX[k].toUpperCase()}</button>`).join('');
+  $$('.chip').forEach(c => c.addEventListener('click', () => { const h = c.dataset.hex; play('tick'); (navigator.clipboard ? navigator.clipboard.writeText(h) : Promise.reject()).then(() => status(`COPIED ${h.toUpperCase()}`), () => status(h.toUpperCase())); }));
+}
+function previewWay(i) { wayPrev = i; genInks = WAYS[i].k.map(k => rgb(HEX[k])); renderWays(); play('move'); drawGen(JRL.time()); }
+function doApply() { wayIdx = wayPrev; store.set('jrl-paint', wayIdx); applyPaint(wayIdx); renderWays(); play('confirm'); status(`SHELL REPAINTED · ${WAYS[wayIdx].n.toUpperCase()}`); setFocus($('#apply')); }
+$('#apply').addEventListener('click', doApply);
+$('#roll').addEventListener('click', () => { seed = Math.random() * 100; const keys = ['ink','white','fog','lime','blue','orange','pink','bone','teal','lav','mint']; const R = () => keys[Math.random() * keys.length | 0]; let a = R(), b = R(), c = R(); while (b === a) b = R(); while (c === a || c === b) c = R(); genInks = [a, b, c].map(k => rgb(HEX[k])); WAYS[5] = { n: 'Rolled', k: [a, b, c], acc: HEX[c] }; wayPrev = 5; renderWays(); play('crackle', 3); });
+renderWays();
+JRL.every(t => { if (room === 'paint') drawGen(t); });
+
+/* ============ SCAN ============ */
+const cloud = $('#cloud'), cg = cloud.getContext('2d'); const PTS = [];
+(() => { const R = JRL.rng(7); for (let i = 0; i < 4096; i++) { const z = R() * 2 - 1, a = R() * Math.PI * 2, r = Math.sqrt(1 - z * z); let x = r * Math.cos(a), y = z, zz = r * Math.sin(a); const n = Math.sin(x * 9) * Math.sin(y * 7) * Math.sin(zz * 8); if (Math.abs(Math.sin(x * 3 + y * 4)) < .06 && R() < .85) continue; const k = 1 + n * .07; PTS.push([x * k, y * k, zz * k]); } })();
+const AN = CORES.map((c, i) => { const R = JRL.rng(JRL.hash(c.t)); const lat = (R() - .5) * 2.2, lon = R() * Math.PI * 2; return { c, lat, lon, v: [Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon)] }; });
+let rotY = .6, rotX = -.25, tgtY = null, selAn = 0, drag = null;
+$('#anoms').innerHTML = AN.map((a, i) => `<button class="an" data-f data-a="${i}"><span class="c">${a.c.c}</span><span>${a.c.t}</span><span class="ll">${(a.lat * 57.3).toFixed(1)}° ${((a.lon * 57.3) % 360).toFixed(1)}°</span></button>`).join('');
+$$('.an').forEach(b => b.addEventListener('click', () => { if (selAn === +b.dataset.a && room === 'scan') { openURL(BASE + AN[selAn].c.f); return; } selectAn(+b.dataset.a); setFocus(b); }));
+function selectAn(i, silent) { selAn = i; $$('.an').forEach((b, k) => b.classList.toggle('sel', k === i)); const a = AN[i]; tgtY = a.lon - Math.PI / 2; if (!silent) play('move'); }
+cloud.addEventListener('pointerdown', e => { drag = [e.clientX, e.clientY, rotY, rotX]; cloud.setPointerCapture(e.pointerId); tgtY = null; });
+cloud.addEventListener('pointermove', e => { if (!drag) return; rotY = drag[2] + (e.clientX - drag[0]) / (200 * scale); rotX = Math.max(-1.2, Math.min(1.2, drag[3] + (e.clientY - drag[1]) / (200 * scale))); });
+cloud.addEventListener('pointerup', () => drag = null);
+JRL.every(t => {
+  if (room !== 'scan') return; const r = cloud.getBoundingClientRect(); const W = cloud.width = Math.round(r.width / scale), H = cloud.height = Math.round(r.height / scale);
+  if (tgtY !== null) { let d = ((tgtY - rotY) % (Math.PI * 2) + Math.PI * 3) % (Math.PI * 2) - Math.PI; rotY += d * .18; if (Math.abs(d) < .002) tgtY = null; } else if (!drag) rotY += .004;
+  const cy = Math.cos(rotY), sy = Math.sin(rotY), cx = Math.cos(rotX), sx = Math.sin(rotX), R = Math.min(W, H) * .42, ox = W / 2, oy = H / 2;
+  const P = ([x, y, z]) => { const X = x * cy + z * sy, Z = -x * sy + z * cy; return [X, y * cx - Z * sx, y * sx + Z * cx]; };
+  cg.fillStyle = '#0a0a0b'; cg.fillRect(0, 0, W, H);
+  cg.strokeStyle = '#1d1e1d'; cg.lineWidth = 1; for (let k = 1; k < 4; k++) { cg.beginPath(); cg.arc(ox, oy, R * k / 3 * 1.18, 0, 7); cg.stroke(); }
+  for (const p of PTS) { const [x, y, z] = P(p); const s = z > 0 ? 3 : 2; cg.fillStyle = z > 0 ? `rgba(45,220,205,${.35 + z * .65})` : 'rgba(45,220,205,.12)'; cg.fillRect(ox + x * R | 0, oy - y * R | 0, s, s); }
+  AN.forEach((a, i) => { const [x, y, z] = P(a.v.map(v => v * 1.08)); const px = ox + x * R, py = oy - y * R; if (z < -.05) return; const on = i === selAn; cg.fillStyle = on ? '#f2f2ee' : '#2ddccd'; cg.fillRect(px - 5, py - 5, 10, 10); if (on) { cg.strokeStyle = '#f2f2ee'; cg.lineWidth = 2; cg.strokeRect(px - 13, py - 13, 26, 26); cg.beginPath(); cg.moveTo(px + 13, py - 13); cg.lineTo(px + 60, py - 60); cg.lineTo(px + 260, py - 60); cg.stroke(); cg.font = '700 18px "Kode Mono", monospace'; cg.fillText(a.c.c, px + 66, py - 70); cg.font = '300 26px "Hubot Sans", sans-serif'; cg.fillText(a.c.t.slice(0, 26), px + 66, py - 38); } });
+  $('#scanro').textContent = `POINTS ${PTS.length} · ROT ${(rotY * 57.3 % 360).toFixed(1)}° · TILT ${(rotX * 57.3).toFixed(1)}° · TARGET ${AN[selAn].c.c} · [A] OPEN CORE`;
+});
+
+/* ============ TERMINAL ============ */
+const tout = $('#tout'), tcmd = $('#tcmd'); let termOpen = false;
+function tl(s, c = '') { const d = document.createElement('div'); d.className = c; d.textContent = s; tout.appendChild(d); while (tout.children.length > 40) tout.firstChild.remove(); }
+function openTerm() { if (termOpen) return; termOpen = true; $('#term').hidden = false; play('crackle', 3); if (!tout.children.length) { tl('JRL SHELL DIAGNOSTICS · type help', 'ok'); } setTimeout(() => tcmd.focus(), 0); hideBrk(); renderPrompts(); }
+function closeTerm() { if (!termOpen) return; termOpen = false; $('#term').hidden = true; play('back'); renderPrompts(); restoreFocus(); }
+$('#tin').addEventListener('submit', e => {
+  e.preventDefault(); const raw = tcmd.value.trim(); tcmd.value = ''; if (!raw) return; tl('runner@jrl:~$ ' + raw, 'd'); const [c, ...a] = raw.split(/\s+/); const arg = a.join(' ').toLowerCase();
+  const ok = m => { tl('[ ok ] ' + m, 'ok'); play('tick'); }, err = m => { tl('[FAIL] ' + m, 'e'); play('buzz'); };
+  switch (c.toLowerCase()) {
+    case 'help': tl('ls · cores · open <01-08> · go <slot> · paint <name> · mute · unmute · whoami · date · signal · clear · reboot · exit'); break;
+    case 'ls': SLOTS.forEach(s => tl(`  SLOT ${s.c}  ${s.n.padEnd(12)} ${s.ct}`)); break;
+    case 'cores': CORES.forEach(k => tl(`  ${k.c}  ${k.t}${k.q ? '  [QUARANTINED]' : ''}`)); break;
+    case 'open': { const n = parseInt(arg); const k = CORES[n - 1]; if (!k) return err('no such core. try: open 03'); if (k.q && !opened.has(n - 1)) return err(`${k.c} is quarantined. override it in the vault first.`); ok(`extracting ${k.c} ${k.t}`); openURL(BASE + k.f); break; }
+    case 'go': { const s = SLOTS.find(s => s.id === arg || s.n.toLowerCase() === arg || s.c === arg.padStart(2, '0')) || (arg === 'shell' ? { id: 'shell' } : null); if (!s || s.id === 'diag') return err('unknown slot. try: go vault'); ok('equipping ' + s.id); closeTerm(); go(s.id); break; }
+    case 'paint': { const i = WAYS.findIndex(w => w.n.toLowerCase().startsWith(arg)); if (i < 0) return err('colorways: ' + WAYS.map(w => w.n.toLowerCase()).join(', ')); wayPrev = i; doApply(); ok('shell repainted ' + WAYS[i].n); break; }
+    case 'mute': setSnd(false); ok('sound off'); break;
+    case 'unmute': setSnd(true); ok('sound on'); break;
+    case 'whoami': tl('runner · JERE.ING · bay 04 · ' + String(visits).padStart(3, '0') + ' visits logged'); break;
+    case 'date': tl($('#tdate').textContent + ' · ' + new Date().toString().slice(0, 24)); break;
+    case 'signal': tl(`uplink ${sig}/6 · wordmark width ${75 + (sig - 1) * 10}%`); break;
+    case 'clear': tout.innerHTML = ''; break;
+    case 'reboot': closeTerm(); boot(true); break;
+    case 'exit': closeTerm(); break;
+    case 'sudo': err('runners do not have root. nice try.'); break;
+    default: err(`unknown command: ${c}. type help`);
+  }
+});
+
+/* ============ FOCUS + SPATIAL NAV ============ */
+let cur = null; const brk = $('#brk'); const lastFocus = {};
+function setFocus(el) { if (!el) return; cur = el; if (document.activeElement !== el) el.focus({ preventScroll: true }); lastFocus[room] = el; placeBrk(); }
+function placeBrk() {
+  if (!cur || !cur.isConnected || termOpen) { brk.classList.remove('on'); return; }
+  const r = cur.getBoundingClientRect(), s = stage.getBoundingClientRect(); const pad = 7;
+  brk.style.left = ((r.left - s.left) / scale - pad) + 'px'; brk.style.top = ((r.top - s.top) / scale - pad) + 'px';
+  brk.style.width = (r.width / scale + pad * 2) + 'px'; brk.style.height = (r.height / scale + pad * 2) + 'px';
+  const dark = ['paint', 'scan'].includes(room) || cur.closest('.insp,.scanp,.slab,.tx-card,.s7,.corep');
+  brk.style.setProperty('--c', dark ? 'var(--sel)' : (room === 'cipher' ? 'var(--white)' : 'var(--ink)'));
+  brk.classList.add('on');
+}
+function hideBrk() { brk.classList.remove('on'); }
+function restoreFocus() { const el = lastFocus[room]; if (el && el.isConnected) setFocus(el); else setFocus(firstIn(room)); }
+document.addEventListener('focusin', e => { if (e.target.closest('[data-f]') && e.target.closest('#rooms')) { cur = e.target.closest('[data-f]'); lastFocus[room] = cur; placeBrk(); } });
+function focusables() { return $$('[data-f]', $(`#r-${room}`)).filter(el => el.getClientRects().length); }
+function firstIn(r) { return r === 'shell' ? $$('.slot')[selSlot] : r === 'vault' ? $(`.item[data-i="${selCore}"]`) : r === 'salvage' ? $$('.crate')[selCh] : r === 'scan' ? $$('.an')[selAn] : r === 'paint' ? $(`.way[data-w="${wayPrev}"]`) : r === 'comms' ? dial : $('#loc8'); }
+function spatial(dir) {
+  const list = focusables(); if (!cur || !list.includes(cur)) return setFocus(firstIn(room));
+  const a = cur.getBoundingClientRect(), ax = a.left + a.width / 2, ay = a.top + a.height / 2; let best = null, bs = 1e9;
+  list.forEach(el => { if (el === cur) return; const b = el.getBoundingClientRect(), bx = b.left + b.width / 2, by = b.top + b.height / 2, dx = bx - ax, dy = by - ay;
+    const prim = dir === 'right' ? dx : dir === 'left' ? -dx : dir === 'down' ? dy : -dy, sec = dir === 'right' || dir === 'left' ? Math.abs(dy) : Math.abs(dx);
+    if (prim <= 4) return; const sc = prim + sec * 2.2; if (sc < bs) { bs = sc; best = el; } });
+  if (best) { setFocus(best); onFocusMove(best); play('move'); } else play('tick');
+}
+function onFocusMove(el) {
+  if (el.dataset.slot !== undefined) selectSlot(+el.dataset.slot, true);
+  else if (el.classList.contains('item') && el.dataset.i !== undefined) selectCore(+el.dataset.i, true);
+  else if (el.classList.contains('crate')) selectCh(+el.dataset.i, true);
+  else if (el.classList.contains('an')) selectAn(+el.dataset.a, true);
+  else if (el.classList.contains('way')) { wayPrev = +el.dataset.w; genInks = WAYS[wayPrev].k.map(k => rgb(HEX[k])); renderWays(); setFocus($(`.way[data-w="${wayPrev}"]`)); }
+}
+
+/* ============ PROMPTS ============ */
+const P = (k, l, fn, sh) => ({ k, l, fn, sh });
+function renderPrompts() {
+  let L;
+  if (termOpen) L = [P('B', 'Close', closeTerm), P('↵', 'Run', null, 1)];
+  else if (room === 'shell') L = [P('✛', 'Select', null, 1), P('A', 'Equip', () => equip(selSlot)), P('LB', 'Prev', () => { selectSlot(selSlot - 1); setFocus($$('.slot')[selSlot]); }, 1), P('RB', 'Next', () => { selectSlot(selSlot + 1); setFocus($$('.slot')[selSlot]); }, 1), P('Y', 'Diagnostics', openTerm)];
+  else {
+    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', 'Open', () => $('#txa').click())], salvage: [P('A', 'Open crate', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openURL(BASE + AN[selAn].c.f))] }[room] || [];
+    L = [P('B', 'Shell', () => go('shell')), ...extra, P('LB', 'Prev room', () => cycle(-1), 1), P('RB', 'Next room', () => cycle(1), 1), P('Y', 'Diag', openTerm)];
+  }
+  if (portrait) L = L.filter(p => !['Prev room', 'Next room', 'Prev', 'Next', 'Select', 'Tune', 'Run'].includes(p.l));
+  $('#prompts').innerHTML = L.map((p, i) => `<button class="pr" data-p="${i}"><span class="k${p.sh ? ' sh' : ''}${p.k === 'A' ? ' sel' : ''}">${p.k}</span>${p.l}</button>`).join('') + `<span class="sp"></span><span class="tc">${portrait ? '' : 'Q/E · ARROWS · ENTER · ESC · / · M<br>'}JRL · ⊠ 2850 · BAY 04</span>`;
+  $$('#prompts .pr').forEach(b => { const p = L[+b.dataset.p]; b.addEventListener('click', () => { if (p.fn) p.fn(); else play('tick'); }); });
+}
+
+/* ============ ROOMS + BURST ============ */
+let room = 'shell', busy = false;
+const ORDER = ['vault', 'comms', 'salvage', 'cipher', 'paint', 'scan'];
+function cycle(d) { const i = ORDER.indexOf(room); go(ORDER[(i + d + ORDER.length) % ORDER.length]); }
+function setRoom(r) {
+  $$('.room').forEach(s => s.hidden = s.id !== 'r-' + r);
+  if (room === 'comms' && r !== 'comms') stopComms();
+  room = r; stage.dataset.room = r;
+  const L = ROOMLOC[r]; $('#loc').innerHTML = `<b>${L[0]}</b>&nbsp;· ${L[1]}&nbsp;&nbsp;<span class="jp">${L[2]}</span>`;
+  if (S.on) S.hum(r === 'shell');
+  if (r === 'shell') { selectSlot(selSlot, true); bust.reveal(); bust.draw(JRL.time()); } if (r === 'vault') selectCore(selCore, true); if (r === 'salvage') selectCh(selCh, true); if (r === 'scan') selectAn(selAn, true); if (r === 'paint') drawGen(JRL.time());
+  renderPrompts(); restoreFocus(); say(L[0].toLowerCase());
+  if (location.hash.slice(1) !== (r === 'shell' ? '' : r)) history.pushState(null, '', r === 'shell' ? location.pathname + location.search : '#' + r);
+}
+function card(html, bg, fg) { return `<div class="cd" style="background:${bg};color:${fg}">${html}</div>`; }
+function go(r, opts = {}) {
+  if (busy || (r === room && !opts.force)) return; if (termOpen) closeTerm();
+  if (RM || opts.instant) { setRoom(r); if (!opts.quiet) play('thump'); return; }
+  busy = true; hideBrk();
+  const name = r === 'shell' ? 'SHELL' : SLOTS.find(s => s.id === r).n.toUpperCase(), dcol = HEX[ROOMCOL[r]], ink = ['ink', 'pink', 'lav', 'blue'].includes(ROOMCOL[r]) ? '#f2f2ee' : '#0a0a0b';
+  const code = Array.from({ length: 22 }, () => `<div style="white-space:nowrap">${Math.random().toString(36).slice(2, 12).toUpperCase()} ${'▮'.repeat(1 + Math.random() * 30 | 0)} 0x${(Math.random() * 1e8 | 0).toString(16)}</div>`).join('');
+  const cards = [
+    [card(`<div class="gi" style="left:30px;top:40px;font-size:200px">[A]</div>`, 'var(--sel)', '#0a0a0b'), 33],
+    [card(`<div style="font:400 15px/1.5 var(--f-code);padding:30px;color:var(--sel)">${code}</div>`, '#0a0a0b', '#c2ff16'), 33],
+    [card(`<div style="position:absolute;inset:0;background-image:linear-gradient(90deg,transparent 50%,rgba(242,242,238,.28) 50%),linear-gradient(transparent 50%,rgba(10,10,11,.35) 50%);background-size:${60 + Math.random() * 80 | 0}px ${40 + Math.random() * 60 | 0}px"></div>`, '#0400f5', '#f2f2ee'), 67],
+    [`<div class="cd" style="background:#0a0a0b;padding:${portrait ? 40 : 70}px"><div style="position:relative;width:100%;height:100%">${ADS[Math.random() * 3 | 0]}</div></div>`, 33],
+    [card(`<div style="position:absolute;inset:0;background-image:radial-gradient(${ink} 2.5px,transparent 3px);background-size:10px 10px"></div>`, dcol, ink), 33],
+    [card(`<div class="gi" style="left:-20px;bottom:-30px;font-size:${portrait ? 230 : 380}px">${name}</div>`, dcol, ink), 67],
+    [card(`<div class="gi" style="left:-120px;bottom:-30px;font-size:${portrait ? 230 : 380}px">${name}</div>`, dcol, ink), 33]
+  ];
+  const b = $('#burst'); b.hidden = false; let i = 0;
+  const next = () => { if (i < cards.length) { b.innerHTML = cards[i][0]; play('crackle', 1); const d = cards[i][1]; i++; setTimeout(next, d); } else { b.hidden = true; b.innerHTML = ''; setRoom(r); play(r === 'shell' ? 'back' : 'thump'); busy = false; } };
+  next();
+}
+addEventListener('popstate', () => { const r = location.hash.slice(1); go(ORDER.includes(r) ? r : 'shell'); });
+
+/* ============ KEYS ============ */
+let lastKey = 0;
+addEventListener('keydown', e => {
+  S.init();
+  if (!$('#boot').hidden) { endBoot(); return; }
+  const typing = e.target.matches('input');
+  if (e.key === 'Escape' || (e.key === 'Backspace' && !typing)) { e.preventDefault(); if (termOpen) return closeTerm(); if (typing) { e.target.blur(); return setFocus($('#loc8')); } if (room !== 'shell') go('shell'); return; }
+  if (typing) { if (e.target === tcmd || e.key !== 'ArrowDown') return; }
+  if (busy) return;
+  const k = e.key.toLowerCase();
+  if (k.startsWith('arrow')) {
+    e.preventDefault();
+    if (cur === dial && (k === 'arrowleft' || k === 'arrowright')) { setFreq(freq + (k === 'arrowright' ? .1 : -.1) * (e.shiftKey ? 10 : 1), true); play('tick'); return; }
+    return spatial(k.slice(5));
+  }
+  if (k === 'enter' || k === ' ') { if (cur && cur.isConnected && !e.repeat) { e.preventDefault(); if (cur.tagName === 'A') { cur.click(); } else if (cur === dial) { $('#txa').focus(); } else cur.click(); } return; }
+  if (k === 'q' || k === 'e') { if (room === 'shell') { selectSlot(selSlot + (k === 'e' ? 1 : -1)); setFocus($$('.slot')[selSlot]); } else cycle(k === 'e' ? 1 : -1); return; }
+  if (k === '/' || k === 'y' || k === '`') { e.preventDefault(); return termOpen ? closeTerm() : openTerm(); }
+  if (k === 'm') return setSnd(!S.on);
+  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); }
+});
+addEventListener('keyup', e => { if (e.key.toLowerCase() === 'x') endHold(); });
+addEventListener('pointerdown', () => S.init(), { once: true });
+$('#boot').addEventListener('pointerdown', endBoot);
+
+/* ============ BOOT ============ */
+let bootT = [];
+function endBoot() { bootT.forEach(clearTimeout); bootT = []; $('#boot').hidden = true; play('swell'); restoreFocus(); }
+function boot(force) {
+  const el = $('#boot'); el.hidden = false; const cv = el.querySelector('canvas'), g = cv.getContext('2d'), log = el.querySelector('.log'), wm = el.querySelector('.bwm'); log.innerHTML = ''; wm.style.visibility = 'hidden'; g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 160, 90);
+  if (RM && !force) { endBoot(); return; }
+  const burst = (k) => { g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 160, 90); g.fillStyle = '#c2ff16'; for (let i = 0; i < 6 + k * 3; i++) { const w = 2 + Math.random() * 14 | 0, h = 1 + Math.random() * 6 | 0; g.fillRect(Math.random() * 160 | 0, Math.random() * 90 | 0, w, h); } };
+  let t = 0; const at = (ms, fn) => bootT.push(setTimeout(fn, ms));
+  for (let r = 0; r < 4; r++) { for (let f = 0; f < 3; f++) { at(t, () => { burst(r); play('crackle', 1); }); t += 33; } at(t, () => { g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 160, 90); }); t += 170; }
+  at(t, () => { wm.style.visibility = 'visible'; play('carrier'); });
+  const lines = [['[ ok ]', 'shell bus · bay 04'], ['[ ok ]', 'shell schematic · ' + bust.tri.toLocaleString('en-US') + ' tri'], ['[ ok ]', 'data cores indexed · 08'], ['[warn]', 'DC-02 quarantined'], ['[ ok ]', 'salvage feeds · 12'], ['[ ok ]', 'paint · ' + WAYS[wayIdx].n.toLowerCase()], ['', 'CONNECTION FOUND']];
+  lines.forEach((l, i) => at(t + 120 + i * 110, () => { const d = document.createElement('div'); d.innerHTML = `<span class="ok">${l[0]}</span> ${l[1]}`; log.appendChild(d); play('tick'); }));
+  at(t + 120 + lines.length * 110 + 260, endBoot);
+}
+
+/* ============ INIT ============ */
+applyPaint(wayIdx); fit(); selectSlot(0, true); selectCore(0, true); selectCh(0, true); selectAn(0, true);
+const startR = location.hash.slice(1); setRoom(ORDER.includes(startR) ? startR : 'shell');
+$('#snd').setAttribute('aria-pressed', S.on);
+document.fonts && document.fonts.ready.then(placeBrk);
+boot();
+})();
+</script>
+
+</body></html>

@@ -5,3 +5,13 @@ tarot.json
 songs.json
 reports/_archive/
 __pycache__/
+
+# Android / signing: never committed
+*.jks
+*.keystore
+*.apk
+*.aab
+local.properties
+.gradle/
+launcher/android/**/build/
+place/dist/

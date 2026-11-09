@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" data-deck="hom">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#0a0a0b">
+<title>JRL Launcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,900&family=Doto:wght@700..900&family=EB+Garamond:ital,wght@1,400..600&family=Hubot+Sans:wdth,wght@75..125,200..900&family=JetBrains+Mono:wght@200..700&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+<style>
+/*@CSS@*/
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
+  <filter id="duo-ic" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 .2126 .7152 .0722 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
+</svg>
+
+<div id="pv" hidden>
+  <span class="pv-l">Preview // JRL launcher v3.0 // mock bridge</span>
+  <span class="pv-b"><button type="button" data-pv="cover" aria-pressed="true">Cover 412×915</button><button type="button" data-pv="main" aria-pressed="false">Unfolded 984×1092</button><button type="button" data-pv="fill" aria-pressed="false">Fill</button></span>
+  <span class="pv-l">Slide the strip to launch · tap it for the terminal (set = every option) · Esc = Back</span>
+</div>
+
+<div id="device">
+<div class="app" id="app">
+  <main id="main">
+    <canvas class="fcol" id="fcol" aria-hidden="true"></canvas>
+    <div class="fieldfx" aria-hidden="true"><div class="ruler-x"></div><div class="ruler-y"></div><span class="ctag" id="ct1"></span><span class="ctag" id="ct2"></span><span class="reticle" id="reticle" hidden></span></div>
+
+    <!-- 01 the Console: the only place you live -->
+    <section class="deck" data-deck="hom" aria-label="Console">
+      <div class="hom">
+        <div class="h-main">
+          <div class="d-head"><span class="tag">01 / Console</span><span class="meta" id="h-meta"></span></div>
+          <div class="clock" id="clock" role="timer" aria-label="Time. Hold to feel it, double-tap to lock."><span id="hh">00</span><i>:</i><span id="mm">00</span></div>
+          <div class="h-sub"><span id="h-day"></span><span class="secbar" id="secbar"></span><span id="h-sec">00</span></div>
+          <div class="h-air" aria-hidden="true"></div>
+          <div class="pn h-line" id="h-line"></div>
+          <nav class="instrs" id="instrs" aria-label="Instruments">
+            <button type="button" class="ins" data-go="2"><span class="ik">03 Agd</span><b class="iv" id="iv-agd">--</b><span class="il" id="il-agd"></span></button>
+            <span class="ins-w"><button type="button" class="ins" data-go="3"><span class="ik">04 Sig</span><b class="iv" id="iv-sig">--</b><span class="il" id="il-sig"></span></button><button type="button" class="ins-pp" id="ins-pp" data-mc="toggle" aria-label="Play or pause">▶</button></span>
+            <button type="button" class="ins" data-go="4"><span class="ik">05 Com</span><b class="iv" id="iv-com">00</b><span class="il" id="il-com"></span></button>
+            <button type="button" class="ins" data-go="5"><span class="ik">06 Bio</span><b class="iv" id="iv-bio">000</b><span class="il" id="il-bio"></span></button>
+          </nav>
+        </div>
+        <aside class="pn instr" aria-label="Instrument column">
+          <div class="ph"><span>Instruments // 01</span><i class="led" id="in-led"></i></div>
+          <div class="in-cap">Power</div><div class="in-big" id="i-batt">--</div><div class="lv" id="i-battbar"></div>
+          <div class="in-cap">Comms // unread by program</div><div class="in-bars" id="i-bars"></div>
+          <div class="in-glyphs" id="in-glyphs"></div>
+          <pre class="in-hex" id="in-hex"></pre>
+          <div class="bc" id="in-bc"></div>
+        </aside>
+        <div class="pins" id="pins" role="list" aria-label="Loadout"></div>
+      </div>
+    </section>
+
+    <!-- 02 the Manifest: every program, as a table -->
+    <section class="deck" data-deck="app" aria-label="Manifest">
+      <div class="d-head"><span class="tag">02 / Manifest</span><span class="meta" id="a-meta"></span></div>
+      <div class="d-big"><b id="a-n">000</b><span>programs<br>on this unit</span></div>
+      <div class="a-wrap"><div class="a-list" id="a-grid" role="list" aria-label="Every program on this unit"></div></div>
+    </section>
+
+    <!-- 03 Schedule -->
+    <section class="deck" data-deck="agd" aria-label="Schedule">
+      <div class="d-head"><span class="tag">03 / Schedule</span><span class="meta" id="g-meta"></span></div>
+      <div class="g-next">
+        <div class="cap" id="g-cap">Next // in</div>
+        <div class="g-cd" id="g-cd">T-00:00:00</div>
+        <button type="button" class="g-t" id="g-t"></button>
+        <p class="g-w" id="g-w"></p>
+      </div>
+      <div class="g-week" id="g-week"></div>
+      <div class="pn g-list" id="g-list"></div>
+      <div class="d-chips foot"><button type="button" class="chip" id="g-open">Open calendar ↗</button><button type="button" class="chip" id="g-grant" hidden>Grant calendar</button></div>
+    </section>
+
+    <!-- 04 Signal -->
+    <section class="deck" data-deck="sig" aria-label="Signal">
+      <div class="d-head"><span class="tag">04 / Signal</span><button type="button" class="meta" id="s-src"></button></div>
+      <div class="s-body" id="s-body">
+        <div class="s-hud">
+          <div class="s-ring" id="s-ring" aria-hidden="true"></div>
+          <button type="button" class="s-art" id="s-artb" aria-label="Show the original artwork"><img alt="" id="s-art"><i class="grid" aria-hidden="true"></i></button>
+          <span class="s-tag t1" aria-hidden="true">SIG</span><span class="s-tag t2" id="s-pct" aria-hidden="true">000%</span>
+        </div>
+        <div class="s-tc" id="s-tc">00:00<span> / 00:00</span></div>
+        <p class="s-title" id="s-title"></p>
+        <p class="s-artist" id="s-artist"></p>
+        <div class="s-ctl"><button type="button" data-mc="prev" aria-label="Previous"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M6 5h2v14H6zM20 5v14L9 12z" fill="currentColor"/></svg></button><button type="button" data-mc="toggle" id="s-pp" aria-label="Play or pause"><svg viewBox="0 0 24 24" width="26" height="26"><path class="i-play" d="M7 4v16l13-8z" fill="currentColor"/><g class="i-pause" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></g></svg></button><button type="button" data-mc="next" aria-label="Next"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M16 5h2v14h-2zM4 5v14l11-7z" fill="currentColor"/></svg></button></div>
+        <canvas class="eq" id="s-eq" aria-hidden="true"></canvas>
+      </div>
+      <div class="nosig" id="s-none" hidden><b>No carrier</b>Nothing is playing. Start something and it lands here.</div>
+    </section>
+
+    <!-- 05 Comms -->
+    <section class="deck" data-deck="com" aria-label="Comms">
+      <div class="d-head"><span class="tag">05 / Comms</span><span class="meta" id="c-meta"></span></div>
+      <div class="d-big"><b id="c-n">00</b><span id="c-sub">unread</span><span class="d-chips"><button type="button" class="chip" id="c-shade">Open shade</button></span></div>
+      <div class="pn c-rows" id="c-rows"></div>
+      <div class="pn feedp"><div class="ph"><span>Telemetry // this unit</span><span id="c-sess"></span></div><div id="feed"></div></div>
+    </section>
+
+    <!-- 06 Bio -->
+    <section class="deck" data-deck="bio" aria-label="Bio">
+      <div class="d-head"><span class="tag">06 / Bio</span><span class="meta" id="b-state"></span></div>
+      <button type="button" class="b-cvw" id="b-cvw" aria-label="The colony. Tap to feed it."><canvas id="b-cv" width="32" height="18"></canvas><span class="b-hint">tap to feed</span></button>
+      <div class="b-stats" id="b-stats"></div>
+      <div class="pn b-life"><div class="ph"><span>Life support</span><span id="b-life-st">full</span></div><div class="b-pw"><b id="b-batt">--</b><span id="b-chg"></span></div><p class="b-cap" id="b-life-cap"></p></div>
+      <pre class="pn b-hex" id="b-hex"></pre>
+      <div class="pn b-dev" id="b-dev"></div>
+      <div class="giantw" aria-hidden="true"><span class="giant">Alive</span></div>
+    </section>
+  </main>
+
+  <!-- the strip: the only system chrome. Tap = terminal, slide = launch, right end = status -->
+  <div class="bstrip" id="bstrip">
+    <span class="bs-l"><span class="wm">JERE<span class="slash">.</span>ING</span><b id="slate">01 Console</b></span>
+    <div class="bs-prompt" id="bs-prompt" role="button" tabindex="0" aria-label="Tap for the terminal. Slide to launch a program.">
+      <span class="bs-l1"><span class="who" id="who">jere@jrl-01:~$</span><span id="echo"></span><i class="cur" aria-hidden="true"></i></span>
+      <span class="ruler" id="ruler" aria-hidden="true"></span>
+    </div>
+    <span class="tele" id="tele" aria-label="Unit status">
+      <span class="tl1"><b class="st-time" id="st-time">00:00</b><span class="st-col"><i class="led" id="st-led"></i><span id="st-colt">D001</span></span></span>
+      <span class="tl2"><span class="st-sig" id="st-sig"><span class="sg"><i class="b4" id="sg-wifi"><i></i><i></i><i></i><i></i></i></span><span class="sg"><em id="sg-net">5G</em><i class="b4" id="sg-cell"><i></i><i></i><i></i><i></i></i></span></span><span class="stat"><i class="hap" id="hap" aria-hidden="true"></i><span class="snd-st">SND</span><span class="batt" id="batt" aria-label="Battery"><i></i></span><b id="batt-n">--</b></span></span>
+    </span>
+  </div>
+</div>
+
+<!-- overlays live inside the device so the preview frame behaves like the phone -->
+<div id="scrubov" hidden><div class="so-giant" id="so-giant" aria-hidden="true"></div><div class="so-head"><b id="so-l">A</b><span id="so-n"></span></div><div class="so-list" id="so-list"></div><p class="so-hint">release on the strip: open · slide up: pick · above the list: cancel</p></div>
+<canvas id="cut" aria-hidden="true"></canvas>
+<div id="sheet" role="dialog" aria-label="Program file" hidden></div>
+<div id="folder" role="dialog" aria-label="Kit" hidden></div>
+<section id="cli" aria-label="Terminal" hidden>
+  <div class="cli-bar"><span>tty1 // jere</span><span>set lists every option</span><button type="button" class="chip" id="cli-x">Close</button></div>
+  <div id="out" aria-live="polite"></div>
+  <form class="cli-pr" id="cli-form" autocomplete="off"><label for="cmd" id="cli-who">jere@jrl-01:~$</label><input id="cmd" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Command line"></form>
+</section>
+<div id="term" role="dialog" aria-label="Root terminal" hidden>
+  <div class="tbar"><span>JRL tty0 // root</span><span id="tclock"></span><span>exit to leave</span></div>
+  <div id="tout" aria-live="polite"></div>
+  <form class="tprompt" id="tform" autocomplete="off"><label for="tin">root@jrl-01:~#</label><input id="tin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go"></form>
+</div>
+<div id="boot" role="button" tabindex="0" aria-label="Boot sequence" hidden>
+  <div class="btop"><span class="lbl">Node JRL-01 // field unit</span><span class="lbl">Cold start // 30 fps</span></div>
+  <div class="bt">JERE<span class="slash">.</span>ING</div>
+  <div id="bootlog"></div>
+  <div class="bbot"><div class="lbl" style="display:flex;justify-content:space-between"><span>Loading</span><span id="bootpct">0%</span></div><div class="loadbar"><i id="bootbar"></i></div></div>
+</div>
+<div id="wipe" aria-hidden="true"></div>
+</div>
+
+<script>
+/*@CORE@*/
+</script>
+<script>
+/*@BRIDGE@*/
+</script>
+<script>
+/*@PAL@*/
+</script>
+<script>
+/*@APP@*/
+</script>
+<script>
+/*@TERM@*/
+</script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>JRL Type Specimen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Doto:wght@400..900&family=EB+Garamond:ital,wght@1,400..700&family=Hubot+Sans:wdth,wght@75..125,200..900&family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@200..800&family=Kode+Mono:wght@400..700&family=Mona+Sans:wdth,wght@75..125,200..900&family=Saira:wdth,wght@50..125,100..900&display=swap">
+<style>
+/* Layout: one row per display face, same five samples in the same order; system A (Kode Mono codes, JetBrains, Doto, Garamond) is fixed. */
+:root{
+  --bg:#0a0a0b; --panel:#151517; --rule:#2a2a2e; --fg:#f2f2ee; --dim:#8b8b92;
+  --lime:#c2ff16; --blue:#0400f5; --red:#e9042b; --pink:#e0216f;
+  --accent:var(--lime); --onaccent:#0a0a0b; --field:var(--blue); --onfield:#f2f2ee;
+  --archivo:"Archivo","Arial Black",sans-serif;
+  --jb:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --doto:"Doto","JetBrains Mono",monospace;
+  --kode:"Kode Mono","JetBrains Mono",monospace;
+  --serif:"EB Garamond",Garamond,Georgia,serif;
+  --tw:600; --tx:78%; --sw:500;
+  color-scheme:dark;
+}
+:root[data-mode="white"]{
+  --bg:#f1f0f0; --panel:#e1dfe0; --rule:#c9c6c8; --fg:#0b0b0c; --dim:#67666c;
+  --accent:var(--pink); --onaccent:#fff; --field:#0b0b0c; --onfield:#f1f0f0;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--jb);font-size:13px;margin:0}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--rule)}
+.top .wrap{display:flex;gap:14px 22px;align-items:center;justify-content:space-between;padding-block:10px;flex-wrap:wrap}
+.brand{font:600 11px/1 var(--jb);letter-spacing:.12em;text-transform:uppercase}
+.brand i{font-style:normal;color:var(--accent)}
+.ctl{display:flex;gap:14px 20px;align-items:center;flex-wrap:wrap}
+.ctl label{display:flex;gap:8px;align-items:center;font:500 10px/1 var(--jb);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.ctl output{color:var(--fg);min-width:3.2em;font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:110px;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--fg)}
+.seg button{font:600 11px/1 var(--jb);letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;background:transparent;color:var(--fg);border:0;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.intro{padding-block:20px 8px;max-width:76ch;color:var(--dim);line-height:1.6}
+.intro strong{color:var(--fg);font-weight:600}
+
+.row{border-top:1px solid var(--rule);padding-block:24px 30px}
+.rh{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:16px}
+.rh .k{font:700 12px/1 var(--kode);background:var(--accent);color:var(--onaccent);padding:5px 8px}
+.rh h2{margin:0;font:600 13px/1 var(--jb);letter-spacing:.06em;text-transform:uppercase}
+.rh p{margin:0;color:var(--dim);flex-basis:100%;max-width:84ch;line-height:1.55}
+.set{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px 26px;align-items:start}
+@media (max-width:860px){.set{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.lbl{display:block;font:500 10px/1.3 var(--jb);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:6px}
+
+.word{font-family:var(--d);font-weight:calc(var(--tw) + 100);font-stretch:var(--tx);font-size:clamp(40px,7vw,96px);line-height:.9;letter-spacing:-.02em;margin:0;text-transform:uppercase}
+.word i{font-style:normal;color:var(--accent)}
+.tr{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.title{font-family:var(--d);font-weight:var(--tw);font-stretch:var(--tx);font-size:clamp(40px,6vw,80px);line-height:.92;letter-spacing:-.03em;margin:0}
+.chip{font:700 11px/1 var(--kode);letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--onaccent);padding:5px 7px;margin-top:8px;white-space:nowrap}
+.slogan{font-family:var(--d);font-weight:var(--sw);font-stretch:100%;font-size:clamp(24px,3.2vw,42px);line-height:1.02;letter-spacing:-.035em;margin:0;text-wrap:balance}
+.card{background:var(--field);color:var(--onfield);display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;padding:16px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.card .n{font:700 60px/.85 var(--kode);letter-spacing:-.02em}
+.card .meta{font:500 10px/1.4 var(--jb);letter-spacing:.08em;display:flex;gap:8px;align-items:center}
+.card .meta .chip{margin:0}
+.card h3{margin:8px 0 4px;font-family:var(--d);font-weight:var(--tw);font-stretch:var(--tx);letter-spacing:-.025em;font-size:28px;line-height:1}
+.card p{margin:0;font:400 12px/1.45 var(--jb);opacity:.85}
+.crop{overflow:hidden;background:var(--accent);color:var(--onaccent);height:clamp(70px,9vw,118px);position:relative}
+.crop span{position:absolute;left:-.05em;bottom:-.2em;font-family:var(--archivo);font-weight:900;font-stretch:125%;font-size:clamp(100px,15vw,210px);line-height:1;letter-spacing:-.03em;white-space:nowrap}
+.crop small{position:absolute;right:10px;top:8px;font:500 10px/1 var(--jb);letter-spacing:.1em}
+
+.fixed{border-top:1px solid var(--rule);padding-block:24px 34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:18px 26px}
+.codes{display:flex;flex-wrap:wrap;gap:6px 16px;font:700 30px/1 var(--kode)}
+.codes span:nth-child(2){color:var(--accent)}
+.term{background:var(--panel);padding:12px 14px;font:400 12px/1.65 var(--jb);overflow-x:auto;white-space:pre}
+.term b{color:var(--accent)}
+.clock{font:800 52px/1 var(--doto)}
+.serif{font:italic 500 28px/1.15 var(--serif);margin:0}
+footer{border-top:1px solid var(--rule);padding-block:16px 28px;color:var(--dim);font-size:11px;line-height:1.6}
+</style>
+
+<header class="top"><div class="wrap">
+  <span class="brand">JERE<i>.</i>ING · type v2</span>
+  <div class="ctl">
+    <label for="tw">Title weight <input id="tw" type="range" min="200" max="900" step="50" value="600"><output id="tw-o">600</output></label>
+    <label for="tx">Title width <input id="tx" type="range" min="75" max="100" step="1" value="78"><output id="tx-o">78%</output></label>
+    <label for="sw">Slogan weight <input id="sw" type="range" min="200" max="800" step="50" value="500"><output id="sw-o">500</output></label>
+    <div class="seg" role="group" aria-label="Color mode"><button type="button" id="m-dark" aria-pressed="true">Dark</button><button type="button" id="m-white" aria-pressed="false">White</button></div>
+  </div>
+</div></header>
+
+<main>
+  <div class="wrap intro">
+    System <strong>A</strong> is locked: Kode Mono for codes and numbers, JetBrains Mono for interface text, Doto for the clock, EB Garamond for rare accent lines. This page swaps only the <strong>display face</strong>, set lighter and narrower than before. Wide, black Archivo is kept for one job only: giant words cropped off the edge. The sliders change every row at once. Weight is capped per family (Instrument Sans tops out at 700).
+  </div>
+
+  <section class="row" style="--d:'Archivo',sans-serif"><div class="wrap">
+    <div class="rh"><span class="k">A0</span><h2>Archivo, for reference</h2><p>A grotesque with chunky, rounded shapes. Even when condensed it reads heavy and a little friendly.</p></div>
+    <div class="set"><div class="col">
+      <div><span class="lbl">Wordmark</span><p class="word">Jere<i>.</i>ing</p></div>
+      <div><span class="lbl">Module title</span><div class="tr"><p class="title">Reports</p><span class="chip">Index</span></div></div>
+      <div><span class="lbl">Slogan</span><p class="slogan">Eight reports. Zero conclusions.</p></div>
+    </div><div class="col">
+      <div><span class="lbl">Report card</span><div class="card"><div class="n">08</div><div><div class="meta">2026.11.02 <span class="chip">New</span></div><h3>Scope</h3><p>An oscilloscope for any audio file you drop in.</p></div></div></div>
+      <div><span class="lbl">Giant cropped word · Archivo 125% / 900</span><div class="crop"><span>CULTURE</span><small>MOD 06</small></div></div>
+    </div></div>
+  </div></section>
+
+  <section class="row" style="--d:'Hubot Sans','Mona Sans',sans-serif"><div class="wrap">
+    <div class="rh"><span class="k">H</span><h2>Hubot Sans</h2><p>A mechanical grotesk with squared curves and flat terminals, made by GitHub. Its condensed widths look like the reference's tall wordmark and its labels. It sits naturally next to Kode Mono.</p></div>
+    <div class="set"><div class="col">
+      <div><span class="lbl">Wordmark</span><p class="word">Jere<i>.</i>ing</p></div>
+      <div><span class="lbl">Module title</span><div class="tr"><p class="title">Reports</p><span class="chip">Index</span></div></div>
+      <div><span class="lbl">Slogan</span><p class="slogan">Eight reports. Zero conclusions.</p></div>
+    </div><div class="col">
+      <div><span class="lbl">Report card</span><div class="card"><div class="n">08</div><div><div class="meta">2026.11.02 <span class="chip">New</span></div><h3>Scope</h3><p>An oscilloscope for any audio file you drop in.</p></div></div></div>
+      <div><span class="lbl">Giant cropped word · Archivo 125% / 900</span><div class="crop"><span>CULTURE</span><small>MOD 06</small></div></div>
+    </div></div>
+  </div></section>
+
+  <section class="row" style="--d:'Mona Sans',sans-serif"><div class="wrap">
+    <div class="rh"><span class="k">M</span><h2>Mona Sans</h2><p>Hubot's neutral sibling, close to the plain Swiss grotesk on the company posters ("They grow. You eat.", "Care, Streamlined"). Cleaner, less machine.</p></div>
+    <div class="set"><div class="col">
+      <div><span class="lbl">Wordmark</span><p class="word">Jere<i>.</i>ing</p></div>
+      <div><span class="lbl">Module title</span><div class="tr"><p class="title">Reports</p><span class="chip">Index</span></div></div>
+      <div><span class="lbl">Slogan</span><p class="slogan">Eight reports. Zero conclusions.</p></div>
+    </div><div class="col">
+      <div><span class="lbl">Report card</span><div class="card"><div class="n">08</div><div><div class="meta">2026.11.02 <span class="chip">New</span></div><h3>Scope</h3><p>An oscilloscope for any audio file you drop in.</p></div></div></div>
+      <div><span class="lbl">Giant cropped word · Archivo 125% / 900</span><div class="crop"><span>CULTURE</span><small>MOD 06</small></div></div>
+    </div></div>
+  </div></section>
+
+  <section class="row" style="--d:'Instrument Sans',sans-serif"><div class="wrap">
+    <div class="rh"><span class="k">I</span><h2>Instrument Sans</h2><p>A refined grotesk with a true condensed width. The quietest of the four, and the most "luxury lab".</p></div>
+    <div class="set"><div class="col">
+      <div><span class="lbl">Wordmark</span><p class="word">Jere<i>.</i>ing</p></div>
+      <div><span class="lbl">Module title</span><div class="tr"><p class="title">Reports</p><span class="chip">Index</span></div></div>
+      <div><span class="lbl">Slogan</span><p class="slogan">Eight reports. Zero conclusions.</p></div>
+    </div><div class="col">
+      <div><span class="lbl">Report card</span><div class="card"><div class="n">08</div><div><div class="meta">2026.11.02 <span class="chip">New</span></div><h3>Scope</h3><p>An oscilloscope for any audio file you drop in.</p></div></div></div>
+      <div><span class="lbl">Giant cropped word · Archivo 125% / 900</span><div class="crop"><span>CULTURE</span><small>MOD 06</small></div></div>
+    </div></div>
+  </div></section>
+
+  <section class="row" style="--d:'Saira',sans-serif"><div class="wrap">
+    <div class="rh"><span class="k">S</span><h2>Saira</h2><p>A squared techno grotesk with the widest range of widths. The most sci-fi of the four. It risks the Michroma feel you didn't like, so it's here mainly for contrast.</p></div>
+    <div class="set"><div class="col">
+      <div><span class="lbl">Wordmark</span><p class="word">Jere<i>.</i>ing</p></div>
+      <div><span class="lbl">Module title</span><div class="tr"><p class="title">Reports</p><span class="chip">Index</span></div></div>
+      <div><span class="lbl">Slogan</span><p class="slogan">Eight reports. Zero conclusions.</p></div>
+    </div><div class="col">
+      <div><span class="lbl">Report card</span><div class="card"><div class="n">08</div><div><div class="meta">2026.11.02 <span class="chip">New</span></div><h3>Scope</h3><p>An oscilloscope for any audio file you drop in.</p></div></div></div>
+      <div><span class="lbl">Giant cropped word · Archivo 125% / 900</span><div class="crop"><span>CULTURE</span><small>MOD 06</small></div></div>
+    </div></div>
+  </div></section>
+
+  <section class="wrap fixed" aria-label="Locked parts of system A">
+    <div><span class="lbl">Locked · codes · Kode Mono</span><div class="codes"><span>0A</span><span>2C</span><span>E3.128</span><span>JRL-01</span></div></div>
+    <div><span class="lbl">Locked · terminal · JetBrains Mono</span><div class="term"><b>[ ok ]</b> index 08 :: scope
+<b>[ ok ]</b> index 07 :: rio_-_duran_duran</div></div>
+    <div><span class="lbl">Locked · clock · Doto</span><div class="clock">08:38:13</div></div>
+    <div><span class="lbl">Locked · accent · EB Garamond</span><p class="serif">Every sentence is already on a shelf.</p></div>
+  </section>
+</main>
+<footer class="wrap">Tell me the row letter and the slider values you like, for example "H at 550 / 80%".</footer>
+
+<script>
+(function(){
+  var r=document.documentElement;
+  function bind(id,prop,unit){var i=document.getElementById(id),o=document.getElementById(id+'-o');function u(){r.style.setProperty(prop,i.value+unit);o.textContent=i.value+unit}i.addEventListener('input',u);u()}
+  bind('tw','--tw','');bind('tx','--tx','%');bind('sw','--sw','');
+  var d=document.getElementById('m-dark'),w=document.getElementById('m-white');
+  function set(m){r.setAttribute('data-mode',m);d.setAttribute('aria-pressed',m==='dark');w.setAttribute('aria-pressed',m==='white');try{localStorage.setItem('jrl-spec-mode',m)}catch(e){}}
+  d.addEventListener('click',function(){set('dark')});w.addEventListener('click',function(){set('white')});
+  var s=null;try{s=localStorage.getItem('jrl-spec-mode')}catch(e){}
+  set(s==='white'?'white':'dark');
+})();
+</script>
+
+</body></html>

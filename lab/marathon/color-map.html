@@ -1,0 +1,131 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>JRL Color Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,900&family=Doto:wght@800&family=EB+Garamond:ital,wght@1,500&family=Hubot+Sans:wdth,wght@75..100,200..500&family=JetBrains+Mono:wght@400;600&family=Kode+Mono:wght@700&display=swap">
+<style>
+/* Layout: one mini screen per module per mode (dark system register, white faction register), with live contrast checks under each. */
+:root{
+  --pg:#111113; --pgline:#2a2a2e; --pgfg:#ecece8; --pgdim:#8b8b92; --ok:#c2ff16; --bad:#e9042b;
+  --hub:"Hubot Sans","Archivo Narrow",sans-serif; --jb:"JetBrains Mono",ui-monospace,monospace;
+  --kode:"Kode Mono","JetBrains Mono",monospace; --doto:"Doto",monospace; --serif:"EB Garamond",Georgia,serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--pg);color:var(--pgfg);font:13px/1.5 var(--jb)}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.wrap{padding-block:26px 8px}
+h1{margin:0;font-family:var(--hub);font-weight:500;font-stretch:75%;font-size:clamp(34px,5vw,56px);line-height:.95;letter-spacing:-.01em;text-transform:uppercase}
+h1 i{font-style:normal;color:var(--ok)}
+.lede{max-width:78ch;color:var(--pgdim);margin:10px 0 0}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px 28px;padding-block:18px 8px;margin:0;list-style:none}
+.rules li{border-top:1px solid var(--pgline);padding-top:8px;max-width:60ch}
+.rules b{font-family:var(--kode);color:var(--pgfg);margin-right:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding-block:14px 0}
+.sw{display:flex;align-items:center;gap:8px;border:1px solid var(--pgline);padding:4px 8px 4px 4px;font-size:11px}
+.sw i{width:18px;height:18px;display:block}
+h2{font:600 12px/1 var(--jb);letter-spacing:.1em;text-transform:uppercase;margin:34px 0 4px}
+h2 + p{margin:0 0 14px;color:var(--pgdim);max-width:78ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:22px 18px;padding-bottom:10px}
+figure{margin:0;min-width:0}
+.scr{aspect-ratio:16/10.5;max-width:100%;display:grid;grid-template-rows:auto 1fr auto;overflow:hidden;background:var(--f);color:var(--i);position:relative;font-family:var(--jb)}
+.sys{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;background:var(--sb);color:var(--si);font-size:9px;letter-spacing:.08em}
+.sys .wm{font-family:var(--hub);font-weight:500;font-stretch:75%;font-size:13px;letter-spacing:0}
+.sys .wm i{font-style:normal;color:var(--sa)}
+.sys .r{display:flex;gap:8px;align-items:center}
+.sys .snd{border:1px solid currentColor;padding:1px 4px;font-family:var(--kode)}
+.sys .ck{font-family:var(--doto);font-size:12px}
+.fld{position:relative;padding:12px 12px 0;display:flex;flex-direction:column;gap:6px;min-height:0;background-image:radial-gradient(var(--dots,transparent) 1.4px,transparent 1.6px);background-size:11px 11px}
+.tag{align-self:flex-start;font:700 9px/1 var(--kode);letter-spacing:.08em;padding:3px 5px;background:var(--a);color:var(--ai)}
+.ttl{font-family:var(--hub);font-weight:300;font-stretch:88%;font-size:clamp(30px,3.4vw,40px);line-height:.92;letter-spacing:-.03em;margin:0}
+.slg{font-family:var(--hub);font-weight:200;font-stretch:100%;font-size:15px;line-height:1.1;letter-spacing:-.02em;margin:0;max-width:22ch}
+.slab{margin-top:auto;align-self:stretch;background:var(--s);color:var(--sti);padding:7px 9px;font-size:10px;line-height:1.45;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%)}
+.slab b{font-weight:600;color:var(--sta,inherit)}
+.acc{position:absolute;right:12px;top:12px;width:30%;aspect-ratio:1;background:var(--a);color:var(--ai);display:grid;place-items:center;font:700 22px/1 var(--kode)}
+.acc.ring{background:transparent;border:5px solid var(--a);border-radius:50%;color:var(--i)}
+.acc.gen{background:linear-gradient(135deg,#ef4606,#e0216f 40%,#441eec 75%,#0a0a0b);image-rendering:pixelated}
+.strip{display:flex;justify-content:space-between;padding:3px 8px;font:600 8px/1.4 var(--jb);letter-spacing:.1em;background:var(--lb);color:var(--li)}
+.err{position:absolute;left:0;right:0;top:46%;background:#e9042b;color:#0a0a0b;font:700 13px/1 var(--kode);padding:5px 0;white-space:nowrap;overflow:hidden}
+.haz{position:absolute;left:12px;right:12px;bottom:40px;height:12px;background:repeating-linear-gradient(-45deg,#eae00b 0 7px,#0a0a0b 7px 14px)}
+figcaption{padding-top:8px;display:grid;gap:3px;font-size:11px}
+figcaption .n{font-family:var(--kode);font-size:12px}
+.cr{display:flex;justify-content:space-between;gap:10px;color:var(--pgdim)}
+.cr span:last-child{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cr .p{color:var(--ok)} .cr .x{color:var(--bad)}
+footer{border-top:1px solid var(--pgline);margin-top:28px;padding-block:16px 30px;color:var(--pgdim);font-size:11px}
+</style>
+
+<header class="wrap">
+  <h1>Jere<i>.</i>ing color map</h1>
+  <p class="lede">Every module in both modes, with the locked type (Hubot Sans: wordmark 500 / 75%, titles 300 / 88%, slogans 200). The numbers under each screen are contrast ratios for the text actually placed on each color. Small text needs 4.5 or more; type at 24px and up needs 3.</p>
+  <ul class="rules">
+    <li><b>01</b>The system layer (header, terminal, feed, boot, sound chip) never takes a module color. Dark mode: black, white, lime. White mode: fog and black, with lime only as a solid strip.</li>
+    <li><b>02</b>Each module gets one field, one ink and at most one accent. No tints of the field. Two hues on screen at most, plus the system layer.</li>
+    <li><b>03</b>Small text only ever sits on black, white or fog. Red, pink, orange and lavender are mid-tones that fail small text in both black and white, so they carry big shapes and large type only.</li>
+    <li><b>04</b>Red means something is wrong: errors, kernel panic. Yellow with black means warning (hazard stripes). Neither is a module color.</li>
+    <li><b>05</b>Lime and yellow vanish on white (contrast about 1:1), so in white mode they only appear as fills with black text.</li>
+    <li><b>06</b>More hues than that appear only in transitions and the idle palette cycle, which are brief and built from the two modules involved.</li>
+  </ul>
+  <div class="chips" id="pal" aria-label="Palette"></div>
+</header>
+
+<main class="wrap">
+  <h2>Dark · system register</h2>
+  <p>Black chrome, saturated fields. Modeled on the UI reel and the Alpha and Story intros.</p>
+  <div class="grid" id="dark"></div>
+  <h2>White · faction register</h2>
+  <p>Fog field, black ink, one accent per module, as each faction intro has one color.</p>
+  <div class="grid" id="white"></div>
+</main>
+<footer class="wrap">Changes from the live site: pink #ff0088 becomes #e0216f; Babel text moves onto black slabs; Culture goes to teal dots on black (dark) and blue on fog (white); red is reserved for errors.</footer>
+
+<script>
+(function(){
+var K='#0a0a0b',W='#f2f2ee',F='#f1f0f0',LI='#c2ff16';
+var pal=[['black',K],['white',W],['fog',F],['lime',LI],['blue','#0400f5'],['orange','#ef4606'],['pink','#e0216f'],['bone','#c7c2b6'],['teal','#2ddccd'],['lavender','#8476bf'],['red · alarm','#e9042b'],['yellow · warn','#eae00b']];
+document.getElementById('pal').innerHTML=pal.map(function(p){return '<span class="sw"><i style="background:'+p[1]+'"></i>'+p[0]+' '+p[1]+'</span>'}).join('');
+function lum(h){h=h.replace('#','');return [0,2,4].map(function(i){var c=parseInt(h.substr(i,2),16)/255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)}).reduce(function(s,c,i){return s+c*[.2126,.7152,.0722][i]},0)}
+function cr(a,b){var x=lum(a),y=lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
+// n, title, slogan, field, ink, slab, slabInk, accent, accentInk, extra
+var DARK={sb:K,si:W,sa:LI,lb:LI,li:K,mods:[
+ ['01','Reports','Eight reports. Zero conclusions.','#0400f5',W,K,W,LI,K,'08'],
+ ['02','Song','One song a day. Same for everyone.','#ef4606',K,K,W,'#0400f5',W,'ring'],
+ ['03','Image','Today’s image. Gone at midnight.','#c7c2b6',K,K,W,'#ef4606',K,'img'],
+ ['04','Babel','Every sentence is already on a shelf.','#e0216f',W,K,W,LI,K,'serif'],
+ ['05','Color','Four colors at a time.',K,W,'#1a1a1d',W,LI,K,'gen'],
+ ['06','Culture','Move to stir the field.',K,W,'#1a1a1d',W,'#2ddccd',K,'dots:#2ddccd'],
+ ['00','System','Terminal, feed, errors.',K,W,'#1a1a1d',W,LI,K,'sys']]};
+var WHITE={sb:F,si:K,sa:'#e0216f',lb:LI,li:K,mods:[
+ ['01','Reports','Eight reports. Zero conclusions.',F,K,K,W,'#e0216f',W,'08'],
+ ['02','Song','One song a day. Same for everyone.',F,K,K,W,'#ef4606',K,'ring'],
+ ['03','Image','Today’s image. Gone at midnight.',F,K,K,W,'#c7c2b6',K,'img'],
+ ['04','Babel','Every sentence is already on a shelf.',F,K,K,W,'#8476bf',K,'serif'],
+ ['05','Color','Four colors at a time.',F,K,K,W,K,W,'gen'],
+ ['06','Culture','Move to stir the field.',F,K,K,W,'#0400f5',W,'dots:#0400f5'],
+ ['00','System','Terminal, feed, errors.',F,K,K,W,K,W,'sys']]};
+function row(label,a,b,large){var r=cr(a,b),ok=r>=(large?3:4.5);return '<div class="cr"><span>'+label+'</span><span class="'+(ok?'p':'x')+'">'+r.toFixed(1)+(ok?' pass':' fail')+'</span></div>'}
+function tile(set,m){
+  var ex=m[9],dots=ex.indexOf('dots:')===0?ex.slice(5):'',acc='';
+  if(ex==='08')acc='<div class="acc">08</div>';
+  else if(ex==='ring')acc='<div class="acc ring">▶</div>';
+  else if(ex==='img')acc='<div class="acc" style="background:'+m[4]+';color:'+m[3]+';font-size:10px">IMG</div>';
+  else if(ex==='gen')acc='<div class="acc gen"></div>';
+  var slab=ex==='serif'?'<span style="font:italic 500 13px/1.2 var(--serif)">“The librarian will see you.”</span> hex 4112 · wall 3 · shelf 2':
+    ex==='sys'?'<b style="color:'+(set===DARK?LI:LI)+'">[ ok ]</b> index 08 :: scope<br><b style="color:#e9042b">[FAIL]</b> jsh: hello: not recognised':
+    'Turns over at midnight ET · <b>'+m[0]+'</b> / 06';
+  var extra=ex==='sys'?'<div class="haz"></div><div class="err">ERROR_ERROR_NOT_RECOGNISED_ERROR_ERROR_ERROR</div>':'';
+  var cap='<span class="n">'+m[0]+' '+m[1].toUpperCase()+'</span>'+
+    row('title on field (large)',m[4],m[3],true)+row('small text on slab',m[6],m[5],false)+row('tag text on accent',m[8],m[7],false)+
+    (set===WHITE&&m[7]!==K?row('accent on fog, if used as text',m[7],F,false):'');
+  return '<figure><div class="scr" style="--f:'+m[3]+';--i:'+m[4]+';--s:'+m[5]+';--sti:'+m[6]+';--a:'+m[7]+';--ai:'+m[8]+';--sb:'+set.sb+';--si:'+set.si+';--sa:'+set.sa+';--lb:'+set.lb+';--li:'+set.li+(dots?';--dots:'+dots:'')+'">'+
+   '<div class="sys"><span class="wm">JERE<i>.</i>ING</span><span class="r"><span class="snd">SND ▎▍▌</span><span class="ck">09:51</span></span></div>'+
+   '<div class="fld"><span class="tag">'+m[0]+' / '+m[1].toUpperCase()+'</span><p class="ttl">'+m[1]+'</p><p class="slg">'+m[2]+'</p><div class="slab">'+slab+'</div>'+acc+extra+'</div>'+
+   '<div class="strip"><span>JRL |||||| × 2026</span><span>JERE.ING</span></div></div><figcaption>'+cap+'</figcaption></figure>';
+}
+document.getElementById('dark').innerHTML=DARK.mods.map(function(m){return tile(DARK,m)}).join('');
+document.getElementById('white').innerHTML=WHITE.mods.map(function(m){return tile(WHITE,m)}).join('');
+})();
+</script>
+
+</body></html>

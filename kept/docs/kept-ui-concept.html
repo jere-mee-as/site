@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File manager: UI concept</title>
+<style>
+:root{--bg:#ffffff;--fg:#1b1b1b;--muted:#5f5f5a;--line:#d4d4cf;--code:#f3f3f1;--link:#0b57d0}
+@media (prefers-color-scheme: dark){:root{--bg:#141414;--fg:#e8e8e4;--muted:#9a9a94;--line:#3a3a3a;--code:#1f1f1f;--link:#8ab4f8}}
+html{background:var(--bg)}
+body{margin:0 auto;max-width:760px;padding:24px 16px 64px;background:var(--bg);color:var(--fg);
+font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+h1{font-size:1.9em;line-height:1.2;margin:0 0 .4em}h2{font-size:1.35em;margin:1.8em 0 .5em}
+a{color:var(--link)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--code);border-radius:4px}
+code{padding:.1em .3em}pre{padding:12px;overflow-x:auto}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--code)}
+li>p{margin:.2em 0}li[data-checked]{list-style:none}
+time,[data-atom=mention]{color:var(--muted)}
+img{max-width:100%;height:auto;border:1px dashed var(--line);color:var(--muted);font-size:.9em}
+figure[data-embed]{margin:1em 0;padding:16px;border:1px dashed var(--line);border-radius:6px;color:var(--muted)}
+figure[data-embed]::before{content:"Embedded diagram (not included in export)";display:block;font-size:.85em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<h1 id="file-manager-ui-concept">File manager: UI concept</h1>
+<p><time data-atom="date" datetime="2026-11-08">2026-11-08</time> · <span data-atom="mention">Jeremias</span></p>
+<h2 id="the-idea">The idea</h2>
+<p>One frame that never changes shape; only the query changes. There are no separate screens for Inbox, Folders or Groups: each is a query typed into the same line, and the results, the selected file and the status sit in the same places every time. That stability is what makes it feel calm, and what makes skins cheap.</p>
+<p>The interface has one job beyond finding files: showing honestly what the machine guessed versus what you confirmed. Everything else is quiet.</p>
+<p>Design rules: flat, no shadows, no rounded cards floating on gradients, hover is a colour change only. One accent per skin, used for exactly three things: the current selection, the primary action, and the layer the indexer is working on.</p>
+<h2 id="in-action">In action</h2>
+<p>Four moments, one per skin. Same frame every time; only the query and the skin change. (Rendered with stand-in fonts, Inter and DejaVu Sans Mono, so type is approximate.)</p>
+<p><strong>1. Morning triage (Base).</strong> The query is <code>is:new</code>. Five arrivals, each with a drafted guess. The photo is selected: two facts (filled squares), three guesses (hollow dots, italic), L3 is reading it now, and the nearest files come from Camera, a work folder and the Desktop. A Cedar group proposal waits in the sidebar.</p>
+<p><img src="blob/619cfdbe-cd57" alt="Inbox triage in the Base skin" width="962" height="601"></p>
+<p><strong>2. Asking in a sentence (Void).</strong> You typed a sentence; the parsed query sits dim at the right of the line, and Tab would accept it. Results come back as a photo grid, with a bar showing 5 exact matches and 18 by meaning. The selected file is fully confirmed: every dot filled, tags solid.</p>
+<p><img src="blob/cf939971-3b2b" alt="Sentence search with a photo grid in the Void skin" width="957" height="598"></p>
+<p><strong>3. Reviewing a proposed group (Pearl).</strong> The machine noticed 34 files across four folders that belong to one permit job. Each row says why it was included; one stray is unchecked. The right pane becomes the group&#39;s summary, and Enter accepts. Nothing moves.</p>
+<p><img src="blob/df3ad65e-9370" alt="Group review in the Pearl skin" width="948" height="593"></p>
+<p><strong>4. A folder is just a query (Cobalt).</strong> <code>in:Downloads sort:date</code> gives the classic folder view with month headers. The selected PDF is mid-read: L2 is pulling its text, so the amount field still says &quot;reading…&quot;.</p>
+<p><img src="blob/a7c41521-b478" alt="Folder view as a query in the Cobalt skin" width="953" height="596"></p>
+<h2 id="the-frame">The frame</h2>
+<p>Five zones, fixed. At 1440 px the columns are 220 / flexible / 360; below 1100 px the file pane becomes an overlay, and on narrow windows the sidebar collapses to icons.</p>
+<figure data-embed="node/5abe1b2b-ce62"><figcaption>the frame · 5 zones at 1440 × 900</figcaption></figure>
+<h2 id="the-query-line">The query line</h2>
+<p>The query line is the navigation. It sits across the top, full width between the sidebar and the file pane, and <code>/</code> focuses it from anywhere.</p>
+<ul><li><p><strong>Results update as you type</strong>, after a 150 ms pause. No search button and no results page.</p></li><li><p><strong>Filters become tokens.</strong> Typing <code>kind:photo</code> and a space turns it into a token you can Backspace over as one unit. Plain words stay plain text.</p></li><li><p><strong>Sentences show their translation.</strong> When the line reads like a sentence, the parsed query appears to its right in the dim colour (<code>→ kind:photo at:&quot;Harbor St.&quot; when:2026-08</code>). Tab accepts it into the line, so you learn the syntax by watching.</p></li><li><p><strong>Autocomplete is the token list.</strong> After a <code>:</code> it offers real values from your index (<code>in:</code> lists your folders, <code>group:</code> your groups) with counts.</p></li><li><p><strong>A kept query is a view.</strong> Ctrl S pins the current query to the sidebar with a name. Inbox, Folders and Groups are pinned views shipped by default; you can reorder or remove them like any other.</p></li><li><p><strong>Clicking a folder, a group or a tag anywhere</strong> just writes that token into the line. The line always shows where you are.</p></li></ul>
+<h2 id="results">Results</h2>
+<p>Two layouts, toggled with V; the choice is remembered per view (photos default to grid, documents to list).</p>
+<table><thead><tr><th>Layout</th><th>Each item shows</th><th>Best for</th></tr></thead><tbody><tr><td>List</td><td>48 px thumbnail, name, one mono meta line (kind · date · folder), one dim line with the machine&#39;s best guess</td><td>documents, screenshots, mixed results</td></tr><tr><td>Grid</td><td>square thumbnail, name underneath, nothing else until hover</td><td>photos, images, video</td></tr></tbody></table>
+<ul><li><p><strong>Selection</strong> is a 3 px accent bar on the left edge plus a slightly darker row. No outlines, no checkmarks.</p></li><li><p><strong>Ranking is shown, not hidden.</strong> A thin bar under the result count shows how many came from exact text vs meaning, so you know why a file is there.</p></li><li><p><strong>Grouping headers</strong> appear only when the query asks for them (<code>sort:date</code> gives month headers, <code>sort:folder</code> gives folder headers). Otherwise one flat list.</p></li><li><p><strong>Multi-select</strong> with Shift or Ctrl; the file pane then becomes a bulk pane (confirm all, add to group, export).</p></li></ul>
+<h2 id="the-file-pane">The file pane</h2>
+<p>The right column, 360 px, shows the selected file top to bottom in the order you&#39;d want to read it:</p>
+<ol><li><p><strong>Preview.</strong> Image, first PDF page, waveform for audio, a few lines of text. Space opens it full-frame; Enter opens it in its own app.</p></li><li><p><strong>Name and path.</strong> The path is in the mono face and every segment is clickable (it writes <code>in:</code> into the query line).</p></li><li><p><strong>Fields.</strong> Kind, captured, place, group, people, then anything else the machine found. Each row is one line: marker, key, value. Guesses and confirmed values look different (see below).</p></li><li><p><strong>Caption and tags.</strong> The machine&#39;s one-sentence description and its tags, editable in place.</p></li><li><p><strong>Ladder.</strong> Five short segments, L0 to L4, showing how far this file has been read. A filled segment is done, the accent one is running now, an empty one hasn&#39;t run.</p></li><li><p><strong>Nearest.</strong> Four files most like this one from any folder, each with its folder underneath. This is the row that makes the app feel like it knows your stuff.</p></li><li><p><strong>Actions.</strong> Pinned to the bottom: Accept (primary), Edit, Group, No card.</p></li></ol>
+<h2 id="inbox-and-groups">Inbox and groups</h2>
+<p><strong>Inbox</strong> is the view <code>is:new</code>, and it is where the app is used day to day. It works like a queue, not a folder:</p>
+<ul><li><p>New arrivals land at the top with the machine&#39;s description already drafted.</p></li><li><p>A accepts every guess and moves to the next file. E jumps into the first guessed field. X dismisses (the file stays, it just leaves the inbox).</p></li><li><p>The sidebar count goes down as you work. At zero the pane shows only &quot;Inbox clear&quot; and the time.</p></li><li><p>Triage is what triggers the expensive layer, so the inbox is also how you spend compute.</p></li></ul>
+<p><strong>Groups</strong> appear in two places. Proposals sit in the sidebar under the views as small blocks: a name, one line saying why (&quot;34 files share an address and October dates&quot;), and Accept / Review. Review opens the proposed files as results so you can deselect strays before accepting. An accepted group is just a <code>group:</code> token from then on, and it shows as a field on every file in it.</p>
+<h2 id="guess-vs-confirmed">Guess vs confirmed</h2>
+<p>This is the one visual distinction the whole UI is built around, so it is carried by three cues at once and never by colour alone.</p>
+<table><thead><tr><th></th><th>Guess (machine)</th><th>Confirmed (you)</th><th>Fact (read from the file)</th></tr></thead><tbody><tr><td>Marker</td><td>hollow dot</td><td>filled dot</td><td>small square</td></tr><tr><td>Text</td><td>dim colour, italic</td><td>full ink, upright</td><td>full ink, upright</td></tr><tr><td>Tag chips</td><td>dashed border</td><td>solid border</td><td>n/a</td></tr><tr><td>On hover</td><td>shows where it came from (&quot;caption from L3&quot;, &quot;place from GPS&quot;)</td><td>shows when you confirmed it</td><td>shows the source field (EXIF, PDF metadata)</td></tr></tbody></table>
+<p>Confirming flips the marker and the text in one frame. Nothing animates; the change itself is the feedback. The query <code>is:guess</code> finds every file that still has hollow dots.</p>
+<h2 id="keyboard">Keyboard</h2>
+<p>Every action has a key, and the status line shows the keys that apply right now. The mouse works everywhere too.</p>
+<table><thead><tr><th>Key</th><th>Action</th></tr></thead><tbody><tr><td>/</td><td>Focus the query line</td></tr><tr><td>Tab</td><td>Accept the parsed query</td></tr><tr><td>J / K</td><td>Next / previous result</td></tr><tr><td>Enter</td><td>Open in its own app</td></tr><tr><td>Space</td><td>Full-frame preview</td></tr><tr><td>A</td><td>Accept all guesses on this file</td></tr><tr><td>E</td><td>Edit the first guessed field</td></tr><tr><td>G</td><td>Add to a group</td></tr><tr><td>X</td><td>Dismiss from the inbox</td></tr><tr><td>L</td><td>Find files like this one (<code>like:</code>)</td></tr><tr><td>V</td><td>List / grid</td></tr><tr><td>Ctrl S</td><td>Pin this query as a view</td></tr><tr><td>1–9</td><td>Jump to pinned view</td></tr><tr><td>Esc</td><td>Clear the query, then step back</td></tr></tbody></table>
+<h2 id="motion-and-sound">Motion and sound</h2>
+<p>Almost none, on purpose. A file manager is opened dozens of times a day; anything that moves gets old by the second week.</p>
+<ul><li><p><strong>Results swap instantly.</strong> No fades between queries.</p></li><li><p><strong>Thumbnails resolve in place</strong>: a flat block in the skin&#39;s thumb colour, then the image in one cut when it loads.</p></li><li><p><strong>The ladder is the only thing that moves.</strong> The running segment pulses slowly while a layer works on the selected file, so you can see the machine is busy without a spinner.</p></li><li><p><strong>Inbox counts tick down</strong> by one per accept, no animation.</p></li><li><p><strong>Sound is off by default.</strong> A skin may define a two-sound set (accept, dismiss); nothing plays on hover or navigation.</p></li><li><p><strong>Reduced motion</strong> stops the ladder pulse; nothing else needs changing.</p></li></ul>
+<h2 id="skins">Skins</h2>
+<p>A skin is a small file of tokens, and nothing else: no layout, no extra components. Because the frame never changes, those tokens are enough to change the whole feel. The <a href="https://claude.ai/artifact/FQLGRmaSxvXdLFLsbmPSHx">skins canvas</a> shows the four below on the same Inbox moment.</p>
+<p><strong>Tokens:</strong> <code>bg</code>, <code>panel</code>, <code>line</code>, <code>ink</code>, <code>dim</code>, <code>accent</code>, <code>accentInk</code>, <code>select</code>, <code>thumb</code> ×3, <code>font</code>, <code>mono</code>, <code>radius</code>, and an optional two-sound set.</p>
+<table><thead><tr><th>Skin</th><th>Ground</th><th>Accent</th><th>Type</th><th>Corners</th><th>Feel</th></tr></thead><tbody><tr><td>Base</td><td>off-white #f3f3f1</td><td>orange #ff4d00</td><td>Geist + Geist Mono</td><td>3 px</td><td>the plain default</td></tr><tr><td>Void</td><td>near-black #0a0a0b</td><td>lime #c2ff16</td><td>JetBrains Mono throughout</td><td>square</td><td>terminal, quiet at night</td></tr><tr><td>Pearl</td><td>pale grey-blue #e9ecef</td><td>ice #8fe6f0</td><td>Saira</td><td>10 px</td><td>soft, game-menu calm</td></tr><tr><td>Cobalt</td><td>blue #0400f5, full-bleed</td><td>lime #c2ff16</td><td>Space Grotesk + Kode Mono</td><td>square</td><td>loud, poster-like</td></tr></tbody></table>
+<p>Rules every skin must pass: body text at 4.5:1 against its own ground, <code>dim</code> text included; the accent never carries small text; guess vs confirmed stays legible without colour.</p>
+<h2 id="open-questions">Open questions</h2>
+<ul><li data-checked="false"><p><input type="checkbox" disabled> Is the file pane always visible, or does it slide in only when a file is selected (more room for grids)?</p></li><li data-checked="false"><p><input type="checkbox" disabled> Which skin is the default on first launch?</p></li><li data-checked="false"><p><input type="checkbox" disabled> Should the skin follow time of day (Void at night), or stay fixed?</p></li><li data-checked="false"><p><input type="checkbox" disabled> Does the app replace Explorer&#39;s role (open on file-system links), or live beside it?</p></li></ul>
+</body>
+</html>

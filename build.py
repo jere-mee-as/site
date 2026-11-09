@@ -217,6 +217,7 @@ def main():
             "title": o.get("title") or title or pretty(f.name),
             "comment": o.get("comment") or comment or "",
             "date": o.get("date") or datetime.fromtimestamp(ts, TZ).date().isoformat(),
+            "kb": round(f.stat().st_size / 1024, 1),
         })
 
     # Newest upload on top (highest number); oldest at the bottom is 01
@@ -224,7 +225,7 @@ def main():
 
     def rows_for(prefix=""):
         return "\n".join(
-            f'    <li><a href="{html.escape(prefix + i["href"])}">{html.escape(i["title"])}</a>'
+            f'    <li data-kb="{i["kb"]}"><a href="{html.escape(prefix + i["href"])}">{html.escape(i["title"])}</a>'
             f'<span class="note">{html.escape(i["comment"])}</span>'
             f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
             for i in items

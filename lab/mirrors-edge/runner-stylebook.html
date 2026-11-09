@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Runner Stylebook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;500;600;700&family=Barlow:wght@300;400;500;600&family=Lexend+Exa:wght@100..600&family=Michroma&family=Noto+Sans+JP:wght@300;500;700&family=Saira:wdth,wght@50..125,100..800&family=Syncopate:wght@400;700&display=swap">
+<style>
+/* Layout: a long white page lit like a rooftop at noon. Full-bleed sky bands open each act; content sits on a 12-col grid; color only where the reference puts it. */
+:root{
+  --white:#f6f9fb;      /* bloom white, slightly cool (refs 8, 22, 25) */
+  --concrete:#e6e2d8;   /* warm interior concrete (refs 6, 12, 20) */
+  --haze:#d8e7f5;       /* horizon haze (ref 4) */
+  --sky:#1c7ff6;        /* zenith blue (refs 1, 4) */
+  --shade:#8fb0de;      /* shadows are blue, never grey (refs 4, 29) */
+  --navy:#1a2140;       /* cutscene ink (refs 21, 23, 24) */
+  --ink:#141821;
+  --red:#e3120b;        /* runner vision (refs 11, 25) */
+  --redpanel:#c4080a;
+  --orange:#ee5a0e;     /* corridor (ref 20) */
+  --yellow:#f6c514;     /* catwalk / logistics (refs 2, 12) */
+  --lime:#94d41c;       /* office district (ref 18) */
+  --ultra:#0607e0;      /* server hall 801 (ref 14) */
+  --violet:#4a26d0;     /* catalyst pipes (ref 10) */
+  --cyan:#3fd2ef;       /* catalyst glow (ref 19) */
+  --f-ui:"Lexend Exa","Michroma",system-ui,sans-serif;
+  --f-num:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"Barlow",system-ui,sans-serif;
+  --f-jp:"Noto Sans JP",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--white);color:var(--ink);font:400 16px/1.6 var(--f-body);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.cap{font-family:var(--f-ui);font-weight:200;text-transform:uppercase;letter-spacing:.14em}
+.micro{font:500 11px/1.4 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:#5d6b80}
+h2{font:200 clamp(26px,4vw,44px)/1.1 var(--f-ui);text-transform:uppercase;letter-spacing:.08em;margin:0;text-wrap:balance}
+h3{font:300 15px/1.3 var(--f-ui);text-transform:uppercase;letter-spacing:.16em;margin:0 0 10px}
+p{margin:0 0 12px;max-width:64ch}
+section{padding-block:72px}
+.act{display:grid;grid-template-columns:200px 1fr;gap:32px;align-items:start}
+.act>header{position:sticky;top:20px}
+.act>header .num{font:600 88px/0.8 var(--f-num);color:var(--red);display:block;margin-bottom:10px}
+@media (max-width:820px){.act{grid-template-columns:1fr}.act>header{position:static}.act>header .num{font-size:64px}}
+.rule{height:1px;background:linear-gradient(90deg,var(--ink),transparent);opacity:.25;margin:18px 0}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;background:linear-gradient(180deg,#0f63ea 0%,#2f8ef6 34%,#8cc1f3 62%,#e9f3fb 82%,var(--white) 100%);color:#fff;padding-block:84px 0}
+.hero .sun{position:absolute;right:12%;top:-120px;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,#fff 0 9%,rgba(255,255,255,.75) 14%,rgba(255,255,255,.18) 38%,transparent 62%);pointer-events:none}
+.hero .flare{position:absolute;border-radius:50%;background:rgba(255,255,255,.16);pointer-events:none}
+.mark{display:flex;align-items:center;gap:14px}
+.mark i{width:18px;height:18px;background:var(--red);display:block;box-shadow:0 0 22px rgba(227,18,11,.6)}
+.word{font:100 clamp(44px,9vw,128px)/0.95 var(--f-ui);letter-spacing:-.01em;margin:22px 0 6px}
+.hero .sub{font:300 13px/1.5 var(--f-ui);letter-spacing:.32em;text-transform:uppercase;opacity:.92}
+.skyline{position:relative;height:250px;margin-top:40px}
+.skyline b{position:absolute;bottom:0;background:linear-gradient(90deg,#fff 0 58%,#c9dcf3 58%);display:block}
+.skyline b::after{content:"";position:absolute;inset:14px 10px auto 10px;height:calc(100% - 28px);background:repeating-linear-gradient(180deg,transparent 0 13px,rgba(120,165,225,.35) 13px 17px)}
+.skyline b.red{background:linear-gradient(90deg,var(--red) 0 58%,#9d0a08 58%)}
+.skyline b.red::after{display:none}
+.skyline .crane{position:absolute;height:5px;background:var(--red);transform-origin:left center}
+.hero .redline{position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--red)}
+
+/* FINDINGS */
+.findings{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px;background:var(--haze);border:2px solid var(--haze)}
+.finding{background:var(--white);padding:22px 22px 18px;min-width:0}
+.finding .refs{font:600 13px var(--f-num);letter-spacing:.1em;color:var(--red);margin-bottom:6px}
+.finding p{font-size:15px;color:#2c3445}
+
+/* COLOR */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.chip{min-width:0}
+.chip .c{aspect-ratio:4/5;max-width:100%;position:relative;display:flex;align-items:flex-end;padding:10px;font:600 32px/1 var(--f-num)}
+.chip .meta{font:400 12px/1.45 var(--f-body);margin-top:8px;color:#3a4356}
+.chip .meta b{font:500 11px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;display:block;color:var(--ink)}
+.ratio{display:flex;height:46px;margin:28px 0 8px;border:1px solid #cdd8e6}
+.ratio span{display:block}
+.zones{width:100%;border-collapse:collapse;font-size:14px}
+.zones th{font:500 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;text-align:left;padding:10px 12px;border-bottom:1px solid #c7d3e3;color:#5d6b80}
+.zones td{padding:10px 12px;border-bottom:1px solid #e1e8f1;vertical-align:middle}
+.zones .dot{display:inline-block;width:28px;height:18px;vertical-align:middle;margin-right:8px}
+.tscroll{overflow-x:auto}
+
+/* TYPE */
+.spec{border-top:1px solid #cfd9e6;padding-block:26px;display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start}
+@media (max-width:820px){.spec{grid-template-columns:1fr}}
+.spec .lab b{display:block;font:500 12px var(--f-ui);letter-spacing:.16em;text-transform:uppercase}
+.spec .lab span{display:block;font-size:13px;color:#56627a;margin-top:6px}
+.spec .show{min-width:0;overflow:hidden}
+.t-ui{font-family:var(--f-ui);text-transform:uppercase}
+.big801{font:600 clamp(110px,20vw,240px)/0.78 var(--f-num);color:var(--red);letter-spacing:-.01em;display:flex;gap:.12em;align-items:flex-end}
+.big801 small{font:600 .42em/1 var(--f-num);color:var(--ultra)}
+.alts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:10px}
+.alt{border:1px solid #d3dce8;padding:18px;min-width:0}
+.alt .s{font-size:26px;text-transform:uppercase;line-height:1.15;margin:8px 0 10px;overflow-wrap:anywhere}
+.alt .v{font:500 11px var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+.alt .v.yes{color:#0b8a3a}.alt .v.no{color:var(--red)}
+.scale{display:grid;gap:10px}
+.scale div{display:grid;grid-template-columns:90px 1fr;gap:14px;align-items:baseline;border-bottom:1px solid #e3e9f1;padding-bottom:8px}
+.scale code{font:500 12px var(--f-num);letter-spacing:.08em;color:#56627a}
+
+/* COMPONENTS */
+.stage{position:relative;overflow:hidden;min-height:420px;background:linear-gradient(180deg,#d9e9f8,#f7fbfd 55%,#e7eef6);border:1px solid #d3dce8}
+.stage .glare{position:absolute;inset:0;background:radial-gradient(70% 60% at 75% 30%,rgba(255,255,255,.95),transparent 70%)}
+.stage .blurcity{position:absolute;inset:0;filter:blur(6px);opacity:.75}
+.stage .blurcity i{position:absolute;bottom:0;background:#fff;box-shadow:inset -40px 0 0 #c3d6ee;display:block}
+.panel{position:relative;width:min(340px,86%);min-height:420px;padding:34px 26px 26px;color:#fff;background:linear-gradient(180deg,rgba(214,10,10,.88),rgba(184,6,8,.92));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;flex-direction:column}
+.panel .ttl{display:flex;align-items:center;gap:12px;font:200 22px/1 var(--f-ui);letter-spacing:.06em;text-transform:uppercase}
+.panel .ttl::before{content:"";width:7px;height:26px;background:#fff;border-radius:1px;flex:none}
+.panel .ul{height:1px;background:rgba(255,255,255,.75);margin:10px 0 10px 19px}
+.panel .st{font:200 13px var(--f-ui);letter-spacing:.12em;text-transform:uppercase;margin-left:19px;opacity:.92}
+.panel .bd{font:400 13px/1.5 var(--f-body);margin:18px 0 22px;opacity:.95}
+.btn{display:block;width:100%;text-align:left;font:400 11px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:#fff;background:transparent;border:1px solid rgba(255,255,255,.85);border-radius:3px;padding:8px 10px;margin-bottom:8px}
+.btn.on{background:rgba(255,255,255,.92);color:var(--redpanel);border-color:#fff;padding-block:12px}
+.panel .back{margin-top:auto;font:400 11px var(--f-ui);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.panel .back::before{content:"";width:9px;height:9px;border:2px solid #fff;border-radius:50%}
+.kit{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+.tile{border:1px solid #d3dce8;padding:20px;min-width:0;background:#fff}
+.tile .lbl{margin-bottom:14px}
+.clock{font:500 46px/1 var(--f-num);letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.clock small{font-size:.5em;color:#5d6b80}
+.split{font:600 16px var(--f-num);letter-spacing:.06em;color:#0b62d6;margin-top:6px}
+.split.slow{color:var(--red)}
+.cp{display:flex;gap:4px;margin-top:12px}.cp i{flex:1;height:5px;background:#d8e2ee}.cp i.d{background:var(--ink)}.cp i.n{background:var(--red)}
+.comms{font:300 12px/1.6 var(--f-ui);letter-spacing:.12em;text-transform:uppercase}
+.comms b{font-weight:500;color:var(--red)}
+.keys{display:flex;flex-wrap:wrap;gap:8px}
+.key{display:inline-flex;align-items:center;gap:8px;font:400 11px var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+.key kbd{font:600 13px var(--f-num);min-width:26px;height:24px;padding:0 6px;display:inline-grid;place-items:center;border:1px solid var(--ink);border-radius:3px}
+.wall{position:relative;height:180px;background:linear-gradient(90deg,#efe9df,#e2dbcf);overflow:hidden}
+.wall .n{position:absolute;left:18px;bottom:-14px;font:600 170px/1 var(--f-num);color:var(--orange);opacity:.9;mix-blend-mode:multiply}
+.wall .jp{position:absolute;right:14px;top:12px;font:500 12px var(--f-jp);writing-mode:vertical-rl;letter-spacing:.2em;color:#6a5f52}
+.wall .stripe{position:absolute;left:0;right:0;bottom:0;height:12px;background:var(--orange)}
+.hazard{height:28px;background:repeating-linear-gradient(-45deg,var(--orange) 0 14px,#fff 14px 28px)}
+.target{position:relative;height:120px;background:linear-gradient(180deg,#e6f0fa,#fff)}
+.target .pipe{position:absolute;left:12%;right:20%;top:52px;height:14px;background:var(--red);box-shadow:0 0 0 2px rgba(227,18,11,.25),0 0 28px rgba(227,18,11,.55)}
+.target .box{position:absolute;right:10%;top:40px;width:46px;height:56px;background:var(--red);box-shadow:0 0 28px rgba(227,18,11,.55)}
+.target .used{position:absolute;left:8%;top:84px;width:30%;height:10px;background:#fff;border:1px solid #cfdbe9}
+.reticle{width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(20,24,33,.55);margin:16px auto}
+
+/* NAV diagram */
+.route{width:100%;height:auto;display:block;background:linear-gradient(180deg,#3a7fdc,#6aa3e6);max-width:100%}
+.navgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:18px}
+.navgrid .tile h3{color:var(--red)}
+
+/* MOCKUPS */
+.frames{display:grid;gap:22px}
+.frame{position:relative;aspect-ratio:16/9;max-width:100%;overflow:hidden;background:linear-gradient(180deg,#1067ec 0%,#4a9cf2 38%,#bcd9f4 64%,#f1f7fc 80%);container-type:inline-size}
+.frame .sun{position:absolute;right:16%;top:-18%;width:40%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff 0 8%,rgba(255,255,255,.6) 16%,transparent 60%)}
+.frame .city{position:absolute;inset:auto 0 0 0;height:62%}
+.frame .city i{position:absolute;bottom:0;display:block;background:linear-gradient(90deg,#fff 0 62%,#b9cfee 62%)}
+.frame .city i::after{content:"";position:absolute;inset:8% 8% 6% 8%;background:repeating-linear-gradient(180deg,transparent 0 9px,rgba(110,160,225,.33) 9px 12px)}
+.frame .roof{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(180deg,#fdfefe,#e3ebf5)}
+.frame .roof::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:#c6d6eb}
+.frame .redp{position:absolute;background:var(--red);box-shadow:0 0 18px rgba(227,18,11,.65)}
+.frame .hud{position:absolute;inset:0;padding:2.4cqw 2.6cqw;display:flex;flex-direction:column;justify-content:space-between;color:var(--ink);pointer-events:none}
+.frame .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.frame .wm{display:flex;align-items:center;gap:.8cqw;font:200 1.7cqw var(--f-ui);letter-spacing:.06em;color:#fff}
+.frame .wm i{width:1.1cqw;height:1.1cqw;background:var(--red);display:block}
+.frame .tt{font:500 3.2cqw/1 var(--f-num);font-variant-numeric:tabular-nums;color:#fff;text-align:right}
+.frame .tt small{display:block;font:300 1cqw var(--f-ui);letter-spacing:.2em;margin-top:.5cqw}
+.frame .cm{font:300 1.15cqw/1.5 var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+.frame .cm b{color:var(--red);font-weight:500}
+.frame .ret{position:absolute;left:50%;top:50%;width:.6cqw;height:.6cqw;border-radius:50%;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.4);transform:translate(-50%,-50%)}
+.frame .fpanel{position:absolute;left:0;top:0;bottom:0;width:31%;padding:3.6cqw 2.2cqw 2cqw;color:#fff;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:flex;flex-direction:column}
+.frame .fpanel .k{font:600 13cqw/0.8 var(--f-num);margin:0 0 1cqw -0.4cqw}
+.frame .fpanel .t{font:200 1.9cqw/1.2 var(--f-ui);text-transform:uppercase;letter-spacing:.05em;border-left:.5cqw solid #fff;padding-left:1cqw}
+.frame .fpanel .u{height:1px;background:rgba(255,255,255,.7);margin:1cqw 0}
+.frame .fpanel .d{font:400 1.1cqw/1.5 var(--f-body)}
+.frame .fpanel .b{margin-top:auto;font:400 1cqw var(--f-ui);letter-spacing:.14em;text-transform:uppercase;padding:.9cqw 1cqw;background:rgba(255,255,255,.92);border-radius:.3cqw}
+.frame .bigword{position:absolute;left:3cqw;top:24%;font:100 9cqw/0.9 var(--f-ui);color:#fff;letter-spacing:-.01em}
+.frame .bigword small{display:block;font:300 1.2cqw var(--f-ui);letter-spacing:.34em;text-transform:uppercase;margin-top:1.4cqw}
+.frame.map{background:#3c7fd8}
+.frame.map .blocks{position:absolute;inset:0;background:
+  repeating-linear-gradient(90deg,transparent 0 5.2%,#2c66bf 5.2% 6%),
+  repeating-linear-gradient(0deg,transparent 0 8%,#2c66bf 8% 9.2%),
+  linear-gradient(135deg,#5a99e6,#3b78cf)}
+.frame.map .blocks::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 40%,rgba(255,255,255,.35),transparent 40%),radial-gradient(circle at 70% 70%,rgba(255,255,255,.25),transparent 35%)}
+.frame.map svg{position:absolute;inset:0;width:100%;height:100%}
+.cap-under{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:8px}
+
+/* GUARD */
+.guard{background:var(--navy);color:#e8eef8}
+.guard h2{color:#fff}
+.guard li{margin-bottom:8px;max-width:70ch}
+.guard .micro{color:#9fb2d4}
+footer{padding-block:28px;font:300 11px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:#6b7890}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+</style>
+</head><body>
+
+
+<div class="hero">
+  <div class="sun"></div>
+  <div class="flare" style="width:60px;height:60px;right:34%;top:150px"></div>
+  <div class="flare" style="width:22px;height:22px;right:41%;top:205px;background:rgba(255,255,255,.3)"></div>
+  <div class="wrap">
+    <div class="mark"><i></i><span class="micro" style="color:#fff">JERE.ING · runner build · stylebook 01</span></div>
+    <div class="word">jere.ing</div>
+    <div class="sub">A white city. A red route. Eight packages to deliver.</div>
+  </div>
+  <div class="skyline" aria-hidden="true">
+    <b style="left:3%;width:9%;height:62%"></b><b style="left:13%;width:6%;height:88%"></b><b style="left:21%;width:11%;height:48%"></b>
+    <b class="red" style="left:34%;width:2.4%;height:30%"></b>
+    <span class="crane" style="left:35%;bottom:30%;width:18%;transform:rotate(-8deg)"></span>
+    <b style="left:39%;width:8%;height:96%"></b><b style="left:49%;width:13%;height:56%"></b><b style="left:64%;width:7%;height:78%"></b>
+    <b style="left:73%;width:12%;height:40%"></b><b style="left:87%;width:9%;height:70%"></b>
+  </div>
+  <div class="redline"></div>
+</div>
+
+<main class="wrap">
+
+<section class="act" id="read">
+  <header><span class="num">01</span><span class="micro">Reading the reference</span></header>
+  <div>
+    <h2>Seven things the city does</h2>
+    <p style="margin-top:14px">From the 29 images in your stylebook folder. Numbers in red are the file numbers they come from. Everything after this section follows from these seven.</p>
+    <div class="findings" style="margin-top:22px">
+      <div class="finding"><div class="refs">REF 04 · 08 · 22 · 25</div><h3>White is overexposed</h3><p>Surfaces blow out to white the way a camera does at noon. Bloom eats the edges of the frame. The page is never grey; it is lit.</p></div>
+      <div class="finding"><div class="refs">REF 04 · 11 · 29</div><h3>Shadows are blue</h3><p>The shade side of a white building is sky blue, not grey. Every shadow, divider and secondary surface in the UI takes that blue.</p></div>
+      <div class="finding"><div class="refs">REF 01 · 11 · 13 · 24</div><h3>Red means go here</h3><p>Runner Vision. Pipes, ramps and doors turn red when they are the way forward, and go back to white once used. Red is never decoration.</p></div>
+      <div class="finding"><div class="refs">REF 06 · 07 · 12 · 14 · 15 · 18 · 20</div><h3>One color per place</h3><p>An orange corridor, a yellow catwalk, a green office, an ultramarine server hall. Each interior owns one saturated hue against white.</p></div>
+      <div class="finding"><div class="refs">REF 13 · 14 · 16 · 20</div><h3>Numbers are architecture</h3><p>Room and floor numbers are painted huge and condensed straight onto walls: 05, 801, 1000, 110. Wayfinding as the main graphic.</p></div>
+      <div class="finding"><div class="refs">REF 25</div><h3>UI is a frosted slab</h3><p>A tall translucent color panel down one side, blurring the world behind it. Thin wide caps, a white tab, one hairline rule, outlined buttons.</p></div>
+      <div class="finding"><div class="refs">REF 21 · 22 · 23 · 26 · 27</div><h3>Flat painted shapes</h3><p>The cutscenes and paintings strip the city to flat planes: navy, cornflower, white, and one red or orange accent. Hard edges, no texture.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="act" id="color">
+  <header><span class="num">02</span><span class="micro">Color</span></header>
+  <div>
+    <h2>Sampled, then cleaned</h2>
+    <p style="margin-top:14px">Each value below was pulled by clustering pixels in the reference images, then nudged to a usable hex. Whites and blues carry 90% of every screen. A hue only appears where the reference would put it.</p>
+    <div class="sw" style="margin-top:24px">
+      <div class="chip"><div class="c" style="background:var(--white);border:1px solid #dbe4ee">W</div><div class="meta"><b>Bloom white</b>#F6F9FB · ref 08, 25. Ground of everything.</div></div>
+      <div class="chip"><div class="c" style="background:var(--haze)">H</div><div class="meta"><b>Haze</b>#D8E7F5 · ref 04. Fog, horizon, rules.</div></div>
+      <div class="chip"><div class="c" style="background:var(--shade);color:#fff">S</div><div class="meta"><b>Shade blue</b>#8FB0DE · ref 04, 29. The shadow side.</div></div>
+      <div class="chip"><div class="c" style="background:var(--sky);color:#fff">K</div><div class="meta"><b>Sky</b>#1C7FF6 · ref 01, 04. Zenith, map field.</div></div>
+      <div class="chip"><div class="c" style="background:var(--navy);color:#fff">N</div><div class="meta"><b>Cutscene navy</b>#1A2140 · ref 21, 23. Ink for long text.</div></div>
+      <div class="chip"><div class="c" style="background:var(--concrete)">C</div><div class="meta"><b>Concrete</b>#E6E2D8 · ref 06, 12. Interior walls, painted numbers sit on it.</div></div>
+      <div class="chip"><div class="c" style="background:var(--red);color:#fff">R</div><div class="meta"><b>Runner red</b>#E3120B · ref 11, 25. Only for the way forward.</div></div>
+      <div class="chip"><div class="c" style="background:var(--orange);color:#fff">O</div><div class="meta"><b>Corridor orange</b>#EE5A0E · ref 20.</div></div>
+      <div class="chip"><div class="c" style="background:var(--yellow)">Y</div><div class="meta"><b>Catwalk yellow</b>#F6C514 · ref 02, 12. Black ink only.</div></div>
+      <div class="chip"><div class="c" style="background:var(--lime)">G</div><div class="meta"><b>Office green</b>#94D41C · ref 18. Navy ink only.</div></div>
+      <div class="chip"><div class="c" style="background:var(--ultra);color:#fff">U</div><div class="meta"><b>Hall ultramarine</b>#0607E0 · ref 14. White ink only.</div></div>
+      <div class="chip"><div class="c" style="background:var(--violet);color:#fff">V</div><div class="meta"><b>Pipe violet</b>#4A26D0 · ref 10, 19.</div></div>
+    </div>
+    <div class="ratio" aria-label="Screen color ratio"><span style="flex:58;background:var(--white)"></span><span style="flex:18;background:var(--haze)"></span><span style="flex:12;background:var(--shade)"></span><span style="flex:6;background:var(--sky)"></span><span style="flex:4;background:var(--orange)"></span><span style="flex:2;background:var(--red)"></span></div>
+    <div class="micro">Per-screen ratio · white 58 · haze 18 · shade 12 · sky 6 · one zone hue 4 · red 2</div>
+
+    <h3 style="margin-top:44px">Zones: each report type owns a district</h3>
+    <div class="tscroll">
+    <table class="zones">
+      <thead><tr><th>Zone</th><th>Report type</th><th>Panel</th><th>Ink</th><th>Source</th></tr></thead>
+      <tbody>
+        <tr><td><span class="dot" style="background:var(--ultra)"></span>Server hall</td><td>Book connectomes</td><td>#0A12D8 at 88%</td><td>White</td><td>ref 14, rooms 801–805</td></tr>
+        <tr><td><span class="dot" style="background:var(--violet)"></span>Pipe works</td><td>Phil Chat connectome, Republic · Timaeus</td><td>#4A26D0 at 88%</td><td>White</td><td>ref 10</td></tr>
+        <tr><td><span class="dot" style="background:var(--lime)"></span>Office floor</td><td>Weak ties</td><td>#94D41C at 92%</td><td>Navy</td><td>ref 18</td></tr>
+        <tr><td><span class="dot" style="background:var(--orange)"></span>Corridor</td><td>Field report</td><td>#C94400 at 90%</td><td>White</td><td>ref 20</td></tr>
+        <tr><td><span class="dot" style="background:var(--yellow)"></span>Catwalk</td><td>Scope (tools)</td><td>#F6C514 at 92%</td><td>Black</td><td>ref 12</td></tr>
+        <tr><td><span class="dot" style="background:var(--red)"></span>Runner red</td><td>RIO and the start/finish</td><td>#C4080A at 88%</td><td>White</td><td>ref 25</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="margin-top:14px;font-size:14px;color:#3a4356">Contrast: white on the panel reds and ultramarine passes 4.5 for body text. Orange is darkened to #C94400 for panels so white body text passes; bright orange stays for paint and stripes. Yellow and green never carry white text.</p>
+  </div>
+</section>
+
+<section class="act" id="type">
+  <header><span class="num">03</span><span class="micro">Type</span></header>
+  <div>
+    <h2>Thin and wide over huge and narrow</h2>
+    <p style="margin-top:14px">The interface voice is hairline, extended, all caps, tracked out. The city's voice is the opposite: condensed numerals painted three storeys tall. Body text stays quiet between them.</p>
+
+    <div class="spec">
+      <div class="lab"><b>UI · Lexend Exa</b><span>100–300, caps, +0.06 to +0.32em. Titles, buttons, labels, comms. Lowercase 100 for the wordmark.</span></div>
+      <div class="show">
+        <div class="t-ui" style="font-weight:200;font-size:clamp(28px,4.4vw,52px);letter-spacing:.06em;line-height:1.05">Pause menu</div>
+        <div class="t-ui" style="font-weight:200;font-size:18px;letter-spacing:.12em;margin-top:6px;color:#4c5870">Back on the roof</div>
+        <div style="font:100 clamp(40px,6vw,72px)/1 var(--f-ui);margin-top:14px">jere.ing</div>
+        <div class="t-ui" style="font-weight:300;font-size:11px;letter-spacing:.32em;margin-top:10px">Deliver · Turn · Map · Sound</div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="lab"><b>Numerals · Barlow Condensed</b><span>600, tight. Package numbers, wall paint, the time-trial clock. Industrial signage, the 801 / 1000 register.</span></div>
+      <div class="show">
+        <div class="big801">08<small>801</small></div>
+        <div style="font:500 44px/1 var(--f-num);margin-top:18px;font-variant-numeric:tabular-nums">01:42.18 <span style="color:#0b62d6;font-size:22px">−0.42</span></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="lab"><b>Body · Barlow</b><span>300–500. Notes, descriptions, the one paragraph a panel is allowed.</span></div>
+      <div class="show">
+        <p style="font-size:18px;font-weight:300;line-height:1.55">A strobing, cursor-driven fan tribute to Duran Duran. An oscilloscope for any audio file you drop in. Ludwig Wittgenstein, mapped.</p>
+        <p style="font-size:14px;color:#3a4356">Shares a skeleton with the condensed cut, so numerals and running text sit in the same family.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <div class="lab"><b>Signage · Noto Sans JP</b><span>300–700. Small bilingual labels on walls and crates, the way the stairwell boxes carry two scripts (ref 06).</span></div>
+      <div class="show">
+        <div style="font:700 44px/1.1 var(--f-jp);letter-spacing:.06em">屋上 <span style="color:var(--red)">配達</span></div>
+        <div style="font:500 13px var(--f-jp);letter-spacing:.2em;margin-top:8px;color:#4c5870">関係者以外立入禁止 · AUTHORIZED PERSONNEL ONLY</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:34px">What else was tried</h3>
+    <div class="alts">
+      <div class="alt"><div class="v no">Rejected</div><div class="s" style="font-family:Michroma">Pause menu</div><p style="font-size:14px">Michroma. Right width, but one weight only and squared corners read Eurostile racing, closer to Wipeout than DICE.</p></div>
+      <div class="alt"><div class="v no">Rejected</div><div class="s" style="font-family:Syncopate;font-weight:400">Pause menu</div><p style="font-size:14px">Syncopate. Small caps forms and too much personality for menu text; fights the painted numerals.</p></div>
+      <div class="alt"><div class="v no">Backup</div><div class="s" style="font-family:Saira;font-variation-settings:'wdth' 125;font-weight:200">Pause menu</div><p style="font-size:14px">Saira 125 width, 200 weight. Close, and one family covers expanded and condensed. Already used in the FFXIII pass, so kept out to keep this one distinct.</p></div>
+      <div class="alt"><div class="v yes">Chosen</div><div class="s" style="font-family:'Lexend Exa';font-weight:200">Pause menu</div><p style="font-size:14px">Lexend Exa 200. Round geometric O, open counters, a real 100 for the wordmark. Matches the Catalyst menu's hairline caps.</p></div>
+    </div>
+
+    <h3 style="margin-top:34px">Scale</h3>
+    <div class="scale">
+      <div><code>240 / num</code><span style="font:600 48px/1 var(--f-num)">Wall number</span></div>
+      <div><code>96 / ui 100</code><span style="font:100 36px/1 var(--f-ui)">wordmark</span></div>
+      <div><code>28 / ui 200</code><span class="t-ui" style="font-weight:200;font-size:24px;letter-spacing:.06em">Panel title</span></div>
+      <div><code>15 / ui 200</code><span class="t-ui" style="font-weight:200;font-size:15px;letter-spacing:.12em">Subtitle</span></div>
+      <div><code>15 / body</code><span style="font-size:15px">Body text in a panel</span></div>
+      <div><code>11 / ui 400</code><span class="t-ui" style="font-weight:400;font-size:11px;letter-spacing:.16em">Button · key hint · label</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="act" id="parts">
+  <header><span class="num">04</span><span class="micro">Components</span></header>
+  <div>
+    <h2>The kit</h2>
+    <p style="margin-top:14px">Built straight from ref 25 and the time-trial HUD. No cards, no rounded boxes, no shadows except the red glow.</p>
+    <div class="stage" style="margin-top:22px">
+      <div class="blurcity"><i style="left:44%;width:12%;height:70%"></i><i style="left:60%;width:9%;height:90%"></i><i style="left:74%;width:16%;height:52%"></i></div>
+      <div class="glare"></div>
+      <div class="panel">
+        <div class="ttl">Package 03</div><div class="ul"></div>
+        <div class="st">Republic · Timaeus · Critias</div>
+        <div class="bd">Connectome of three Platonic dialogues. Requested by aura. Delivered 2026.10.31.</div>
+        <button class="btn on" type="button">Deliver package ↗</button>
+        <button class="btn" type="button">Run to next drop</button>
+        <button class="btn" type="button">Open map</button>
+        <div class="back">Quick turn</div>
+      </div>
+    </div>
+    <div class="cap-under"><span class="micro">Frosted slab · zone color at 88% · backdrop blur 14px · white tab + hairline</span><span class="micro">Selected button = solid white, zone-colored text</span></div>
+
+    <div class="kit">
+      <div class="tile"><div class="micro lbl">Time trial</div><div class="clock">01:42<small>.18</small></div><div class="split">CP 04 · −0.42</div><div class="cp"><i class="d"></i><i class="d"></i><i class="d"></i><i class="d"></i><i class="n"></i><i></i><i></i><i></i><i></i></div></div>
+      <div class="tile"><div class="micro lbl">Operator comms</div><p class="comms"><b>OPS ▸</b> Morning, runner. Eight on the board. Blue tower first, then follow the red.</p><div class="reticle" title="Reticle"></div><div class="micro" style="text-align:center">Reticle · 6px dot</div></div>
+      <div class="tile"><div class="micro lbl">Key hints</div><div class="keys"><span class="key"><kbd>␣</kbd>Run</span><span class="key"><kbd>Q</kbd>Turn</span><span class="key"><kbd>M</kbd>Map</span><span class="key"><kbd>S</kbd>Sound</span></div></div>
+      <div class="tile" style="padding:0"><div class="wall"><div class="n">05</div><div class="jp">第五配達所</div><div class="stripe"></div></div><div class="micro" style="padding:10px 14px">Painted wall number · multiply on concrete</div></div>
+      <div class="tile" style="padding:0"><div class="target"><div class="used"></div><div class="pipe"></div><div class="box"></div></div><div class="micro" style="padding:10px 14px">Runner Vision · active red, used goes white</div></div>
+      <div class="tile" style="padding:0"><div class="hazard"></div><div style="padding:14px"><div class="micro">Hazard stripe · ref 17</div><p style="font-size:14px;margin-top:6px">Only at drop edges and on the finish line.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="act" id="nav">
+  <header><span class="num">05</span><span class="micro">Navigation</span></header>
+  <div>
+    <h2>The route is the menu</h2>
+    <p style="margin-top:14px">There is no nav bar, no list of links at the top, no hamburger. You stand on a roof. Something is red. You run to it. Each report is a rooftop in the city with its number painted on the wall, and the route links them in order, newest first.</p>
+    <svg class="route" viewBox="0 0 800 300" role="img" aria-label="Route diagram: drop, eight package roofs, finish">
+      <g fill="#5d98e4" stroke="#2c62b6" stroke-width="1">
+        <rect x="30" y="40" width="70" height="60"/><rect x="120" y="150" width="60" height="80"/><rect x="200" y="60" width="90" height="50"/><rect x="310" y="170" width="70" height="70"/><rect x="400" y="50" width="60" height="70"/><rect x="480" y="150" width="80" height="60"/><rect x="580" y="40" width="70" height="80"/><rect x="660" y="160" width="60" height="70"/><rect x="730" y="60" width="50" height="60"/>
+      </g>
+      <path d="M60 230 L65 70 L150 190 L245 85 L345 205 L430 85 L520 180 L615 80 L690 195 L755 90" fill="none" stroke="#e3120b" stroke-width="4" stroke-linejoin="bevel"/>
+      <g font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="600" font-size="22" fill="#fff">
+        <text x="40" y="262">DROP</text><text x="58" y="66">08</text><text x="142" y="186">07</text><text x="237" y="80">06</text><text x="337" y="200">05</text><text x="422" y="80">04</text><text x="512" y="176">03</text><text x="607" y="76">02</text><text x="682" y="190">01</text><text x="740" y="85">END</text>
+      </g>
+      <circle cx="60" cy="230" r="7" fill="#fff"/>
+    </svg>
+    <div class="cap-under"><span class="micro">Top-down: the map overlay draws the city like this, in blues (ref 29)</span></div>
+    <div class="navgrid">
+      <div class="tile"><h3>Run</h3><p style="font-size:14px">Click the red object, or press Space / → / Enter. The camera runs, jumps the gap and lands on the next roof. Swipe left on a phone.</p></div>
+      <div class="tile"><h3>Quick turn</h3><p style="font-size:14px">The 180° turn from the game is the back button. Q, ←, Backspace, or swipe right. The browser's own Back does the same through the URL hash.</p></div>
+      <div class="tile"><h3>Map</h3><p style="font-size:14px">M or tap the clock. The camera lifts to a top-down blue city with every drop numbered. Click a number to run straight there.</p></div>
+      <div class="tile"><h3>Deliver</h3><p style="font-size:14px">On a package roof the frosted slab slides in. Deliver opens the report. Every report is still a real link underneath for keyboards and screen readers.</p></div>
+      <div class="tile"><h3>Time trial</h3><p style="font-size:14px">The clock runs from your first step. Each roof is a checkpoint with a split. Reach the end to see your run and your best.</p></div>
+      <div class="tile"><h3>The board</h3><p style="font-size:14px">The drop roof carries the manifest of all eight packages. Picking one lights a red line across the city to it and starts the run.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="act" id="motion">
+  <header><span class="num">06</span><span class="micro">Motion &amp; sound</span></header>
+  <div>
+    <h2>Momentum, then stillness</h2>
+    <div class="navgrid">
+      <div class="tile"><h3>Run</h3><p style="font-size:14px">Accelerate over 300ms, field of view widens from 70° to 84°, head bob at stride rate, speed streaks gather at the edges.</p></div>
+      <div class="tile"><h3>Jump</h3><p style="font-size:14px">An arc over the gap, a beat of floating at the top, then a landing dip of 0.4m and a short roll. The used red object fades to white.</p></div>
+      <div class="tile"><h3>Arrive</h3><p style="font-size:14px">Everything stops. The slab cuts in from the left in 2 frames. The wall number is already in view. Stillness is the reward.</p></div>
+      <div class="tile"><h3>Sound</h3><p style="font-size:14px">Synthesized, no files. Footfalls on concrete, wind rising with speed, a landing thud, a soft UI tick. On by default after the first key, S mutes.</p></div>
+      <div class="tile"><h3>Reduced motion</h3><p style="font-size:14px">No run. A white bloom cut to the next roof, same arrival.</p></div>
+      <div class="tile"><h3>Idle</h3><p style="font-size:14px">The camera breathes. Clouds drift. Nothing else moves until you do.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="act" id="mock">
+  <header><span class="num">07</span><span class="micro">Mockups</span></header>
+  <div>
+    <h2>Three frames</h2>
+    <div class="frames" style="margin-top:22px">
+      <div>
+      <div class="frame" aria-label="Mockup: the drop roof">
+        <div class="sun"></div>
+        <div class="city"><i style="left:4%;width:10%;height:70%"></i><i style="left:16%;width:7%;height:95%"></i><i style="left:58%;width:9%;height:84%"></i><i style="left:69%;width:12%;height:58%"></i><i style="left:84%;width:8%;height:100%"></i><i style="left:44%;width:10%;height:50%"></i></div>
+        <div class="redp" style="left:47%;bottom:44%;width:6%;height:2.4%"></div>
+        <div class="roof"></div>
+        <div class="redp" style="left:52%;bottom:16%;width:12%;height:5%"></div>
+        <div class="bigword">jere.ing<small>Eight packages · follow the red</small></div>
+        <div class="ret"></div>
+        <div class="hud"><div class="hrow"><div class="wm"><i></i>jere.ing</div><div class="tt">00:00.00<small>Drop · cp 00/09</small></div></div><div class="hrow"><div class="cm"><b>OPS ▸</b> Morning, runner. Eight on the board.</div><div class="cm">␣ Run · Q Turn · M Map</div></div></div>
+      </div>
+      <div class="cap-under"><span class="micro">01 · Drop roof · wordmark painted on the sky, first red target ahead</span></div>
+      </div>
+
+      <div>
+      <div class="frame" aria-label="Mockup: package roof">
+        <div class="sun" style="right:30%"></div>
+        <div class="city"><i style="left:40%;width:22%;height:100%;background:linear-gradient(90deg,#f1ece2 0 70%,#c9cfdb 70%)"></i><i style="left:66%;width:9%;height:76%"></i><i style="left:80%;width:14%;height:60%"></i></div>
+        <div style="position:absolute;left:43%;bottom:30%;font:600 19cqw/0.8 var(--f-num);color:var(--ultra);opacity:.9">06</div>
+        <div class="redp" style="left:72%;bottom:40%;width:4%;height:6%"></div>
+        <div class="roof"></div>
+        <div class="fpanel" style="background:rgba(10,18,216,.86)"><div class="k">06</div><div class="t">Philosophical Investigations</div><div class="u"></div><div class="d">Book connectome. Ludwig Wittgenstein. Delivered 2026.10.30.</div><div class="b" style="color:#0a12d8">Deliver package ↗</div></div>
+        <div class="hud" style="left:31%"><div class="hrow"><span></span><div class="tt">00:21.70<small>cp 03/09 · −0.42</small></div></div><div class="hrow"><div class="cm"><b>OPS ▸</b> Server hall district. Next drop is east.</div></div></div>
+      </div>
+      <div class="cap-under"><span class="micro">02 · Package roof · ultramarine zone for book connectomes</span></div>
+      </div>
+
+      <div>
+      <div class="frame map" aria-label="Mockup: map overlay">
+        <div class="blocks"></div>
+        <svg viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true"><path d="M14 74 L20 22 L42 60 L58 26 L80 64 L96 24 L116 58 L132 20 L148 50" fill="none" stroke="#e3120b" stroke-width=".9" vector-effect="non-scaling-stroke"/></svg>
+        <div class="hud" style="color:#fff"><div class="hrow"><div class="wm"><i></i>map · 地図</div><div class="tt">00:21.70<small>Pick a drop</small></div></div><div class="hrow"><div class="cm" style="color:#fff">Click a number to run there · M to close</div></div></div>
+      </div>
+      <div class="cap-under"><span class="micro">03 · Map · the city seen from above in blues, the route in red</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<section class="guard">
+  <div class="wrap act">
+    <header><span class="num" style="font:600 88px/0.8 var(--f-num);color:var(--red)">08</span><span class="micro">Guardrails</span></header>
+    <div>
+      <h2>Ours, not theirs</h2>
+      <ul style="margin-top:18px;padding-left:18px">
+        <li>No game logo, no DICE or EA marks, no character. The runner is the camera; there's no figure on screen.</li>
+        <li>No screenshots or game audio in the site. The city is generated in code, the sounds are synthesized.</li>
+        <li>In-world brands are invented: halden logistics, vesta 9, kuro &amp; assoc., meridian. The style is borrowed, the names aren't.</li>
+        <li>The site keeps <code>&lt;ol id="list"&gt;&lt;!-- LIST --&gt;&lt;/ol&gt;</code> so build.py drops reports in unchanged.</li>
+      </ul>
+    </div>
+  </div>
+  <footer class="wrap">JERE.ING · runner build · stylebook 01 · 2026.11.08</footer>
+</section>
+
+</body></html>

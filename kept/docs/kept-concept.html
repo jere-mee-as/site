@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File manager: concept</title>
+<style>
+:root{--bg:#ffffff;--fg:#1b1b1b;--muted:#5f5f5a;--line:#d4d4cf;--code:#f3f3f1;--link:#0b57d0}
+@media (prefers-color-scheme: dark){:root{--bg:#141414;--fg:#e8e8e4;--muted:#9a9a94;--line:#3a3a3a;--code:#1f1f1f;--link:#8ab4f8}}
+html{background:var(--bg)}
+body{margin:0 auto;max-width:760px;padding:24px 16px 64px;background:var(--bg);color:var(--fg);
+font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+h1{font-size:1.9em;line-height:1.2;margin:0 0 .4em}h2{font-size:1.35em;margin:1.8em 0 .5em}
+a{color:var(--link)}
+code,pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:var(--code);border-radius:4px}
+code{padding:.1em .3em}pre{padding:12px;overflow-x:auto}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--code)}
+li>p{margin:.2em 0}li[data-checked]{list-style:none}
+time,[data-atom=mention]{color:var(--muted)}
+img{max-width:100%;height:auto;border:1px dashed var(--line);color:var(--muted);font-size:.9em}
+figure[data-embed]{margin:1em 0;padding:16px;border:1px dashed var(--line);border-radius:6px;color:var(--muted)}
+figure[data-embed]::before{content:"Embedded diagram (not included in export)";display:block;font-size:.85em;margin-bottom:4px}
+</style>
+</head>
+<body>
+<h1 id="file-manager-concept">File manager: concept</h1>
+<p><time data-atom="date" datetime="2026-11-08">2026-11-08</time> · <span data-atom="mention">Jeremias</span></p>
+<h2 id="the-idea">The idea</h2>
+<p>A standalone local file manager where every view is a query and nothing ever moves. Files stay where they are. A local AI reads each file once and describes it; you browse by asking, not by walking folders.</p>
+<p>The whole design rests on one split. What the machine works out about a file is a cache: keyed by the file&#39;s content hash, deletable, rebuildable overnight. What you decide about a file (confirm a guess, fix a field, group files) is yours: small, durable, plain text.</p>
+<p>Cost follows attention. Every file gets the cheap layers. The expensive model only reads files you look at, triage or star, so a 100,000-file disk costs about as much as the few hundred files you actually touch.</p>
+<h2 id="principles">Principles</h2>
+<ol><li><p><strong>Never move, rename or rewrite a file.</strong> Organizing means describing and grouping, not relocating. Other apps&#39; paths never break.</p></li><li><p><strong>One surface.</strong> A query line drives everything. Folders, inbox, groups and saved searches are all queries.</p></li><li><p><strong>The machine proposes, you confirm.</strong> Guesses look different from facts, and confirming is one key.</p></li><li><p><strong>Cache is disposable, decisions are not.</strong> Delete the index and you lose only time. Your decisions are a plain-text log that rebuilds everything.</p></li><li><p><strong>Cost follows attention.</strong> Cheap layers on everything, the expensive layer on what you touch.</p></li><li><p><strong>Local only.</strong> Nothing leaves the machine unless you send one file to a cloud model on purpose.</p></li><li><p><strong>Degrades to a plain file manager.</strong> With the indexer off, folders, names and dates still work.</p></li></ol>
+<h2 id="everything-is-a-query">Everything is a query</h2>
+<p>There is one input at the top of every screen. Type plain words and it searches exact text and meaning at once; add filters to narrow. A sentence like &quot;site photos from August with the ceiling open&quot; is rewritten by a small local model into the syntax below and shown back to you, so you can edit it and learn it.</p>
+<table><thead><tr><th>You type</th><th>Means</th></tr></thead><tbody><tr><td><code>ceiling open</code></td><td>words and meaning, everywhere</td></tr><tr><td><code>&quot;response v4&quot;</code></td><td>exact text, including text read from images and scans</td></tr><tr><td><code>kind:photo</code></td><td>photo, screenshot, document, audio, video, archive, code</td></tr><tr><td><code>in:Downloads</code></td><td>under a folder; this alone is the classic folder view</td></tr><tr><td><code>when:2026-08</code></td><td>captured or created in a range (<code>when:today</code>, <code>when:last-week</code>)</td></tr><tr><td><code>at:&quot;Harbor St.&quot;</code></td><td>place, from GPS or read from the content</td></tr><tr><td><code>group:Cedar</code></td><td>a group you made or accepted</td></tr><tr><td><code>like:IMG_4412.jpg</code></td><td>files nearest in meaning to this one</td></tr><tr><td><code>is:new</code></td><td>arrived and not yet triaged (the Inbox)</td></tr><tr><td><code>is:guess</code></td><td>has unconfirmed machine fields</td></tr></tbody></table>
+<p>A query you keep becomes a <strong>view</strong>, pinned in the sidebar. The defaults are just pinned queries: Inbox is <code>is:new</code>, Folders is <code>in:</code>, Groups is <code>group:</code>. Nothing is special-cased.</p>
+<h2 id="what-it-knows-about-a-file">What it knows about a file</h2>
+<p>Two layers, kept apart on purpose. Both live in one hidden app folder, never next to your files, so folders stay clean.</p>
+<table><thead><tr><th>Layer</th><th>Holds</th><th>Stored as</th><th>If deleted</th></tr></thead><tbody><tr><td>Derived</td><td>facts, extracted text, embedding, machine caption and tags, thumbnails</td><td>SQLite index, keyed by content hash</td><td>rebuilt from the files</td></tr><tr><td>Yours</td><td>confirmed fields, corrections, groups, notes, dismissals</td><td>an append-only plain-text log, one line per decision</td><td>your decisions are lost; back it up</td></tr></tbody></table>
+<p>A decision line looks like this:</p>
+<pre><code>2026-11-08T21:40 b3:9f1c…e07a confirm group=&quot;Harbor St.&quot;
+2026-11-08T21:40 b3:9f1c…e07a set note=&quot;Conduit before inspection&quot;</code></pre>
+<p>The index is the log replayed over the derived layer. That is why the cache can be thrown away: replay the log and every confirmation comes back.</p>
+<p><strong>Finding files again.</strong> Everything is keyed by content hash plus last-known path. A rename or move is matched by hash on the next scan, so nothing is lost. An edit at the same path keeps its decisions and gets re-derived. An <strong>export</strong> writes sidecar files or embeds tags (EXIF, XMP, PDF metadata) when you want metadata to travel with a file; it is never automatic.</p>
+<h2 id="the-compute-ladder">The compute ladder</h2>
+<p>Every file climbs only as far as it needs to. L0 to L3 write to the disposable index; anything you confirm or keep goes into your log, which is replayed over the index.</p>
+<figure data-embed="node/55e735ac-27e6"><figcaption>compute ladder · 5 layers, cache and log</figcaption></figure>
+<h2 id="costs">Costs</h2>
+<p>Only one layer is expensive, and it never runs on everything. Figures are approximate, from typical small open models; benchmark on your own machine before deciding anything.</p>
+<table><thead><tr><th>Layer</th><th>Model size</th><th>RAM while running</th><th>Per item, GPU</th><th>Per item, CPU</th><th>Runs on</th></tr></thead><tbody><tr><td>L0 Facts</td><td>none</td><td>~0</td><td>under 10 ms</td><td>under 10 ms</td><td>every file</td></tr><tr><td>L1 Look</td><td>0.1–0.5 GB</td><td>0.5–1 GB</td><td>10–50 ms</td><td>50–200 ms</td><td>every file with content</td></tr><tr><td>L2 Read</td><td>0.1–1.5 GB</td><td>0.5–2 GB</td><td>0.2–1 s a page</td><td>1–5 s a page</td><td>images with text, scans, audio</td></tr><tr><td>L3 Understand</td><td>2–5 GB (3–7B model)</td><td>3–6 GB</td><td>2–6 s</td><td>15–60 s</td><td>files you touch or triage</td></tr><tr><td>L4 Ask</td><td>cloud or large local</td><td>n/a</td><td>seconds</td><td>n/a</td><td>only when you ask</td></tr></tbody></table>
+<p><strong>A 20,000-photo backfill.</strong> L1 takes about 17 minutes. L3 on all of them would take about 22 hours on a decent GPU or about a week on CPU, which is why L3 runs on attention instead.</p>
+<p><strong>Storage.</strong> An embedding is about 3 KB, so 100k files is about 300 MB, or about 75 MB quantized. Extracted text adds a few hundred MB. Thumbnails are made on view and capped.</p>
+<p><strong>Memory.</strong> One model loaded at a time, unloaded after 2 minutes idle. At rest the indexer uses about 100–200 MB. Heavy work runs only when the machine is idle and plugged in, and yields the moment you need it.</p>
+<h2 id="screens">Screens</h2>
+<p>One frame: query line on top, pinned views on the left, results in the middle, the selected file on the right, indexer status along the bottom. The <a href="https://claude.ai/artifact/FQLGRmaSxvXdLFLsbmPSHx">skins canvas</a> shows it in four looks.</p>
+<ul><li><p><strong>Results.</strong> Whatever the query returns, as a list or a grid. Folders are just <code>in:</code> results, so the old tree is still there.</p></li><li><p><strong>Inbox</strong> (<code>is:new</code>). New arrivals with the machine&#39;s description already drafted. A accepts, E edits a field, X dismisses. Triage is what triggers L3.</p></li><li><p><strong>File.</strong> Preview, every field marked confirmed or guessed, how far up the ladder it has gone, and the nearest files by meaning from any folder.</p></li><li><p><strong>Groups.</strong> The machine notices files that belong together (&quot;34 files share an address and October dates&quot;) and proposes a group. Accept it and <code>group:Cedar</code> exists. Files get organized without anything moving.</p></li></ul>
+<p>Everything works from the keyboard: <code>/</code> focuses the query, J and K move, Enter opens the file in its own app, Esc steps back.</p>
+<h2 id="stack">Stack</h2>
+<p>Two processes: an indexer that does the work in the background, and the app window you look at. They talk over localhost, so the app can be rebuilt or reskinned without touching the index.</p>
+<table><thead><tr><th>Part</th><th>Choice</th><th>Why</th></tr></thead><tbody><tr><td>App</td><td>Tauri (web UI in a native window)</td><td>small, native file access, the skins are just CSS</td></tr><tr><td>Indexer</td><td>Python service, starts with the OS</td><td>fastest route to every model below; can be ported later</td></tr><tr><td>Folder watching</td><td><code>watchdog</code> (OS change notifications)</td><td>create, edit and move events</td></tr><tr><td>Hashing</td><td>BLAKE3</td><td>fast enough to hash everything on first scan</td></tr><tr><td>Index</td><td>SQLite with FTS5 + <code>sqlite-vec</code></td><td>words, vectors and facets in one file</td></tr><tr><td>Embeddings</td><td>ONNX Runtime: a SigLIP-class image model, a small text embedder (nomic or bge class)</td><td>small, CPU-friendly</td></tr><tr><td>OCR</td><td>Windows built-in OCR first, PaddleOCR if needed</td><td>built-in is free and already installed</td></tr><tr><td>Speech</td><td>whisper.cpp</td><td>voice memos and video audio</td></tr><tr><td>Understanding</td><td>3–7B vision-language model via llama.cpp or Ollama</td><td>captions, tags, group guesses</td></tr><tr><td>Query rewriting</td><td>the same small model, text only</td><td>sentence → query syntax</td></tr></tbody></table>
+<h2 id="build-order">Build order</h2>
+<p>Each step is usable on its own, and none depends on the expensive layer working.</p>
+<ol><li><p><strong>Scan and query.</strong> Watch folders, hash, L0 facts, the query line with <code>in:</code>, <code>kind:</code>, <code>when:</code> and exact text on names. Already a faster file finder.</p></li><li><p><strong>Look.</strong> L1 embeddings and meaning search, <code>like:</code>. Benchmark speed and RAM here.</p></li><li><p><strong>Read.</strong> L2 OCR and transcripts, so exact text reaches inside images, scans and audio.</p></li><li><p><strong>Inbox and the decision log.</strong> Triage, L3 on touch, confirm and edit, log replay.</p></li><li><p><strong>Groups.</strong> Proposals, accept into <code>group:</code>.</p></li><li><p><strong>Sentences.</strong> Plain-language queries rewritten into syntax.</p></li><li><p><strong>Skins and export.</strong> The looks on the canvas, sidecar and EXIF/XMP export.</p></li></ol>
+<h2 id="open-questions">Open questions</h2>
+<ul><li data-checked="false"><p><input type="checkbox" disabled> What&#39;s in the PC: GPU and its memory, total RAM? This decides whether L3 is seconds or a minute per file.</p></li><li data-checked="false"><p><input type="checkbox" disabled> Which folders are watched by default: Downloads, Desktop, Pictures, Proton Drive, work drives?</p></li><li data-checked="false"><p><input type="checkbox" disabled> Work and personal in one index, or two?</p></li><li data-checked="false"><p><input type="checkbox" disabled> Windows only, or Mac and Linux too?</p></li><li data-checked="false"><p><input type="checkbox" disabled> A name.</p></li></ul>
+</body>
+</html>

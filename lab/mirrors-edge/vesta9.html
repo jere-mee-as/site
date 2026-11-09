@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>vesta 9 Residences</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Barlow:wght@300;400;500&family=Lexend+Exa:wght@100..500&family=Noto+Sans+JP:wght@200;300;500&display=swap">
+<style>
+/* Layout: one fixed white frame, never scrolls. Left: a tall frosted slab menu in the current floor's color (ref: pause menu). Center: the stage, pure white paper with something underneath. Right: the comfort record, writing down what you do. */
+:root{
+  --white:#ffffff; --emboss:#eef2f6; --ink:#18203a; --mute:#8a94a6; --soft:#b9c2cf; --line:#e6ebf1;
+  --navy:#1a2140; --green:#8fd11e; --red:#e3120b;
+  --pc:#8fd11e; --pi:#1a2140;
+  --f-ui:"Lexend Exa",system-ui,sans-serif; --f-body:"Barlow",system-ui,sans-serif; --f-num:"Barlow Condensed","Arial Narrow",sans-serif; --f-jp:"Noto Sans JP",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:var(--white);color:var(--ink);font:400 15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit}
+:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+::selection{background:var(--ink);color:#fff}
+.cap{font:400 10px/1.4 var(--f-ui);letter-spacing:.22em;text-transform:uppercase}
+
+#app{height:100%;display:grid;grid-template-columns:288px minmax(0,1fr) 196px}
+
+/* slab */
+#slab{position:relative;z-index:6;background:var(--pc);color:var(--pi);display:flex;flex-direction:column;padding:max(28px,env(safe-area-inset-top,0px)) 0 max(18px,env(safe-area-inset-bottom,0px)) max(0px,env(safe-area-inset-left,0px));transition:none}
+.brand{display:flex;align-items:flex-end;gap:12px;padding:0 24px 26px;text-decoration:none;color:var(--pi)}
+.brand .v{font:100 22px/1 var(--f-ui);letter-spacing:.42em}
+.brand .n{font:500 64px/.74 var(--f-num)}
+#menu{display:grid;gap:2px}
+#menu a{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:8px;padding:11px 24px;text-decoration:none;color:var(--pi);font:200 15px/1.1 var(--f-ui);letter-spacing:.14em;text-transform:uppercase}
+#menu a b{font:500 22px/1 var(--f-num);letter-spacing:.02em}
+#menu a i{display:block;font:300 10px/1.4 var(--f-jp);font-style:normal;letter-spacing:.3em;margin-top:3px;opacity:.75}
+#menu a.on{background:#fff;color:var(--navy)}
+#menu a.on::before{content:"";position:absolute;left:8px;top:50%;width:5px;height:22px;margin-top:-11px;background:var(--pc)}
+#menu a:not(.on):hover{background:rgba(255,255,255,.18)}
+#menu a.locked{opacity:.38;cursor:not-allowed}
+#menu a.locked em{position:absolute;right:20px;font:400 8px var(--f-ui);font-style:normal;letter-spacing:.2em}
+#menu a.open{opacity:1;background:var(--red);color:#fff;animation:rpulse 1.2s steps(2) infinite}
+#menu a.open em{display:none}
+@keyframes rpulse{50%{background:#b80c06}}
+.slabfoot{margin-top:auto;padding:0 24px;display:grid;gap:10px}
+.tg{all:unset;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font:400 10px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;padding:9px 10px;border:1px solid currentColor;border-radius:2px}
+.tg span:last-child{font:500 13px var(--f-num);letter-spacing:.1em}
+.tg:hover{background:var(--pi);color:var(--pc)}
+.tg:focus-visible{outline:1px solid var(--pi);outline-offset:2px}
+.obs{display:flex;align-items:center;gap:8px;font:300 9px var(--f-ui);letter-spacing:.24em;text-transform:uppercase;opacity:.8}
+.obs i{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 2s steps(2) infinite}
+@keyframes blink{50%{opacity:.2}}
+
+/* stage */
+#stage{position:relative;overflow:hidden;background:var(--white)}
+#under{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;transition:opacity 2.4s ease-in;-webkit-mask-image:radial-gradient(circle 220px at var(--mx,-999px) var(--my,-999px),#000 0,rgba(0,0,0,.45) 40%,rgba(0,0,0,0) 100%);mask-image:radial-gradient(circle 220px at var(--mx,-999px) var(--my,-999px),#000 0,rgba(0,0,0,.45) 40%,rgba(0,0,0,0) 100%);animation:breathe 7s ease-in-out infinite}
+body.peel #under{opacity:.16}
+@keyframes breathe{50%{transform:scale(1.006)}}
+.pg{position:absolute;inset:0;padding:max(40px,env(safe-area-inset-top,0px)) 44px 56px;display:none}
+.pg.on{display:grid}
+.fl{font:600 clamp(110px,21vh,230px)/.78 var(--f-num);color:var(--emboss);text-shadow:0 1px 0 #fff,0 -1px 0 #dde4ec;letter-spacing:-.01em;user-select:none}
+.st{margin:0;font:100 clamp(28px,3.6vw,52px)/1.12 var(--f-ui);letter-spacing:.05em;text-transform:uppercase;text-wrap:balance}
+.stjp{word-break:keep-all;line-break:strict;margin:10px 0 0;font:200 clamp(18px,2.2vw,30px)/1.4 var(--f-jp);letter-spacing:.18em;color:#3a4560}
+.sub{margin:18px 0 0;max-width:46ch;font:300 16px/1.6 var(--f-body);color:#3a4560}
+.fn{font:400 11px/1.6 var(--f-body);color:var(--mute);max-width:70ch;margin:0}
+sup{font:500 10px var(--f-num);color:var(--mute)}
+.wo{color:#fff}
+.wo::selection{background:#18203a;color:#fff}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:40px;padding:10px 16px;font:400 10px/1.2 var(--f-ui);letter-spacing:.2em;text-transform:uppercase;border:1px solid var(--ink);border-radius:2px;color:var(--ink);background:transparent}
+.btn:hover,.btn.pri{background:var(--ink);color:#fff}
+.btn.pri:hover{background:#2b3560}
+.btn:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+.btn[disabled]{opacity:.3;cursor:not-allowed;background:transparent;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pager{display:flex;align-items:center;gap:12px}
+.pager .ix{font:500 18px var(--f-num);letter-spacing:.1em;font-variant-numeric:tabular-nums;min-width:66px;text-align:center}
+.pager .btn{min-width:44px;padding:8px 12px}
+
+/* lobby */
+#p-lobby.on{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto 1fr auto;gap:22px 36px}
+#p-lobby .l1{grid-column:1;grid-row:1/3;display:flex;flex-direction:column;gap:6px;min-height:0}
+#win{grid-column:2;grid-row:1/3;position:relative;min-height:0;border:1px solid var(--line)}
+#win .lab{position:absolute;left:10px;bottom:8px;z-index:4;color:#fff;font:300 9px var(--f-ui);letter-spacing:.24em;text-transform:uppercase;text-shadow:0 0 6px rgba(10,40,120,.6)}
+.ic{grid-column:1/3;grid-row:3;display:grid;grid-template-columns:150px minmax(0,1fr) auto;align-items:stretch;border:1px solid var(--line);background:rgba(255,255,255,.6)}
+.ic .h{padding:12px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;gap:4px}
+.ic .h b{font:200 14px var(--f-ui);letter-spacing:.2em;text-transform:uppercase}
+.ic .h span{font:300 10px var(--f-jp);letter-spacing:.3em;color:var(--mute)}
+.ic .scr{padding:12px 16px;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
+#ic-out{font:300 15px/1.45 var(--f-body);min-height:22px}
+#ic-out .you{display:block;font:400 9px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin-bottom:2px}
+#icform{display:flex;gap:8px}
+#ic-in{flex:1;min-width:0;border:0;border-bottom:1px solid var(--soft);font:400 15px var(--f-body);color:var(--ink);padding:6px 0;background:transparent;border-radius:0}
+#ic-in:focus{outline:none;border-bottom-color:var(--ink)}
+.ic .sp{border-left:1px solid var(--line);display:flex;align-items:stretch}
+.ic .sp .btn{border:0;border-radius:0;min-width:110px}
+
+/* residences / amenities */
+#p-res.on,#p-am.on{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);grid-template-rows:minmax(0,1fr) auto;gap:20px 40px}
+.pane-l{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
+.pane-r{position:relative;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
+.pane-r svg{width:100%;height:100%;max-height:100%}
+.ctl{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:16px}
+dl.sp{display:grid;grid-template-columns:auto 1fr;gap:6px 22px;margin:16px 0 0;padding:14px 0;border-block:1px solid var(--line)}
+dl.sp dt{font:400 9px/2 var(--f-ui);letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+dl.sp dd{margin:0;font:500 19px/1.35 var(--f-num);letter-spacing:.04em}
+.plate{position:relative;width:100%;height:100%;max-height:440px;overflow:hidden;border:1px solid var(--line)}
+.plate.garden{background:linear-gradient(180deg,#e7f1fb 0 55%,#fff 55%)}
+.plate.garden::before{content:"";position:absolute;left:8%;right:8%;top:30%;height:28%;background:repeating-linear-gradient(90deg,#8fd11e 0 18px,#79b512 18px 22px);clip-path:polygon(0 100%,8% 40%,22% 70%,36% 20%,50% 60%,64% 10%,78% 55%,92% 30%,100% 100%)}
+.plate.pool{background:linear-gradient(180deg,#fff 0 34%,#5aa7f3 34% 62%,#fff 62%)}
+.plate.pool::before{content:"";position:absolute;left:0;right:0;top:34%;height:28%;background:repeating-linear-gradient(90deg,transparent 0 60px,rgba(255,255,255,.8) 60px 62px)}
+.plate.quiet{background:repeating-linear-gradient(180deg,#fff 0 26px,#f1f4f8 26px 27px)}
+.plate.halden{background:linear-gradient(135deg,#f6c514 0 46%,#fff 46%)}
+.plate.halden::after{content:"halden logistics";position:absolute;left:22px;top:24px;font:200 26px var(--f-ui);color:#fff}
+.plate.desk{background:linear-gradient(180deg,#eef4fa,#fff)}
+.plate.desk::before{content:"";position:absolute;left:22%;right:22%;top:38%;height:20%;background:#fff;box-shadow:inset 0 -6px 0 var(--navy),0 24px 30px -22px rgba(20,40,90,.4)}
+.plate .cap{position:absolute;right:12px;bottom:10px;color:var(--mute)}
+
+/* safety */
+#p-safe.on{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);grid-template-rows:auto minmax(0,1fr) auto;gap:20px 40px}
+.days{font:500 clamp(100px,19vh,210px)/.8 var(--f-num);color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.cams{grid-column:2;grid-row:1/3;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:10px;min-height:0}
+.cam{position:relative;background:#eef2f6;overflow:hidden;min-height:0}
+.cam canvas{width:100%;height:100%;display:block}
+.cam .lab{position:absolute;left:8px;top:6px;font:400 9px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.cam .st{position:absolute;right:8px;top:6px;font:500 11px var(--f-num);letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+.cam .st.mo{animation:blink .5s steps(2) infinite}
+.cam .ts{position:absolute;left:8px;bottom:6px;font:500 11px var(--f-num);letter-spacing:.08em;color:var(--mute);font-variant-numeric:tabular-nums}
+.rules{grid-column:1/3;grid-row:3;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line)}
+.rules div{padding:14px 18px 0 0}
+.rules b{display:block;font:300 10px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;margin-bottom:4px}
+.rules span{font-size:13px;color:#3a4560}
+
+/* district */
+#p-dist.on{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:18px}
+.dhead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+#mapw{position:relative;min-height:0;overflow:hidden}
+#mapw svg{width:100%;height:100%;display:block}
+#mapw::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 72% at 50% 50%,transparent 55%,#fff 100%)}
+.poi text{font:400 11px var(--f-ui);letter-spacing:.16em;text-transform:uppercase;fill:#fff}
+.poi .t2{fill:#dbe9fb;font-size:9px}
+
+/* apply */
+#p-apply.on{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:40px}
+.kiosk{border:1px solid var(--line);display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.55)}
+.kiosk .kh{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.kiosk .kb{flex:1;padding:26px 24px;display:flex;flex-direction:column;gap:18px;justify-content:center;min-height:0}
+.kq{font:100 26px/1.2 var(--f-ui);letter-spacing:.06em;text-transform:uppercase}
+.kq small{display:block;font:200 14px var(--f-jp);letter-spacing:.24em;text-transform:none;color:var(--mute);margin-top:6px}
+.kin{border:0;border-bottom:1px solid var(--ink);font:300 26px var(--f-body);padding:8px 0;color:var(--ink);background:transparent;width:100%;border-radius:0}
+.kin:focus{outline:none;border-bottom-width:2px}
+.keys{display:grid;grid-template-columns:repeat(3,72px);gap:8px}
+.keys .btn{min-height:56px;font:500 22px var(--f-num);letter-spacing:.04em}
+.keys.wide{grid-template-columns:repeat(5,minmax(0,1fr))}
+.disp{font:500 64px/1 var(--f-num);letter-spacing:.06em;font-variant-numeric:tabular-nums;min-width:120px}
+.kmsg{font:400 10px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);min-height:14px}
+.steps{display:flex;gap:4px}.steps i{width:22px;height:3px;background:var(--line)}.steps i.d{background:var(--ink)}
+
+/* roof */
+#p-roof.on{grid-template-columns:minmax(0,1fr);align-content:end}
+#p-roof .note{position:relative;z-index:3;max-width:560px;background:#fff;border:2px solid var(--red);padding:24px 26px;transform:rotate(-1deg)}
+#p-roof .note h2{margin:0 0 12px;font:500 18px/1.3 var(--f-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--red)}
+#p-roof .note p{margin:0 0 10px;font:400 16px/1.6 var(--f-body)}
+#p-roof .note .sig{font:400 10px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--red)}
+#p-roof .note .btn{border-color:var(--red);color:var(--red)}
+#p-roof .note .btn:hover{background:var(--red);color:#fff}
+body.roof #stage{background:#0d1226}
+body.roof #under{opacity:.5;-webkit-mask-image:none;mask-image:none;animation:none;z-index:3;filter:invert(1)}
+body.roof #tick,body.roof #band{display:none}
+
+/* city canvas */
+#city{position:fixed;z-index:1;display:none;pointer-events:none}
+#stage>.pg{z-index:auto}
+
+/* announcements */
+#band{position:absolute;z-index:8;left:0;right:0;top:0;background:#fff;border-bottom:1px solid var(--ink);padding:14px 44px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 18px;align-items:baseline}
+#band .k{grid-row:1/3;font:400 9px var(--f-ui);letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+#band .en{font:200 15px/1.4 var(--f-ui);letter-spacing:.1em;text-transform:uppercase}
+#band .jp{font:300 12px var(--f-jp);letter-spacing:.2em;color:var(--mute)}
+#band .en em{font-style:normal}
+#band .en em.slip{color:var(--red)}
+
+/* ticker */
+#tick{position:absolute;z-index:7;left:0;right:0;bottom:0;height:28px;border-top:1px solid var(--line);background:#fff;overflow:hidden;white-space:nowrap;display:flex;align-items:center;font:300 9px var(--f-ui);letter-spacing:.24em;text-transform:uppercase;color:var(--mute)}
+#tick .run{display:inline-flex;padding-left:44px;animation:tick 80s linear infinite}
+#tick span{margin-right:50px}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* tracking brackets */
+#brk{position:fixed;z-index:20;pointer-events:none;left:0;top:0;width:0;height:0}
+#brk i{position:absolute;width:10px;height:10px;border:0 solid var(--ink)}
+#brk i:nth-child(1){left:-5px;top:-5px;border-left-width:1px;border-top-width:1px}
+#brk i:nth-child(2){right:-5px;top:-5px;border-right-width:1px;border-top-width:1px}
+#brk i:nth-child(3){left:-5px;bottom:-5px;border-left-width:1px;border-bottom-width:1px}
+#brk i:nth-child(4){right:-5px;bottom:-5px;border-right-width:1px;border-bottom-width:1px}
+#brk span{position:absolute;left:-5px;bottom:-22px;white-space:nowrap;font:400 8px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--ink);background:rgba(255,255,255,.9);padding:2px 4px}
+
+/* comfort record */
+#log{position:relative;z-index:6;border-left:1px solid var(--line);background:#fff;padding:max(30px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 40px 16px;display:flex;flex-direction:column;min-height:0}
+#log h3{margin:0 0 4px;font:300 10px var(--f-ui);letter-spacing:.22em;text-transform:uppercase}
+#log .jp{font:300 10px var(--f-jp);letter-spacing:.3em;color:var(--mute);margin-bottom:14px}
+#logl{list-style:none;margin:0;padding:0;overflow:hidden;flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:7px;-webkit-mask-image:linear-gradient(180deg,transparent,#000 30%);mask-image:linear-gradient(180deg,transparent,#000 30%)}
+#logl li{font:400 8.5px/1.5 var(--f-ui);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+#logl li b{display:block;font:500 11px var(--f-num);letter-spacing:.06em;color:var(--soft)}
+#logl li.new{color:var(--ink)}
+#log .sub2{font:300 9px/1.6 var(--f-body);color:var(--soft);margin-top:12px}
+
+/* gate */
+#gate{position:fixed;inset:0;z-index:40;background:#fff;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+#gate .doors{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;pointer-events:none}
+#gate .doors i{background:linear-gradient(90deg,#fff,#f4f7fa);border-right:1px solid var(--line);transition:transform .9s cubic-bezier(.7,0,.2,1)}
+#gate .doors i:last-child{background:linear-gradient(270deg,#fff,#f4f7fa);border-right:0;border-left:1px solid var(--line)}
+#gate.open{background:transparent}
+#gate.open .doors i:first-child{transform:translateX(-101%)}#gate.open .doors i:last-child{transform:translateX(101%)}
+#gate.open .gin{opacity:0}
+.gin{position:relative;z-index:2;max-width:620px;text-align:left;transition:opacity .25s}
+.gin .brand{padding:0 0 30px;color:var(--ink)}
+.gin .scan{height:1px;background:var(--line);margin:26px 0 22px;position:relative;overflow:hidden}
+.gin .scan::after{content:"";position:absolute;left:-30%;top:0;width:30%;height:1px;background:var(--ink)}
+#gate.scanning .scan::after{animation:scan .9s linear 2}
+@keyframes scan{to{left:100%}}
+#gstat{min-height:16px}
+#prefs{margin-top:18px;border-top:1px solid var(--line)}
+#prefs div{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+#prefs small{display:block;font-size:11px;color:var(--mute)}
+#prefs .lk{font:400 9px var(--f-ui);letter-spacing:.2em;text-transform:uppercase;color:var(--mute)}
+
+/* idle */
+#idle{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;justify-content:flex-end;padding:0 max(44px,env(safe-area-inset-right,0px)) max(44px,env(safe-area-inset-bottom,0px)) max(44px,env(safe-area-inset-left,0px));color:#fff;pointer-events:none}
+#idle .brand{padding:0 0 10px;color:#fff}
+#idle p{margin:0;font:200 13px var(--f-ui);letter-spacing:.3em;text-transform:uppercase;animation:blink 2.4s steps(2) infinite}
+
+#cut{position:fixed;inset:0;z-index:50;background:#fff;pointer-events:none;opacity:0}
+#cut.on{opacity:1}
+#mtop{display:none}
+#logline{display:none}
+
+@media (max-width:860px),(max-aspect-ratio:3/4){
+  #app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+  #log{display:none}
+  #slab{position:fixed;inset:0;z-index:35;padding-top:max(70px,env(safe-area-inset-top,0px));display:none}
+  body.menuopen #slab{display:flex}
+  #slab>.brand{display:none}
+  #mtop{display:flex;z-index:36;position:relative;justify-content:space-between;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--pc);color:var(--pi)}
+  #mtop .brand{padding:0;gap:8px}#mtop .brand .v{font-size:14px}#mtop .brand .n{font-size:34px}
+  #mtop .here{font:200 11px var(--f-ui);letter-spacing:.2em;text-transform:uppercase}
+  #mtop .btn{border-color:var(--pi);color:var(--pi);min-height:34px;padding:6px 12px}
+  #mtop .btn:hover{background:var(--pi);color:var(--pc)}
+  .pg{padding:18px max(16px,env(safe-area-inset-right,0px)) 64px max(16px,env(safe-area-inset-left,0px));overflow:auto}
+  .pg.on{display:flex!important;flex-direction:column;gap:14px}
+  .fl{font-size:96px}
+  #win{min-height:200px;flex:none;height:30vh}
+  .ic{grid-template-columns:1fr}.ic .h{border-right:0;border-bottom:1px solid var(--line);flex-direction:row;justify-content:space-between}.ic .sp{border-left:0;border-top:1px solid var(--line)}.ic .sp .btn{width:100%}
+  .pane-r{height:34vh;flex:none}
+  .cams{grid-column:auto;grid-row:auto;height:46vh;flex:none}
+  .rules{grid-template-columns:1fr 1fr}
+  #mapw{height:52vh;flex:none}
+  .kiosk{flex:none}
+  #band{padding:10px 16px}
+  #logline{display:block;position:absolute;z-index:7;left:0;right:0;bottom:28px;padding:5px max(16px,env(safe-area-inset-left,0px));font:400 8px var(--f-ui);letter-spacing:.18em;text-transform:uppercase;color:var(--mute);background:#fff;border-top:1px solid var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #brk{display:none!important}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head><body>
+
+
+<div id="app">
+  <div id="mtop"><a class="brand" href="#lobby"><span class="v">VESTA</span><span class="n">9</span></a><span class="here" id="here">Lobby</span><button class="btn" type="button" id="mbtn">Floors</button></div>
+  <aside id="slab" aria-label="Floors">
+    <a class="brand" href="#lobby" data-t="VESTA 9"><span class="v">VESTA</span><span class="n">9</span></a>
+    <nav id="menu">
+      <a href="#lobby" data-p="lobby" data-t="FLOOR 01 · LOBBY"><b>01</b><span>Lobby<i>ロビー</i></span></a>
+      <a href="#residences" data-p="res" data-t="FLOOR 12 · RESIDENCES"><b>12</b><span>Residences<i>住居</i></span></a>
+      <a href="#amenities" data-p="am" data-t="FLOOR 36 · AMENITIES"><b>36</b><span>Amenities<i>共用</i></span></a>
+      <a href="#safety" data-p="safe" data-t="FLOOR 54 · SAFETY"><b>54</b><span>Safety<i>安全</i></span></a>
+      <a href="#district" data-p="dist" data-t="FLOOR 68 · DISTRICT"><b>68</b><span>District<i>近隣</i></span></a>
+      <a href="#apply" data-p="apply" data-t="FLOOR 90 · APPLY"><b>90</b><span>Apply<i>申込</i></span></a>
+      <a href="#roof" data-p="roof" class="locked" aria-disabled="true" data-t="ROOF · RESTRICTED"><b>R</b><span>Roof<i>屋上</i></span><em>Restricted</em></a>
+    </nav>
+    <div class="slabfoot">
+      <button class="tg" type="button" id="t-snd" data-t="LOBBY AUDIO"><span>Sound · 音</span><span>On</span></button>
+      <button class="tg" type="button" id="t-voice" data-t="ANNOUNCEMENT VOICE"><span>Voice · 声</span><span>Off</span></button>
+      <div class="obs"><i></i>Observed for your comfort · 観察中</div>
+    </div>
+  </aside>
+
+  <main id="stage">
+    <canvas id="under" aria-hidden="true"></canvas>
+
+    <section class="pg" id="p-lobby" data-p="lobby" data-name="Lobby" data-jp="ロビー" data-c="#8fd11e" data-i="#1a2140">
+      <div class="l1">
+        <div class="fl" aria-hidden="true">01</div>
+        <h1 class="st">A quiet life,<br>held in place.</h1>
+        <p class="stjp">静かな暮らしを、その場所に。</p>
+        <p class="sub" data-t="TOWER FIGURES">96 floors. 312 residences. Nothing out of place.<sup>1</sup></p>
+        <p class="fn" style="margin-top:auto"><sup>1</sup> Places are assigned by the Central District Development Compact. <span class="wo">Things out of place are moved.</span></p>
+      </div>
+      <div id="win" data-t="WINDOW · CENTRAL DISTRICT"><span class="lab">View from floor 01 · live</span></div>
+      <div class="ic" data-t="CONCIERGE · INTERCOM">
+        <div class="h"><b>Concierge</b><span>受付 · always here</span></div>
+        <div class="scr"><div id="ic-out" aria-live="polite"></div><form id="icform" autocomplete="off"><input id="ic-in" type="text" placeholder="Speak to the desk" aria-label="Speak to the concierge"></form></div>
+        <div class="sp"><button class="btn pri" type="submit" form="icform">Speak</button></div>
+      </div>
+    </section>
+
+    <section class="pg" id="p-res" data-p="res" data-name="Residences" data-jp="住居" data-c="#1c7ff6" data-i="#ffffff">
+      <div class="pane-l" id="res-l"></div>
+      <div class="pane-r" id="res-r" data-t="PLAN"></div>
+      <div class="ctl"><div class="pager"><button class="btn" type="button" data-pg="-1" aria-label="Previous plan">◂</button><span class="ix" id="res-ix">03 / 04</span><button class="btn" type="button" data-pg="1" aria-label="Next plan">▸</button></div><div class="row" id="res-act"></div></div>
+    </section>
+
+    <section class="pg" id="p-am" data-p="am" data-name="Amenities" data-jp="共用" data-c="#c94400" data-i="#ffffff">
+      <div class="pane-l" id="am-l"></div>
+      <div class="pane-r" id="am-r"></div>
+      <div class="ctl"><div class="pager"><button class="btn" type="button" data-pg="-1" aria-label="Previous amenity">◂</button><span class="ix" id="am-ix">01 / 05</span><button class="btn" type="button" data-pg="1" aria-label="Next amenity">▸</button></div><p class="fn">Everything you need is inside. <span class="wo">There is no need to go outside.</span></p></div>
+    </section>
+
+    <section class="pg" id="p-safe" data-p="safe" data-name="Safety" data-jp="安全" data-c="#0a12d8" data-i="#ffffff">
+      <div><div class="days" data-t="DAYS WITHOUT INCIDENT">1,204</div><h2 class="st" style="margin-top:16px">Days without<br>an incident.<sup>2</sup></h2><p class="stjp">事故ゼロ、千二百四日。</p></div>
+      <div class="cams" id="cams"></div>
+      <div style="grid-column:1;grid-row:2;align-self:end"><p class="sub">Common areas are observed around the clock, so you never have to be.</p><p class="fn" style="margin-top:10px"><sup>2</sup> An incident is an event that was not prevented. <span class="wo">What is prevented is not recorded.</span></p></div>
+      <div class="rules">
+        <div data-t="STAIRWELLS"><b>Stairwells</b><span>Observed on every landing. Please do not linger.</span></div>
+        <div data-t="ROOFTOP SENSORS"><b>The roof</b><span>Closed to residents. Activity is reported automatically.</span></div>
+        <div data-t="SEALED GLASS"><b>Windows</b><span>Sealed for your comfort. Air is rated hourly.</span></div>
+        <div data-t="CIVIC LIAISON"><b>Your liaison</b><span>Knows your household by name. <span class="wo">And by habit.</span></span></div>
+      </div>
+    </section>
+
+    <section class="pg" id="p-dist" data-p="dist" data-name="District" data-jp="近隣" data-c="#4622c8" data-i="#ffffff">
+      <div class="dhead"><div><div class="fl" aria-hidden="true" style="font-size:clamp(90px,15vh,160px)">68</div><h2 class="st">The center<br>of the center.</h2></div><p class="sub" style="text-align:right">Central District, block 9. Everything within a covered walk.<br><span class="fn">The map ends where your comfort does. <span class="wo">Beyond the harbour is not shown.</span></span></p></div>
+      <div id="mapw" data-t="DISTRICT MAP"><svg id="map" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid slice" role="img" aria-label="District map around vesta 9"></svg></div>
+    </section>
+
+    <section class="pg" id="p-apply" data-p="apply" data-name="Apply" data-jp="申込" data-c="#1a2140" data-i="#ffffff">
+      <div class="pane-l"><div class="fl" aria-hidden="true">90</div><h2 class="st">Apply for<br>residency.</h2><p class="stjp">入居のお申し込み。</p><p class="sub">Five questions at the desk. A Civic Liaison does the rest.</p><p class="fn" style="margin-top:auto">Applications are permanent. <span class="wo">So is the file.</span></p></div>
+      <div class="kiosk" data-t="APPLICATION KIOSK"><div class="kh"><span class="cap" id="k-step">Step 1 / 5</span><span class="steps" id="k-steps"></span></div><div class="kb" id="kb"></div></div>
+    </section>
+
+    <section class="pg" id="p-roof" data-p="roof" data-name="Roof" data-jp="屋上" data-c="#e3120b" data-i="#ffffff">
+      <div class="note"><h2>You found the stairs.</h2>
+        <p>Everything on this site is a sheet of paper over something. Press on the big pale floor numbers, then move slowly. The quotes are real people who didn't agree to anything. The days without incident count only what they let themselves see.</p>
+        <p>The cams on 54 loop every forty seconds. That's how we get up here. If you need something carried, don't type it to them. Find the red.</p>
+        <div class="row" style="justify-content:space-between;margin-top:14px"><span class="sig">— a friend on the roof · 屋上の友</span><button class="btn" type="button" id="roofdown">Go back down before they see</button></div></div>
+    </section>
+
+    <div id="band" hidden role="status"><span class="k">Announcement<br>お知らせ</span><span class="en" id="b-en"></span><span class="jp" id="b-jp"></span></div>
+    <div id="logline" aria-hidden="true"></div>
+    <div id="tick" aria-hidden="true"><div class="run" id="tickrun"></div></div>
+  </main>
+
+  <aside id="log" aria-label="Comfort record"><h3>Comfort record</h3><div class="jp">快適記録</div><ol id="logl"></ol><p class="sub2">Kept for your comfort under the Civic Transparency Act. A fiction · jere.ing.</p></aside>
+</div>
+
+<canvas id="city" aria-hidden="true"></canvas>
+<div id="brk" hidden><i></i><i></i><i></i><i></i><span></span></div>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="g-h">
+  <div class="doors"><i></i><i></i></div>
+  <div class="gin">
+    <div class="brand"><span class="v">VESTA</span><span class="n">9</span></div>
+    <h1 class="st" id="g-h" style="font-size:clamp(26px,3.4vw,44px)">Welcome.<br>Your visit is observed<br>for your comfort.</h1>
+    <p class="stjp" style="font-size:17px">ようこそ。快適のため、ご訪問は観察されます。</p>
+    <div class="scan"></div>
+    <div class="row"><button class="btn pri" type="button" data-enter="1">Enter</button><button class="btn" type="button" data-enter="2">Enter and accept all</button><button class="btn" type="button" id="g-prefs" style="border-color:transparent;text-decoration:underline">Preferences</button></div>
+    <p class="cap" id="gstat" style="margin-top:16px;color:var(--mute)">Declining is not available in the Central District.</p>
+    <div id="prefs" hidden>
+      <div><span>Essential observation<small>Keeps the building working</small></span><span class="lk">Required</span></div>
+      <div><span>Comfort analytics<small>Learns what calms you</small></span><span class="lk">Required</span></div>
+      <div><span>Behavioural arrangement<small>Arranges the building around you</small></span><span class="lk">Required</span></div>
+      <div><span>Civic sharing<small>Civic Transparency Act, §4</small></span><span class="lk">Required</span></div>
+    </div>
+  </div>
+</div>
+<div id="idle" hidden><div class="brand"><span class="v">VESTA</span><span class="n">9</span></div><p>Touch to continue · 触れて続ける</p></div>
+<div id="cut" aria-hidden="true"></div>
+
+<script>
+(()=>{'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TOUCH=matchMedia('(pointer: coarse)').matches;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=(n,l=2)=>String(n).padStart(l,'0');
+const CAND=String(100+Math.floor(Math.random()*899)).padStart(4,'0');
+let entered=false,curP='lobby',roofOpen=false,lastInput=performance.now(),idle=false,intruded=false;
+const appData={name:'',house:'',floor:'',month:''};
+
+/* ---------- ticker ---------- */
+{const it=['Central District · 21°C','Air quality 98 · excellent','Civic index +0.4','1,204 days without incident','Rooftop access closed to residents','Compliance in your district 99.98%','Sky line service normal','ご協力ありがとうございます · thank you for your cooperation'];const h=it.map(t=>`<span>${t}</span>`).join('');$('#tickrun').innerHTML=h+h}
+
+/* ---------- comfort record ---------- */
+const logl=$('#logl');
+function rec(t){const d=new Date();const li=document.createElement('li');li.className='new';li.innerHTML=`<b>${d.toTimeString().slice(0,8)}</b>${esc(t)}`;logl.appendChild(li);setTimeout(()=>li.classList.remove('new'),2400);while(logl.children.length>40)logl.firstChild.remove();$('#logline').textContent=d.toTimeString().slice(0,8)+' · '+t}
+
+/* ---------- audio ---------- */
+const AU={ctx:null,on:store.get('v9.audio',true),voice:store.get('v9.voice',false),started:false,semi:0,glitchUntil:0,
+  start(){if(this.started||!this.on)return;try{const C=window.AudioContext||window.webkitAudioContext;this.ctx=new C()}catch(e){return}this.started=true;const x=this.ctx;
+    this.master=x.createGain();this.master.gain.value=0;this.master.gain.linearRampToValueAtTime(.5,x.currentTime+3);this.master.connect(x.destination);
+    this.mus=x.createGain();this.lp=x.createBiquadFilter();this.lp.type='lowpass';this.lp.frequency.value=16000;this.duckG=x.createGain();
+    this.bus=x.createGain();this.bus.connect(this.lp).connect(this.duckG).connect(this.mus).connect(this.master);
+    const len=x.sampleRate*3.2,ir=x.createBuffer(2,len,x.sampleRate);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6)}
+    this.verb=x.createConvolver();this.verb.buffer=ir;const vg=x.createGain();vg.gain.value=.55;this.verb.connect(vg).connect(this.bus);
+    this.dly=x.createDelay(1);this.dly.delayTime.value=60/92*.75;const fb=x.createGain();fb.gain.value=.38;const dl=x.createBiquadFilter();dl.type='lowpass';dl.frequency.value=3200;this.dly.connect(dl).connect(fb).connect(this.dly);dl.connect(this.bus);
+    this.padF=x.createBiquadFilter();this.padF.type='lowpass';this.padF.frequency.value=1100;this.padF.Q.value=2;const lfo=x.createOscillator();lfo.frequency.value=.06;const lg=x.createGain();lg.gain.value=520;lfo.connect(lg).connect(this.padF.frequency);lfo.start();
+    const pg=x.createGain();pg.gain.value=.11;this.padF.connect(pg);pg.connect(this.bus);pg.connect(this.verb);
+    const nl=x.sampleRate*2,nb=x.createBuffer(1,nl,x.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nl;i++)nd[i]=Math.random()*2-1;this.noise=nb;
+    this.hum=x.createGain();this.hum.gain.value=0;[50,100,150].forEach((f,i)=>{const o=x.createOscillator();o.frequency.value=f;const g=x.createGain();g.gain.value=[.05,.025,.012][i];o.connect(g).connect(this.hum);o.start()});this.hum.connect(this.master);
+    const wn=x.createBufferSource();wn.buffer=nb;wn.loop=true;const wf=x.createBiquadFilter();wf.type='bandpass';wf.frequency.value=420;wf.Q.value=.5;this.wind=x.createGain();this.wind.gain.value=0;wn.connect(wf).connect(this.wind).connect(this.master);wn.start();
+    const wl=x.createOscillator();wl.frequency.value=.13;const wlg=x.createGain();wlg.gain.value=260;wl.connect(wlg).connect(wf.frequency);wl.start();
+    this.step=0;this.next=x.currentTime+.15;this.timer=setInterval(()=>this.sched(),25);this.room(curP)},
+  chords:[[50,54,57,61,64],[47,50,54,57,61],[43,47,50,54,57],[45,52,57,59,64]],
+  f(m){return 440*Math.pow(2,(m-69+this.semi)/12)},
+  sched(){const x=this.ctx;if(!x)return;const s16=60/92/4;while(this.next<x.currentTime+.15){const st=this.step,t=this.next,ci=Math.floor(st/32)%4,ch=this.chords[ci];this.semi=x.currentTime<this.glitchUntil?-1:0;
+      if(st%32===0){this.pad(ch,t,s16*32);this.bass(ch[0]-12,t,s16*30)}if(st%16===0||st%16===8)this.kick(t);if(st%4===2)this.hat(t,st%8===6?.045:.028);
+      if(Math.random()<(st%2?.2:.34))this.pluck(ch[(Math.random()*ch.length)|0]+(Math.random()<.5?12:24),t);if(x.currentTime<this.glitchUntil&&st%2===0){this.duckG.gain.setValueAtTime(0,t);this.duckG.gain.setValueAtTime(1,t+s16*.5)}
+      this.step++;this.next+=s16}},
+  pad(ch,t,dur){const x=this.ctx;ch.forEach(m=>[-7,7].forEach(dt=>{const o=x.createOscillator();o.type='sawtooth';o.frequency.value=this.f(m);o.detune.value=dt;const g=x.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.05,t+1.8);g.gain.setValueAtTime(.05,t+dur-.4);g.gain.linearRampToValueAtTime(0,t+dur+2.6);o.connect(g).connect(this.padF);o.start(t);o.stop(t+dur+2.8)}))},
+  bass(m,t,dur){const x=this.ctx,o=x.createOscillator();o.frequency.value=this.f(m);const g=x.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.22,t+.3);g.gain.linearRampToValueAtTime(0,t+dur);o.connect(g).connect(this.bus);o.start(t);o.stop(t+dur+.1)},
+  kick(t){const x=this.ctx,o=x.createOscillator();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(42,t+.22);const g=x.createGain();g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(g).connect(this.bus);o.start(t);o.stop(t+.35)},
+  hat(t,v){const x=this.ctx,s=x.createBufferSource();s.buffer=this.noise;const f=x.createBiquadFilter();f.type='highpass';f.frequency.value=7500;const g=x.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0005,t+.04);s.connect(f).connect(g).connect(this.bus);s.start(t,Math.random());s.stop(t+.06)},
+  pluck(m,t){const x=this.ctx,o=x.createOscillator(),o2=x.createOscillator();o.type='triangle';o.frequency.value=this.f(m);o2.frequency.value=this.f(m)*3.01;const g=x.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.07,t+.006);g.gain.exponentialRampToValueAtTime(.0008,t+.55);const g2=x.createGain();g2.gain.value=.25;o2.connect(g2).connect(g);o.connect(g);g.connect(this.bus);g.connect(this.dly);g.connect(this.verb);o.start(t);o2.start(t);o.stop(t+.6);o2.stop(t+.6)},
+  tone(fs,gap,vol){if(!this.ok())return;const x=this.ctx,t=x.currentTime;fs.forEach((f,i)=>{const o=x.createOscillator();o.frequency.value=f;const g=x.createGain();const s=t+i*gap;g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(vol,s+.008);g.gain.exponentialRampToValueAtTime(.0005,s+.9);o.connect(g).connect(this.master);g.connect(this.verb);o.start(s);o.stop(s+1)})},
+  cut(){this.tone([1046.5,1568],.05,.035)},
+  chime(){this.tone([784,1046.5,1318.5],.2,.05)},
+  tick(){if(!this.ok())return;const x=this.ctx,t=x.currentTime,o=x.createOscillator();o.frequency.value=2600;const g=x.createGain();g.gain.setValueAtTime(.016,t);g.gain.exponentialRampToValueAtTime(.0004,t+.03);o.connect(g).connect(this.master);o.start(t);o.stop(t+.05)},
+  room(p){if(!this.ctx)return;const t=this.ctx.currentTime,L={lobby:16000,res:9000,am:16000,safe:1300,dist:12000,apply:5200,roof:400}[p]||16000;
+    this.lp.frequency.setTargetAtTime(L,t,.25);this.hum.gain.setTargetAtTime(p==='safe'?1:0,t,.4);this.wind.gain.setTargetAtTime(p==='roof'?.5:0,t,.6);this.mus.gain.setTargetAtTime(p==='roof'?0:1,t,.4)},
+  duck(on){if(!this.ctx)return;this.duckG.gain.setTargetAtTime(on?.35:1,this.ctx.currentTime,.2)},
+  glitch(){if(!this.ctx)return;this.glitchUntil=this.ctx.currentTime+60/92*8;const x=this.ctx,t=x.currentTime,s=x.createBufferSource();s.buffer=this.noise;const f=x.createBiquadFilter();f.type='bandpass';f.frequency.value=1800;const g=x.createGain();g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);s.connect(f).connect(g).connect(this.master);s.start(t);s.stop(t+.4)},
+  paper(){if(!this.ok())return;const x=this.ctx,t=x.currentTime,s=x.createBufferSource();s.buffer=this.noise;const f=x.createBiquadFilter();f.type='bandpass';f.frequency.value=3200;f.Q.value=.7;const g=x.createGain();g.gain.setValueAtTime(.045,t);g.gain.exponentialRampToValueAtTime(.0005,t+.2);s.connect(f).connect(g).connect(this.master);s.start(t,Math.random());s.stop(t+.22)},
+  ok(){return this.ctx&&this.on},
+  toggle(){this.on=!this.on;store.set('v9.audio',this.on);if(this.on){if(!this.started)this.start();else{this.ctx.resume();this.master.gain.setTargetAtTime(.5,this.ctx.currentTime,.3);this.room(curP)}}else if(this.ctx)this.master.gain.setTargetAtTime(0,this.ctx.currentTime,.15);tgUI();rec(this.on?'Sound enabled · preference noted':'Sound muted · preference noted')}
+};
+function tgUI(){$('#t-snd span:last-child').textContent=AU.on?'On':'Off';$('#t-voice span:last-child').textContent=AU.voice?'On':'Off';$('#t-snd').setAttribute('aria-pressed',String(AU.on));$('#t-voice').setAttribute('aria-pressed',String(AU.voice))}
+$('#t-snd').onclick=()=>AU.toggle();
+$('#t-voice').onclick=()=>{AU.voice=!AU.voice;store.set('v9.voice',AU.voice);tgUI();rec(AU.voice?'Announcement voice enabled':'Announcement voice disabled · noted');if(AU.voice)announce(['Voice announcements are on. Thank you.','音声のお知らせを開始します。']);else if(window.speechSynthesis)speechSynthesis.cancel()};
+tgUI();
+
+/* ---------- announcements ---------- */
+let bandT=null;
+function speak(t){if(!AU.voice||!('speechSynthesis' in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);const vs=speechSynthesis.getVoices();const v=vs.find(v=>/en-GB/i.test(v.lang)&&/female|serena|kate|libby|sonia|hazel/i.test(v.name))||vs.find(v=>/en-GB/i.test(v.lang))||vs.find(v=>/^en/i.test(v.lang));if(v)u.voice=v;u.rate=.9;u.volume=.9;AU.duck(true);u.onend=()=>AU.duck(false);speechSynthesis.speak(u)}catch(e){}}
+function announce([en,jp],slip){if(curP==='roof')return;const b=$('#band');let h=esc(en);if(slip)h=h.replace(slip,`<em>${slip}</em>`);$('#b-en').innerHTML=h;$('#b-jp').textContent=jp||'';b.hidden=false;AU.chime();speak(en);rec('Announcement delivered');
+  clearTimeout(bandT);bandT=setTimeout(()=>{b.hidden=true},AU.voice?9000:6500);
+  if(slip&&!RM){const e=$('#b-en em');setTimeout(()=>{e.classList.add('slip');setTimeout(()=>e.classList.remove('slip'),70)},1200)}}
+const ANN=[['Good evening. Air quality on every floor is excellent.','全階の空気質は良好です。'],['Residents are reminded that windows remain sealed for their comfort.','快適のため、窓は閉じたままです。'],['The sky garden is open. Please remain on the paths.','空中庭園は開いています。通路から離れないでください。'],['A household on floor 33 has moved to a quieter floor. We wish them well.','三十三階のご家族は、より静かな階へ移られました。'],['Please do not linger in stairwells.','階段に留まらないでください。'],['Rooftop patrol reports all clear.','屋上巡回、異常なし。'],['Compliance in your district is ninety-nine point nine eight percent. Thank you.','地区の遵守率は99.98%です。']];
+let annI=0;
+function annLoop(){setTimeout(()=>{if(entered&&!idle&&!document.hidden&&curP!=='roof'){const k=topDwell();if(annI%3===2&&k)announce([`Your interest in ${k.toLowerCase()} has been noted.`,'ご関心は記録されました。']);else announce(ANN[annI%ANN.length])}annI++;annLoop()},32000+Math.random()*20000)}
+
+/* ---------- tracking brackets ---------- */
+const brk=$('#brk');let tEl=null,tStart=0;const dwell={};
+function topDwell(){let best=null,v=2500;for(const k in dwell)if(dwell[k]>v&&!/FLOOR|VOICE|AUDIO|VESTA/.test(k)){v=dwell[k];best=k}return best}
+function leave(){if(tEl){const d=performance.now()-tStart,k=tEl.dataset.t;dwell[k]=(dwell[k]||0)+d;if(d>1500)rec(`Dwell ${(d/1000).toFixed(1)}s · ${k}`)}tEl=null;brk.hidden=true}
+document.addEventListener('mousemove',e=>{const st=$('#stage').getBoundingClientRect();$('#under').style.setProperty('--mx',(e.clientX-st.left)+'px');$('#under').style.setProperty('--my',(e.clientY-st.top)+'px');
+  if(TOUCH||!entered||idle)return;const el=e.target.closest&&e.target.closest('[data-t]');if(el!==tEl){leave();if(el){tEl=el;tStart=performance.now();brk.hidden=false;AU.tick()}}});
+function brLoop(){if(tEl&&!brk.hidden){const r=tEl.getBoundingClientRect();brk.style.left=r.left+'px';brk.style.top=r.top+'px';brk.style.width=r.width+'px';brk.style.height=r.height+'px';brk.querySelector('span').textContent=`${tEl.dataset.t} · dwell ${((performance.now()-tStart)/1000).toFixed(1)}s`}requestAnimationFrame(brLoop)}
+requestAnimationFrame(brLoop);
+document.documentElement.addEventListener('mouseleave',()=>{if(entered)rec('Cursor left the page · noted')});
+let hidAt=0;document.addEventListener('visibilitychange',()=>{if(!entered)return;if(document.hidden)hidAt=performance.now();else if(hidAt)rec(`Away ${((performance.now()-hidAt)/1000).toFixed(0)}s · return noted`)});
+let woSel=0;const woSeen=new WeakSet();
+document.addEventListener('selectionchange',()=>{const s=getSelection();if(!s||s.isCollapsed)return;for(const w of $$('.wo')){if(s.containsNode(w,true)&&!woSeen.has(w)){woSeen.add(w);woSel++;rec('Highlighted text that was not meant to be read');if(woSel===2)setTimeout(()=>announce(['Residents are reminded that highlighting is unnecessary.','強調表示は不要です。']),1500)}}});
+$('#stage').addEventListener('touchstart',e=>{const t=e.touches[0],st=$('#stage').getBoundingClientRect();$('#under').style.setProperty('--mx',(t.clientX-st.left)+'px');$('#under').style.setProperty('--my',(t.clientY-st.top)+'px')},{passive:true});
+
+/* ---------- the underlayer: what's behind the paper ---------- */
+const uc=$('#under');
+function textField(x,W,H,lines,size,step){x.font=`500 ${size}px "Barlow Condensed","Arial Narrow",sans-serif`;let i=0;for(let y=size+6;y<H;y+=step){let s='';while(x.measureText(s).width<W+60)s+=lines[i++%lines.length]+'   ';x.fillText(s,-((y*7)%60),y)}}
+function drawUnder(p){const r=$('#stage').getBoundingClientRect(),W=Math.max(1,r.width|0),H=Math.max(1,r.height|0);uc.width=W;uc.height=H;const x=uc.getContext('2d');x.clearRect(0,0,W,H);x.fillStyle='#1a2140';x.strokeStyle='#1a2140';
+  let sd=p.length*977;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+  if(p==='lobby'){x.globalAlpha=.55;x.lineWidth=1;for(let gy=0;gy<H;gy+=46)for(let gx=0;gx<W;gx+=88){x.strokeRect(gx+4,gy+4,78,38);x.font='500 9px "Barlow Condensed",sans-serif';x.fillText('RESIDENT '+pad((gx/88|0)+(gy/46|0)*40,4),gx+9,gy+16);x.fillText(['COMPLIANT','COMPLIANT','REVIEW','COMPLIANT','RELOCATED'][(R()*5)|0],gx+9,gy+28)}
+    x.globalAlpha=1;x.lineWidth=2;const cx=W*.72,cy=H*.45;for(let k=1;k<9;k++){x.beginPath();x.arc(cx,cy,k*H*.07,0,Math.PI*2);x.stroke()}x.beginPath();x.arc(cx,cy,H*.09,0,Math.PI*2);x.fill()}
+  else if(p==='res'){x.lineWidth=1.5;x.globalAlpha=.8;[[0,0],[W,0],[W*.5,0],[0,H*.6],[W,H*.55],[W*.3,H],[W*.8,H]].forEach(([a,b],i)=>{const ang=Math.atan2(H*.5-b,W*.6-a),sp=.45;x.beginPath();x.moveTo(a,b);x.lineTo(a+Math.cos(ang-sp)*W*1.2,b+Math.sin(ang-sp)*W*1.2);x.moveTo(a,b);x.lineTo(a+Math.cos(ang+sp)*W*1.2,b+Math.sin(ang+sp)*W*1.2);x.stroke();x.font='600 14px "Barlow Condensed",sans-serif';x.fillText('CAM R-'+pad(12+i),a+(a>W/2?-70:8),b+(b>H/2?-10:20))});
+    x.globalAlpha=1;x.font='600 13px "Barlow Condensed",sans-serif';['BEDROOM · OBSERVED','BATH · OBSERVED','LIVING · OBSERVED','KITCHEN · OBSERVED'].forEach((t,i)=>x.fillText(t,W*.52+(i%2)*W*.2,H*.32+(i>>1)*H*.26))}
+  else if(p==='am'){x.globalAlpha=.7;textField(x,W,H,['LANE 3 · COMPLIANCE 0.71 · DENIED','GARDEN · PATH DEVIATION 2.3M · NOTED','QUIET FLOOR · VOICE DETECTED 14:02','DELIVERY OPENED · RESEALED',`POOL · CANDIDATE ${CAND} · NOT YET ASSIGNED`,'BIRDSONG TRACK 04 · LOOP'],13,24)}
+  else if(p==='safe'){x.globalAlpha=.75;textField(x,W,H,[`SUBJECT ${CAND}`,'STAIRWELL B · LINGER 41S','RELOCATION 2026.09.14 · REASON WITHHELD','ROOF EAST · LOOP 40S','INCIDENT · RECLASSIFIED','SUBJECT ASLEEP 01:12','CURSOR HESITATION · PRICING','FAMILY CONTACT · LOGGED'],15,26)}
+  else if(p==='dist'){x.lineWidth=7;x.globalAlpha=.9;const pts=[[.05,.2],[.4,.08],[.9,.15],[.95,.7],[.55,.92],[.1,.8]];x.beginPath();pts.forEach(([a,b],i)=>i?x.lineTo(W*a,H*b):x.moveTo(W*a,H*b));x.closePath();x.stroke();x.lineWidth=1.5;
+    x.font='600 16px "Barlow Condensed",sans-serif';pts.forEach(([a,b],i)=>{const px=W*a,py=H*b;x.beginPath();x.moveTo(px-10,py-10);x.lineTo(px+10,py+10);x.moveTo(px+10,py-10);x.lineTo(px-10,py+10);x.stroke();x.fillText('CHECKPOINT '+(i+1),px+14,py+5)});
+    x.font='600 30px "Barlow Condensed",sans-serif';x.fillText('PERIMETER',W*.42,H*.06);x.fillText('RELOCATION ZONE →',W*.62,H*.98)}
+  else if(p==='apply'){const nm=(appData.name||'APPLICANT').toUpperCase();x.globalAlpha=.85;x.font=`600 ${H*.32|0}px "Barlow Condensed",sans-serif`;x.fillText(nm,-10,H*.35);x.fillText('FILE '+CAND,-10,H*.7);x.font=`600 ${H*.12|0}px "Barlow Condensed",sans-serif`;x.fillText('OPEN · PERMANENT',10,H*.95)}
+  else if(p==='roof'){x.globalAlpha=.6;textField(x,W,H,[`SUBJECT ${CAND} · ROOF ACCESS`,'SIGNAL LOST','FIND THE RED','LOOP 40S','THEY READ EVERYTHING'],18,30)}}
+
+/* the paper only gives way if you press on it: the pale floor numbers (and 1,204 on Safety) */
+document.addEventListener('click',e=>{if(!entered||curP==='roof')return;const f=e.target.closest&&e.target.closest('.fl,.days');if(!f)return;const on=document.body.classList.toggle('peel');AU.paper();if(on)rec('Surface disturbed · noted')});
+
+/* ---------- pages ---------- */
+const PG={};$$('.pg').forEach(s=>PG[s.dataset.p]=s);
+const HASH={lobby:'lobby',residences:'res',amenities:'am',safety:'safe',district:'dist',apply:'apply',roof:'roof'};const RH=Object.fromEntries(Object.entries(HASH).map(([a,b])=>[b,a]));
+function cut(){if(RM)return;const c=$('#cut');c.classList.add('on');setTimeout(()=>c.classList.remove('on'),50)}
+function show(p,fromHash){if(p==='roof'&&!roofOpen){if(entered)announce(['The roof is closed to residents.','屋上は居住者立入禁止です。']);if(location.hash==='#roof')history.replaceState(null,'','#'+RH[curP]);return}
+  leave();const prev=curP;curP=p;$$('.pg').forEach(s=>s.classList.toggle('on',s===PG[p]));$$('#menu a').forEach(a=>a.classList.toggle('on',a.dataset.p===p));
+  const s=PG[p];document.documentElement.style.setProperty('--pc',s.dataset.c);document.documentElement.style.setProperty('--pi',s.dataset.i);$('#here').textContent=s.dataset.name+' · '+s.dataset.jp;
+  document.body.classList.toggle('roof',p==='roof');document.body.classList.remove('menuopen');if(p==='roof')$('#band').hidden=true;
+  if(entered){cut();AU.cut();AU.room(p);rec(`Floor · ${s.dataset.name}`)}
+  drawUnder(p);placeCity();if(!fromHash&&location.hash!=='#'+RH[p])location.hash=RH[p];
+  if(prev==='roof'&&p!=='roof')leftRoof();
+  if(p==='safe')armIntrusion(9000);if(p==='apply')renderKiosk()}
+addEventListener('hashchange',()=>{const p=HASH[location.hash.slice(1)];if(p&&p!==curP)show(p,true)});
+$$('#menu a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.p)}));
+$$('.brand').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();if(entered)show('lobby')}));
+$('#mbtn').onclick=()=>document.body.classList.toggle('menuopen');
+addEventListener('keydown',e=>{if(!entered||e.metaKey||e.ctrlKey||e.altKey)return;if(e.target.closest&&e.target.closest('input'))return;const k=e.key,order=['lobby','res','am','safe','dist','apply'];
+  if(/^[1-6]$/.test(k))show(order[+k-1]);else if(k==='ArrowRight'||k==='ArrowLeft'){const d=k==='ArrowRight'?1:-1;if(curP==='res')resGo(d);else if(curP==='am')amGo(d)}else if(k==='Escape')document.body.classList.remove('menuopen')});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)show(g.dataset.go)});
+
+/* ---------- concierge intercom ---------- */
+const icOut=$('#ic-out');let icT=null;
+function icSay(t,you){clearInterval(icT);const pre=you?`<span class="you">You said: ${esc(you)}</span>`:'';if(RM){icOut.innerHTML=pre+esc(t);return}let i=0;icOut.innerHTML=pre;const sp=document.createElement('span');icOut.appendChild(sp);icT=setInterval(()=>{i+=2;sp.textContent=t.slice(0,i);if(i>=t.length)clearInterval(icT)},18);if(AU.voice&&curP==='lobby')speak(t)}
+function greet(){const h=new Date().getHours();return `Good ${h<12?'morning':h<18?'afternoon':'evening'}, candidate ${CAND}. How may I keep you comfortable?`}
+const RULES=[[/price|cost|rent|credit|how much/i,'Residences begin at 4,200 credits a month on floor 41. Penthouse pricing follows a background review.'],[/view|visit|tour|book|apply/i,'The application desk is on floor 90. I have already started your file.'],[/roof|runner|stairs|climb|jump/i,'The roof is closed to residents. Rooftop activity is reported automatically. Is there anything else?'],[/private|privacy|camera|watch|monitor|record|log|observ/i,'Common areas are observed for your comfort. Residences are observed only with consent, which is part of the lease.'],[/red|note|friend|paper|behind|under/i,()=>intruded?'Please disregard any unauthorised marks. They have been reported.':'I\'m not sure what you mean.'],[/leave|exit|move out|out of place|relocat|33/i,'Households are never asked to leave. Some are moved to quieter floors.'],[/who are you|human|real|bot|person/i,'I am the desk. Someone reads every conversation afterwards, if that helps.'],[/music|sound|audio/i,'Lobby audio is composed for calm. The sound control is on the left.'],[/^(hi|hello|hey|good)/i,()=>greet()],[/thank/i,'You\'re welcome. This has been added to your file.']];
+const DEF=['I\'ve noted that for your file.','A Civic Liaison will follow up.','Thank you. That has been recorded.','I can help with residences, viewings and building services.'];let di=0;
+$('#icform').addEventListener('submit',e=>{e.preventDefault();const v=$('#ic-in').value.trim();if(!v)return;$('#ic-in').value='';rec(`Spoke to concierge · ${v.length} characters`);let a=DEF[di++%DEF.length];for(const[re,r]of RULES)if(re.test(v)){a=typeof r==='function'?r():r;break}setTimeout(()=>icSay(a,v),500)});
+
+/* ---------- residences ---------- */
+const UNITS=[
+ {name:'Studio',floor:41,area:38,price:'4,200 ₵',layout:'Bed folds into the wall',light:'East · morning',line:'Small, bright, very quiet.',prev:'relocated 2026.10.02 · reason withheld',rooms:[[6,8,58,44,'living'],[64,8,30,22,'kitchen'],[64,30,30,22,'bath'],[6,52,88,10,'entry']]},
+ {name:'One bedroom',floor:58,area:62,price:'6,900 ₵',layout:'1 bedroom · sliding wall',light:'South · all day',line:'A long room on the glass.',prev:'moved to a quieter floor',rooms:[[6,8,52,34,'living'],[58,8,36,34,'bedroom'],[6,42,30,20,'kitchen'],[36,42,22,20,'bath'],[58,42,36,20,'dressing']]},
+ {name:'Two bedroom',floor:74,area:104,price:'11,400 ₵',layout:'2 bedrooms · 2 baths',light:'Corner · south-west',line:'Two walls of glass. Nowhere to stand unseen.',prev:'relocated 2026.09.14 · reason withheld',rooms:[[6,8,40,30,'living'],[46,8,26,30,'dining'],[72,8,22,26,'bedroom'],[72,34,22,28,'bedroom'],[6,38,24,24,'kitchen'],[30,38,20,24,'bath'],[50,38,22,24,'bath']]},
+ {name:'Penthouse',floor:96,area:280,price:'On review',layout:'4 bedrooms · private lift',light:'Every direction',line:'The whole floor, under the crown.',prev:'still in residence',rooms:[[6,8,30,26,'bedroom'],[36,8,28,26,'living'],[64,8,30,26,'bedroom'],[6,34,22,28,'bedroom'],[28,34,24,28,'terrace'],[52,34,20,28,'dining'],[72,34,22,28,'bedroom']]}];
+let ri=2;
+function planSVG(u){return `<svg viewBox="0 0 100 70" role="img" aria-label="Floor plan, ${u.name}"><rect x="2" y="4" width="96" height="62" fill="none" stroke="#18203a" stroke-width="1"/>${u.rooms.map(([x,y,w,h,l])=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="rgba(255,255,255,.55)" stroke="#18203a" stroke-width=".35"/><text x="${x+w/2}" y="${y+h/2+1}" text-anchor="middle" font-family="Lexend Exa, sans-serif" font-size="2.4" letter-spacing=".5" fill="#8a94a6">${l.toUpperCase()}</text>`).join('')}<line x1="6" y1="6" x2="94" y2="6" stroke="#1c7ff6" stroke-width="1"/><text x="94" y="69" text-anchor="end" font-family="Barlow Condensed, sans-serif" font-size="3" fill="#8a94a6">${u.area} m² · GLASS ━</text></svg>`}
+function renderRes(){const u=UNITS[ri];$('#res-l').innerHTML=`<div class="fl" aria-hidden="true">${u.floor}</div><h2 class="st">${u.name}</h2><p class="sub">${esc(u.line)}</p><dl class="sp"><dt>Area</dt><dd>${u.area} m²</dd><dt>Layout</dt><dd>${u.layout}</dd><dt>Light</dt><dd>${u.light}</dd><dt>Monthly</dt><dd>${u.price}</dd><dt>Previous household</dt><dd><span class="wo">${u.prev}</span></dd></dl>`;
+  $('#res-r').innerHTML=planSVG(u);$('#res-r').dataset.t=`PLAN · FLOOR ${u.floor} · ${u.name.toUpperCase()}`;$('#res-ix').textContent=`${pad(ri+1)} / ${pad(UNITS.length)}`;
+  $('#res-act').innerHTML=`<button class="btn pri" type="button" id="hold" data-t="HOLD · ${u.name.toUpperCase()}">Hold this residence</button><button class="btn" type="button" data-go="apply" data-t="APPLY">Apply</button>`;
+  $('#hold').onclick=()=>{rec(`Hold requested · floor ${u.floor}`);announce([`The ${u.name.toLowerCase()} on floor ${u.floor} is held for you for twenty-four hours.`,`${u.floor}階のお部屋を二十四時間お取り置きします。`])}}
+function resGo(d){ri=(ri+d+UNITS.length)%UNITS.length;renderRes();AU.cut();cut();rec(`Viewed plan · floor ${UNITS[ri].floor}`)}
+$$('#p-res [data-pg]').forEach(b=>b.onclick=()=>resGo(+b.dataset.pg));renderRes();
+
+/* ---------- amenities ---------- */
+const AMS=[{fl:'64',name:'Sky garden',jp:'空中庭園',plate:'garden',a:'Two storeys of planted terraces behind sealed glass.',b:'The birdsong is a recording.'},
+ {fl:'88',name:'Lap pool',jp:'プール',plate:'pool',a:'Twenty-five metres, heated, lit from beneath.',b:'Lanes are assigned by compliance score.'},
+ {fl:'30–40',name:'Quiet floors',jp:'静かな階',plate:'quiet',a:'Acoustic slabs. No voices in the corridors.',b:'Voices are logged.'},
+ {fl:'B2',name:'Secure delivery',jp:'配達',plate:'halden',a:'Every parcel scanned by halden logistics. Nothing arrives unannounced.',b:'Everything is opened first.'},
+ {fl:'01',name:'The desk',jp:'受付',plate:'desk',a:'Always there. Always listening.',b:'This one is not a euphemism.'}];
+let ai=0;
+function renderAm(){const m=AMS[ai];$('#am-l').innerHTML=`<div class="fl" aria-hidden="true">${m.fl}</div><h2 class="st">${m.name}</h2><p class="stjp">${m.jp}</p><p class="sub">${esc(m.a)} <span class="wo">${esc(m.b)}</span></p>`;
+  $('#am-r').innerHTML=`<div class="plate ${m.plate}" data-t="${m.name.toUpperCase()} · FLOOR ${m.fl}"><span class="cap">Floor ${m.fl}</span></div>`;$('#am-ix').textContent=`${pad(ai+1)} / ${pad(AMS.length)}`}
+function amGo(d){ai=(ai+d+AMS.length)%AMS.length;renderAm();AU.cut();cut()}
+$$('#p-am [data-pg]').forEach(b=>b.onclick=()=>amGo(+b.dataset.pg));renderAm();
+
+/* ---------- cams ---------- */
+const CAMS=[['02','Lobby'],['07','Stairwell B'],['11','Sky garden'],['14','Roof east']];
+$('#cams').innerHTML=CAMS.map(c=>`<div class="cam" data-t="CAM ${c[0]} · ${c[1].toUpperCase()}"><canvas width="200" height="120"></canvas><span class="lab">Cam ${c[0]} · ${c[1]}</span><span class="st">Clear</span><span class="ts">--:--:--</span></div>`).join('');
+const camEls=$$('#cams .cam');let runnerT=-1;
+function drawCam(i,c,t){const x=c.getContext('2d'),W=200,H=120;x.fillStyle='#f3f6f9';x.fillRect(0,0,W,H);x.strokeStyle='rgba(24,32,58,.5)';x.lineWidth=1;x.beginPath();
+  if(i===0){x.moveTo(0,84);x.lineTo(200,84);x.moveTo(50,84);x.lineTo(76,36);x.lineTo(124,36);x.lineTo(150,84);x.rect(80,48,40,26)}
+  else if(i===1){for(let k=0;k<6;k++){const y=108-k*15;x.moveTo(40+k*12,y);x.lineTo(160-k*12,y)}x.moveTo(40,108);x.lineTo(100,12);x.moveTo(160,108);x.lineTo(100,12)}
+  else if(i===2){x.moveTo(0,78);x.lineTo(200,78);for(let k=0;k<10;k++){x.moveTo(12+k*20,78);x.lineTo(16+k*20,48+((k*7)%16))}x.rect(0,12,200,7)}
+  else{x.moveTo(0,72);x.lineTo(200,62);x.moveTo(0,72);x.lineTo(0,120);x.rect(136,36,36,26);x.moveTo(24,70);x.lineTo(24,48);x.lineTo(72,46);x.lineTo(72,68)}
+  x.stroke();if(i===3&&runnerT>=0){const p=(t-runnerT)/1500;if(p<1){const px=-20+p*240,py=56-Math.sin(p*Math.PI)*18;x.fillStyle='rgba(227,18,11,.95)';x.fillRect(px,py,7,14);x.fillStyle='rgba(227,18,11,.3)';x.fillRect(px-30,py+3,28,8)}}
+  const img=x.getImageData(0,0,W,H),d=img.data;for(let k=0;k<d.length;k+=4){const n=(Math.random()-.5)*22;d[k]+=n;d[k+1]+=n;d[k+2]+=n}x.putImageData(img,0,0)}
+let camLast=0;function camLoop(t){if(curP==='safe'&&t-camLast>100){camLast=t;const ts=new Date().toTimeString().slice(0,8);camEls.forEach((el,i)=>{drawCam(i,el.querySelector('canvas'),t);el.querySelector('.ts').textContent=ts+' · rec'})}requestAnimationFrame(camLoop)}requestAnimationFrame(camLoop);
+function camMotion(i,ms){const s=camEls[i].querySelector('.st');s.textContent='Motion';s.classList.add('mo');setTimeout(()=>{s.textContent='Clear';s.classList.remove('mo')},ms)}
+setInterval(()=>{if(curP==='safe'&&Math.random()<.35)camMotion((Math.random()*3)|0,1200)},8000);
+
+/* ---------- map ---------- */
+{let h='',s=7;const r=()=>{s=(s*16807)%2147483647;return s/2147483647};h+='<rect width="1200" height="520" fill="#2f69c0"/>';
+ for(let x=0;x<1200;x+=60)for(let y=0;y<520;y+=52){if(x>=540&&x<=600&&y>=208&&y<=260)continue;const w=40+r()*12,hh=32+r()*12,c=['#5b9be6','#4a8be0','#6aa7ec','#3f7fd6'][(r()*4)|0];h+=`<rect x="${x+6}" y="${y+6}" width="${w}" height="${hh}" fill="${c}"/><rect x="${x+6}" y="${y+6}" width="${w}" height="${hh*.25}" fill="#cfe2fa" opacity=".55"/>`}
+ h+='<path d="M0 290 C 300 240, 700 330, 1200 260" stroke="#9cc6f5" stroke-width="10" fill="none" opacity=".7"/>';
+ [[570,236,'vesta 9','You are here',1],[300,130,'meridian','Mall · 6 min'],[880,170,'halden T3','Logistics · 9 min'],[820,380,'kuro & assoc.','Offices · 7 min'],[220,360,'Central station','Sky line · 4 min'],[1010,90,'civic office','Your liaison · 12 min']].forEach(([x,y,n,t,me])=>{h+=`<g class="poi" data-t="${n.toUpperCase()} · ${t.toUpperCase()}"><circle cx="${x}" cy="${y}" r="${me?15:9}" fill="${me?'#8fd11e':'#fff'}" stroke="${me?'#fff':'#1a2140'}" stroke-width="2"/><text x="${x+18}" y="${y+2}">${n}</text><text class="t2" x="${x+18}" y="${y+16}">${t}</text></g>`});
+ $('#map').innerHTML=h}
+
+/* ---------- application kiosk ---------- */
+let ks=0,fbuf='';
+function kh(n){$('#k-step').textContent=n<5?`Step ${n+1} / 5`:'Received · 受理';$('#k-steps').innerHTML=[0,1,2,3,4].map(i=>`<i class="${i<=n?'d':''}"></i>`).join('')}
+function renderKiosk(){const kb=$('#kb');kh(ks);
+  if(ks===0){kb.innerHTML=`<div class="kq">Your name, as it appears on your file.<small>ファイルに記載のお名前</small></div><input class="kin" id="k-name" type="text" autocomplete="off" aria-label="Your name" value="${esc(appData.name)}"><div class="kmsg" id="kmsg"></div><div class="row"><button class="btn pri" type="button" id="kn">Continue</button></div>`;
+    const go=()=>{const v=$('#k-name').value.trim();if(!v){$('#kmsg').textContent='Enter the name on your file to continue.';return}appData.name=v;rec('Name entered · file updated');drawUnder('apply');ks=1;renderKiosk();AU.cut()};$('#kn').onclick=go;$('#k-name').onkeydown=e=>{if(e.key==='Enter')go()}}
+  else if(ks===1){kb.innerHTML=`<div class="kq">Household.<small>世帯人数</small></div><div class="keys wide">${['1','2','3','4','5+'].map(n=>`<button class="btn" type="button" data-h="${n}">${n}</button>`).join('')}</div>`;$$('[data-h]',kb).forEach(b=>b.onclick=()=>{appData.house=b.dataset.h;rec(`Household · ${b.dataset.h}`);ks=2;fbuf='';renderKiosk();AU.cut()})}
+  else if(ks===2){kb.innerHTML=`<div class="kq">Preferred floor.<small>ご希望の階</small></div><div class="row" style="gap:28px;align-items:flex-start"><div><div class="disp" id="disp">${fbuf.padEnd(2,'_')}</div><div class="kmsg" id="kmsg">Floors 12 to 96</div></div><div class="keys">${['1','2','3','4','5','6','7','8','9','C','0','OK'].map(n=>`<button class="btn" type="button" data-k="${n}">${n}</button>`).join('')}</div></div>`;
+    $$('[data-k]',kb).forEach(b=>b.onclick=()=>{const k=b.dataset.k;AU.tick();if(k==='C'){fbuf=''}else if(k==='OK'){const n=+fbuf;let m='';if(!fbuf)m='Enter a floor.';else if(n<12||n>96)m='Floors 12 to 96 only.';else if(n===54)m='Floor 54 is not residential.';else if(n===33)m='Floor 33 is being prepared.';if(m){$('#kmsg').textContent=m;return}appData.floor=n;rec(`Preferred floor · ${n}`);ks=3;renderKiosk();AU.cut();return}else if(fbuf.length<2)fbuf+=k;$('#disp').textContent=fbuf.padEnd(2,'_')})}
+  else if(ks===3){kb.innerHTML=`<div class="kq">Move-in.<small>入居時期</small></div><div class="keys wide">${['Dec','Jan','Feb','Mar','Apr'].map(n=>`<button class="btn" type="button" data-m="${n}">${n}</button>`).join('')}</div><div class="kmsg">2026 – 2027</div>`;$$('[data-m]',kb).forEach(b=>b.onclick=()=>{appData.month=b.dataset.m;rec(`Move-in · ${b.dataset.m}`);ks=4;renderKiosk();AU.cut()})}
+  else if(ks===4){kb.innerHTML=`<div class="kq">Consent.<small>同意</small></div><p class="sub" style="margin:0">I consent to continuous residency monitoring, inside and outside the residence, for the length of my residency and after.</p><div class="row"><button class="btn pri" type="button" id="kc">I consent</button><button class="btn" type="button" disabled>I do not consent</button></div><div class="kmsg">Not consenting is not available in your district.</div>`;
+    $('#kc').onclick=()=>{rec('Consent recorded · permanent');ks=5;renderKiosk();announce([`Thank you, ${appData.name}. Your application has been received.`,'お申し込みを受け付けました。'])}}
+  else{kb.innerHTML=`<div class="kq">Application 9-${CAND}<small>受理されました</small></div><p class="sub" style="margin:0">Thank you, ${esc(appData.name)}. A Civic Liaison will visit your current address about floor ${appData.floor}, ${appData.month}. Please be at home. Please keep your windows sealed.</p><div class="row"><button class="btn pri" type="button" data-go="lobby">Return to the lobby</button></div>`}}
+
+/* ---------- the roof ---------- */
+let armed=false;
+function armIntrusion(ms){if(armed||intruded)return;armed=true;setTimeout(intrude,ms)}
+function intrude(){if(intruded||!entered)return;intruded=true;roofOpen=true;AU.glitch();runnerT=performance.now();camMotion(3,2800);rec('Unusual activity · roof east');
+  const a=$('#menu a[data-p=roof]');a.classList.remove('locked');a.classList.add('open');a.removeAttribute('aria-disabled');a.dataset.t='ROOF · OPEN';
+  if(!RM)$('#app').animate([{transform:'translate(0,0)'},{transform:'translate(-5px,2px)'},{transform:'translate(4px,-2px)'},{transform:'translate(0,0)'}],{duration:120,easing:'steps(3)'});
+  setTimeout(()=>announce(['Rooftop patrol reports all clear.','屋上巡回、異常なし。'],'all clear'),900)}
+function leftRoof(){roofOpen=false;const a=$('#menu a[data-p=roof]');a.classList.remove('open');a.classList.add('locked');a.setAttribute('aria-disabled','true');a.dataset.t='ROOF · RESTRICTED';
+  setTimeout(()=>announce(['We noticed unusual activity during your visit. Rooftop patrol has been notified. Thank you for your cooperation.','ご協力ありがとうございます。']),1300);
+  icSay('We noticed unusual activity during your visit. Please disregard any unauthorised marks.')}
+$('#roofdown').onclick=()=>show('lobby');
+
+/* ---------- gate ---------- */
+$('#g-prefs').onclick=()=>{$('#prefs').hidden=!$('#prefs').hidden};
+$$('[data-enter]').forEach(b=>b.onclick=()=>{if(entered)return;AU.start();tgUI();const g=$('#gate');g.classList.add('scanning');$('#gstat').textContent='Verifying · 確認中';
+  setTimeout(()=>{$('#gstat').textContent=`Welcome, candidate ${CAND}.`},RM?0:900);
+  setTimeout(()=>{g.classList.add('open');entered=true;rec(b.dataset.enter==='2'?'Entry · accepted all':'Entry · accepted');rec(`Candidate ${CAND} · file opened`);icSay(greet());AU.room(curP);placeCity();setTimeout(()=>{g.hidden=true},RM?0:950);annLoop();setTimeout(()=>armIntrusion(0),80000)},RM?50:1900)});
+
+/* ---------- idle ---------- */
+['pointermove','pointerdown','keydown','wheel','touchstart'].forEach(ev=>addEventListener(ev,()=>{lastInput=performance.now();if(idle){idle=false;$('#idle').hidden=true;placeCity();rec('Returned from idle')}},{passive:true}));
+setInterval(()=>{if(entered&&!idle&&curP!=='roof'&&performance.now()-lastInput>60000){idle=true;leave();$('#idle').hidden=false;$('#band').hidden=true;placeCity();rec(`Idle ${((performance.now()-lastInput)/1000)|0}s · noted`)}},2000);
+
+/* ---------- the city (WebGL): lobby window, idle, roof ---------- */
+const cv=$('#city');let camMode='orbit',cityResize=()=>{};
+function placeCity(){const s=cv.style;let r=null;
+  if(idle){r={left:0,top:0,width:innerWidth,height:innerHeight};s.zIndex=29;camMode='orbit'}
+  else if(curP==='roof'){r=$('#stage').getBoundingClientRect();s.zIndex=1;camMode='roof'}
+  else if(curP==='lobby'&&entered){r=$('#win').getBoundingClientRect();s.zIndex=3;camMode='orbit'}
+  if(!r||r.width<2){s.display='none';return}s.display='block';s.left=r.left+'px';s.top=r.top+'px';s.width=r.width+'px';s.height=r.height+'px';cityResize()}
+addEventListener('resize',()=>{drawUnder(curP);placeCity()});
+(function city(){let gl=null;try{gl=cv.getContext('webgl',{antialias:true,alpha:false})}catch(e){}if(!gl)return;
+ function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+ const R=rng(909),V=[];
+ function box(x0,y0,z0,x1,y1,z1,c,f){const F=[[[0,1,0],[[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]]],[[-1,0,0],[[x0,y0,z1],[x0,y0,z0],[x0,y1,z0],[x0,y1,z1]]],[[1,0,0],[[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]]],[[0,0,-1],[[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]]],[[0,0,1],[[x1,y0,z1],[x0,y0,z1],[x0,y1,z1],[x1,y1,z1]]]];for(const[n,q]of F)for(const i of[0,1,2,0,2,3]){const p=q[i];V.push(p[0],p[1],p[2],n[0],n[1],n[2],c[0],c[1],c[2],f)}}
+ const hex=h=>{const n=parseInt(h.slice(1),16);return[(n>>16&255)/255,(n>>8&255)/255,(n&255)/255]};const WHITE=[.95,.96,.975],CONC=[.92,.9,.86],GLASS=[.62,.74,.93];
+ V.push(...[[-4000,0,-4000],[4000,0,-4000],[4000,0,4000],[-4000,0,-4000],[4000,0,4000],[-4000,0,4000]].flatMap(p=>[p[0],p[1],p[2],0,1,0,.8,.84,.9,0]));
+ for(let gx=-1100;gx<1100;gx+=30)for(let gz=-1100;gz<1100;gz+=30){const cx=gx+15,cz=gz+15,d=Math.hypot(cx,cz);if(d<70||R()<.07)continue;const w=13+R()*11,dd=13+R()*11;let h=14+Math.pow(R(),2.1)*(d<400?170:120);if(d>500&&R()<.12)h+=100+R()*120;
+  const r=R();let c=WHITE,f=1;if(r<.22){c=CONC;f=0}else if(r<.36){c=GLASS;f=2}else if(r<.4){c=hex(['#f6c514','#ee5a0e','#94d41c','#3a72e6'][(R()*4)|0]);f=0}
+  box(cx-w/2,0,cz-dd/2,cx+w/2,h,cz+dd/2,c,f);if(R()<.4){const pw=2+R()*3;box(cx-pw/2,h,cz-pw/2,cx+pw/2,h+1.5+R()*2,cz+pw/2,WHITE,0)}if(h>120&&R()<.5)box(cx-.3,h,cz-.3,cx+.3,h+14+R()*20,cz+.3,[.9,.9,.92],0)}
+ box(-46,0,-46,46,22,46,WHITE,1);box(-20,22,-20,20,300,20,[.7,.8,.95],2);box(-21,262,-21,21,276,21,hex('#8fd11e'),0);box(-21,226,-21,21,229,21,hex('#8fd11e'),0);box(-16,300,-16,16,310,16,WHITE,0);box(-.6,310,-.6,.6,360,.6,[.92,.92,.95],0);
+ box(13,310,-12,13.4,311.1,12,[.89,.07,.04],0);
+ const VS=`attribute vec3 aP,aN,aC;attribute float aF;uniform mat4 uVP;varying vec3 vP,vN,vC;varying float vF;void main(){vP=aP;vN=aN;vC=aC;vF=aF;gl_Position=uVP*vec4(aP,1.);}`;
+ const FS=`precision highp float;varying vec3 vP,vN,vC;varying float vF;uniform vec3 uCam,uSun;void main(){vec3 n=normalize(vN),c=vC,p=vP;float f=vF;float lit=max(dot(n,uSun),0.),k=smoothstep(0.,.42,lit);
+  if(f>.5&&abs(n.y)<.5){float band=fract(p.y/3.6),col=fract((p.x+p.z)/3.1);float g=f>1.5?step(.05,band)*step(.035,col):step(band,.44)*step(.08,col);vec3 gc=mix(vec3(.42,.58,.85),vec3(.72,.85,.98),k);gc=mix(gc,vec3(.86,.93,1.),smoothstep(30.,250.,p.y)*.4);c=mix(c,gc,g);}
+  vec3 o=mix(c*vec3(.66,.76,.95),c,k);if(n.y>.5)o=c*1.02;o*=mix(vec3(.36,.47,.74),vec3(1.),smoothstep(0.,58.,p.y));float d=length(p-uCam),fog=1.-exp(-d*.0011);fog=clamp(fog*fog*1.2,0.,1.);o=mix(o,vec3(.87,.925,.97),fog);gl_FragColor=vec4(min(o*1.06,vec3(1.)),1.);}`;
+ const VSS=`attribute vec2 aP;varying vec2 vQ;void main(){vQ=aP;gl_Position=vec4(aP,.9999,1.);}`;
+ const FSS=`precision highp float;varying vec2 vQ;uniform mat4 uInv;uniform vec3 uCam,uSun;uniform float uT;float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}float nz(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*nz(p);p*=2.03;a*=.5;}return v;}
+ void main(){vec4 w=uInv*vec4(vQ,1.,1.);vec3 d=normalize(w.xyz/w.w-uCam);float y=d.y;vec3 c=mix(vec3(.9,.945,.98),vec3(.27,.6,.96),smoothstep(0.,.22,y));c=mix(c,vec3(.04,.36,.91),smoothstep(.2,.75,y));if(y<0.)c=vec3(.87,.925,.97);float s=max(dot(d,uSun),0.);c+=vec3(1.,.98,.94)*(pow(s,600.)*1.2+pow(s,8.)*.18);if(y>.02){vec2 uv=d.xz/(y+.12)*1.4+vec2(uT*.006,0.);float cl=smoothstep(.55,.85,fbm(uv*1.3));cl*=smoothstep(.02,.18,y)*(1.-smoothstep(.5,.9,y));c=mix(c,vec3(.97,.985,1.),cl*.85);}gl_FragColor=vec4(min(c,vec3(1.)),1.);}`;
+ function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o}
+ function prog(v,f){const p=gl.createProgram();gl.attachShader(p,sh(gl.VERTEX_SHADER,v));gl.attachShader(p,sh(gl.FRAGMENT_SHADER,f));gl.linkProgram(p);return{p,u:n=>gl.getUniformLocation(p,n),a:n=>gl.getAttribLocation(p,n)}}
+ let P,S;try{P=prog(VS,FS);S=prog(VSS,FSS)}catch(e){console.warn(e);return}
+ const B=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,B);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(V),gl.STATIC_DRAW);const nV=V.length/10;const SB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,SB);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+ const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],norm=a=>{const l=Math.hypot(...a)||1;return[a[0]/l,a[1]/l,a[2]/l]};
+ const persp=(fy,a,n,f)=>{const t=1/Math.tan(fy/2),nf=1/(n-f);return[t/a,0,0,0,0,t,0,0,0,0,(f+n)*nf,-1,0,0,2*f*n*nf,0]};const viewM=(e,f,up)=>{const z=[-f[0],-f[1],-f[2]],x=norm(cross(up,z)),y=cross(z,x);return[x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-dot(x,e),-dot(y,e),-dot(z,e),1]};
+ const mul=(a,b)=>{const o=new Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+i]*b[j*4+k];o[j*4+i]=s}return o};
+ function inv(m){const[a00,a01,a02,a03,a10,a11,a12,a13,a20,a21,a22,a23,a30,a31,a32,a33]=m;const b00=a00*a11-a01*a10,b01=a00*a12-a02*a10,b02=a00*a13-a03*a10,b03=a01*a12-a02*a11,b04=a01*a13-a03*a11,b05=a02*a13-a03*a12,b06=a20*a31-a21*a30,b07=a20*a32-a22*a30,b08=a20*a33-a23*a30,b09=a21*a32-a22*a31,b10=a21*a33-a23*a31,b11=a22*a33-a23*a32;let d=b00*b11-b01*b10+b02*b09+b03*b08-b04*b07+b05*b06;if(!d)return null;d=1/d;return[(a11*b11-a12*b10+a13*b09)*d,(a02*b10-a01*b11-a03*b09)*d,(a31*b05-a32*b04+a33*b03)*d,(a22*b04-a21*b05-a23*b03)*d,(a12*b08-a10*b11-a13*b07)*d,(a00*b11-a02*b08+a03*b07)*d,(a32*b02-a30*b05-a33*b01)*d,(a20*b05-a22*b02+a23*b01)*d,(a10*b10-a11*b08+a13*b06)*d,(a01*b08-a00*b10-a03*b06)*d,(a30*b04-a31*b02+a33*b00)*d,(a21*b02-a20*b04-a23*b00)*d,(a11*b07-a10*b09-a12*b06)*d,(a00*b09-a01*b07+a02*b06)*d,(a31*b01-a30*b03-a32*b00)*d,(a20*b03-a21*b01+a22*b00)*d]}
+ const SUN=norm([-.55,.72,-.42]);cityResize=()=>{const d=Math.min(devicePixelRatio||1,1.5);cv.width=Math.max(1,Math.round(cv.clientWidth*d));cv.height=Math.max(1,Math.round(cv.clientHeight*d))};const t0=performance.now();
+ function frame(ms){requestAnimationFrame(frame);if(cv.style.display!=='block'||document.hidden)return;const t=(ms-t0)/1000*(RM?0:1)+20,W=cv.width,H=cv.height,asp=W/H;let e,f,fov;
+  if(camMode==='roof'){e=[0,312.2,0];const yaw=t*.03+2.2,pitch=-.12+Math.sin(t*.2)*.01;f=[Math.cos(pitch)*Math.cos(yaw),Math.sin(pitch),Math.cos(pitch)*Math.sin(yaw)];fov=(asp<1?78:58)*Math.PI/180}
+  else{const a=t*2*Math.PI/240+.5,Rr=asp<1?460:380,hh=150+Math.sin(t*.05)*18;e=[Math.cos(a)*Rr,hh,Math.sin(a)*Rr];fov=(asp<1?72:46)*Math.PI/180;const yaw=Math.atan2(-e[2],-e[0]),pitch=Math.atan2(185-hh,Rr)*.9;f=[Math.cos(pitch)*Math.cos(yaw),Math.sin(pitch),Math.cos(pitch)*Math.sin(yaw)]}
+  const vp=mul(persp(fov,asp,.5,9000),viewM(e,f,[0,1,0])),iv=inv(vp);if(!iv)return;gl.viewport(0,0,W,H);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.disable(gl.DEPTH_TEST);gl.useProgram(S.p);gl.bindBuffer(gl.ARRAY_BUFFER,SB);const sa=S.a('aP');gl.enableVertexAttribArray(sa);gl.vertexAttribPointer(sa,2,gl.FLOAT,false,0,0);gl.uniformMatrix4fv(S.u('uInv'),false,iv);gl.uniform3fv(S.u('uCam'),e);gl.uniform3fv(S.u('uSun'),SUN);gl.uniform1f(S.u('uT'),t);gl.drawArrays(gl.TRIANGLES,0,3);gl.disableVertexAttribArray(sa);
+  gl.enable(gl.DEPTH_TEST);gl.useProgram(P.p);gl.bindBuffer(gl.ARRAY_BUFFER,B);[['aP',3,0],['aN',3,12],['aC',3,24],['aF',1,36]].forEach(([n,s,o])=>{const l=P.a(n);gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,s,gl.FLOAT,false,40,o)});gl.uniformMatrix4fv(P.u('uVP'),false,vp);gl.uniform3fv(P.u('uCam'),e);gl.uniform3fv(P.u('uSun'),SUN);gl.drawArrays(gl.TRIANGLES,0,nV)}
+ requestAnimationFrame(frame)})();
+
+/* ---------- boot ---------- */
+{const p=HASH[location.hash.slice(1)];show(p&&p!=='roof'?p:'lobby',true)}
+window.__v9={show,intrude,announce,rec,appData,get curP(){return curP},get entered(){return entered}};
+})();
+</script>
+
+</body></html>
