@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The launcher's field blue: window, WebView and icon background -->
+    <color name="field">#ff1722f6</color>
+    <!-- The signal lime: icon foreground -->
+    <color name="lime">#ffc5ff18</color>
+</resources>
