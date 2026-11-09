@@ -152,9 +152,9 @@ body.hide #insp,body.hide .rh{display:none}
   <span class="lb" id="lb1"></span>
   <div id="stage">
     <header id="top">
-      <a class="id" href="../#vault" title="Back to the vault">JRL</a>
+      <a class="id" href="../#lab" target="_top" title="Back to the lab">JRL</a>
       <span><span id="wm">JERE.ING</span></span>
-      <span class="loc"><b>SCOPE</b>&nbsp;· VAULT · DC-08 · OSC-01 CH.A&nbsp;&nbsp;<span class="jp">波形</span></span>
+      <span class="loc"><b>SCOPE</b>&nbsp;· LAB · DC-08 · OSC-01 CH.A&nbsp;&nbsp;<span class="jp">波形</span></span>
       <span id="sig"><i></i><i></i><i></i>&nbsp;<span id="sigt">NO SIGNAL</span></span>
       <span class="hide-p" style="flex-direction:column;align-items:flex-start;justify-content:center;gap:3px"><span id="clock">00:00:00</span><span class="micro" id="tdate" style="color:#8b8c86">TCR</span></span>
       <button id="fsB" class="hide-p" title="Fullscreen (F)"><span class="k sh">F</span></button>
@@ -215,6 +215,8 @@ const store = { get(k, d) { try { const v = localStorage.getItem('scope3.' + k);
 const pad = n => String(Math.max(0, n | 0)).padStart(2, '0');
 const fmt = s => isFinite(s) ? pad(s / 60) + ':' + pad(s % 60) : '00:00';
 const stage = $('#stage');
+const inFrame = (() => { try { return window.top !== window; } catch (e) { return true; } })();
+const back = () => { if (inFrame) { try { window.top.history.back(); } catch (e) { } } else location.href = '../#lab'; };
 
 /* ---------- stage fit ---------- */
 let scale = 1, portrait = false;
@@ -447,7 +449,7 @@ function frame(now) {
 /* ---------- prompts + keys ---------- */
 const P = (k, l, fn, sh) => ({ k, l, fn, sh });
 function prompts() {
-  let L = [P('A', 'Load', () => $('#file').click()), P('␣', audioEl && !audioEl.paused ? 'Hold' : 'Play', toggle, 1), P('B', 'Prev', prev, 1), P('N', 'Next', next, 1), P('M', 'Draw', () => setMode(cycle(MODES, modeKey)), 1), P('C', 'Ink', () => setInk(cycle(INKS, inkKey)), 1), P('H', document.body.classList.contains('hide') ? 'Show' : 'Hide', hide, 1), P('ESC', 'Vault', () => location.href = '../#vault', 1)];
+  let L = [P('A', 'Load', () => $('#file').click()), P('␣', audioEl && !audioEl.paused ? 'Hold' : 'Play', toggle, 1), P('B', 'Prev', prev, 1), P('N', 'Next', next, 1), P('M', 'Draw', () => setMode(cycle(MODES, modeKey)), 1), P('C', 'Ink', () => setInk(cycle(INKS, inkKey)), 1), P('H', document.body.classList.contains('hide') ? 'Show' : 'Hide', hide, 1), P('ESC', 'Lab', back, 1)];
   if (portrait) L = L.filter(p => ['Load', 'Play', 'Hold', 'Draw', 'Vault'].includes(p.l));
   $('#prompts').innerHTML = L.map((p, i) => `<button class="pr" data-p="${i}"><span class="k${p.sh ? ' sh' : ''}${p.k === 'A' ? ' sel' : ''}">${p.k}</span>${p.l}</button>`).join('') + `<span class="sp"></span><span class="tc">${portrait ? '' : 'M DRAW · W WEIGHT · V WINDOW · C INK · F FULL<br>'}JRL · ⊠ 2850 · DC-08</span>`;
   $$('#prompts .pr').forEach(b => b.onclick = () => L[+b.dataset.p].fn());
@@ -459,7 +461,7 @@ addEventListener('keydown', e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return; const k = e.key.toLowerCase();
   if (k === ' ') { e.preventDefault(); toggle(); } else if (k === 'a') $('#file').click(); else if (k === 'n') next(); else if (k === 'b') prev();
   else if (k === 'm') setMode(cycle(MODES, modeKey)); else if (k === 'w') setWidth(cycle(WIDTHS, widthKey)); else if (k === 'v') setView(cycle(VIEWS, viewKey)); else if (k === 'c') setInk(cycle(INKS, inkKey));
-  else if (k === 'h') hide(); else if (k === 'f') full(); else if (k === 'escape') { if (document.body.classList.contains('hide')) hide(); else location.href = '../#vault'; }
+  else if (k === 'h') hide(); else if (k === 'f') full(); else if (k === 'escape') { if (document.body.classList.contains('hide')) hide(); else back(); }
   else if (k === 'arrowright' && audioEl && audioEl.duration) audioEl.currentTime = Math.min(audioEl.duration, audioEl.currentTime + 5); else if (k === 'arrowleft' && audioEl) audioEl.currentTime = Math.max(0, audioEl.currentTime - 5);
   else return; prompts();
 });
