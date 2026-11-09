@@ -479,7 +479,6 @@ a.seal{background:var(--sel)}
             <div class="sgbar"><i id="sgp"></i></div>
             <p class="txt" style="color:#c9cac4;font-size:15px">One song a day from the playlist, the same for everyone, new at midnight Eastern. Tune the dial onto today's frequency to lock it in, or just press A.</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btnA" id="txa" data-f><span class="k">A</span><span id="txal">PLAY TODAY'S SONG</span></button><a class="btnB" id="txy" data-f href="https://music.youtube.com/" target="_blank" rel="noopener"><span class="k">↗</span>YouTube Music</a></div>
-            <div id="ytp" aria-hidden="true"></div>
           </div>
           <div class="micro" style="line-height:1.6">Lock frequency changes daily · brief low chime on lock · brown-noise static, low-passed at 1.4kHz · sound wakes on first input</div>
         </div>
@@ -567,6 +566,7 @@ Most of any page is noise. Your phrase is the clean part.</pre></div>
       </section>
     </main>
 
+    <div id="ytp" aria-hidden="true"></div>
     <div id="status" hidden></div>
     <div id="term" hidden aria-label="Diagnostics terminal">
       <div class="th"><span>SLOT 07 · DIAGNOSTICS · <span class="jp">診断</span></span><span>[B] CLOSE</span></div>
@@ -1142,19 +1142,20 @@ fetch(ROOT + 'songs.json').then(r => r.ok ? r.json() : []).then(list => {
   $('#sgt').textContent = SONG.title; $('#sga').textContent = SONG.artist || ''; $('#sgd').textContent = 'SONG OF THE DAY · ' + TODAY.replace(/-/g, '·');
   $('#sgimg').src = `https://i.ytimg.com/vi/${SONG.id}/hqdefault.jpg`; $('#txy').href = `https://music.youtube.com/watch?v=${SONG.id}`;
 }).catch(() => { $('#sgt').textContent = 'No transmission.'; });
-function songUI() { $('#txal').textContent = songOn ? 'PAUSE' : (SONG ? "PLAY TODAY'S SONG" : 'NO SONG TODAY'); if (room === 'comms') renderPrompts(); }
+function hushStatic() { if (bed) bed.g.gain.setTargetAtTime(songOn || ytWant && !yt ? 0 : .03, bed.ctx.currentTime, .15); }
+function songUI() { $('#txal').textContent = songOn ? 'PAUSE' : (SONG ? "PLAY TODAY'S SONG" : 'NO SONG TODAY'); if (!termOpen) renderPrompts(); }
 function ytLoad() {
   if (yt || !SONG) return;
   window.onYouTubeIframeAPIReady = () => {
     yt = new YT.Player('ytp', { width: 1, height: 1, videoId: SONG.id, playerVars: { playsinline: 1, controls: 0 },
-      events: { onReady: () => { if (ytWant) yt.playVideo(); }, onStateChange: e => { songOn = e.data === 1 || e.data === 3; if (songOn && bed) bed.g.gain.setTargetAtTime(0, bed.ctx.currentTime, .3); songUI(); } } });
+      events: { onReady: () => { if (ytWant) yt.playVideo(); }, onStateChange: e => { songOn = e.data === 1 || e.data === 3; hushStatic(); songUI(); } } });
   };
   const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => status('YOUTUBE DID NOT ANSWER · OPEN IT IN YOUTUBE MUSIC', 3200); document.head.appendChild(sc);
 }
 function toggleSong() {
   if (!SONG) { play('buzz'); return; }
   if (yt && yt.getPlayerState) { if (songOn) yt.pauseVideo(); else yt.playVideo(); play('confirm'); return; }
-  ytWant = true; ytLoad(); status(`RECEIVING · ${SONG.title.toUpperCase()}`); play('confirm');
+  ytWant = true; hushStatic(); ytLoad(); status(`RECEIVING · ${SONG.title.toUpperCase()}`); play('confirm');
 }
 $('#txa').addEventListener('click', toggleSong);
 JRL.every(() => { if (room !== 'comms' || !yt || !yt.getDuration) return; const d = yt.getDuration(), c = yt.getCurrentTime(); if (d) $('#sgp').style.width = (c / d * 100) + '%'; });
@@ -1409,9 +1410,10 @@ const NZ = (() => {
     const c = C[cur], st = $('#r-noise').style; st.setProperty('--nf', c.hex); st.setProperty('--ni', c.ink); st.setProperty('--nzc', c.hex === '#0400f5' ? '#6f6cff' : c.hex === '#5a3a22' ? '#c08a5c' : c.hex);
     ROOMCOL.noise = cur; $('#nzname').textContent = c.n; $('#nzslope').textContent = c.slope; $('#nzwhat').textContent = c.what;
     const sw = $('#nzsw'); if (sw) sw.style.background = c.hex;
-    $('#nzlist').innerHTML = keys.map(k => `<button class="nzc${k === cur ? ' sel' : ''}${k === cur && on ? ' on' : ''}" data-f data-k="${k}"><i style="background:${C[k].hex}"></i><b>${C[k].n}</b><span>${C[k].slope}</span><em>${C[k].what}</em></button>`).join('');
-    $$('#nzlist .nzc').forEach(b => b.addEventListener('click', () => { if (b.dataset.k === cur) toggle(); else { pick(b.dataset.k); if (room === 'noise') setFocus($(`.nzc[data-k="${b.dataset.k}"]`)); } }));
-    ui(); if (room === 'noise') { const el = $(`.nzc[data-k="${cur}"]`); if (el && cur && document.activeElement && document.activeElement.closest && document.activeElement.closest('#nzlist')) setFocus(el); placeBrk(); }
+    if (!$('#nzlist').children.length) { $('#nzlist').innerHTML = keys.map(k => `<button class="nzc" data-f data-k="${k}"><i style="background:${C[k].hex}"></i><b>${C[k].n}</b><span>${C[k].slope}</span><em>${C[k].what}</em></button>`).join('');
+      $$('#nzlist .nzc').forEach(b => b.addEventListener('click', () => { if (b.dataset.k === cur) toggle(); else { pick(b.dataset.k); if (room === 'noise') setFocus(b); } })); }
+    $$('#nzlist .nzc').forEach(b => b.classList.toggle('sel', b.dataset.k === cur));
+    ui(); if (room === 'noise') placeBrk();
   }
   function ui() {
     $('#nzgol').textContent = on ? 'STOP' : 'START ' + C[cur].n.toUpperCase();
@@ -1533,8 +1535,9 @@ function renderPrompts() {
     const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', songOn ? 'Pause' : 'Play song', toggleSong)], salvage: [P('A', 'Open on Are.na', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit()), P('X', 'Random line', cipRandom), P('F', 'Page', () => $('#cipf').click())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openCore(CORES.indexOf(AN[selAn].c)))], noise: [P('A', NZ.on ? 'Stop' : 'Start', () => NZ.toggle()), P('◂▸', 'Level', null, 1), P('X', 'Sleep', () => NZ.sleepNext())], lab: LAB[selP].sh === 'r' ? [P('A', LAB[selP].q && !LAB[selP].ovr ? 'Override' : 'Open', () => labRun(selP))] : LAB[selP].links ? [P('A', 'Open ↗', () => labRun(selP))] : [P('A', 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
     L = [P('B', 'Shell', () => go('shell')), ...extra, P('LB', 'Prev room', () => cycle(-1), 1), P('RB', 'Next room', () => cycle(1), 1), P('Y', 'Diag', openTerm)];
   }
+  if (!termOpen && room !== 'comms' && typeof yt !== 'undefined' && yt) L.splice(Math.min(L.length, room === 'shell' ? 2 : 1), 0, P('♪', songOn ? 'Pause song' : 'Play song', toggleSong, 1));
   if (portrait) L = L.filter(p => !['Prev room', 'Next room', 'Prev', 'Next', 'Select', 'Tune', 'Run'].includes(p.l));
-  $('#prompts').innerHTML = L.map((p, i) => `<button class="pr" data-p="${i}"><span class="k${p.sh ? ' sh' : ''}${p.k === 'A' ? ' sel' : ''}">${p.k}</span>${p.l}</button>`).join('') + `<span class="sp"></span><span class="tc">${portrait ? '' : 'Q/E · ARROWS · ENTER · ESC · / · M<br>'}JRL · ⊠ 2850 · BAY 04</span>`;
+  $('#prompts').innerHTML = L.map((p, i) => `<button class="pr" data-p="${i}"><span class="k${p.sh ? ' sh' : ''}${p.k === 'A' ? ' sel' : ''}">${p.k}</span>${p.l}</button>`).join('') + `<span class="sp"></span><span class="tc">${typeof yt !== 'undefined' && yt && SONG && room !== 'comms' ? `<b style="color:${songOn ? 'var(--sel)' : '#b4b5af'};font-weight:600">♪ ${SONG.title.replace(/</g, '')} · ${(SONG.artist || '').replace(/</g, '')}</b><br>` : (portrait ? '' : 'Q/E · ARROWS · ENTER · ESC · / · M<br>')}JRL · ⊠ 2850 · BAY 04</span>`;
   $$('#prompts .pr').forEach(b => { const p = L[+b.dataset.p]; b.addEventListener('click', () => { if (p.fn) p.fn(); else play('tick'); }); });
 }
 
