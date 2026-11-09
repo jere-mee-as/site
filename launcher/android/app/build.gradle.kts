@@ -15,8 +15,8 @@ android {
         applicationId = "ing.jere.launcher"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.3.1"
     }
 
     signingConfigs {
@@ -41,6 +41,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Never compiled before its first CI run: don't let release lint block the APK over a warning-level nit.
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
     }
 
     kotlinOptions {

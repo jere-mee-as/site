@@ -4,7 +4,7 @@ JRL Launcher is an Android home screen for a Galaxy Z Fold7, in the same style a
 
 | Path | What |
 |---|---|
-| `android/` | Kotlin shell (being added separately) |
+| `android/` | Kotlin shell (HOME app, WebView, `window.JRLAndroid` bridge); see its README |
 | `web/src/` | v3.0 modular web UI sources: `shell.html`, `launcher.css`, `core.js`, `bridge.js`, `pal.js`, `app.js`, `term.js`, plus `assemble.py` |
 | `web/archive/src-v2.2/` | The v2.2 sources, same layout, kept for reference |
 | `previews/v0-first-mockup.html` | First mockup |
@@ -23,7 +23,7 @@ JRL Launcher is an Android home screen for a Galaxy Z Fold7, in the same style a
 
 ## Status
 
-v4.0 is the current design (preview only). The modular sources in `web/src/` are still at v3.0. The Kotlin shell is being moved into `android/`.
+v4.0 is the current design. The APK (shell 0.3.1) bundles it with the adapter fixed for the real bridge; build it from the Actions tab. The modular sources in `web/src/` are still at v3.0.
 
 ## Docs
 

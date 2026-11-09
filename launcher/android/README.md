@@ -12,7 +12,7 @@ the 0.1.2 bridge contract method-for-method, so older pages keep working.
 |---|---|
 | applicationId / package | `ing.jere.launcher` |
 | Label | JRL |
-| Version | 0.3.0 (versionCode 3) |
+| Version | 0.3.1 (versionCode 4) |
 | SDK | min 26, target/compile 35 |
 | Toolchain | AGP 8.7.3, Kotlin 2.0.21, Gradle 8.10.2 (wrapper), JDK 17 |
 | OTA page source | `https://jere.ing/launcher/app/index.html` |
@@ -26,6 +26,7 @@ app/src/main/java/ing/jere/launcher/
   Live.kt           Live (OTA page fetch) and LiveHandler (serves /live/…)
   IconHandler.kt    serves /icon/<pkg>/<activity> as PNG
   NotifListener.kt  notification-access service: unread counts per package
+  LockService.kt    "JRL lock" accessibility service: turns the screen off for lock()
 app/src/main/assets/www/
   index.html        the bundled page (v4.0 preview)
   fonts/            Archivo, Doto, JetBrains Mono (+ LICENSES.md, OFL.txt)
@@ -75,9 +76,12 @@ Never commit a keystore (`.gitignore` blocks `*.jks` / `*.keystore`).
    `adb install -r app-release.apk`.
 3. The package name changed in 0.3.0, so this installs **alongside** the old 0.1.2 launcher, not over it.
    Uninstall the old one once the new one works.
-4. Settings → Apps → Default apps → Home app → **JRL**.
-5. In the launcher, grant notification access (needed for unread counts *and* now-playing media) and
-   calendar access when the page asks.
+4. Settings → Apps → Choose default apps → Home app → **JRL**.
+5. Android 13+ blocks sensitive switches for sideloaded apps. Before step 6: Settings → Apps → JRL → ⋮ (top
+   right) → **Allow restricted settings**.
+6. The page opens the notification-access switch once on first run (needed for unread counts *and* now
+   playing); turn on JRL. Calendar: tap the grant line on Agenda. Lock: the first double-tap on the clock
+   opens Accessibility; turn on **JRL lock**. `settings notif` in the terminal reopens the notification switch.
 
 ## Bridge: `window.JRLAndroid`
 
@@ -105,11 +109,12 @@ count, and a wrong count throws "Method not found" in JS).
 | `statusBar(visible)` | *new* Shows / hides Android's status bar (swipe shows it briefly while hidden) |
 | `keyboard()` | Focuses the page and asks for the soft keyboard |
 | `coldStart()` | *new* `true` on the first call after the app process starts, then `false` |
-| `events(days)` | `{perm, ev:[{id, title, begin, end, allDay}]}`: up to 40 not-yet-ended events, 12 h back to `days` (1–31) ahead |
+| `events(days)` | `{perm, ev:[{id, title, begin, end, allDay, color, cal}]}`: up to 40 not-yet-ended events, 12 h back to `days` (1–31) ahead |
 | `askCalendar()` | Calendar permission dialog; fires `calendar` when it closes |
 | `openEvent(id, begin)` | Opens the event in the calendar app (`begin` in ms as a string, may be `""`) |
 | `openCalendar()` | Opens the calendar app |
-| `media()` | `{on, active, title, artist, app, pkg, playing}`; `{on:false}` without notification access |
+| `media()` | `{on, active, title, artist, app, pkg, playing, pos, dur, art}` (pos/dur in s, art a JPEG data URL or `""`); `{on:false}` without notification access |
+| `lock()` | *new in 0.3.1* Screen off through the JRL lock accessibility service; if it's off, opens Accessibility settings, sends an `error` event and returns `false` |
 | `mediaCmd(cmd)` | `play`, `pause`, `next`, `prev`; anything else (e.g. `toggle`) flips play/pause |
 | `update()` | Checks for a new page now; always answers with an `updated` event |
 | `version()` | The shell's versionCode (number) |
@@ -149,31 +154,12 @@ Inset sizes go to the page as CSS variables on `<html>`: `--sat`, `--sar`, `--sa
 
 ### The v4.0 page's adapter vs this bridge
 
-`launcher-proton/src/bridge.js` and the copy embedded in the v4.0 preview are identical (the preview has
-one extra closing line). The page was written before the Kotlin source was recovered, against guessed
-signatures. The native side keeps the 0.1.2 contract, so **these need fixing in the page adapter** (only
-the `if (!MOCK)` block of `bridge.js`). Items marked *breaks* throw "Method not found" or show wrong data today.
-
-| Page call | Native | Problem | Fix in the adapter |
-|---|---|---|---|
-| `launch(app.pkg, app.act)` | `launch(key, x, y, w, h)` | *breaks*: 2 args vs 5 | `call('launch', app.pkg + '/' + app.act, 0, 0, 0, 0)` (0s = no animation) |
-| `apps()` reads `a.act` | 0.1.2 sent no `act` | launch keys were `"pkg/"` | fixed natively: `apps()` now also sends `act` |
-| `settings()` | `settings(which)` | *breaks*: 0 args vs 1 | `call('settings', which \|\| '')` |
-| `keyboard(!!on)` | `keyboard()` | *breaks*: 1 arg vs 0 | `call('keyboard')` (there is no hide) |
-| `openEvent(String(id))` | `openEvent(id, begin)` | *breaks*: 1 arg vs 2 | `call('openEvent', String(id), String(begin \|\| ''))` |
-| `haptic(kind, JSON)` / `haptic(ms)` | `haptic(kind)` | *breaks*: 2-arg call fails, the fallback passes a number as the kind, so every buzz is a plain key tap | `call('haptic', kind)`; for `pattern`, `call('hapticPattern', JSON.stringify(ms))` |
-| `events(7)` reads `r.list` / `r.events`, `r.granted` | `{perm, ev}` | *breaks*: list is always empty; `granted` is always true | read `r.ev` and `r.perm` |
-| `events` items read `e.color`, `e.cal` | not sent | calendar colour / name missing | native addition (Instances `DISPLAY_COLOR`, `CALENDAR_DISPLAY_NAME`) or drop |
-| `notifs()` returns the object as-is | `{on, count, pkgs}` | *breaks*: the page treats `on`/`count`/`pkgs` as package names | return `n.pkgs` (and use `n.on` for the "grant access" state) |
-| `bars(on)` means "show Android's bars" | `bars(dark)` = icon colour | wrong meaning: `set bars off` turns icons light instead of hiding the bar | call `statusBar(on)` for show/hide; keep `bars(dark)` for icon colour |
-| `battery()` divides level by 100 if > 1 | level is 0–100 | at exactly 1% it reads as 100% | always divide when `level >= 0` |
-| `device()` reads `name`, `android` | `maker`, `model`, `release`, `sdk` | shows "android // model", "?" | map `name ← maker + ' ' + model`, `android ← release` |
-| `media()` reads `art`, `pos`, `dur` | not sent | no artwork, progress or timecode | native addition (MediaMetadata art bitmap → data URL, `PlaybackState.position`, `METADATA_KEY_DURATION`) |
-| `signal()` expects `net` like `"5G"` / `"LTE"` | `"WIFI"` / `"CELL"` | radio generation not shown | needs `READ_PHONE_STATE` + `TelephonyDisplayInfo`; left out |
-| `lock()` | missing | *no-op* (caught) | needs an accessibility or device-admin service, see below |
-| `coldStart()` | added | fine now | none |
-| `JRLnative 'updated'` reads `data.ok`, `data.why` | sends a string | every result shows as "UI update staged", even `same` / `failed` | `ok = data === 'updated'`, `why = data` |
-| `JRLnative 'error'` reads `data.msg` | sends a string | the message is dropped from the log | use `data` when it's a string |
+Fixed in 0.3.1. The bundled `assets/www/index.html` carries a rewritten `if (!MOCK)` adapter that calls every
+method above with its exact argument count, reads `{perm, ev}`, `{on, count, pkgs}` and the string payloads of
+`updated` / `error`, and maps the page's `bars on|off` to `statusBar()`. It was checked in a browser against a
+fake `JRLAndroid` that throws on any wrong argument count. **Port the same block back into the v4 modular
+`bridge.js`** (Proton Drive, `Launcher/src`) before assembling a new page, or the next OTA page breaks again.
+Still open: `signal().net` is the transport (WIFI/CELL), not 5G/LTE.
 
 Also from the page side:
 
@@ -181,9 +167,8 @@ Also from the page side:
   Kode Mono) from Google Fonts over the network. The bundled TTFs in `www/fonts/` are not referenced by it,
   so offline the page falls back to system fonts. Add `@font-face` rules for `fonts/*.ttf` and bundle the
   missing families (all OFL) to make it fully offline.
-- The page uses `env(safe-area-inset-*)`, but the shell consumes the window insets and publishes them as
-  `--sat/--sar/--sab/--sal` instead (as 0.1.2 did), so in the WebView `env()` reads 0 and the strip can sit
-  under the status bar. Use `var(--sat, env(safe-area-inset-top, 0px))` etc. in the page.
+- Insets: the shell publishes `--sat/--sar/--sab/--sal`; the bundled page now reads
+  `var(--sat, env(safe-area-inset-top, 0px))` (same for bottom). Keep that in future pages.
 
 ### Kotlin to-dos from `docs/jrl-launcher-v2-plan.md`
 
@@ -191,7 +176,7 @@ Also from the page side:
 |---|---|
 | `haptic(kind, patternJson)` → `VibrationEffect.createWaveform` | **Done as `hapticPattern(json)`** (separate name, not an overload). Needs the adapter fix above |
 | `haptic(kind)` with tick, click, heavy, double, err | **Done**: tick = clock tick, heavy = long press, double/err = system CONFIRM/REJECT on Android 11+ (short waveform before) |
-| `lock()` via AccessibilityService `GLOBAL_ACTION_LOCK_SCREEN` or `DevicePolicyManager.lockNow()` | **Not done**: needs an accessibility or device-admin service the user enables by hand |
+| `lock()` via AccessibilityService `GLOBAL_ACTION_LOCK_SCREEN` or `DevicePolicyManager.lockNow()` | **Done in 0.3.1** as the JRL lock accessibility service (switched on once by hand) |
 | `signal()` → `{wifi, cell, net, airplane}` | **Done, partly**: levels and airplane yes; `net` is the transport, not 5G/LTE |
 | Push a `notif` event on arrivals | **Done** as the `notifs` event (no payload; the page re-reads `notifs()`; the v4 page already handles `notifs`) |
 | `launch()` with `ActivityOptions.makeCustomAnimation(ctx, 0, 0)` | **Done**: used whenever no tile rect is passed |
@@ -202,8 +187,8 @@ Also from the page side:
 
 ### Other
 
-- Not built here: this project was written without an Android SDK or network, so it has never been compiled.
-  Expect to fix small things on the first Android Studio sync.
+- Never compiled before its first CI run (no Android SDK where it was written; the Kotlin was syntax-checked
+  only). Release lint is set not to block the build. If the first run fails, the log's first `e:` line is the fix.
 - `lifecycle-runtime-ktx` is pinned at 2.6.1: the APK's lifecycle version files were build placeholders, and its
   code has `withStateAtLeast` but not `currentStateFlow`, which puts it at 2.5–2.6. Gradle resolves up if
   activity-ktx asks for newer.

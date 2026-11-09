@@ -7,6 +7,7 @@ import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Rect
 import android.media.MediaMetadata
 import android.media.session.MediaController
@@ -24,6 +25,7 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.provider.CalendarContract
 import android.provider.Settings
+import android.util.Base64
 import android.telephony.TelephonyManager
 import android.view.HapticFeedbackConstants
 import android.webkit.JavascriptInterface
@@ -31,6 +33,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -330,7 +333,7 @@ class Bridge(private val act: MainActivity) {
     // ---------------------------------------------------------------- calendar
 
     /**
-     * {perm, ev: [{id, title, begin, end, allDay}]}: up to 40 events that have not ended yet, from 12 h ago
+     * {perm, ev: [{id, title, begin, end, allDay, color, cal}]}: up to 40 events that have not ended yet, from 12 h ago
      * to [days] (1–31) days ahead. perm is false (and ev empty) until READ_CALENDAR is granted.
      */
     @JavascriptInterface
@@ -352,6 +355,8 @@ class Bridge(private val act: MainActivity) {
             CalendarContract.Instances.BEGIN,
             CalendarContract.Instances.END,
             CalendarContract.Instances.ALL_DAY,
+            CalendarContract.Instances.DISPLAY_COLOR,
+            CalendarContract.Instances.CALENDAR_DISPLAY_NAME,
         )
         try {
             act.contentResolver.query(uri, columns, "${CalendarContract.Instances.VISIBLE}=1", null, "${CalendarContract.Instances.BEGIN} ASC")
@@ -366,6 +371,8 @@ class Bridge(private val act: MainActivity) {
                                 .put("begin", c.getLong(2))
                                 .put("end", end)
                                 .put("allDay", c.getInt(4) == 1)
+                                .put("color", if (c.isNull(5)) JSONObject.NULL else c.getInt(5))
+                                .put("cal", c.getString(6) ?: "")
                         )
                     }
                 }
@@ -414,7 +421,7 @@ class Bridge(private val act: MainActivity) {
 
     /**
      * {on: false} without notification access; {on: true, active: false} with no session;
-     * otherwise {on, active, title, artist, app, pkg, playing}.
+     * otherwise {on, active, title, artist, app, pkg, playing, pos (s), dur (s), art (JPEG data URL or "")}.
      */
     @JavascriptInterface
     fun media(): String {
@@ -446,7 +453,57 @@ class Bridge(private val act: MainActivity) {
             .put("app", appLabel)
             .put("pkg", mc.packageName)
             .put("playing", mc.playbackState?.state == PlaybackState.STATE_PLAYING)
+            .put("pos", position(mc.playbackState) / 1000.0)
+            .put("dur", (meta?.getLong(MediaMetadata.METADATA_KEY_DURATION) ?: 0L).coerceAtLeast(0L) / 1000.0)
+            .put("art", artwork(meta, mc.packageName))
             .toString()
+    }
+
+    /** The playhead in ms, moved on by the time since the session last reported it while playing. */
+    private fun position(st: PlaybackState?): Long {
+        if (st == null) return 0L
+        var pos = st.position
+        if (st.state == PlaybackState.STATE_PLAYING && st.lastPositionUpdateTime > 0L) {
+            pos += ((SystemClock.elapsedRealtime() - st.lastPositionUpdateTime) * st.playbackSpeed).toLong()
+        }
+        return pos.coerceAtLeast(0L)
+    }
+
+    @Volatile private var artKey = ""
+    @Volatile private var artUrl = ""
+
+    /**
+     * The track's artwork as a small JPEG data URL. The page polls media() every second, so the encoded
+     * image is cached per track and only rebuilt when the track changes.
+     */
+    private fun artwork(meta: MediaMetadata?, pkg: String): String {
+        if (meta == null) return ""
+        val key = pkg + "|" + (meta.getString(MediaMetadata.METADATA_KEY_TITLE) ?: "") + "|" +
+            (meta.getString(MediaMetadata.METADATA_KEY_ARTIST) ?: "")
+        if (key == artKey) return artUrl
+        val url = try {
+            val bmp: Bitmap? = meta.getBitmap(MediaMetadata.METADATA_KEY_ALBUM_ART)
+                ?: meta.getBitmap(MediaMetadata.METADATA_KEY_ART)
+                ?: meta.getBitmap(MediaMetadata.METADATA_KEY_DISPLAY_ICON)
+            if (bmp == null || bmp.width <= 0 || bmp.height <= 0) {
+                ""
+            } else {
+                val scale = ART_PX.toFloat() / maxOf(bmp.width, bmp.height)
+                val small = if (scale < 1f) {
+                    Bitmap.createScaledBitmap(bmp, maxOf(1, (bmp.width * scale).toInt()), maxOf(1, (bmp.height * scale).toInt()), true)
+                } else {
+                    bmp
+                }
+                val out = ByteArrayOutputStream()
+                small.compress(Bitmap.CompressFormat.JPEG, 85, out)
+                "data:image/jpeg;base64," + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP)
+            }
+        } catch (e: Exception) {
+            ""
+        }
+        artUrl = url
+        artKey = key
+        return url
     }
 
     /** "play", "pause", "next", "prev"; anything else (e.g. "toggle") flips play/pause. */
@@ -467,6 +524,22 @@ class Bridge(private val act: MainActivity) {
                 // No access or the session went away.
             }
         }
+    }
+
+    // ---------------------------------------------------------------- lock
+
+    /**
+     * Turns the screen off (double-tap the clock, or `lock`). Uses the JRL lock accessibility service; if it
+     * isn't switched on yet, opens Accessibility settings and tells the page. Returns true when it locked.
+     */
+    @JavascriptInterface
+    fun lock(): Boolean {
+        if (LockService.lock()) return true
+        ui {
+            act.emit("error", MainActivity.jsString("switch on JRL lock in Accessibility, then double-tap again"))
+            act.start(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }
+        return false
     }
 
     // ---------------------------------------------------------------- the page itself
@@ -492,6 +565,7 @@ class Bridge(private val act: MainActivity) {
         const val MAX_EVENTS = 40
         const val MAX_PATTERN_STEPS = 64
         const val MAX_PATTERN_STEP_MS = 5_000L
+        const val ART_PX = 240
 
         /** Process-wide: a new process means a cold start. */
         val coldStartUnread = AtomicBoolean(true)

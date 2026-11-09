@@ -2,4 +2,6 @@
 <resources>
     <string name="app_name">JRL</string>
     <string name="notif_label">JRL notification count</string>
+    <string name="lock_label">JRL lock</string>
+    <string name="lock_desc">Lets the JRL launcher turn the screen off when you double-tap the clock. It reads nothing on screen and receives no events.</string>
 </resources>
