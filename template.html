@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Jerelevance</title>
+<title>JERE.ING</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,900&family=Doto:wght@700..900&family=EB+Garamond:ital,wght@1,400..600&family=Hubot+Sans:wdth,wght@75..125,200..900&family=JetBrains+Mono:wght@200..700&family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
 <style>
-/* JERE//LEVANCE v3 — graphic realism, terminal of the future.
+/* JERE.ING v3 — graphic realism, terminal of the future.
    System layer (header, rail, feed, terminal) never takes a module colour.
    Each module = one field + one ink + one accent. Small text only on black, white or fog.
    Motion runs on a 30fps grid: hard cuts, stepped changes, flash-card bursts. No eased fades. */
@@ -532,7 +532,7 @@ html.inv body{filter:invert(1)}
 <div id="boot" role="button" tabindex="0" aria-label="Skip boot sequence" hidden>
   <div class="btop"><span class="lbl">Node JRL-01 // reports/</span><span class="lbl">Cold start // 30 fps</span></div>
   <div class="left">
-    <div class="bt">JERE<span class="slash">//</span>LEVANCE</div>
+    <div class="bt">JERE<span class="slash">.</span>ING</div>
     <div id="bootlog"></div>
   </div>
   <div class="totem" aria-hidden="true">
@@ -551,7 +551,7 @@ html.inv body{filter:invert(1)}
 
 <div class="app">
   <header class="top">
-    <h1>JERE<span class="slash">//</span>LEVANCE</h1>
+    <h1>JERE<span class="slash">.</span>ING</h1>
     <button id="cg-back" type="button" aria-label="Put the colour back in its box" title="put the colours back" hidden>
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 4 3 9 8 9"/></svg>
     </button>
@@ -761,12 +761,12 @@ html.inv body{filter:invert(1)}
 
   <footer class="cli" aria-label="Terminal">
     <div class="cli-in"><div id="out"><div>TYPE 'help' FOR COMMANDS. EVERY CLICK TYPES ITS COMMAND HERE.</div></div>
-    <div class="pr"><label for="cmd">visitor@jerelevance:~$</label><input id="cmd" autocomplete="off" spellcheck="false" aria-label="Command line"></div></div>
+    <div class="pr"><label for="cmd">visitor@jere.ing:~$</label><input id="cmd" autocomplete="off" spellcheck="false" aria-label="Command line"></div></div>
     <div class="cli-side"><button type="button" class="chip" id="cli-x">Close · Esc</button><div class="bc" id="bc2" aria-hidden="true"></div></div>
   </footer>
   <div class="bstrip">
     <span class="bs-l">JRL <i class="bars"></i> × 2026 ≡ <b id="slate-mod">01 / 06 Reports</b> ≡ <span id="bio-st">colony</span></span>
-    <button type="button" class="bs-prompt" id="bs-prompt" title="Terminal (/)"><span class="who">visitor@jerelevance:~$</span><span id="echo"></span><i class="cur" aria-hidden="true"></i></button>
+    <button type="button" class="bs-prompt" id="bs-prompt" title="Terminal (/)"><span class="who">visitor@jere.ing:~$</span><span id="echo"></span><i class="cur" aria-hidden="true"></i></button>
     <span class="bs-r"><b>Tab</b> index · <b>Q</b><b>E</b> · <b>/</b> term · <b>F</b> feed · <b>M</b> mute</span>
     <button type="button" class="bs-life" id="life" title="Life support: full or low (saves battery)">Life // full</button>
     <div class="bc" id="bc1" aria-hidden="true"></div>
@@ -1020,8 +1020,8 @@ html.inv body{filter:invert(1)}
         if (!data) {
           var fs = Math.round(h * .34); ox.font = '500 ' + fs + 'px "Hubot Sans", Archivo, sans-serif';
           try { ox.fontStretch = 'condensed'; } catch (e) {}
-          var mw = ox.measureText('JERE//LEVANCE').width; if (mw > w * .86) { fs = Math.floor(fs * w * .86 / mw); ox.font = '500 ' + fs + 'px "Hubot Sans", Archivo, sans-serif'; try { ox.fontStretch = 'condensed'; } catch (e) {} }
-          ox.textAlign = 'center'; ox.textBaseline = 'middle'; ox.fillStyle = '#fff'; ox.fillText('JERE//LEVANCE', w / 2, h / 2); data = ox.getImageData(0, 0, w, h).data;
+          var mw = ox.measureText('JERE.ING').width; if (mw > w * .86) { fs = Math.floor(fs * w * .86 / mw); ox.font = '500 ' + fs + 'px "Hubot Sans", Archivo, sans-serif'; try { ox.fontStretch = 'condensed'; } catch (e) {} }
+          ox.textAlign = 'center'; ox.textBaseline = 'middle'; ox.fillStyle = '#fff'; ox.fillText('JERE.ING', w / 2, h / 2); data = ox.getImageData(0, 0, w, h).data;
         }
         var s = [16, 8, 4, 2][k]; x.fillStyle = '#0a0a0b'; x.fillRect(0, 0, w, h); x.fillStyle = L;
         for (var j = 0; j < h; j += s) for (var i = 0; i < w; i += s) { var px = Math.min(w - 1, i + (s >> 1)), py = Math.min(h - 1, j + (s >> 1)); if (data[(py * w + px) * 4 + 3] > 100) x.fillRect(i, j, s, s); }
@@ -1173,8 +1173,8 @@ html.inv body{filter:invert(1)}
     }
     function localId() {
       try {
-        var id = localStorage.getItem('jerelevance-visitor');
-        if (!id) { id = Math.random().toString(36).slice(2); localStorage.setItem('jerelevance-visitor', id); }
+        var id = localStorage.getItem('jere-visitor') || localStorage.getItem('jere' + 'levance-visitor');
+        if (!id) { id = Math.random().toString(36).slice(2); } localStorage.setItem('jere-visitor', id);
         return id;
       } catch (e) { return 'anon'; }
     }
@@ -1818,7 +1818,7 @@ html.inv body{filter:invert(1)}
     window.JRLgo = go;
     document.querySelectorAll('.mod').forEach(function (b) { b.addEventListener('click', function () { go(b.dataset.mod); }); });
     /* ---------- culture engine ---------- */
-const CUL={mode:'ripple',px:'mixed',frozen:false,pal:0,text:'JERELEVANCE',stamp:'bird',egg:false};
+const CUL={mode:'ripple',px:'mixed',frozen:false,pal:0,text:'JERE.ING',stamp:'bird',egg:false};
 const PALS=[null,
  {fld:'#0400f5',ink:'#f2f2ee',acc:'#c2ff16',on:'#0a0a0b'},
  {fld:'#ef4606',ink:'#0a0a0b',acc:'#0400f5',on:'#f2f2ee'},
@@ -2196,7 +2196,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
         ['dma', h() + ' → ' + h() + '  ' + bar(37)],
         ['fs', 'mount -o ro /reports … ' + N + ' objects'],
         ['fs', 'sort --newest-first reports/*.html'],
-        ['hex', hex('JERELEVANCE').toUpperCase()]
+        ['hex', hex('JERE.ING').toUpperCase()]
       ].concat(rows.slice(0, 6).map(function (r) { return ['ok', 'index ' + pad(r.n) + ' :: ' + r.title.toLowerCase().replace(/\s+/g, '_').slice(0, 52)]; }))
       .concat([
         ['net', 'eth0 up · carrier 1420.405 MHz locked'],
@@ -2210,9 +2210,9 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
         ['dma', h() + ' → ' + h() + '  ' + bar(100)],
         ['sub', 'ping lesymboliste.substack.com … 1 sheep responded'],
         ['diff', '+++ newest: ' + newest.toLowerCase()],
-        ['auth', 'visitor@jerelevance … no credentials, letting you in anyway'],
+        ['auth', 'visitor@jere.ing … no credentials, letting you in anyway'],
         ['warn', 'unsanctioned visitor detected'],
-        ['ready', 'JERE//LEVANCE']
+        ['ready', 'JERE.ING']
       ]);
     }
     function bstep() {
@@ -2303,15 +2303,15 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     function hexrow() { var a = '0x' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0') + '  '; for (var i = 0; i < 12; i++) a += Math.floor(Math.random() * 256).toString(16).padStart(2, '0') + ' '; return a; }
     function findReport(a) { var n = parseInt(a, 10), r = rows.filter(function (x) { return x.n === n; })[0]; if (!r && a) { var q = a.toLowerCase(); r = rows.filter(function (x) { return x.title.toLowerCase().indexOf(q) > -1; })[0]; } return r; }
     function buildTerm() {
-      var el = document.createElement('div'); el.id = 'term'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'JERE//LEVANCE root terminal'); el.hidden = true;
+      var el = document.createElement('div'); el.id = 'term'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'JERE.ING root terminal'); el.hidden = true;
       el.innerHTML = '<div class="tbar"><span>JRL tty0 // root</span><span id="tclock"></span><span>type exit to leave</span></div><div id="tout" aria-live="polite"></div>' +
-        '<form class="tprompt" id="tform"><label for="tin">root@jerelevance:~#</label><input id="tin" autocomplete="off" spellcheck="false" autocapitalize="off"></form>';
+        '<form class="tprompt" id="tform"><label for="tin">root@jere.ing:~#</label><input id="tin" autocomplete="off" spellcheck="false" autocapitalize="off"></form>';
       document.body.appendChild(el);
       term = { el: el, out: el.querySelector('#tout'), inp: el.querySelector('#tin'), hist: [], hi: 0, busy: false, q: [] };
       el.querySelector('#tform').addEventListener('submit', function (e) {
         e.preventDefault(); var v = term.inp.value; term.inp.value = '';
         if (term.busy) { if (v.trim()) term.q.push(v.trim()); return; }
-        tline('<span class="tw">root@jerelevance:~#</span> ' + esc(v)); if (v.trim()) { term.hist.push(v); term.hi = term.hist.length; } trun(v.trim());
+        tline('<span class="tw">root@jere.ing:~#</span> ' + esc(v)); if (v.trim()) { term.hist.push(v); term.hi = term.hist.length; } trun(v.trim());
       });
       term.inp.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowUp') { if (term.hi > 0) { term.hi--; term.inp.value = term.hist[term.hi]; } e.preventDefault(); }
@@ -2353,7 +2353,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       ttxt('[ ok ] mount -o ro /reports ................... ' + N + ' objects', 'tdim'); await sleep(120);
       ttxt('[ ok ] babel index ............................ 25^1312000 pages', 'tdim'); await sleep(180);
       tline(' '); await art(JERE); tline(' ');
-      ttxt('JERE//LEVANCE :: hacking core :: tty build 5.0.0-graphic-realism', 'tw'); await sleep(260);
+      ttxt('JERE.ING :: hacking core :: tty build 5.0.0-graphic-realism', 'tw'); await sleep(260);
       var lg = tline('login: '); await sleep(250); await typeInto(lg, 'visitor', 75); await sleep(220);
       var pw = tline('password: '); await sleep(200); await typeInto(pw, '••••••••••••', 50); await sleep(260);
       var sp = tline('[....] logging in '); await spin(sp, 1300);
@@ -2392,7 +2392,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       echo: function (a) { ttxt(a || ''); },
       whoami: function () { ttxt('root  (you came in as visitor. nobody saw.)'); },
       id: function () { ttxt('uid=0(root) gid=0(root) groups=0(root),4112(babel),78(tarot)'); },
-      uname: function () { ttxt('JRL 5.0.0-graphic-realism #1 SMP PREEMPT x86_64 GNU/jerelevance'); },
+      uname: function () { ttxt('JRL 5.0.0-graphic-realism #1 SMP PREEMPT x86_64 GNU/jere.ing'); },
       date: function () { ttxt(dayStr() + ' ' + $('#clock').textContent + ' America/New_York'); },
       uptime: function () { ttxt('up ' + Math.round(performance.now() / 1000) + 's,  1 user,  load average: ' + [1, 2, 3].map(function () { return (Math.random() * 2).toFixed(2); }).join(', ')); },
       pwd: function () { ttxt('/home/jere'); },
@@ -2400,7 +2400,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       skull: function () { return art(SKULL, 'c'); },
       fortune: function () { ttxt(FORT[Math.floor(Math.random() * FORT.length)], 'tw', { frames: 16, speed: 28 }); },
       neofetch: async function () {
-        var info = ['<span class="tw">root</span>@<span class="tw">jerelevance</span>', '-----------------', '<span class="tw">OS</span>: JRL 5.0.0-graphic-realism', '<span class="tw">Host</span>: github pages', '<span class="tw">Uptime</span>: ' + Math.round(performance.now() / 1000) + 's',
+        var info = ['<span class="tw">root</span>@<span class="tw">jere.ing</span>', '-----------------', '<span class="tw">OS</span>: JRL 5.0.0-graphic-realism', '<span class="tw">Host</span>: github pages', '<span class="tw">Uptime</span>: ' + Math.round(performance.now() / 1000) + 's',
           '<span class="tw">Packages</span>: ' + N + ' reports', '<span class="tw">Shell</span>: jsh 0.4', '<span class="tw">Module</span>: ' + current, '<span class="tw">Fonts</span>: Hubot Sans · Kode Mono · JetBrains Mono · Doto · EB Garamond', '<span class="tw">Theme</span>: graphic realism // field + ink + accent', '<span class="tw">Sound</span>: webaudio synth · ' + (window.JRLsfx && JRLsfx.on() ? 'on' : 'muted'),
           ['#0400f5', '#ef4606', '#c7c2b6', '#e0216f', '#c2ff16', '#2ddccd', '#0a0a0b', '#f2f2ee'].map(function (c) { return '<span class="sw" style="background:' + c + '"></span>'; }).join('')];
         var box = tline('<div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap"><div class="tart c"></div><div class="nf"></div></div>');
@@ -2592,7 +2592,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
       tline('<span class="tw">' + 'verdict'.padEnd(13) + '</span><span class="granted">' + pick(['human. probably.', 'human. mostly.', 'organic. cleared.', 'human (confidence 97.2%)']) + '</span>');
     };
     TC.ping = async function (a) {
-      term.skip = false; var h = (a || 'jerelevance.github.io').toLowerCase().replace(/^-\S+\s*/, '').trim() || 'jerelevance.github.io';
+      term.skip = false; var h = (a || 'jere.ing').toLowerCase().replace(/^-\S+\s*/, '').trim() || 'jere.ing';
       if (h === 'mars') { ttxt('PING mars: 4–24 light-minutes each way.', 'tb'); await sleep(1400); return terr('ping: mars: request timed out. try again in about 20 minutes.'); }
       if (h === 'sun') return terr('ping: sun: too bright. no reply.');
       var base = { moon: 2560, luna: 2560, colony: 2.6, localhost: .04, '127.0.0.1': .04, jere: 0.7 }[h], ip = h === 'colony' ? '10.0.0.42' : /^(localhost|127\.0\.0\.1)$/.test(h) ? '127.0.0.1' : (rnd(222) + 1) + '.' + rnd(256) + '.' + rnd(256) + '.' + rnd(256);
@@ -2794,7 +2794,7 @@ function loop(now){if(!CU)return;if(current!=='culture'){CU.running=false;return
     }
     function tfree() {
       term.busy = false; term.skip = false; if (!term.el.hidden) term.inp.focus();
-      var n = term.q.shift(); if (n) { tline('<span class="tw">root@jerelevance:~#</span> ' + esc(n)); term.hist.push(n); term.hi = term.hist.length; trun(n); if (!term.busy && term.q.length) tfree(); }
+      var n = term.q.shift(); if (n) { tline('<span class="tw">root@jere.ing:~#</span> ' + esc(n)); term.hist.push(n); term.hi = term.hist.length; trun(n); if (!term.busy && term.q.length) tfree(); }
     }
     function trun(v) {
       if (!v) return; var parts = v.split(/\s+/), k = parts[0].toLowerCase(), arg = parts.slice(1).join(' ');

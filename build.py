@@ -51,7 +51,7 @@ def fetch_json(url, tries=4):
     import urllib.request
     for attempt in range(tries):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "jerelevance-site"})
+            req = urllib.request.Request(url, headers={"User-Agent": "jere.ing-site"})
             with urllib.request.urlopen(req, timeout=20) as r:
                 return json.load(r)
         except Exception as e:
@@ -121,7 +121,7 @@ def _ytm(body, tries=3):
                 data=json.dumps(body).encode(), method="POST",
                 headers={"Content-Type": "application/json", "Origin": "https://music.youtube.com",
                          "Referer": "https://music.youtube.com/",
-                         "User-Agent": "jerelevance-site (personal playlist reader)"})
+                         "User-Agent": "jere.ing-site (personal playlist reader)"})
             with urllib.request.urlopen(req, timeout=30) as r:
                 return json.load(r)
         except Exception as e:

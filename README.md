@@ -1,4 +1,4 @@
-# Jerelevance
+# JERE.ING
 
 A personal static site: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal.
 
@@ -28,9 +28,10 @@ Don't edit `index.html` directly; edit `template.html` for design changes. Old d
 This repo works with or without GitHub.
 
 - **On my PC:** double-click `BUILD SITE.bat`. It runs `build.py` and puts the finished site in `_site/`. Upload that folder to any static host (it's on Cloudflare Pages).
-- **On GitHub:** `.github/workflows/build.yml` does the same thing on every push to `main` and once a day, and deploys to GitHub Pages.
+- **Live site:** Cloudflare Pages (project `jere-ing`) builds every push to `main` with `pip install pypdf && python build.py && python tools/package_site.py` and serves `_site/` at https://jere.ing.
+- **GitHub Actions:** off. `.github/workflows/build.yml` is the old GitHub Pages workflow, kept for reference.
 - **Quick build without the network:** set `JRL_OFFLINE=1` before running `build.py`.
 
 ## Backups
 
-Every commit copies the whole repo to Proton Drive as `jerelevance-latest.bundle` (a git hook the setup script installs). `BACKUP.bat` also saves a dated copy and keeps the newest 14. To restore: `git clone jerelevance-latest.bundle jerelevance`.
+Every commit copies the whole repo to Proton Drive as `jere-ing-latest.bundle` (a git hook the setup script installs). `BACKUP.bat` also saves a dated copy and keeps the newest 14. To restore: `git clone jere-ing-latest.bundle jere.ing`.

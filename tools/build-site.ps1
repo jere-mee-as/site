@@ -23,5 +23,5 @@ if ($LASTEXITCODE -ne 0) { Write-Host 'Packaging failed, see above.' -Foreground
 
 Write-Host ''
 Write-Host "Done. Upload this folder: $repo\_site" -ForegroundColor Green
-Write-Host 'Cloudflare: Workers & Pages > your jerelevance project > Create new deployment > drag _site in.'
+Write-Host 'Cloudflare: Workers & Pages > the jere-ing project > Create new deployment > drag _site in.'
 Start-Process explorer.exe (Join-Path $repo '_site')
