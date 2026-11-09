@@ -481,7 +481,7 @@ a.seal{background:var(--sel)}
             <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btnA" id="txa" data-f><span class="k">A</span><span id="txal">PLAY TODAY'S SONG</span></button><a class="btnB" id="txy" data-f href="https://music.youtube.com/" target="_blank" rel="noopener"><span class="k">↗</span>YouTube Music</a></div>
             <div id="ytp" aria-hidden="true"></div>
           </div>
-          <div class="micro" style="line-height:1.6">Lock frequency changes daily · carrier 2.8kHz · brown-noise static, low-passed at 1.4kHz · sound wakes on first input</div>
+          <div class="micro" style="line-height:1.6">Lock frequency changes daily · brief low chime on lock · brown-noise static, low-passed at 1.4kHz · sound wakes on first input</div>
         </div>
         <div class="gi" style="left:-24px;bottom:-40px;font-size:270px;color:var(--ink);opacity:.12" aria-hidden="true">COMMS</div>
       </section>
@@ -877,6 +877,7 @@ const JRL = (() => {
       back() { if (!init()) return; osc('sine', 80, 30, .2, .7); nz(.04, 1800, 1, .2); },
       crackle(n = 5) { if (!init()) return; for (let i = 0; i < n; i++) nz(.03 + Math.random() * .03, 800 + Math.random() * 7000, .6, .32, i * .034); },
       swell() { if (!init()) return; const t = ctx.currentTime, o = ctx.createOscillator(), f = ctx.createBiquadFilter(), g = ctx.createGain(); o.type = 'sawtooth'; o.frequency.value = 55; f.type = 'lowpass'; f.frequency.setValueAtTime(80, t); f.frequency.exponentialRampToValueAtTime(900, t + .9); g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.35, t + .7); g.gain.exponentialRampToValueAtTime(.0001, t + 1.3); o.connect(f); f.connect(g); g.connect(master); o.start(t); o.stop(t + 1.35); },
+      lock() { if (!init()) return; osc('sine', 196, 194, .32, .45); osc('sine', 294, 292, .26, .25, .07); osc('triangle', 392, 390, .18, .08, .14); nz(.03, 1200, 1, .12); },
       carrier() { if (!init()) return; osc('sine', 2794, 2794, 1.2, .04); },
       buzz() { if (!init()) return; osc('sawtooth', 58, 55, .35, .35); nz(.25, 2500, .5, .25); },
       hum(start) {
@@ -1078,7 +1079,7 @@ function override() { opened.add(selCore); const el = $(`.item[data-i="${selCore
 const day = Math.floor(Date.now() / 864e5); const lockF = 88 + (JRL.hash('jrl' + day) % 190) / 10 + 0.5;
 let freq = 96.3; const dial = $('#dial');
 $('#lk').style.left = `calc(${(lockF - 88) / 20 * 100}% - 7px)`;
-let bed = null, car = null;
+let bed = null;
 function setFreq(f, user) {
   freq = Math.max(88, Math.min(108, Math.round(f * 10) / 10)); $('#freq').textContent = freq.toFixed(1);
   $('#nd').style.left = `calc(${(freq - 88) / 20 * 100}% - 2px)`; dial.setAttribute('aria-valuenow', freq);
@@ -1087,13 +1088,13 @@ function setFreq(f, user) {
 
   $('#lk').style.opacity = locked ? 1 : 0;
   if (user && S.on) {
-    if (!bed) { bed = S.noiseBed(.0); car = S.tone(2794, 0); }
-    if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(songOn ? 0 : .5 * n + .03, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(locked ? .035 : Math.max(0, .02 * (1 - dist / 2)), car.ctx.currentTime, .05); }
-    if (locked && !setFreq.wasLocked) { status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); if (!songOn) toggleSong(); }
+    if (!bed) { bed = S.noiseBed(.0); }
+    if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(songOn ? 0 : .5 * n + .03, bed.ctx.currentTime, .05); }
+    if (locked && !setFreq.wasLocked) { play('lock'); status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); if (!songOn) toggleSong(); }
   }
   setFreq.wasLocked = locked;
 }
-function stopComms() { if (bed) { bed.g.gain.setTargetAtTime(0, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(0, car.ctx.currentTime, .05); const b = bed, c = car; setTimeout(() => { try { b.s.stop(); c.o.stop(); } catch (e) { } }, 300); bed = car = null; } }
+function stopComms() { if (bed) { bed.g.gain.setTargetAtTime(0, bed.ctx.currentTime, .05); const b = bed; setTimeout(() => { try { b.s.stop(); } catch (e) { } }, 300); bed = null; } }
 setFreq(freq);
 let dragging = false;
 function dialAt(e) { const r = dial.getBoundingClientRect(); setFreq(88 + Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 20, true); }
