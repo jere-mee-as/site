@@ -477,7 +477,7 @@ a.seal{background:var(--sel)}
             <div style="display:flex;justify-content:space-between;gap:12px"><span class="tag" id="txs">CARRIER · SEARCHING</span><span class="micro" style="color:#8b8c86" id="txf">NEXT SONG IN --:--:--</span></div>
             <div class="song"><div class="cv duo" id="sgcv"><img id="sgimg" alt=""></div><div style="min-width:0;display:flex;flex-direction:column;gap:6px"><span class="micro" style="color:#8b8c86" id="sgd">SONG OF THE DAY</span><div class="ttl" style="font-size:40px" id="sgt">Tuning…</div><div class="slog" style="font-size:20px;color:#c9cac4" id="sga">&nbsp;</div></div></div>
             <div class="sgbar"><i id="sgp"></i></div>
-            <p class="txt" style="color:#c9cac4;font-size:15px">One song a day from the playlist, the same for everyone, new at midnight Eastern. Tune the dial onto today's frequency to lock it in, or just press A.</p>
+            <p class="txt" style="color:#c9cac4;font-size:15px">One song a day from the playlist, the same for everyone, new at midnight Eastern. It only comes through while the dial is locked on today's frequency; drift off and it cuts out.</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btnA" id="txa" data-f><span class="k">A</span><span id="txal">PLAY TODAY'S SONG</span></button><a class="btnB" id="txy" data-f href="https://music.youtube.com/" target="_blank" rel="noopener"><span class="k">↗</span>YouTube Music</a></div>
           </div>
           <div class="micro" style="line-height:1.6">Lock frequency changes daily · brief low chime on lock · brown-noise static, low-passed at 1.4kHz · sound wakes on first input</div>
@@ -1090,7 +1090,11 @@ function setFreq(f, user) {
   if (user && S.on) {
     if (!bed) { bed = S.noiseBed(.0); }
     if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(songOn ? 0 : .5 * n + .03, bed.ctx.currentTime, .05); }
+  }
+  if (user && setFreq.wasLocked !== undefined) {
+    if (!locked && setFreq.wasLocked) { ytWant = false; if (yt && yt.pauseVideo && songOn) { yt.pauseVideo(); status('CARRIER LOST · TRANSMISSION CUT'); } }
     if (locked && !setFreq.wasLocked) { play('lock'); status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); if (!songOn) toggleSong(); }
+    if (locked !== setFreq.wasLocked && SONG) songUI();
   }
   setFreq.wasLocked = locked;
 }
@@ -1140,10 +1144,10 @@ fetch(ROOT + 'songs.json').then(r => r.ok ? r.json() : []).then(list => {
   if (!list.length) { $('#sgt').textContent = 'No transmission.'; $('#sga').textContent = 'The playlist loads on the live uplink.'; return; }
   SONG = list[fnv(TODAY) % list.length];
   $('#sgt').textContent = SONG.title; $('#sga').textContent = SONG.artist || ''; $('#sgd').textContent = 'SONG OF THE DAY · ' + TODAY.replace(/-/g, '·');
-  $('#sgimg').src = `https://i.ytimg.com/vi/${SONG.id}/hqdefault.jpg`; $('#txy').href = `https://music.youtube.com/watch?v=${SONG.id}`;
+  $('#sgimg').src = `https://i.ytimg.com/vi/${SONG.id}/hqdefault.jpg`; $('#txy').href = `https://music.youtube.com/watch?v=${SONG.id}`; songUI();
 }).catch(() => { $('#sgt').textContent = 'No transmission.'; });
 function hushStatic() { if (bed) bed.g.gain.setTargetAtTime(songOn || ytWant && !yt ? 0 : .03, bed.ctx.currentTime, .15); }
-function songUI() { $('#txal').textContent = songOn ? 'PAUSE' : (SONG ? "PLAY TODAY'S SONG" : 'NO SONG TODAY'); if (!termOpen) renderPrompts(); }
+function songUI() { $('#txal').textContent = songOn ? 'PAUSE' : !SONG ? 'NO SONG TODAY' : tunedIn() ? "PLAY TODAY'S SONG" : 'TUNE IN TO PLAY'; if (!termOpen) renderPrompts(); }
 function ytLoad() {
   if (yt || !SONG) return;
   window.onYouTubeIframeAPIReady = () => {
@@ -1152,8 +1156,10 @@ function ytLoad() {
   };
   const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => status('YOUTUBE DID NOT ANSWER · OPEN IT IN YOUTUBE MUSIC', 3200); document.head.appendChild(sc);
 }
+const tunedIn = () => Math.abs(freq - lockF) <= .4;
 function toggleSong() {
   if (!SONG) { play('buzz'); return; }
+  if (!songOn && !tunedIn()) { play('buzz'); status(`NO CARRIER · TUNE COMMS TO ${lockF.toFixed(1)} MHz TO RECEIVE`, 3200); return; }
   if (yt && yt.getPlayerState) { if (songOn) yt.pauseVideo(); else yt.playVideo(); play('confirm'); return; }
   ytWant = true; hushStatic(); ytLoad(); status(`RECEIVING · ${SONG.title.toUpperCase()}`); play('confirm');
 }
