@@ -18,7 +18,7 @@ Read `PUBLISHING.md` before making anything else public. `LICENSE`: all rights r
 
 ## The Lab
 
-Slot 08 on the front page (`jere.ing/#lab`, or `go lab` / `run veta` in the terminal). Three shelves: **Tools** (the apps, each with an interactive demo on made-up data), **Worlds** (other directions for this site), **Archive** (every retired version as a zip). A demo opens full-frame over the site; `jere.ing/#lab/<id>` links straight to one. `tools/lab_build.py` builds it into `_site/lab/` on every deploy. Source links stay sealed until the repo is public: flip `REPO.open` in `template.html`.
+Slot 08 on the front page (`jere.ing/#lab`, or `go lab` / `run veta` in the terminal). Three shelves: **Tools** (the apps, each with an interactive demo on made-up data), **Worlds** (other directions for this site), **Archive** (every retired version, each opening as its own page in a new tab). A demo opens full-frame over the site, and style books get a download button there; `jere.ing/#lab/<id>` links straight to one. `tools/lab_build.py` builds it into `_site/lab/` on every deploy. Source links stay sealed until the repo is public: flip `REPO.open` in `template.html`.
 
 ## About the "root" / "hack" stuff
 
