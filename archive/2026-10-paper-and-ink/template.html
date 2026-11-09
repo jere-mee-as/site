@@ -958,8 +958,8 @@
     });
   })();
 
-  // Tarot: one card per visitor per day. The visitor is identified by their IP
-  // address (looked up with ipify), falling back to a random id kept in this browser.
+  // Tarot: one card per visitor per day. The visitor is a random id kept in this
+  // browser (no IP lookup, nothing leaves the page).
   (function () {
     var card = document.getElementById('tarot'), img = document.getElementById('t-img');
     var day = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
@@ -976,10 +976,7 @@
         return id;
       } catch (e) { return 'anon'; }
     }
-    var who = fetch('https://api.ipify.org?format=json')
-      .then(function (r) { return r.json(); })
-      .then(function (j) { return j.ip || localId(); })
-      .catch(localId);
+    var who = Promise.resolve(localId());
     Promise.all([fetch('../../../tarot.json').then(function (r) { return r.json(); }), who]).then(function (res) {
       var deck = res[0], id = res[1];
       if (!deck.length) return;
