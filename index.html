@@ -131,8 +131,8 @@ a{text-decoration:none}
 .P .card .stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}
 .P .card .stats .v{font-size:26px}
 .P .card .hide-p{display:none}
-.loadout{display:grid;grid-template-columns:1fr 340px 1fr;grid-template-rows:repeat(3,1fr) 88px;grid-template-areas:"s1 core s4" "s2 core s5" "s3 core s6" "s7 s7 s7";gap:12px;min-width:0;min-height:0}
-.P .loadout{grid-template-columns:1fr 1fr;grid-template-rows:420px repeat(3,1fr) 84px;grid-template-areas:"core core" "s1 s4" "s2 s5" "s3 s6" "s7 s7"}
+.loadout{display:grid;grid-template-columns:1fr 340px 1fr;grid-template-rows:repeat(3,1fr) 70px 70px;grid-template-areas:"s1 core s4" "s2 core s5" "s3 core s6" "s8 s8 s8" "s7 s7 s7";gap:12px;min-width:0;min-height:0}
+.P .loadout{grid-template-columns:1fr 1fr;grid-template-rows:420px repeat(3,1fr) 84px;grid-template-areas:"core core" "s1 s4" "s2 s5" "s3 s6" "s8 s7"}
 .slot{position:relative;background:var(--white);outline:1px solid rgba(10,10,11,.22);outline-offset:-1px;display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px;min-width:0;overflow:hidden}
 .slot .t{display:flex;justify-content:space-between;font:700 12px/1 var(--f-code)}
 .slot .nm{font:300 34px/.95 var(--f-disp);font-stretch:88%;letter-spacing:-.025em}
@@ -205,12 +205,20 @@ a{text-decoration:none}
 .dial .lk{position:absolute;top:0;width:14px;height:40px;background:var(--blue);opacity:.0}
 .dial .ln{position:absolute;left:12px;bottom:10px;right:12px;display:flex;justify-content:space-between;font:700 12px/1 var(--f-code)}
 #osc{width:100%;height:150px;display:block;background:var(--ink)}
-.tx-card{background:var(--ink);color:var(--white);padding:22px;display:flex;flex-direction:column;gap:14px}
+.tx-card{background:var(--ink);color:var(--white);padding:22px;display:flex;flex-direction:column;gap:14px;position:relative}
 .tx-card.lock{background:var(--blue)}
+.song{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center}
+.song .cv{width:150px;height:150px;background:var(--orange);overflow:hidden;position:relative}
+.song .cv img{width:100%;height:100%;object-fit:cover;display:block}
+.duo img{filter:url(#duo)}.duo:hover img{filter:none}
+.sgbar{height:6px;background:#2a2b29;position:relative}.sgbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--orange);display:block}
+.tx-card.lock .sgbar i{background:var(--white)}
+#ytp{position:absolute;width:1px;height:1px;left:-9999px;top:0;overflow:hidden}
+.P .song{grid-template-columns:110px 1fr}.P .song .cv{width:110px;height:110px}
 
 /* ---------- SALVAGE ---------- */
 #r-salvage{background:var(--bone);display:grid;grid-template-columns:1fr 420px;gap:26px}
-.P #r-salvage{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;gap:14px}
+.P #r-salvage{grid-template-columns:1fr;grid-template-rows:auto auto;gap:14px}
 .crates{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:10px;margin-top:18px;flex:1;min-height:0}
 .P .crates{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,104px);margin-top:0}
 .crate{position:relative;background:var(--white);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-width:0;border:3px solid var(--ink)}
@@ -221,6 +229,15 @@ a{text-decoration:none}
 .crate.sel{background:var(--ink);color:var(--white)}
 .scanp{background:var(--ink);color:var(--white);padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0;overflow:hidden}
 .scanw{position:relative;flex:1;background:var(--orange);overflow:hidden;min-height:180px}
+.dimg{position:relative;flex:1;min-height:0;margin-top:18px;background:var(--ink);overflow:hidden}
+.P .dimg{margin-top:0;min-height:520px}
+.dimg canvas{position:absolute;inset:0;width:100%;height:100%}
+.dimg img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.dimg .st{position:absolute;left:10px;top:10px;background:var(--ink);color:var(--orange);padding:5px 7px}
+.chl{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+.chl a{display:grid;grid-template-columns:44px 1fr;gap:6px;font:400 11px/1.3 var(--f-ui);color:#8b8c86;padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chl a b{font:700 10px/1.3 var(--f-code);color:#5d5e59}
+.chl a:hover,.chl a:focus{color:var(--white)}.chl a:hover b{color:var(--orange)}
 .scanw img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.4);mix-blend-mode:multiply}
 .scanw canvas{position:absolute;inset:0;width:100%;height:100%}
 .scanw .st{position:absolute;left:10px;top:10px;background:var(--ink);color:var(--orange);padding:5px 7px}
@@ -338,6 +355,33 @@ a.seal{background:var(--sel)}
 #labv .cv.on{display:block}
 @media (max-width:640px){#labv .vh .hide-s{display:none}}
 
+/* ---------- NOISE ---------- */
+#r-noise{background:var(--nf,var(--bone));color:var(--ni,var(--ink));display:grid;grid-template-columns:1fr 430px;gap:26px}
+.P #r-noise{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:14px}
+#r-noise .ttl,#r-noise .slog,#r-noise .tag,#r-noise .lab{color:inherit}
+#nzname{font:200 150px/.8 var(--f-disp);font-stretch:88%;letter-spacing:-.05em;margin:6px 0 0 -6px}
+.P #nzname{font-size:110px}
+#nzslope{font:700 22px/1 var(--f-code)}
+.nzp{position:relative;flex:1;min-height:0;background:var(--ink);color:var(--white);overflow:hidden}
+.nzp canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.nzp .ct{position:absolute;font:700 11px/1 var(--f-code);color:#7b7c76;pointer-events:none}
+.nzp .ct.l{left:12px;top:10px;color:var(--nzc,var(--white))}.nzp .ct.r{right:12px;top:10px}
+.nzp .ct.b{left:12px;bottom:8px;right:12px;display:flex;justify-content:space-between}
+.nzs{background:var(--ink);color:var(--white);padding:18px;display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0}
+.nzc{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:center;padding:7px 8px;border-left:3px solid transparent}
+.nzc i{width:22px;height:22px;display:block;outline:1px solid #3a3b38;outline-offset:-1px}
+.nzc b{font:300 24px/1 var(--f-disp);font-stretch:88%;letter-spacing:-.02em}
+.nzc span{font:700 11px/1 var(--f-code);color:#8b8c86}
+.nzc em{grid-column:2/-1;font:400 11px/1.3 var(--f-ui);font-style:normal;color:#8b8c86;margin-top:-6px}
+.nzc.sel{background:var(--white);color:var(--ink);border-color:var(--sel)}.nzc.sel span,.nzc.sel em{color:#4b4c47}
+.nzc.on b::after{content:" ●";color:var(--sel);font-size:14px;vertical-align:middle}
+.nzrow{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center;border-top:1px solid #2a2b29;padding-top:9px;margin-top:4px}
+.nzrow > span{font:400 10px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;color:#8b8c86}
+.nzrow .chips{display:flex;gap:4px;flex-wrap:wrap}
+.nzrow .chip{background:#1c1d1e}.nzrow .chip.on{background:var(--white);color:var(--ink)}
+.nzvol{display:flex;gap:3px;align-items:flex-end;height:26px}.nzvol button{width:14px;background:#2a2b29;display:block}.nzvol button.on{background:var(--sel)}
+.P .nzc em{display:none}.P .nzc{padding:5px 8px}.P .nzc b{font-size:20px}
+
 /* ---------- DIAG terminal ---------- */
 #term{position:absolute;left:0;right:0;bottom:52px;height:46%;background:var(--ink);color:var(--white);z-index:25;display:flex;flex-direction:column;border-top:3px solid var(--sel)}
 .P #term{height:52%}
@@ -374,6 +418,7 @@ a.seal{background:var(--sel)}
       <button id="snd" aria-pressed="true" title="Sound (M)"><span class="m"><i></i><i></i><i></i><i></i><i></i></span>SND</button>
     </header>
 
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 1 0"/><feComponentTransfer><feFuncR type="table" tableValues=".04 .94"/><feFuncG type="table" tableValues=".04 .27"/><feFuncB type="table" tableValues=".043 .024"/></feComponentTransfer></filter></svg>
     <main id="rooms">
       <!-- SHELL -->
       <section class="room chev" id="r-shell" aria-label="Runner shell">
@@ -418,27 +463,31 @@ a.seal{background:var(--sel)}
         </div>
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
           <div class="tx-card" id="txc">
-            <div style="display:flex;justify-content:space-between"><span class="tag" id="txs">CARRIER · SEARCHING</span><span class="micro" style="color:#8b8c86" id="txf">LOCK ±0.4</span></div>
-            <div class="ttl" style="font-size:44px" id="txh">No lock yet.</div>
-            <p class="txt" style="color:#c9cac4">The song of the day comes from your YouTube Music playlist and plays on the live uplink. Turn the dial with ← → or drag it. Static drops as you get close.</p>
-            <a class="btnA" id="txa" data-f href="https://music.youtube.com/playlist?list=PLatbUHOLE1e0" target="_blank" rel="noopener"><span class="k">A</span>OPEN THE FREQUENCY ↗</a>
+            <div style="display:flex;justify-content:space-between;gap:12px"><span class="tag" id="txs">CARRIER · SEARCHING</span><span class="micro" style="color:#8b8c86" id="txf">NEXT SONG IN --:--:--</span></div>
+            <div class="song"><div class="cv duo" id="sgcv"><img id="sgimg" alt=""></div><div style="min-width:0;display:flex;flex-direction:column;gap:6px"><span class="micro" style="color:#8b8c86" id="sgd">SONG OF THE DAY</span><div class="ttl" style="font-size:40px" id="sgt">Tuning…</div><div class="slog" style="font-size:20px;color:#c9cac4" id="sga">&nbsp;</div></div></div>
+            <div class="sgbar"><i id="sgp"></i></div>
+            <p class="txt" style="color:#c9cac4;font-size:15px">One song a day from the playlist, the same for everyone, new at midnight Eastern. Tune the dial onto today's frequency to lock it in, or just press A.</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btnA" id="txa" data-f><span class="k">A</span><span id="txal">PLAY TODAY'S SONG</span></button><a class="btnB" id="txy" data-f href="https://music.youtube.com/" target="_blank" rel="noopener"><span class="k">↗</span>YouTube Music</a></div>
+            <div id="ytp" aria-hidden="true"></div>
           </div>
-          <div class="micro" style="line-height:1.6">Lock frequency changes daily · carrier 2.8kHz · static bed band-passed at 1.8kHz · sound wakes on first input</div>
+          <div class="micro" style="line-height:1.6">Lock frequency changes daily · carrier 2.8kHz · brown-noise static, low-passed at 1.4kHz · sound wakes on first input</div>
         </div>
         <div class="gi" style="left:-24px;bottom:-40px;font-size:270px;color:var(--ink);opacity:.12" aria-hidden="true">COMMS</div>
       </section>
 
       <!-- SALVAGE -->
-      <section class="room" id="r-salvage" hidden aria-label="Salvage: Are.na channels">
+      <section class="room" id="r-salvage" hidden aria-label="Salvage: image of the day">
         <div style="display:flex;flex-direction:column;min-height:0;min-width:0">
-          <div class="rh"><div class="row"><span class="tag">SLOT 03</span><span class="jp" style="font-size:15px">回収</span><span class="lab">12 feeds · Are.na</span></div><h2 class="ttl" style="font-size:64px">Salvage</h2><p class="slog">Crates from twelve channels. The daily image is pulled from one of them.</p></div>
-          <div class="crates" id="crates"></div>
+          <div class="rh"><div class="row"><span class="tag">SLOT 03</span><span class="jp" style="font-size:15px">回収</span><span class="lab">Image of the day · Are.na</span></div><h2 class="ttl" style="font-size:64px">Salvage</h2><p class="slog">One image a day, pulled from twelve channels. Hover to see it clean.</p></div>
+          <div class="dimg duo" id="dimg" data-f tabindex="0" aria-label="Image of the day"><canvas class="dither" width="64" height="48" id="noise"></canvas><img id="dimgi" alt="Image of the day" hidden><span class="tag st" id="scst">SEARCHING</span></div>
         </div>
         <div class="scanp">
-          <div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--orange)" id="scn">SV-01</span><span class="micro" style="color:#8b8c86">Salvage scan · duotone</span></div>
-          <div class="ttl" style="font-size:40px" id="scnm">mefr</div>
-          <div class="scanw" id="scanw"><canvas class="dither" width="64" height="48" id="noise"></canvas><span class="tag st" id="scst">SEARCHING</span></div>
-          <a class="btnA" data-f id="scl" href="#" target="_blank" rel="noopener"><span class="k">A</span>OPEN CRATE ON ARE.NA ↗</a>
+          <div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--orange)" id="scn">SV-00</span><span class="micro" style="color:#8b8c86" id="dcd">NEXT IN --:--:--</span></div>
+          <div class="ttl" style="font-size:40px" id="scnm">Today</div>
+          <p class="txt" style="font-size:15px;color:#c9cac4">Same image for everyone, new at midnight Eastern. Duotone at rest; the original shows while you hover.</p>
+          <a class="btnA" data-f id="scl" href="https://www.are.na/jere-mi-as" target="_blank" rel="noopener"><span class="k">A</span>OPEN ON ARE.NA ↗</a>
+          <div class="micro" style="color:#8b8c86;border-top:1px solid #2a2b29;padding-top:10px;margin-top:auto">Feeds · 12 channels</div>
+          <div class="chl" id="chl"></div>
         </div>
       </section>
 
@@ -466,6 +515,22 @@ a.seal{background:var(--sel)}
           <div class="ways" id="ways"></div>
           <div class="chips" id="chips"></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btnA" data-f id="apply" style="background:var(--white);color:var(--ink)"><span class="k">A</span>APPLY TO SHELL</button><button class="btnA" data-f id="roll" style="background:#1c1d1e"><span class="k" style="background:var(--white)">X</span>ROLL</button></div>
+        </div>
+      </section>
+
+      <!-- NOISE -->
+      <section class="room" id="r-noise" hidden aria-label="Noise: colour noise generator">
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 08</span><span class="jp" style="font-size:15px">雑音</span><span class="lab">Colour noise generator</span></div><h2 class="ttl" style="font-size:64px">Noise</h2><p class="slog">Seven colours. Pick one, press A. It keeps playing while you walk the shell.</p></div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px"><div id="nzname">Brown</div><div style="text-align:right;padding-bottom:12px"><div id="nzslope">−6 dB/oct</div><div class="micro" id="nzwhat" style="font-size:10px;margin-top:6px">deep · surf, rumble</div></div></div>
+          <div class="nzp cutc"><canvas id="nzcv" aria-hidden="true"></canvas><span class="ct l" id="nzl">SPECTRUM · IDLE</span><span class="ct r" id="nzr">20 Hz — 20 kHz · LOG</span><span class="ct b"><span>20</span><span>100</span><span>1k</span><span>10k</span><span id="nzrms">RMS -∞ dBFS</span></span></div>
+        </div>
+        <div class="nzs cutc">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="tag" style="color:var(--sel)">GEN-01 · STEREO</span><span id="nzrun" style="font:500 22px/1 var(--f-dot)">00:00:00</span></div>
+          <div id="nzlist" style="display:flex;flex-direction:column;gap:2px"></div>
+          <div class="nzrow"><span>Level</span><div class="nzvol" id="nzvol"></div></div>
+          <div class="nzrow"><span>Sleep</span><div class="chips" id="nzsleep"></div></div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:10px"><button class="btnA" data-f id="nzgo"><span class="k">A</span><span id="nzgol">START</span></button><span class="micro" id="nzleft" style="color:#8b8c86"></span></div>
         </div>
       </section>
 
@@ -764,13 +829,14 @@ const JRL = (() => {
 
   /* ---- synthesized UI sound ---- */
   const SFX = (() => {
-    let ctx = null, master, noise, on = true, humNodes = null;
+    let ctx = null, master, noise, brown, on = true, humNodes = null;
     try { on = localStorage.getItem('jrl-snd') !== 'off'; } catch (e) { }
     function init() {
       if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return true; }
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
       ctx = new AC(); master = ctx.createGain(); master.gain.value = on ? .55 : 0; master.connect(ctx.destination);
       noise = ctx.createBuffer(1, ctx.sampleRate * 1, ctx.sampleRate); const ch = noise.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+      brown = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate); const bc = brown.getChannelData(0); let last = 0; for (let i = 0; i < bc.length; i++) { last = (last + .02 * (Math.random() * 2 - 1)) / 1.02; bc[i] = last * 3.5; } const F = 2048; for (let i = 0; i < F; i++) { const a = i / F; bc[i] = bc[i] * a + bc[bc.length - F + i] * (1 - a); }
       return true;
     }
     function nz(dur, f1, q, gain, when = 0, type = 'bandpass') {
@@ -804,7 +870,7 @@ const JRL = (() => {
         if (!start && humNodes) { const h = humNodes; humNodes = null; h.g.gain.setTargetAtTime(0, ctx.currentTime, .1); setTimeout(() => { h.a.stop(); h.b.stop(); }, 500); }
       },
       tone(freq, gain) { if (!init()) return null; const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = freq; g.gain.value = gain; o.connect(g); g.connect(master); o.start(); return { o, g, ctx }; },
-      noiseBed(gain) { if (!init()) return null; const s = ctx.createBufferSource(); s.buffer = noise; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1800; f.Q.value = .4; const g = ctx.createGain(); g.gain.value = gain; s.connect(f); f.connect(g); g.connect(master); s.start(); return { s, g, f, ctx }; }
+      noiseBed(gain) { if (!init()) return null; const s = ctx.createBufferSource(); s.buffer = brown; s.loop = true; const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1400; f.Q.value = .5; const g = ctx.createGain(); g.gain.value = gain; s.connect(f); f.connect(g); g.connect(master); s.start(); return { s, g, f, ctx }; }
     };
     return api;
   })();
@@ -855,15 +921,16 @@ const CORES = (() => {
 const CHANNELS = ['fun-mefr','cool-looks-cool','fun-trite-core','fun-terminally-online-core','fun-react','fun-erm-frankly','cool-current-ideology','thought-consciousness-the-self-psychology','cool-interesting','fun-lost-in-the-maze','cool-weird-ebkeham9qyi','fun-truuuuuuuue'].map((s, i) => ({ s, n: ['fun-mefr','looks cool','trite core','terminally online core','react idy','erm frankly','current ideology','consciousness, the self, psychology','interesting','lost in the maze','weird','fun-truuuuuuuue'][i], c: 'SV-' + String(i + 1).padStart(2, '0') }));
 const SLOTS = [
  { id:'lab', c:'01', n:'Lab', jp:'ラボ', ic:'lab', ct:String(CORES.filter(k => k.ty !== 'TOOL').length).padStart(2, '0') + ' reports · builds', d:'Everything made between runs: the reports, the tools, other worlds for this site, and every retired version. Each one runs here.', col:'mint', area:'s1' },
- { id:'comms', c:'02', n:'Comms', jp:'通信', ic:'comms', ct:'01 frequency', d:'The song of the day. Tune the dial until the carrier locks.', col:'orange', area:'s2' },
- { id:'salvage', c:'03', n:'Salvage', jp:'回収', ic:'salvage', ct:'12 feeds', d:'Twelve Are.na channels as crates. The daily image comes from one of them.', col:'bone', area:'s3' },
+ { id:'comms', c:'02', n:'Comms', jp:'通信', ic:'comms', ct:'01 frequency', d:'The song of the day, new at midnight. Tune the dial until the carrier locks, or just press play.', col:'orange', area:'s2' },
+ { id:'salvage', c:'03', n:'Salvage', jp:'回収', ic:'salvage', ct:'image of the day', d:'One image a day from twelve Are.na channels. Duotone until you hover.', col:'bone', area:'s3' },
  { id:'cipher', c:'04', n:'Cipher', jp:'暗号', ic:'cipher', ct:'∞ shelves', d:'Babel. Type any phrase and the librarian gives you its shelf.', col:'lav', area:'s4' },
  { id:'paint', c:'05', n:'Paint', jp:'塗装', ic:'paint', ct:'06 colorways', d:'The color generator. Painting the shell changes the signal color on every screen.', col:'lime', area:'s5' },
  { id:'scan', c:'06', n:'Scan', jp:'走査', ic:'scan', ct:'zone · 08 cores', d:'Culture as a zone scan. Every core marks where it was recovered.', col:'teal', area:'s6' },
+ { id:'noise', c:'08', n:'Noise', jp:'雑音', ic:'sound', ct:'seven colours · generator', d:'A colour noise generator: white, pink, brown, grey, green, blue, violet. Keeps playing while you move around.', col:'bone', area:'s8' },
  { id:'diag', c:'07', n:'Diagnostics', jp:'診断', ic:'diag', ct:'terminal · /', d:'The shell terminal. Opens over any room.', col:'ink', area:'s7' }
 ];
-const ROOMLOC = { shell:['HANGAR','BAY 04 · TAU CETI IV HIGH ORBIT','格納庫'], vault:['VAULT','SLOT 01 · DATA CORES','保管庫'], comms:['COMMS','SLOT 02 · CARRIER BAND','通信'], salvage:['SALVAGE','SLOT 03 · ARE.NA FEEDS','回収'], cipher:['CIPHER','SLOT 04 · HEXAGON INDEX','暗号'], paint:['PAINT','SLOT 05 · BOOTH','塗装'], scan:['SCAN','SLOT 06 · ZONE','走査'], lab:['LAB','SLOT 01 · WORKBENCH','ラボ'] };
-const ROOMCOL = { shell:'fog', vault:'white', comms:'orange', salvage:'bone', cipher:'lav', paint:'ink', scan:'ink', lab:'mint' };
+const ROOMLOC = { shell:['HANGAR','BAY 04 · TAU CETI IV HIGH ORBIT','格納庫'], vault:['VAULT','SLOT 01 · DATA CORES','保管庫'], comms:['COMMS','SLOT 02 · SONG OF THE DAY','通信'], salvage:['SALVAGE','SLOT 03 · IMAGE OF THE DAY','回収'], cipher:['CIPHER','SLOT 04 · HEXAGON INDEX','暗号'], paint:['PAINT','SLOT 05 · BOOTH','塗装'], scan:['SCAN','SLOT 06 · ZONE','走査'], lab:['LAB','SLOT 01 · WORKBENCH','ラボ'], noise:['NOISE','SLOT 08 · GENERATOR','雑音'] };
+const ROOMCOL = { shell:'fog', vault:'white', comms:'orange', salvage:'bone', cipher:'lav', paint:'ink', scan:'ink', lab:'mint', noise:'brown' };
 
 /* ============ STAGE FIT ============ */
 let scale = 1, portrait = false;
@@ -915,7 +982,7 @@ const WAYS = [
  { n:'Somatic', k:['lav','white','mint'], acc:'#cce4dc' },
  { n:'Scan', k:['ink','white','teal'], acc:'#2ddccd' }
 ];
-const HEX = { ink:'#0a0a0b', white:'#f2f2ee', fog:'#f1f0f0', panel:'#e1dfe0', lime:'#c2ff16', blue:'#0400f5', orange:'#ef4606', pink:'#e0216f', bone:'#c7c2b6', teal:'#2ddccd', lav:'#8476bf', mint:'#cce4dc', yel:'#eae00b' };
+const HEX = { brown:'#5a3a22', grey:'#a7a8a2', green:'#5cc77a', violet:'#8476bf', ink:'#0a0a0b', white:'#f2f2ee', fog:'#f1f0f0', panel:'#e1dfe0', lime:'#c2ff16', blue:'#0400f5', orange:'#ef4606', pink:'#e0216f', bone:'#c7c2b6', teal:'#2ddccd', lav:'#8476bf', mint:'#cce4dc', yel:'#eae00b' };
 let wayIdx = Math.min(5, parseInt(store.get('jrl-paint', '0')) || 0), wayPrev = wayIdx;
 let selHex = '#c2ff16';
 function applyPaint(i) { const w = WAYS[i]; selHex = w.acc; document.documentElement.style.setProperty('--sel', w.acc); $('#paintnm').textContent = w.n.toUpperCase(); }
@@ -923,8 +990,10 @@ function applyPaint(i) { const w = WAYS[i]; selHex = w.acc; document.documentEle
 /* ============ SHELL ============ */
 const lo = $('#loadout');
 SLOTS.forEach((s, i) => {
-  const b = document.createElement('button'); b.className = 'slot' + (s.id === 'diag' ? ' s7' : ''); b.style.gridArea = s.area; b.dataset.f = ''; b.dataset.slot = i;
-  b.innerHTML = s.id === 'diag'
+  const b = document.createElement('button'); b.className = 'slot' + (s.id === 'diag' ? ' s7' : s.id === 'noise' ? ' s8' : ''); b.style.gridArea = s.area; b.dataset.f = ''; b.dataset.slot = i;
+  b.innerHTML = s.id === 'noise'
+    ? `<i class="sw" id="nzsw" style="background:var(--${s.col})"></i><span class="ic">${JRL.icon(s.ic)}</span><span class="t" style="flex-direction:column;gap:6px"><span>SLOT ${s.c}</span><span class="ak"></span></span><span class="nm">${s.n}</span><span class="jp" style="font-size:14px">${s.jp}</span><span class="ct" id="nzct" style="margin-left:auto">${s.ct}</span>`
+    : s.id === 'diag'
     ? `<span class="ic">${JRL.icon(s.ic)}</span><span class="t" style="gap:12px"><span>SLOT ${s.c}</span></span><span class="nm">${s.n}</span><span class="jp" style="font-size:14px">${s.jp}</span><span class="ct" style="margin-left:auto">${s.ct} · [Y]</span>`
     : `<i class="sw" style="background:var(--${s.col})"></i><span class="t"><span>SLOT ${s.c}</span><span class="ak"></span></span><span class="ic">${JRL.icon(s.ic)}</span><span><span class="jp" style="font-size:14px;display:block;margin-bottom:4px">${s.jp}</span><span class="nm">${s.n}</span></span><span class="ct">${s.ct}</span>`;
   b.setAttribute('aria-label', `Slot ${s.c}: ${s.n}. ${s.d}`);
@@ -1000,12 +1069,12 @@ function setFreq(f, user) {
   $('#nd').style.left = `calc(${(freq - 88) / 20 * 100}% - 2px)`; dial.setAttribute('aria-valuenow', freq);
   const dist = Math.abs(freq - lockF), locked = dist <= .4;
   $('#txc').classList.toggle('lock', locked); $('#txs').textContent = locked ? 'CARRIER · LOCKED' : dist < 2 ? 'CARRIER · CLOSE' : 'CARRIER · SEARCHING';
-  $('#txh').textContent = locked ? 'Transmission locked.' : dist < 2 ? 'Something is there.' : 'No lock yet.';
+
   $('#lk').style.opacity = locked ? 1 : 0;
   if (user && S.on) {
     if (!bed) { bed = S.noiseBed(.0); car = S.tone(2794, 0); }
-    if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(.12 * n + .01, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(locked ? .035 : Math.max(0, .02 * (1 - dist / 2)), car.ctx.currentTime, .05); }
-    if (locked && !setFreq.wasLocked) { play('confirm'); status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); }
+    if (bed) { const n = Math.min(1, dist / 3); bed.g.gain.setTargetAtTime(songOn ? 0 : .5 * n + .03, bed.ctx.currentTime, .05); car.g.gain.setTargetAtTime(locked ? .035 : Math.max(0, .02 * (1 - dist / 2)), car.ctx.currentTime, .05); }
+    if (locked && !setFreq.wasLocked) { status(`LOCKED · ${lockF.toFixed(1)} MHz · TODAY'S TRANSMISSION`); if (!songOn) toggleSong(); }
   }
   setFreq.wasLocked = locked;
 }
@@ -1024,27 +1093,55 @@ JRL.every(t => {
   og.fillStyle = '#333'; for (let x = 0; x < W; x += 60) og.fillRect(x, 0, 1, H);
 });
 
-/* ============ SALVAGE ============ */
-const crates = $('#crates'); let selCh = 0;
-CHANNELS.forEach((ch, i) => {
-  const b = document.createElement('button'); b.className = 'crate'; b.dataset.f = ''; b.dataset.i = i;
-  b.innerHTML = `<span class="t"><span>${ch.c}</span><span>${JRL.icon('salvage').replace('class="px"', 'class="px" style="width:14px;height:14px"')}</span></span><span class="sn"${ch.n.length > 18 ? ' style="font-size:.72em"' : ''}>${ch.n}</span><i class="hz"></i>`;
-  b.setAttribute('aria-label', `Crate ${ch.c}: ${ch.n}`);
-  b.addEventListener('click', () => { if (selCh === i && room === 'salvage') $('#scl').click(); selectCh(i); setFocus(b); });
-  crates.appendChild(b);
-});
-const scanCache = {};
-function selectCh(i, silent) {
-  selCh = i; const ch = CHANNELS[i]; $$('.crate').forEach((b, k) => b.classList.toggle('sel', k === i));
-  $('#scn').textContent = ch.c; $('#scnm').textContent = ch.n; $('#scl').href = `https://www.are.na/jere-mi-as/${ch.s}`;
-  const w = $('#scanw'); const old = w.querySelector('img'); if (old) old.remove(); $('#scst').textContent = 'SEARCHING · ' + ch.c;
-  if (!silent) play('move');
-  const show = url => { if (selCh !== i) return; if (!url) { $('#scst').textContent = 'NO SIGNAL · scans load on the live uplink'; return; } const im = new Image(); im.alt = ''; im.onload = () => { if (selCh !== i) return; w.appendChild(im); $('#scst').textContent = 'SCAN · ' + ch.c; }; im.onerror = () => $('#scst').textContent = 'NO SIGNAL'; im.src = url; };
-  if (ch.s in scanCache) return show(scanCache[ch.s]);
-  fetch(`https://api.are.na/v2/channels/${ch.s}/contents?per=12&direction=desc`).then(r => r.ok ? r.json() : Promise.reject()).then(j => { const b = (j.contents || []).filter(x => x.image).pop(); scanCache[ch.s] = b ? (b.image.display || b.image.thumb).url : null; show(scanCache[ch.s]); }).catch(() => { scanCache[ch.s] = null; show(null); });
-}
+/* ============ SALVAGE: image of the day ============ */
+const ROOT = location.protocol === 'file:' ? 'https://jere.ing/' : '';
+const ET = 'America/New_York', etDay = () => new Intl.DateTimeFormat('en-CA', { timeZone: ET }).format(new Date());
+function fnv(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h; }
+function msToMidnightET() { const p = {}; new Intl.DateTimeFormat('en-US', { timeZone: ET, hourCycle: 'h23', hour: 'numeric', minute: 'numeric', second: 'numeric' }).formatToParts(new Date()).forEach(x => p[x.type] = +x.value); return 864e5 - ((p.hour * 60 + p.minute) * 60 + p.second) * 1000; }
+const hms = ms => { const s = Math.max(0, ms / 1000 | 0); return `${pad(s / 3600 | 0)}:${pad(s / 60 % 60 | 0)}:${pad(s % 60)}`; };
+const TODAY = etDay();
+let selCh = 0; function selectCh() { }
+$('#chl').innerHTML = CHANNELS.map(ch => `<a href="https://www.are.na/jere-mi-as/${ch.s}" target="_blank" rel="noopener"><b>${ch.c}</b><span>${ch.n}</span></a>`).join('');
+(function imageOfTheDay() {
+  const img = $('#dimgi');
+  fetch(ROOT + 'images.json').then(r => r.ok ? r.json() : []).then(pool => {
+    if (!pool.length) { $('#scst').textContent = 'NO SIGNAL · the image pool loads on the live uplink'; return; }
+    let idx = fnv(TODAY) % pool.length, tries = 0;
+    const show = () => { const p = pool[idx]; img.onload = () => { img.hidden = false; $('#noise').style.display = 'none'; $('#scst').textContent = 'SALVAGED · ' + TODAY.replace(/-/g, '·'); };
+      img.onerror = () => { if (++tries < 5) { idx = (idx + 1) % pool.length; show(); } else $('#scst').textContent = 'NO SIGNAL'; };
+      img.src = p.src; $('#scl').href = 'https://www.are.na/block/' + p.id; $('#scn').textContent = 'BLK ' + p.id;
+      const slug = String(p.channel).split('/').pop(), ch = CHANNELS.find(c => c.s === slug); $('#scnm').textContent = ch ? ch.n : slug.replace(/-/g, ' '); };
+    show();
+  }).catch(() => $('#scst').textContent = 'NO SIGNAL · the image pool loads on the live uplink');
+})();
 const ncv = $('#noise'), ng = ncv.getContext('2d');
-JRL.every(() => { if (room !== 'salvage') return; const d = ng.createImageData(64, 48); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() < .5 ? 10 : 239; d.data[i] = v; d.data[i + 1] = v < 100 ? 10 : 70; d.data[i + 2] = v < 100 ? 11 : 6; d.data[i + 3] = $('#scanw img') ? 40 : 255; } ng.putImageData(d, 0, 0); });
+JRL.every(() => { if (room !== 'salvage' || ncv.style.display === 'none') return; const d = ng.createImageData(64, 48); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() < .5 ? 10 : 239; d.data[i] = v; d.data[i + 1] = v < 100 ? 10 : 70; d.data[i + 2] = v < 100 ? 11 : 6; d.data[i + 3] = 255; } ng.putImageData(d, 0, 0); });
+setInterval(() => { const t = hms(msToMidnightET()); $('#dcd').textContent = 'NEXT IN ' + t; $('#txf').textContent = 'NEXT SONG IN ' + t; if (etDay() !== TODAY) location.reload(); }, 1000);
+
+/* ============ SONG OF THE DAY (Comms) ============ */
+let SONG = null, yt = null, ytWant = false, songOn = false;
+fetch(ROOT + 'songs.json').then(r => r.ok ? r.json() : []).then(list => {
+  if (!list.length) { $('#sgt').textContent = 'No transmission.'; $('#sga').textContent = 'The playlist loads on the live uplink.'; return; }
+  SONG = list[fnv(TODAY) % list.length];
+  $('#sgt').textContent = SONG.title; $('#sga').textContent = SONG.artist || ''; $('#sgd').textContent = 'SONG OF THE DAY · ' + TODAY.replace(/-/g, '·');
+  $('#sgimg').src = `https://i.ytimg.com/vi/${SONG.id}/hqdefault.jpg`; $('#txy').href = `https://music.youtube.com/watch?v=${SONG.id}`;
+}).catch(() => { $('#sgt').textContent = 'No transmission.'; });
+function songUI() { $('#txal').textContent = songOn ? 'PAUSE' : (SONG ? "PLAY TODAY'S SONG" : 'NO SONG TODAY'); if (room === 'comms') renderPrompts(); }
+function ytLoad() {
+  if (yt || !SONG) return;
+  window.onYouTubeIframeAPIReady = () => {
+    yt = new YT.Player('ytp', { width: 1, height: 1, videoId: SONG.id, playerVars: { playsinline: 1, controls: 0 },
+      events: { onReady: () => { if (ytWant) yt.playVideo(); }, onStateChange: e => { songOn = e.data === 1 || e.data === 3; if (songOn && bed) bed.g.gain.setTargetAtTime(0, bed.ctx.currentTime, .3); songUI(); } } });
+  };
+  const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.onerror = () => status('YOUTUBE DID NOT ANSWER · OPEN IT IN YOUTUBE MUSIC', 3200); document.head.appendChild(sc);
+}
+function toggleSong() {
+  if (!SONG) { play('buzz'); return; }
+  if (yt && yt.getPlayerState) { if (songOn) yt.pauseVideo(); else yt.playVideo(); play('confirm'); return; }
+  ytWant = true; ytLoad(); status(`RECEIVING · ${SONG.title.toUpperCase()}`); play('confirm');
+}
+$('#txa').addEventListener('click', toggleSong);
+JRL.every(() => { if (room !== 'comms' || !yt || !yt.getDuration) return; const d = yt.getDuration(), c = yt.getCurrentTime(); if (d) $('#sgp').style.width = (c / d * 100) + '%'; });
 
 /* ============ CIPHER ============ */
 const LIB = ['Every sentence you could type is already shelved. I only tell you where.', 'This one has been on the shelf longer than the hangar.', 'Someone asked for this exact phrase before you. I won\'t say who.', 'Most of the page is noise. Your phrase is the only clean line on it.', 'You will not find a typo here that wasn\'t also written correctly, two shelves over.'];
@@ -1195,6 +1292,114 @@ $('#labvx').addEventListener('click', () => closeLab());
 $('#labvn').addEventListener('click', () => { if (labURL) openURL(labURL); });
 function openCore(ci) { const i = LAB.findIndex(x => x.core === ci || (x.id === 'scope' && CORES[ci] && CORES[ci].ty === 'TOOL')); if (i < 0) return; if (room !== 'lab') setRoom('lab'); selectProj(i, true); setFocus($(`.lp[data-p="${i}"]`)); if (LAB[i].q && !LAB[i].ovr) { status(`${LAB[i].c} IS QUARANTINED · PRESS A TO OVERRIDE`); return; } openLab(i); }
 
+/* ============ NOISE: colour noise generator ============ */
+/* Own AudioContext, so the SND chip (UI sounds) never mutes it. Each colour is a 12 s stereo buffer,
+   generated once, cross-faded at the seam and looped; grey and green are white through filters. */
+const NZ = (() => {
+  const C = {
+    white:  { n:'White',  hex:'#f2f2ee', ink:'#0a0a0b', slope:'0 dB/oct',  what:'flat · every frequency at equal power', d:0 },
+    pink:   { n:'Pink',   hex:'#e0216f', ink:'#f2f2ee', slope:'−3 dB/oct', what:'balanced · rain, focus', d:-3 },
+    brown:  { n:'Brown',  hex:'#5a3a22', ink:'#f2f2ee', slope:'−6 dB/oct', what:'deep · surf, rumble, sleep', d:-6 },
+    grey:   { n:'Grey',   hex:'#a7a8a2', ink:'#0a0a0b', slope:'equal loudness', what:'sounds flat to the ear · tuned to hearing', d:'g' },
+    green:  { n:'Green',  hex:'#5cc77a', ink:'#0a0a0b', slope:'mid band · 500 Hz', what:'the middle of white · wind in trees', d:'m' },
+    blue:   { n:'Blue',   hex:'#0400f5', ink:'#f2f2ee', slope:'+3 dB/oct', what:'bright · hiss, spray', d:3 },
+    violet: { n:'Violet', hex:'#8476bf', ink:'#f2f2ee', slope:'+6 dB/oct', what:'sharp · high hiss, tinnitus masking', d:6 }
+  };
+  const keys = Object.keys(C);
+  let cur = keys.includes(store.get('jrl-noise', 'brown')) ? store.get('jrl-noise', 'brown') : 'brown';
+  let lvl = Math.max(1, Math.min(10, parseInt(store.get('jrl-noise-lvl', '5')) || 5)), sleepIdx = 0, sleepEnd = 0, t0 = 0;
+  const SLEEP = [0, 15, 30, 60, 90];
+  let ctx = null, out, an, src = null, chain = [], on = false; const bufs = {};
+  function gen(k) {
+    const sr = ctx.sampleRate, N = sr * 12, F = 4096, b = ctx.createBuffer(2, N, sr);
+    for (let c = 0; c < 2; c++) {
+      const raw = new Float32Array(N + F); let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0, last = 0, prev = 0, pprev = 0;
+      for (let i = 0; i < N + F; i++) {
+        const w = Math.random() * 2 - 1; let v = w;
+        if (k === 'pink' || k === 'blue') { b0 = .99886 * b0 + w * .0555179; b1 = .99332 * b1 + w * .0750759; b2 = .969 * b2 + w * .153852; b3 = .8665 * b3 + w * .3104856; b4 = .55 * b4 + w * .5329522; b5 = -.7616 * b5 - w * .016898; v = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * .5362) * .11; b6 = w * .115926; }
+        if (k === 'brown') { last = (last + .02 * w) / 1.02; v = last * 3.5; }
+        if (k === 'blue') { const p = v; v = (p - prev) * 1.4; prev = p; }
+        if (k === 'violet') { v = (w - pprev) * .5; pprev = w; }
+        raw[i] = v;
+      }
+      const ch = b.getChannelData(c);
+      for (let i = 0; i < N; i++) ch[i] = raw[i];
+      for (let i = 0; i < F; i++) { const a = i / F; ch[i] = raw[i] * a + raw[N + i] * (1 - a); }   // seamless loop
+      let ss = 0; for (let i = 0; i < N; i += 7) ss += ch[i] * ch[i]; const rms = Math.sqrt(ss / (N / 7)) || 1, g = .2 / rms; for (let i = 0; i < N; i++) ch[i] *= g;
+    }
+    return b;
+  }
+  function init() {
+    if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+    ctx = new (window.AudioContext || window.webkitAudioContext)(); out = ctx.createGain(); out.gain.value = 0;
+    an = ctx.createAnalyser(); an.fftSize = 4096; an.smoothingTimeConstant = .8; out.connect(an); an.connect(ctx.destination);
+  }
+  const gainFor = () => Math.pow(lvl / 10, 2) * .9;
+  function wire(k) {
+    if (src) { const old = src, oc = chain; old.stop(ctx.currentTime + .06); setTimeout(() => oc.forEach(n => n.disconnect()), 200); }
+    const base = k === 'grey' || k === 'green' ? 'white' : k; if (!bufs[base]) bufs[base] = gen(base);
+    src = ctx.createBufferSource(); src.buffer = bufs[base]; src.loop = true; chain = [src]; let node = src;
+    const add = n => { node.connect(n); node = n; chain.push(n); };
+    if (k === 'grey') { const a = ctx.createBiquadFilter(); a.type = 'lowshelf'; a.frequency.value = 220; a.gain.value = 12; add(a); const b = ctx.createBiquadFilter(); b.type = 'peaking'; b.frequency.value = 3500; b.Q.value = .9; b.gain.value = -10; add(b); const c = ctx.createBiquadFilter(); c.type = 'highshelf'; c.frequency.value = 9000; c.gain.value = 6; add(c); const d = ctx.createGain(); d.gain.value = .55; add(d); }
+    if (k === 'green') { const a = ctx.createBiquadFilter(); a.type = 'bandpass'; a.frequency.value = 500; a.Q.value = .45; add(a); const d = ctx.createGain(); d.gain.value = 1.9; add(d); }
+    const x = ctx.createGain(); x.gain.value = 0; add(x); x.connect(out); x.gain.setTargetAtTime(1, ctx.currentTime, .05); src.start();
+  }
+  function start() { init(); t0 = t0 || Date.now(); on = true; wire(cur); out.gain.cancelScheduledValues(ctx.currentTime); out.gain.setTargetAtTime(gainFor(), ctx.currentTime, .4); if (SLEEP[sleepIdx]) sleepEnd = Date.now() + SLEEP[sleepIdx] * 6e4; ui(); }
+  function stop(fade = .25) { if (!ctx || !on) return; on = false; out.gain.setTargetAtTime(0, ctx.currentTime, fade); const s = src; setTimeout(() => { if (!on && s) { try { s.stop(); } catch (e) { } if (src === s) src = null; } }, fade * 6000); t0 = 0; sleepEnd = 0; ui(); }
+  function pick(k, quiet) { if (!C[k]) return; cur = k; store.set('jrl-noise', k); if (on) wire(k); if (!quiet) play('move'); paint(); }
+  function level(d) { lvl = Math.max(1, Math.min(10, lvl + d)); store.set('jrl-noise-lvl', lvl); if (on) out.gain.setTargetAtTime(gainFor(), ctx.currentTime, .08); play('tick'); ui(); }
+  function sleepNext() { sleepIdx = (sleepIdx + 1) % SLEEP.length; sleepEnd = on && SLEEP[sleepIdx] ? Date.now() + SLEEP[sleepIdx] * 6e4 : 0; play('tick'); ui(); }
+  function paint() {
+    const c = C[cur], st = $('#r-noise').style; st.setProperty('--nf', c.hex); st.setProperty('--ni', c.ink); st.setProperty('--nzc', c.hex === '#0400f5' ? '#6f6cff' : c.hex === '#5a3a22' ? '#c08a5c' : c.hex);
+    ROOMCOL.noise = cur; $('#nzname').textContent = c.n; $('#nzslope').textContent = c.slope; $('#nzwhat').textContent = c.what;
+    const sw = $('#nzsw'); if (sw) sw.style.background = c.hex;
+    $('#nzlist').innerHTML = keys.map(k => `<button class="nzc${k === cur ? ' sel' : ''}${k === cur && on ? ' on' : ''}" data-f data-k="${k}"><i style="background:${C[k].hex}"></i><b>${C[k].n}</b><span>${C[k].slope}</span><em>${C[k].what}</em></button>`).join('');
+    $$('#nzlist .nzc').forEach(b => b.addEventListener('click', () => { if (b.dataset.k === cur) toggle(); else { pick(b.dataset.k); if (room === 'noise') setFocus($(`.nzc[data-k="${b.dataset.k}"]`)); } }));
+    ui(); if (room === 'noise') { const el = $(`.nzc[data-k="${cur}"]`); if (el && cur && document.activeElement && document.activeElement.closest && document.activeElement.closest('#nzlist')) setFocus(el); placeBrk(); }
+  }
+  function ui() {
+    $('#nzgol').textContent = on ? 'STOP' : 'START ' + C[cur].n.toUpperCase();
+    $('#nzvol').innerHTML = Array.from({ length: 10 }, (_, i) => `<button aria-label="Level ${i + 1}" data-v="${i + 1}" class="${i < lvl ? 'on' : ''}" style="height:${8 + i * 2}px"></button>`).join('');
+    $$('#nzvol button').forEach(b => b.addEventListener('click', () => level(+b.dataset.v - lvl)));
+    $('#nzsleep').innerHTML = SLEEP.map((m, i) => `<button class="chip${i === sleepIdx ? ' on' : ''}" data-i="${i}">${m ? m + ' MIN' : 'OFF'}</button>`).join('');
+    $$('#nzsleep .chip').forEach(b => b.addEventListener('click', () => { sleepIdx = +b.dataset.i; sleepEnd = on && SLEEP[sleepIdx] ? Date.now() + SLEEP[sleepIdx] * 6e4 : 0; play('tick'); ui(); }));
+    $$('#nzlist .nzc').forEach(b => b.classList.toggle('on', on && b.dataset.k === cur));
+    const ct = $('#nzct'); if (ct) ct.textContent = on ? `${C[cur].n.toLowerCase()} · on · level ${lvl}` : 'seven colours · generator';
+    $('#nzl').textContent = on ? `SPECTRUM · ${C[cur].n.toUpperCase()} · LIVE` : `SPECTRUM · ${C[cur].n.toUpperCase()} · IDLE`;
+    if (room === 'noise') renderPrompts();
+  }
+  function toggle() { on ? stop() : start(); play(on ? 'confirm' : 'back'); }
+  $('#nzgo').addEventListener('click', toggle);
+  const cv = $('#nzcv'), g = cv.getContext('2d'); let fb = null, tb = null, lvlS = [];
+  JRL.every(() => {
+    if (on && sleepEnd && Date.now() >= sleepEnd) { stop(30); status('SLEEP TIMER · NOISE FADING OUT'); }
+    if (room !== 'noise') return;
+    const r = cv.getBoundingClientRect(), W = cv.width = Math.round(r.width / scale), H = cv.height = Math.round(r.height / scale), col = getComputedStyle($('#r-noise')).getPropertyValue('--nzc').trim() || '#f2f2ee';
+    g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, W, H);
+    const L = 40, R = W - 30, T = 34, B = H - 30, cs = 12, cols = Math.floor((R - L) / cs), rows = Math.floor((B - T) / cs);
+    const fx = f => L + (Math.log10(f) - Math.log10(20)) / 3 * (R - L);
+    g.fillStyle = '#26272a'; for (const f of [20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000]) g.fillRect(fx(f) | 0, T, 1, B - T);
+    if (!lvlS.length || lvlS.length !== cols) lvlS = new Array(cols).fill(0);
+    if (on && an) { if (!fb || fb.length !== an.frequencyBinCount) fb = new Float32Array(an.frequencyBinCount); an.getFloatFrequencyData(fb); }
+    const sr = ctx ? ctx.sampleRate : 48000, n = fb ? fb.length : 0;
+    for (let c = 0; c < cols; c++) {
+      const f0 = 20 * Math.pow(1000, c / cols), f1 = 20 * Math.pow(1000, (c + 1) / cols); let m = -140;
+      if (on && fb) { const i0 = Math.max(1, Math.floor(f0 / (sr / 2) * n)), i1 = Math.max(i0 + 1, Math.ceil(f1 / (sr / 2) * n)); for (let i = i0; i < i1 && i < n; i++) if (fb[i] > m) m = fb[i]; }
+      const v = on ? Math.max(0, Math.min(1, (m + 110) / 80)) : 0; lvlS[c] += (v - lvlS[c]) * .35; const lit = Math.round(lvlS[c] * rows);
+      for (let rr = 0; rr < rows; rr++) { const x = L + c * cs + cs / 2, y = B - rr * cs - cs / 2; g.globalAlpha = rr < lit ? 1 : .09; g.fillStyle = rr < lit && rr === lit - 1 ? '#f2f2ee' : col; g.beginPath(); g.arc(x, y, cs * .33, 0, 6.2832); g.fill(); }
+    }
+    g.globalAlpha = 1;
+    // the colour's ideal slope as a dashed guide
+    const d = C[cur].d; g.strokeStyle = '#f2f2ee'; g.globalAlpha = .55; g.setLineDash([4, 6]); g.lineWidth = 1.5; g.beginPath();
+    for (let k = 0; k <= 60; k++) { const f = 20 * Math.pow(1000, k / 60); let db = typeof d === 'number' ? d * Math.log2(f / 1000) : d === 'm' ? -12 * Math.pow(Math.log2(f / 500), 2) / 4 : (f < 200 ? 10 : 0) - 8 * Math.exp(-Math.pow(Math.log2(f / 3500), 2)) + (f > 9000 ? 5 : 0); const y = (T + B) / 2 - db * (B - T) / 70; k ? g.lineTo(fx(f), y) : g.moveTo(fx(f), y); }
+    g.stroke(); g.setLineDash([]); g.globalAlpha = 1;
+    if (on && an) { if (!tb) tb = new Float32Array(an.fftSize); an.getFloatTimeDomainData(tb); let ss = 0; for (let i = 0; i < tb.length; i++) ss += tb[i] * tb[i]; const rms = Math.sqrt(ss / tb.length); $('#nzrms').textContent = 'RMS ' + (rms > 1e-6 ? (20 * Math.log10(rms)).toFixed(1) : '-∞') + ' dBFS'; } else $('#nzrms').textContent = 'RMS -∞ dBFS';
+    const run = on && t0 ? (Date.now() - t0) / 1000 | 0 : 0; $('#nzrun').textContent = `${pad(run / 3600 | 0)}:${pad(run / 60 % 60 | 0)}:${pad(run % 60)}`;
+    $('#nzleft').textContent = on && sleepEnd ? 'SLEEP IN ' + Math.ceil((sleepEnd - Date.now()) / 6e4) + ' MIN' : on ? 'RUNS UNTIL YOU STOP IT' : '';
+  });
+  return { keys, get cur() { return cur; }, get on() { return on; }, start, stop, toggle, pick, level, sleepNext, paint, darkField: () => C[cur].ink === '#f2f2ee' };
+})();
+
 /* ============ TERMINAL ============ */
 const tout = $('#tout'), tcmd = $('#tcmd'); let termOpen = false;
 function tl(s, c = '') { const d = document.createElement('div'); d.className = c; d.textContent = s; tout.appendChild(d); while (tout.children.length > 40) tout.firstChild.remove(); }
@@ -1204,7 +1409,7 @@ $('#tin').addEventListener('submit', e => {
   e.preventDefault(); const raw = tcmd.value.trim(); tcmd.value = ''; if (!raw) return; tl('runner@jrl:~$ ' + raw, 'd'); const [c, ...a] = raw.split(/\s+/); const arg = a.join(' ').toLowerCase();
   const ok = m => { tl('[ ok ] ' + m, 'ok'); play('tick'); }, err = m => { tl('[FAIL] ' + m, 'e'); play('buzz'); };
   switch (c.toLowerCase()) {
-    case 'help': tl('ls · cores · open <nn> · lab · run <name> · archive [n] · go <slot> · paint <name> · mute · unmute · whoami · date · signal · clear · reboot · exit'); break;
+    case 'help': tl('ls · cores · open <nn> · lab · run <name> · noise [colour|off] · archive [n] · go <slot> · paint <name> · mute · unmute · whoami · date · signal · clear · reboot · exit'); break;
     case 'ls': SLOTS.forEach(s => tl(`  SLOT ${s.c}  ${s.n.padEnd(12)} ${s.ct}`)); break;
     case 'cores': CORES.forEach(k => tl(`  ${k.c}  ${k.t}${k.q ? '  [QUARANTINED]' : ''}`)); break;
     case 'open': { const n = parseInt(arg); const k = CORES[n - 1]; if (!k) return err('no such core. try: open 03'); if (k.q && !opened.has(n - 1)) return err(`${k.c} is quarantined. override it in the vault first.`); ok(`extracting ${k.c} ${k.t}`); closeTerm(); openCore(n - 1); break; }
@@ -1221,6 +1426,7 @@ $('#tin').addEventListener('submit', e => {
     case 'archive': { const AR = [['2026-11-terminal-of-the-future', 'terminal of the future (v3.6)'], ['2026-11-graphic-realism', 'graphic realism v1'], ['2026-10-paper-and-ink', 'paper & ink']]; const n = parseInt(arg); if (!n) { AR.forEach((x, k) => tl(`  ${k + 1}  /archive/${x[0]}  ${x[1]}`)); tl('  open one: archive 1'); break; } const x = AR[n - 1]; if (!x) return err('no such archive. try: archive'); ok('opening /archive/' + x[0]); openURL((location.protocol === 'file:' ? 'https://jere.ing/' : '') + 'reports/_archive/' + x[0] + '/'); break; }
     case 'lab': LAB.forEach(x => tl(`  ${x.c}  ${x.n.padEnd(16)} ${x.pl}`)); tl('  run one: run veta'); break;
     case 'run': { const i = LAB.findIndex(x => x.id === arg || x.n.toLowerCase() === arg || x.c.toLowerCase() === arg); if (i < 0) return err('nothing on the bench called that. type lab'); ok((LAB[i].dl ? 'pulling ' : LAB[i].links ? 'opening ' : 'running ') + LAB[i].n); closeTerm(); if (room !== 'lab') { selP = i; go('lab', { instant: true, quiet: true }); } selectProj(i, true); labRun(i); break; }
+    case 'noise': { if (!arg) { tl('  ' + NZ.keys.join(' · ') + ' · off'); tl(`  now: ${NZ.cur}${NZ.on ? ' (on)' : ' (off)'}`); break; } if (arg === 'off' || arg === 'stop') { NZ.stop(); ok('noise off'); break; } if (!NZ.keys.includes(arg)) return err('colours: ' + NZ.keys.join(', ')); NZ.pick(arg, true); NZ.start(); ok(arg + ' noise on'); break; }
     case 'sudo': err('runners do not have root. nice try.'); break;
     default: err(`unknown command: ${c}. type help`);
   }
@@ -1234,7 +1440,7 @@ function placeBrk() {
   const r = cur.getBoundingClientRect(), s = stage.getBoundingClientRect(); const pad = 7;
   brk.style.left = ((r.left - s.left) / scale - pad) + 'px'; brk.style.top = ((r.top - s.top) / scale - pad) + 'px';
   brk.style.width = (r.width / scale + pad * 2) + 'px'; brk.style.height = (r.height / scale + pad * 2) + 'px';
-  const dark = ['paint', 'scan'].includes(room) || cur.closest('.insp,.scanp,.slab,.tx-card,.s7,.corep');
+  const dark = ['paint', 'scan'].includes(room) || (room === 'noise' && NZ.darkField()) || cur.closest('.insp,.scanp,.slab,.tx-card,.s7,.corep');
   brk.style.setProperty('--c', dark ? 'var(--sel)' : (room === 'cipher' ? 'var(--white)' : 'var(--ink)'));
   brk.classList.add('on');
 }
@@ -1242,7 +1448,7 @@ function hideBrk() { brk.classList.remove('on'); }
 function restoreFocus() { const el = lastFocus[room]; if (el && el.isConnected) setFocus(el); else setFocus(firstIn(room)); }
 document.addEventListener('focusin', e => { if (e.target.closest('[data-f]') && e.target.closest('#rooms')) { cur = e.target.closest('[data-f]'); lastFocus[room] = cur; placeBrk(); } });
 function focusables() { return $$('[data-f]', $(`#r-${room}`)).filter(el => el.getClientRects().length); }
-function firstIn(r) { return r === 'shell' ? $$('.slot')[selSlot] : r === 'vault' ? $(`.item[data-i="${selCore}"]`) : r === 'salvage' ? $$('.crate')[selCh] : r === 'scan' ? $$('.an')[selAn] : r === 'paint' ? $(`.way[data-w="${wayPrev}"]`) : r === 'comms' ? dial : r === 'lab' ? $(`.lp[data-p="${selP}"]`) : $('#loc8'); }
+function firstIn(r) { return r === 'shell' ? $$('.slot')[selSlot] : r === 'vault' ? $(`.item[data-i="${selCore}"]`) : r === 'salvage' ? $('#dimg') : r === 'scan' ? $$('.an')[selAn] : r === 'paint' ? $(`.way[data-w="${wayPrev}"]`) : r === 'comms' ? dial : r === 'lab' ? $(`.lp[data-p="${selP}"]`) : r === 'noise' ? $('.nzc.sel') : $('#loc8'); }
 function spatial(dir) {
   const list = focusables(); if (!cur || !list.includes(cur)) return setFocus(firstIn(room));
   const a = cur.getBoundingClientRect(), ax = a.left + a.width / 2, ay = a.top + a.height / 2; let best = null, bs = 1e9;
@@ -1257,6 +1463,7 @@ function onFocusMove(el) {
   else if (el.classList.contains('crate')) selectCh(+el.dataset.i, true);
   else if (el.classList.contains('an')) selectAn(+el.dataset.a, true);
   else if (el.classList.contains('lp')) selectProj(+el.dataset.p, true);
+  else if (el.classList.contains('nzc')) NZ.pick(el.dataset.k, true);
   else if (el.classList.contains('way')) { wayPrev = +el.dataset.w; genInks = WAYS[wayPrev].k.map(k => rgb(HEX[k])); renderWays(); setFocus($(`.way[data-w="${wayPrev}"]`)); }
 }
 
@@ -1267,7 +1474,7 @@ function renderPrompts() {
   if (termOpen) L = [P('B', 'Close', closeTerm), P('↵', 'Run', null, 1)];
   else if (room === 'shell') L = [P('✛', 'Select', null, 1), P('A', 'Equip', () => equip(selSlot)), P('LB', 'Prev', () => { selectSlot(selSlot - 1); setFocus($$('.slot')[selSlot]); }, 1), P('RB', 'Next', () => { selectSlot(selSlot + 1); setFocus($$('.slot')[selSlot]); }, 1), P('Y', 'Diagnostics', openTerm)];
   else {
-    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', 'Open', () => $('#txa').click())], salvage: [P('A', 'Open crate', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openCore(CORES.indexOf(AN[selAn].c)))], lab: LAB[selP].sh === 'r' ? [P('A', LAB[selP].q && !LAB[selP].ovr ? 'Override' : 'Open', () => labRun(selP))] : LAB[selP].links ? [P('A', 'Open ↗', () => labRun(selP))] : [P('A', 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
+    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', songOn ? 'Pause' : 'Play song', toggleSong)], salvage: [P('A', 'Open on Are.na', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openCore(CORES.indexOf(AN[selAn].c)))], noise: [P('A', NZ.on ? 'Stop' : 'Start', () => NZ.toggle()), P('◂▸', 'Level', null, 1), P('X', 'Sleep', () => NZ.sleepNext())], lab: LAB[selP].sh === 'r' ? [P('A', LAB[selP].q && !LAB[selP].ovr ? 'Override' : 'Open', () => labRun(selP))] : LAB[selP].links ? [P('A', 'Open ↗', () => labRun(selP))] : [P('A', 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
     L = [P('B', 'Shell', () => go('shell')), ...extra, P('LB', 'Prev room', () => cycle(-1), 1), P('RB', 'Next room', () => cycle(1), 1), P('Y', 'Diag', openTerm)];
   }
   if (portrait) L = L.filter(p => !['Prev room', 'Next room', 'Prev', 'Next', 'Select', 'Tune', 'Run'].includes(p.l));
@@ -1277,7 +1484,7 @@ function renderPrompts() {
 
 /* ============ ROOMS + BURST ============ */
 let room = 'shell', busy = false;
-const ORDER = ['lab', 'comms', 'salvage', 'cipher', 'paint', 'scan'];
+const ORDER = ['lab', 'comms', 'salvage', 'cipher', 'paint', 'scan', 'noise'];
 function cycle(d) { const i = ORDER.indexOf(room); go(ORDER[(i + d + ORDER.length) % ORDER.length]); }
 function setRoom(r) {
   $$('.room').forEach(s => s.hidden = s.id !== 'r-' + r);
@@ -1285,7 +1492,7 @@ function setRoom(r) {
   room = r; stage.dataset.room = r;
   const L = ROOMLOC[r]; $('#loc').innerHTML = `<b>${L[0]}</b>&nbsp;· ${L[1]}&nbsp;&nbsp;<span class="jp">${L[2]}</span>`;
   if (S.on) S.hum(r === 'shell');
-  if (r === 'shell') { selectSlot(selSlot, true); bust.reveal(); bust.draw(JRL.time()); } if (r === 'vault') selectCore(selCore, true); if (r === 'salvage') selectCh(selCh, true); if (r === 'scan') selectAn(selAn, true); if (r === 'paint') drawGen(JRL.time()); if (r === 'lab') { selectProj(selP, true); labSizes(); }
+  if (r === 'shell') { selectSlot(selSlot, true); bust.reveal(); bust.draw(JRL.time()); } if (r === 'vault') selectCore(selCore, true); if (r === 'salvage') selectCh(selCh, true); if (r === 'scan') selectAn(selAn, true); if (r === 'paint') drawGen(JRL.time()); if (r === 'lab') { selectProj(selP, true); labSizes(); } if (r === 'noise') NZ.paint();
   renderPrompts(); restoreFocus(); say(L[0].toLowerCase());
   if (location.hash.slice(1) !== (r === 'shell' ? '' : r)) history.pushState(null, '', r === 'shell' ? location.pathname + location.search : '#' + r);
 }
@@ -1294,7 +1501,7 @@ function go(r, opts = {}) {
   if (busy || (r === room && !opts.force)) return; if (termOpen) closeTerm();
   if (RM || opts.instant) { setRoom(r); if (!opts.quiet) play('thump'); return; }
   busy = true; hideBrk();
-  const name = r === 'shell' ? 'SHELL' : SLOTS.find(s => s.id === r).n.toUpperCase(), dcol = HEX[ROOMCOL[r]], ink = ['ink', 'pink', 'lav', 'blue'].includes(ROOMCOL[r]) ? '#f2f2ee' : '#0a0a0b';
+  const name = r === 'shell' ? 'SHELL' : SLOTS.find(s => s.id === r).n.toUpperCase(), dcol = HEX[ROOMCOL[r]], ink = ['ink', 'pink', 'lav', 'blue', 'brown', 'violet'].includes(ROOMCOL[r]) ? '#f2f2ee' : '#0a0a0b';
   const code = Array.from({ length: 22 }, () => `<div style="white-space:nowrap">${Math.random().toString(36).slice(2, 12).toUpperCase()} ${'▮'.repeat(1 + Math.random() * 30 | 0)} 0x${(Math.random() * 1e8 | 0).toString(16)}</div>`).join('');
   const cards = [
     [card(`<div class="gi" style="left:30px;top:40px;font-size:200px">[A]</div>`, 'var(--sel)', '#0a0a0b'), 33],
@@ -1324,14 +1531,15 @@ addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
   if (k.startsWith('arrow')) {
     e.preventDefault();
+    if (room === 'noise' && (k === 'arrowleft' || k === 'arrowright')) { NZ.level(k === 'arrowright' ? 1 : -1); return; }
     if (cur === dial && (k === 'arrowleft' || k === 'arrowright')) { setFreq(freq + (k === 'arrowright' ? .1 : -.1) * (e.shiftKey ? 10 : 1), true); play('tick'); return; }
     return spatial(k.slice(5));
   }
-  if (k === 'enter' || k === ' ') { if (cur && cur.isConnected && !e.repeat) { e.preventDefault(); if (cur.tagName === 'A') { cur.click(); } else if (cur === dial) { $('#txa').focus(); } else cur.click(); } return; }
+  if (k === 'enter' || k === ' ') { if (cur && cur.isConnected && !e.repeat) { e.preventDefault(); if (cur.tagName === 'A') { cur.click(); } else if (cur === dial) { toggleSong(); } else cur.click(); } return; }
   if (k === 'q' || k === 'e') { if (room === 'shell') { selectSlot(selSlot + (k === 'e' ? 1 : -1)); setFocus($$('.slot')[selSlot]); } else cycle(k === 'e' ? 1 : -1); return; }
   if (k === '/' || k === 'y' || k === '`') { e.preventDefault(); return termOpen ? closeTerm() : openTerm(); }
   if (k === 'm') return setSnd(!S.on);
-  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); else if (room === 'lab') labDocs(selP); }
+  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); else if (room === 'lab') labDocs(selP); else if (room === 'noise') NZ.sleepNext(); }
 });
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'x') endHold(); });
 addEventListener('pointerdown', () => S.init(), { once: true });
@@ -1353,7 +1561,7 @@ function boot(force) {
 }
 
 /* ============ INIT ============ */
-applyPaint(wayIdx); fit(); selectSlot(0, true); selectCore(0, true); selectCh(0, true); selectAn(0, true);
+applyPaint(wayIdx); NZ.paint(); fit(); selectSlot(0, true); selectCore(0, true); selectCh(0, true); selectAn(0, true);
 const startR = location.hash.slice(1) === 'vault' ? 'lab' : location.hash.slice(1); const startL = startR.startsWith('lab/') ? LAB.findIndex(x => x.id === startR.slice(4)) : -1;
 setRoom(startL >= 0 ? 'lab' : ORDER.includes(startR) ? startR : 'shell'); if (startL >= 0) { selectProj(startL, true); history.replaceState(null, '', '#lab'); openLab(startL); }
 $('#snd').setAttribute('aria-pressed', S.on);
