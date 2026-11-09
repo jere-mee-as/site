@@ -7,7 +7,7 @@ Other worlds for the site: directions it could have taken. They run in the Lab (
 | [`marathon/`](marathon/) | The current live direction for jere.ing: type specimen and color map |
 | [`uplink/`](uplink/) | Marathon pass 2: an in-world "runner's shell" site and its visual development book. **Now the live front page** (the root `template.html`); the copy here is the concept as it was before going live |
 | [`ffxiii/`](ffxiii/) | Final Fantasy XIII-inspired direction: preview, template drop-ins, audit |
-| [`mirrors-edge/`](mirrors-edge/) | Mirror's Edge-inspired direction: runner site, vesta 9 in-world site and field guide, preview and template |
+| [`mirrors-edge/`](mirrors-edge/) | Mirror's Edge-inspired direction: vesta 9 in-world site and field guide (in the Lab), plus the runner site, its style book, preview and template (repo only, never published) |
 
 ## How to open
 

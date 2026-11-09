@@ -48,14 +48,13 @@ def veta_demo(out):
     return len(files)
 
 
+# The Mirror's Edge runner site (lab/mirrors-edge/runner.html and its style book) stays in the repo only; it is never published.
 WORLDS = {
     # published path under lab/worlds/      : source in the repo
     "ffxiii/index.html": "lab/ffxiii/preview.html",
     "ffxiii/audit.html": "lab/ffxiii/audit.html",
-    "mirrors-edge/runner.html": "lab/mirrors-edge/runner.html",
     "mirrors-edge/vesta9.html": "lab/mirrors-edge/vesta9.html",
     "mirrors-edge/field-guide.html": "lab/mirrors-edge/city-web-field-guide.html",
-    "mirrors-edge/stylebook.html": "lab/mirrors-edge/runner-stylebook.html",
     "uplink/stylebook.html": "lab/uplink/stylebook.html",
     "marathon/type.html": "lab/marathon/type-specimen.html",
     "marathon/color.html": "lab/marathon/color-map.html",
