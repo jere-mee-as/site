@@ -238,15 +238,26 @@ a{text-decoration:none}
 /* ---------- CIPHER ---------- */
 #r-cipher{background:var(--lav);color:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:30px}
 .P #r-cipher{grid-template-columns:1fr;grid-template-rows:auto 1fr;gap:16px}
-.lib{font:italic 400 44px/1.12 var(--f-serif);margin:0;text-wrap:balance}
-.P .lib{font-size:34px}
+.lib{font:italic 400 30px/1.15 var(--f-serif);margin:0;text-wrap:balance}
+.P .lib{font-size:26px}
+.pg{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.pg .hd{display:flex;justify-content:space-between;gap:10px;font:700 11px/1 var(--f-code);color:var(--mint)}
+.pg pre{margin:0;flex:1;min-height:0;overflow:auto;position:relative;font:400 13px/1.55 var(--f-code);color:#77786f;white-space:pre;scrollbar-width:thin}
+.pg pre .ln{color:#45463f;user-select:none}
+.pg pre mark{background:var(--mint);color:var(--ink);padding:1px 0}
+.pg pre .hot{color:#c9cac4}
+.cipb{display:flex;gap:8px;flex-wrap:wrap}
+.cipb button{background:var(--ink);color:var(--white);padding:9px 12px 9px 8px;display:flex;align-items:center;gap:8px;font:700 12px/1 var(--f-code)}
+.cipb button:hover{background:var(--mint);color:var(--ink)}
+.cipb .k{background:var(--mint);color:var(--ink);min-width:24px;height:24px}
+.P .pg pre{font-size:11px}
 .phr{display:flex;background:var(--ink);align-items:stretch}
 .phr input{flex:1;min-width:0;background:transparent;border:0;color:var(--white);font:400 20px/1 var(--f-ui);padding:16px;caret-color:var(--mint)}
 .phr input::placeholder{color:#6d6e69}
 .phr button{background:var(--mint);color:var(--ink);padding:0 16px;display:flex;align-items:center;gap:8px;font:700 13px/1 var(--f-code)}
 .addr{display:flex;flex-direction:column;gap:10px;min-width:0}
 .slab{background:var(--ink);color:var(--white);padding:14px 16px}
-.hex{font:400 13px/1.45 var(--f-code);color:var(--mint);word-break:break-all;height:190px;overflow:hidden}
+.hex{font:400 12px/1.45 var(--f-code);color:var(--mint);word-break:break-all;height:250px;overflow:hidden}
 .P .hex{height:150px}
 .coords{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .coords .slab .v{font:700 44px/1 var(--f-code)}
@@ -486,16 +497,20 @@ a.seal{background:var(--sel)}
 
       <!-- CIPHER -->
       <section class="room" id="r-cipher" hidden aria-label="Cipher: Library of Babel">
-        <div style="display:flex;flex-direction:column;gap:22px;min-width:0">
-          <div class="rh"><div class="row"><span class="tag">SLOT 04</span><span class="jp" style="font-size:15px">暗号</span></div><h2 class="ttl" style="font-size:64px">Cipher</h2></div>
+        <div style="display:flex;flex-direction:column;gap:14px;min-width:0;min-height:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 04</span><span class="jp" style="font-size:15px">暗号</span><span class="lab">Library of Babel · 29 symbols · 3,200 per page</span></div><h2 class="ttl" style="font-size:64px">Cipher</h2></div>
           <p class="lib" id="lib">Every sentence you could type is already shelved. I only tell you where.</p>
-          <form class="phr" id="phr" autocomplete="off"><input id="phrase" data-f maxlength="120" placeholder="type a phrase" aria-label="Phrase to locate"><button type="submit" data-f id="loc8"><span class="k" style="background:var(--ink);color:var(--mint)">A</span>LOCATE</button></form>
-          <p class="slab txt" style="font-size:14px">Coordinates are computed on the shell. To read the actual page, search the real Library of Babel. <a href="https://libraryofbabel.info/search.html" target="_blank" rel="noopener" data-f style="color:var(--mint)">libraryofbabel.info ↗</a></p>
+          <form class="phr" id="phr" autocomplete="off"><input id="phrase" data-f maxlength="400" placeholder="type a phrase, or press X for a random line" aria-label="Phrase to locate"><button type="submit" data-f id="loc8"><span class="k" style="background:var(--ink);color:var(--mint)">A</span>LOCATE</button></form>
+          <div class="slab pg"><div class="hd"><span id="pgh">THE PAGE · 40 LINES × 80</span><span id="pgw" style="color:#8b8c86">—</span></div><pre id="pgt" tabindex="0" aria-label="The page, with your phrase marked">Type a phrase and the librarian finds the page it is printed on.
+Every page holds 3,200 characters: a–z, space, comma, period.
+Most of any page is noise. Your phrase is the clean part.</pre></div>
         </div>
         <div class="addr">
           <div class="slab"><div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--mint)">HEXAGON</span><span class="micro" style="color:#8b8c86" id="hexn">— chars</span></div></div>
           <div class="slab hex" id="hex">awaiting phrase</div>
           <div class="coords"><div class="slab"><div class="micro">Wall</div><div class="v" id="cw">–</div></div><div class="slab"><div class="micro">Shelf</div><div class="v" id="cs">–</div></div><div class="slab"><div class="micro">Volume</div><div class="v" id="cv">–</div></div><div class="slab"><div class="micro">Page</div><div class="v" id="cp">–</div></div></div>
+          <div class="cipb"><button data-f id="cipr"><span class="k">X</span>RANDOM LINE</button><button data-f id="cipf"><span class="k">F</span><span id="cipfl">WHOLE PAGE</span></button><button data-f id="cipc"><span class="k">C</span>COPY ADDRESS</button></div>
+          <p class="micro" style="color:#d9d6ee;line-height:1.6;margin:0">Shelved by this shell's own catalogue: every page has exactly one address and every address one page, so the same phrase always lands in the same place. The real library at libraryofbabel.info files its pages differently.</p>
         </div>
         <div class="gi" style="right:-20px;bottom:-30px;font-size:230px;color:var(--white);opacity:.16" aria-hidden="true">CIPHER</div>
       </section>
@@ -916,7 +931,7 @@ const SLOTS = [
  { id:'lab', c:'01', n:'Lab', jp:'ラボ', ic:'lab', ct:String(CORES.filter(k => k.ty !== 'TOOL').length).padStart(2, '0') + ' reports · builds', d:'Everything made between runs: the reports, the tools, other worlds for this site, and every retired version. Each one runs here.', col:'mint', area:'s1' },
  { id:'comms', c:'02', n:'Comms', jp:'通信', ic:'comms', ct:'01 frequency', d:'The song of the day, new at midnight. Tune the dial until the carrier locks, or just press play.', col:'orange', area:'s2' },
  { id:'salvage', c:'03', n:'Salvage', jp:'回収', ic:'salvage', ct:'image of the day', d:'One image a day from twelve Are.na channels. Duotone until you hover.', col:'bone', area:'s3' },
- { id:'cipher', c:'04', n:'Cipher', jp:'暗号', ic:'cipher', ct:'∞ shelves', d:'Babel. Type any phrase and the librarian gives you its shelf.', col:'lav', area:'s4' },
+ { id:'cipher', c:'04', n:'Cipher', jp:'暗号', ic:'cipher', ct:'∞ shelves', d:'Babel. Type any phrase and the librarian finds its page, its address, and the noise around it. X pulls a random line.', col:'lav', area:'s4' },
  { id:'paint', c:'05', n:'Paint', jp:'塗装', ic:'paint', ct:'06 colorways', d:'The color generator. Painting the shell changes the signal color on every screen.', col:'lime', area:'s5' },
  { id:'scan', c:'06', n:'Scan', jp:'走査', ic:'scan', ct:'zone · 08 cores', d:'Culture as a zone scan. Every core marks where it was recovered.', col:'teal', area:'s6' },
  { id:'noise', c:'08', n:'Noise', jp:'雑音', ic:'sound', ct:'seven colours · generator', d:'A colour noise generator: white, pink, brown, grey, green, blue, violet. Keeps playing while you move around.', col:'bone', area:'s8' },
@@ -1136,24 +1151,64 @@ function toggleSong() {
 $('#txa').addEventListener('click', toggleSong);
 JRL.every(() => { if (room !== 'comms' || !yt || !yt.getDuration) return; const d = yt.getDuration(), c = yt.getCurrentTime(); if (d) $('#sgp').style.width = (c / d * 100) + '%'; });
 
-/* ============ CIPHER ============ */
+/* ============ CIPHER: a working Library of Babel ============ */
+/* A page is 3,200 symbols from a 29-letter alphabet, read as one base-29 number N. Its address is
+   X = (A·N + C) mod 29^3200, split into page (410), volume (32), shelf (5), wall (4) and a hexagon
+   written in base 36. The map is one-to-one, so each phrase gets one fixed page and address. */
+const BAB = (() => {
+  const AL = 'abcdefghijklmnopqrstuvwxyz ,.', LEN = 3200, B = 29n;
+  let M = null, A = null, Cc = null;
+  function consts() { if (M) return; M = B ** BigInt(LEN); const h = s => { let x = 0n; for (let i = 0; i < 380; i++) x = x * 97n + BigInt((JRL.hash(s + i) % 97)); return x; }; A = (h('jrl-babel-a') * 2n + 1n) % M; if (A % B === 0n) A += 1n; Cc = h('jrl-babel-c') % M; }
+  const clean = t => t.toLowerCase().replace(/[^a-z ,.]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, LEN);
+  function pageFor(phrase) { const R = JRL.rng(JRL.hash('page:' + phrase)); let pg = ''; for (let i = 0; i < LEN; i++) pg += AL[R() * 29 | 0]; const at = Math.floor(R() * (LEN - phrase.length + 1)); return { page: pg.slice(0, at) + phrase + pg.slice(at + phrase.length), at }; }
+  function locate(page) {
+    consts(); let N = 0n; for (let i = 0; i < LEN; i++) N = N * B + BigInt(AL.indexOf(page[i]));
+    let X = (A * N + Cc) % M; const take = m => { const v = Number(X % BigInt(m)); X /= BigInt(m); return v; };
+    const pg = take(410) + 1, vol = take(32) + 1, shelf = take(5) + 1, wall = take(4) + 1;
+    return { hex: X.toString(36), wall, shelf, vol, pg };
+  }
+  const W = { a: ['the', 'every', 'a quiet', 'no', 'one more', 'the last', 'some other', 'an old'], n: ['runner', 'librarian', 'hangar', 'shelf', 'signal', 'shell', 'archive', 'colony', 'carrier', 'page', 'river', 'city', 'machine', 'window'], v: ['remembers', 'forgets', 'outlives', 'repeats', 'waits for', 'misreads', 'keeps', 'counts', 'rewrites', 'listens to', 'hides', 'returns to'], o: ['the noise', 'its own name', 'the static', 'a closed door', 'the last line', 'every word', 'the dark between floors', 'what was lost', 'the second sun', 'a better copy'], t: ['', '', ' at night', ' twice', ' for a while', ' again', ' on purpose', ' without asking'] };
+  function sentence() { const r = a => a[Math.random() * a.length | 0]; return `${r(W.a)} ${r(W.n)} ${r(W.v)} ${r(W.o)}${r(W.t)}.`; }
+  return { clean, pageFor, locate, sentence, LEN };
+})();
 const LIB = ['Every sentence you could type is already shelved. I only tell you where.', 'This one has been on the shelf longer than the hangar.', 'Someone asked for this exact phrase before you. I won\'t say who.', 'Most of the page is noise. Your phrase is the only clean line on it.', 'You will not find a typo here that wasn\'t also written correctly, two shelves over.'];
-let decodeT = null;
-$('#phr').addEventListener('submit', e => {
-  e.preventDefault(); const p = $('#phrase').value.trim().toLowerCase(); if (!p) { play('tick'); status('TYPE A PHRASE · THE LIBRARIAN IS LISTENING'); setFocus($('#phrase')); return; }
-  const R = JRL.rng(JRL.hash(p)); const A = 'abcdefghijklmnopqrstuvwxyz0123456789'; let hx = ''; for (let i = 0; i < 520; i++) hx += A[R() * 36 | 0];
-  const target = { w: 1 + (R() * 4 | 0), s: 1 + (R() * 5 | 0), v: 1 + (R() * 32 | 0), p: 1 + (R() * 410 | 0) };
-  $('#hexn').textContent = '3260 chars · showing 520'; $('#lib').textContent = LIB[JRL.hash(p) % LIB.length];
+let decodeT = null, cipPage = null, cipFull = false, cipHex = '';
+function renderPage() {
+  const el = $('#pgt'); if (!cipPage) return; const { page, at, len } = cipPage, L0 = Math.floor(at / 80), L1 = Math.floor((at + Math.max(1, len) - 1) / 80);
+  const from = cipFull ? 0 : Math.max(0, L0 - 3), to = cipFull ? 39 : Math.min(39, L1 + 3); let html = '';
+  for (let l = from; l <= to; l++) {
+    const a = l * 80, b = a + 80, line = page.slice(a, b), s0 = Math.max(a, at), s1 = Math.min(b, at + len);
+    const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const body = s0 < s1 ? esc(line.slice(0, s0 - a)) + '<mark>' + esc(line.slice(s0 - a, s1 - a)) + '</mark>' + esc(line.slice(s1 - a)) : esc(line);
+    html += `<span class="ln">${String(l + 1).padStart(2, '0')}  </span><span class="${l >= L0 && l <= L1 ? 'hot' : ''}">${body}</span>\n`;
+  }
+  el.innerHTML = html; $('#pgh').textContent = cipFull ? 'THE WHOLE PAGE · 40 LINES × 80' : `LINES ${pad(from + 1)}–${pad(to + 1)} OF 40 · YOUR TEXT IN CONTEXT`;
+  $('#pgw').textContent = `CHAR ${at + 1}–${at + len} · LINE ${L0 + 1}${L1 > L0 ? '–' + (L1 + 1) : ''}`; $('#cipfl').textContent = cipFull ? 'JUST THE CONTEXT' : 'WHOLE PAGE';
+  const m = el.querySelector('mark'); el.scrollTop = m && cipFull ? Math.max(0, m.offsetTop - el.clientHeight / 2) : 0; $('#r-cipher').scrollTop = 0;
+}
+function shelve(raw, fromRandom) {
+  const p = BAB.clean(raw); if (!p) { play('tick'); status('TYPE A PHRASE · LETTERS, SPACES, COMMAS AND PERIODS'); setFocus($('#phrase')); return; }
+  if (p !== raw.toLowerCase().trim()) status('ONLY a–z, SPACE, COMMA AND PERIOD ARE PRINTED HERE · THE REST WAS DROPPED');
+  const { page, at } = BAB.pageFor(p); const L = BAB.locate(page); cipPage = { page, at, len: p.length }; cipHex = L.hex; cipFull = false;
+  $('#lib').textContent = fromRandom ? `“${p}” · pulled from a random shelf.` : LIB[JRL.hash(p) % LIB.length];
+  $('#hexn').textContent = `${L.hex.length.toLocaleString('en-US')} chars · showing ${Math.min(900, L.hex.length)}`;
+  renderPage();
+  const A = 'abcdefghijklmnopqrstuvwxyz0123456789', show = Math.min(900, L.hex.length), hx = L.hex.slice(0, show);
   clearInterval(decodeT); let k = 0; play('swell');
   decodeT = setInterval(() => {
-    k++; const done = Math.min(520, k * 40); let out = hx.slice(0, done); for (let i = done; i < 520; i++) out += A[Math.random() * 36 | 0];
-    $('#hex').textContent = out;
-    const r = (n, m) => k > n ? m : (1 + Math.random() * m | 0);
-    $('#cw').textContent = r(4, target.w); $('#cs').textContent = r(6, target.s); $('#cv').textContent = pad(r(9, target.v)); $('#cp').textContent = r(12, target.p);
+    k++; const done = Math.min(show, k * 70); let out = hx.slice(0, done); for (let i = done; i < show; i++) out += A[Math.random() * 36 | 0];
+    $('#hex').textContent = out + (done >= show && L.hex.length > show ? '…' : '');
+    const r = (n, m, v) => k > n ? v : (1 + Math.random() * m | 0);
+    $('#cw').textContent = r(4, 4, L.wall); $('#cs').textContent = r(6, 5, L.shelf); $('#cv').textContent = pad(r(9, 32, L.vol)); $('#cp').textContent = r(12, 410, L.pg);
     if (k % 2) play('tick');
-    if (done >= 520 && k > 12) { clearInterval(decodeT); play('confirm'); status(`SHELVED · WALL ${target.w} · SHELF ${target.s} · VOL ${pad(target.v)} · PAGE ${target.p}`); }
+    if (done >= show && k > 12) { clearInterval(decodeT); play('confirm'); status(`SHELVED · WALL ${L.wall} · SHELF ${L.shelf} · VOL ${pad(L.vol)} · PAGE ${L.pg}`); }
   }, RM ? 1 : 33);
-});
+}
+$('#phr').addEventListener('submit', e => { e.preventDefault(); shelve($('#phrase').value); });
+function cipRandom() { const t = BAB.sentence(); $('#phrase').value = t; shelve(t, true); }
+$('#cipr').addEventListener('click', cipRandom);
+$('#cipf').addEventListener('click', () => { if (!cipPage) return play('buzz'); cipFull = !cipFull; renderPage(); play('tick'); });
+$('#cipc').addEventListener('click', () => { if (!cipHex) return play('buzz'); const t = `hexagon ${cipHex} · wall ${$('#cw').textContent} · shelf ${$('#cs').textContent} · volume ${$('#cv').textContent} · page ${$('#cp').textContent}`; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => status('ADDRESS COPIED · ' + cipHex.length.toLocaleString('en-US') + ' CHARACTERS OF HEXAGON')).catch(() => status('COPY BLOCKED BY THE BROWSER')); play('tick'); });
 
 /* ============ PAINT ============ */
 const gen = $('#gen'), gg = gen.getContext('2d'); const BAY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16);
@@ -1467,7 +1522,7 @@ function renderPrompts() {
   if (termOpen) L = [P('B', 'Close', closeTerm), P('↵', 'Run', null, 1)];
   else if (room === 'shell') L = [P('✛', 'Select', null, 1), P('A', 'Equip', () => equip(selSlot)), P('LB', 'Prev', () => { selectSlot(selSlot - 1); setFocus($$('.slot')[selSlot]); }, 1), P('RB', 'Next', () => { selectSlot(selSlot + 1); setFocus($$('.slot')[selSlot]); }, 1), P('Y', 'Diagnostics', openTerm)];
   else {
-    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', songOn ? 'Pause' : 'Play song', toggleSong)], salvage: [P('A', 'Open on Are.na', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openCore(CORES.indexOf(AN[selAn].c)))], noise: [P('A', NZ.on ? 'Stop' : 'Start', () => NZ.toggle()), P('◂▸', 'Level', null, 1), P('X', 'Sleep', () => NZ.sleepNext())], lab: LAB[selP].sh === 'r' ? [P('A', LAB[selP].q && !LAB[selP].ovr ? 'Override' : 'Open', () => labRun(selP))] : LAB[selP].links ? [P('A', 'Open ↗', () => labRun(selP))] : [P('A', 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
+    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', songOn ? 'Pause' : 'Play song', toggleSong)], salvage: [P('A', 'Open on Are.na', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit()), P('X', 'Random line', cipRandom), P('F', 'Page', () => $('#cipf').click())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openCore(CORES.indexOf(AN[selAn].c)))], noise: [P('A', NZ.on ? 'Stop' : 'Start', () => NZ.toggle()), P('◂▸', 'Level', null, 1), P('X', 'Sleep', () => NZ.sleepNext())], lab: LAB[selP].sh === 'r' ? [P('A', LAB[selP].q && !LAB[selP].ovr ? 'Override' : 'Open', () => labRun(selP))] : LAB[selP].links ? [P('A', 'Open ↗', () => labRun(selP))] : [P('A', 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
     L = [P('B', 'Shell', () => go('shell')), ...extra, P('LB', 'Prev room', () => cycle(-1), 1), P('RB', 'Next room', () => cycle(1), 1), P('Y', 'Diag', openTerm)];
   }
   if (portrait) L = L.filter(p => !['Prev room', 'Next room', 'Prev', 'Next', 'Select', 'Tune', 'Run'].includes(p.l));
@@ -1532,7 +1587,9 @@ addEventListener('keydown', e => {
   if (k === 'q' || k === 'e') { if (room === 'shell') { selectSlot(selSlot + (k === 'e' ? 1 : -1)); setFocus($$('.slot')[selSlot]); } else cycle(k === 'e' ? 1 : -1); return; }
   if (k === '/' || k === 'y' || k === '`') { e.preventDefault(); return termOpen ? closeTerm() : openTerm(); }
   if (k === 'm') return setSnd(!S.on);
-  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); else if (room === 'lab') labDocs(selP); else if (room === 'noise') NZ.sleepNext(); }
+  if (room === 'cipher' && k === 'f') return $('#cipf').click();
+  if (room === 'cipher' && k === 'c') return $('#cipc').click();
+  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); else if (room === 'lab') labDocs(selP); else if (room === 'noise') NZ.sleepNext(); else if (room === 'cipher') cipRandom(); }
 });
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'x') endHold(); });
 addEventListener('pointerdown', () => S.init(), { once: true });
