@@ -21,6 +21,12 @@ for name in ("images.json", "tarot.json", "songs.json"):
 shutil.copytree(ROOT / "reports", SITE / "reports")
 (SITE / ".nojekyll").touch()
 
+# The Lab: demos, other worlds for the site, and archive downloads (see tools/lab_build.py).
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+import lab_build
+lab_build.build(SITE)
+
 files = [p for p in SITE.rglob("*") if p.is_file()]
 size = sum(p.stat().st_size for p in files) / 1024 / 1024
 print(f"_site ready: {len(files)} files, {size:.1f} MB")

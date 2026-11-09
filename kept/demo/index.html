@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kept · demo</title>
+<meta name="description" content="Kept, a local AI file manager: every view is a query. Demo with made-up files.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Saira:wdth,wght@100..125,300..700&family=Space+Grotesk:wght@400;500;600&family=Kode+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--r:3px}
+[data-skin=base]{--bg:#f3f3f1;--panel:#ebebe7;--line:#d4d4cf;--ink:#111;--dim:#5f5f5a;--acc:#ff4d00;--accInk:#111;--sel:#e3e3de;--t1:#c4c4bd;--t2:#d0d0ca;--t3:#adada6;--font:'Geist',system-ui,sans-serif;--mono:'Geist Mono',ui-monospace,monospace;--r:3px}
+[data-skin=void]{--bg:#0a0a0b;--panel:#141416;--line:#26272a;--ink:#e9e9e4;--dim:#8a8b86;--acc:#c2ff16;--accInk:#0a0a0b;--sel:#1b1c1e;--t1:#2a2b2e;--t2:#222326;--t3:#34353a;--font:'JetBrains Mono',ui-monospace,monospace;--mono:'JetBrains Mono',ui-monospace,monospace;--r:0px}
+[data-skin=pearl]{--bg:#e9ecef;--panel:#f4f6f8;--line:#cfd5db;--ink:#1d2731;--dim:#556270;--acc:#8fe6f0;--accInk:#1d2731;--sel:#dce3e9;--t1:#c3ccd4;--t2:#d3dae0;--t3:#b2bcc6;--font:'Saira',system-ui,sans-serif;--mono:'Saira',system-ui,sans-serif;--r:10px}
+[data-skin=cobalt]{--bg:#0400f5;--panel:#1410ff;--line:#3d3aff;--ink:#f2f2ee;--dim:#b9b8ff;--acc:#c2ff16;--accInk:#0a0a0b;--sel:#2420ff;--t1:#2b28ff;--t2:#3330ff;--t3:#4744ff;--font:'Space Grotesk',system-ui,sans-serif;--mono:'Kode Mono',ui-monospace,monospace;--r:0px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:13px/1.4 var(--font);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+.mono{font-family:var(--mono)}
+.dim{color:var(--dim)}
+.frame{height:100%;display:grid;grid-template-rows:56px minmax(0,1fr) 32px}
+header{display:grid;grid-template-columns:220px minmax(0,1fr) 300px;align-items:center;border-bottom:1px solid var(--line)}
+.brand{padding:0 24px;display:flex;align-items:baseline;gap:8px}
+.brand b{font:600 13px/1 var(--mono);letter-spacing:.14em}
+.brand span{font:11px var(--mono);color:var(--dim)}
+.q{margin:0 24px;height:36px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);display:flex;align-items:center;gap:10px;padding:0 12px;min-width:0}
+.q:focus-within{border-color:var(--ink)}
+.q svg{flex:none}
+.q input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:13px}
+.q .tr{font:11px var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%}
+.q .tr kbd{font:inherit;border:1px solid var(--line);border-radius:var(--r);padding:0 4px;margin-left:6px}
+.counts{padding:0 24px;display:flex;justify-content:flex-end;gap:16px;font:11px var(--mono);color:var(--dim)}
+main{display:grid;grid-template-columns:220px minmax(0,1fr) 360px;min-height:0}
+nav{border-right:1px solid var(--line);padding:16px 0;display:flex;flex-direction:column;gap:22px;min-height:0;overflow:hidden}
+.views{display:flex;flex-direction:column}
+.view{display:flex;align-items:center;justify-content:space-between;height:34px;padding:0 24px 0 21px;border-left:3px solid transparent;text-align:left}
+.view:hover{background:var(--sel)}
+.view.on{border-color:var(--acc);background:var(--sel);font-weight:600}
+.view i{font:normal 11px var(--mono);color:var(--dim)}
+.lbl{font:10.5px var(--mono);letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.props{padding:0 24px;display:flex;flex-direction:column;gap:10px}
+.prop{border:1px solid var(--line);border-radius:var(--r);padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.prop b{font-weight:500}
+.prop span{font-size:11.5px;color:var(--dim)}
+.prop .row{display:flex;gap:8px}
+.btn{border-radius:var(--r);font-size:11.5px;padding:4px 10px;border:1px solid var(--line)}
+.btn:hover{background:var(--sel)}
+.btn.pri{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.watched{margin-top:auto;padding:0 24px;display:flex;flex-direction:column;gap:6px;font:11px var(--mono);color:var(--dim)}
+.watched button{text-align:left}.watched button:hover{color:var(--ink)}
+.res{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.rh{height:48px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px}
+.rh b{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rh .meta{font:11px var(--mono);color:var(--dim);white-space:nowrap;display:flex;gap:12px;align-items:center}
+.rank{height:3px;display:flex;background:var(--line)}
+.rank i{display:block;background:var(--ink)}.rank i+i{background:var(--dim);opacity:.5}
+.list{flex:1;overflow:auto;scrollbar-width:thin}
+.it{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;padding:12px 24px 12px 21px;border-left:3px solid transparent;border-bottom:1px solid var(--line);width:100%;text-align:left;align-items:center}
+.it:hover{background:var(--sel)}
+.it.on{border-left-color:var(--acc);background:var(--sel)}
+.it .tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+.it .nm{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .mt{font:11px var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .gs{font-size:12px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.it .new{font:10px var(--mono);color:var(--accInk);background:var(--acc);padding:2px 5px;border-radius:var(--r)}
+.th{width:48px;height:48px;border-radius:var(--r);overflow:hidden;position:relative;background:var(--t1)}
+.th canvas,.pv canvas{width:100%;height:100%;display:block}
+.th span{position:absolute;left:4px;bottom:3px;font:9px var(--mono);color:#fff;mix-blend-mode:difference}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;padding:18px 24px;align-content:start;align-items:start}
+.grid .it{display:flex;flex-direction:column;gap:6px;padding:0;border:0;border-bottom:3px solid transparent;align-items:stretch}
+.grid .it.on{border-bottom-color:var(--acc);background:none}
+.grid .th{width:100%;height:auto;aspect-ratio:1}
+.grid .it .nm{font-size:12px}
+.mh{padding:14px 24px 6px;font:10.5px var(--mono);letter-spacing:.12em;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--line)}
+.grid .mh{grid-column:1/-1;padding:4px 0}
+.empty{padding:40px 24px;color:var(--dim)}
+.empty b{display:block;font-size:22px;color:var(--ink);font-weight:500;margin-bottom:6px}
+aside{display:flex;flex-direction:column;min-height:0;overflow:auto;scrollbar-width:thin}
+.pv{aspect-ratio:4/3;background:var(--t1);position:relative;border-bottom:1px solid var(--line);flex:none}
+.pv .sz{position:absolute;right:10px;bottom:8px;font:10.5px var(--mono);color:#fff;mix-blend-mode:difference}
+.sec{padding:14px 24px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.fn{font-size:18px;font-weight:500;letter-spacing:-.01em;word-break:break-word;margin:0}
+.path{font:11px var(--mono);color:var(--dim);display:flex;flex-wrap:wrap;gap:2px}
+.path button:hover{color:var(--ink);text-decoration:underline}
+.fields{display:grid;grid-template-columns:14px 86px 1fr;gap:6px 8px;align-items:center;font-size:12.5px}
+.mk{width:8px;height:8px;display:block}
+.mk.fact{background:var(--ink)}
+.mk.conf{background:var(--ink);border-radius:50%}
+.mk.guess{border:1.5px solid var(--dim);border-radius:50%}
+.fields .k{font:11px var(--mono);color:var(--dim)}
+.fields .v.g{color:var(--dim);font-style:italic}
+.cap{margin:0;font-size:13px}
+.cap.g{color:var(--dim);font-style:italic}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:11px var(--mono);border:1px solid var(--ink);border-radius:var(--r);padding:2px 7px}
+.tag.g{border-style:dashed;border-color:var(--dim);color:var(--dim)}
+.tag:hover{background:var(--sel)}
+.ladder{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.ladder div{display:flex;flex-direction:column;gap:4px;font:10px var(--mono);color:var(--dim)}
+.ladder i{height:5px;background:var(--line);display:block}
+.ladder i.done{background:var(--ink)}
+.ladder i.run{background:var(--acc);animation:pulse 1.6s steps(4) infinite}
+@keyframes pulse{50%{opacity:.35}}
+.near{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.near button{display:flex;flex-direction:column;gap:4px;text-align:left;min-width:0}
+.near .th{width:100%;height:auto;aspect-ratio:1}
+.near span{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.near small{font:10px var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;flex-wrap:wrap;gap:8px;padding:14px 24px 20px;margin-top:auto}
+.acts button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:var(--r);padding:6px 10px 6px 6px;font-size:12px}
+.acts button:hover{background:var(--sel)}
+.acts button.pri{background:var(--acc);color:var(--accInk);border-color:var(--acc)}
+.acts kbd{font:600 10.5px var(--mono);border:1px solid currentColor;border-radius:var(--r);min-width:20px;height:20px;display:grid;place-items:center;padding:0 4px}
+footer{border-top:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 24px;font:11px var(--mono);color:var(--dim);white-space:nowrap;overflow:hidden}
+footer kbd{font:inherit;color:var(--ink)}
+footer .demo{margin-left:auto;color:var(--ink)}
+footer .demo i{font-style:normal;background:var(--acc);color:var(--accInk);padding:1px 6px;border-radius:var(--r);margin-right:6px}
+#full{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;place-items:center;z-index:9}
+#full.on{display:grid}
+#full canvas{max-width:86vw;max-height:80vh}
+#full p{position:absolute;left:24px;bottom:16px;color:#ddd;font:12px var(--mono);margin:0}
+#toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font:12px var(--mono);padding:8px 12px;border-radius:var(--r);display:none;z-index:10}
+#toast.on{display:block}
+.mob{display:none}
+@media (max-width:900px){
+  header{grid-template-columns:auto minmax(0,1fr)}
+  .counts{display:none}
+  .brand{padding:0 0 0 14px}
+  .q{margin:0 12px}
+  main{grid-template-columns:minmax(0,1fr)}
+  nav{position:fixed;left:0;top:56px;bottom:32px;width:240px;background:var(--bg);z-index:5;transform:translateX(-100%)}
+  body.navon nav{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+  aside{position:fixed;inset:56px 0 32px;background:var(--bg);z-index:6;display:none}
+  body.paneon aside{display:flex}
+  .mob{display:inline-flex}
+  .rh{padding:0 14px}.it{padding:12px 14px 12px 11px}
+  footer .keys{display:none}
+  .q .tr{display:none}
+}
+</style>
+</head>
+<body data-skin="base">
+<div class="frame">
+  <header>
+    <div class="brand"><button class="mob btn" id="navb" aria-label="Views">≡</button><b>KEPT</b><span>local</span></div>
+    <label class="q"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4"/></svg><input id="qi" aria-label="Query" autocomplete="off" spellcheck="false"><span class="tr" id="tr"></span></label>
+    <div class="counts"><span id="nfiles"></span><span id="ncards"></span></div>
+  </header>
+  <main>
+    <nav aria-label="Views">
+      <div class="views" id="views"></div>
+      <div class="props"><span class="lbl">Proposed</span><div id="props"></div></div>
+      <div class="watched"><span class="lbl">Watched</span><div id="watched" style="display:flex;flex-direction:column;gap:6px"></div></div>
+    </nav>
+    <section class="res" aria-label="Results">
+      <div class="rh"><b id="rtitle">Inbox</b><span class="meta"><span id="rmeta"></span><button class="btn" id="vb" title="List / grid (V)">List</button></span></div>
+      <div class="rank" id="rank"><i></i><i></i></div>
+      <div class="list" id="list"></div>
+    </section>
+    <aside id="pane" aria-label="File"></aside>
+  </main>
+  <footer><span class="keys"><kbd>/</kbd> query · <kbd>J K</kbd> move · <kbd>Space</kbd> preview · <kbd>A</kbd> accept · <kbd>X</kbd> dismiss · <kbd>L</kbd> like this · <kbd>V</kbd> view · <kbd>T</kbd> skin</span><span id="layer"></span><span class="demo"><i>DEMO</i>made-up files · nothing leaves this page</span></footer>
+</div>
+<div id="full"><canvas id="fullc" width="1200" height="900"></canvas><p id="fullp"></p></div>
+<div id="toast"></div>
+<script>
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s);
+const DAY=864e5, NOW=Date.now();
+const ago=d=>new Date(NOW-d*DAY);
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const fmtD=d=>{const n=Math.round((NOW-d)/DAY);return n<1?'today':n<2?'yesterday':MON[d.getMonth()]+' '+d.getDate()};
+const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function hash(s){let h=2166136261;for(const c of s)h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0}
+function rng(seed){let a=seed||1;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- made-up files ---------- */
+// [name, kind, folder, daysAgo, size, caption, tags, place, group, new, extra]
+const RAW=[
+['IMG_2231.jpg','photo','Pictures/Camera/2026/09',52,'4.1 MB','Tiled facade in afternoon light, a yellow tram passing in front.','street, tram, tiles','Lisbon, PT','Lisbon trip',0,{dims:'4032 × 3024',pal:['#e8b04a','#2f6f9f','#efe6d4']}],
+['IMG_2236.jpg','photo','Pictures/Camera/2026/09',52,'3.7 MB','Steep stairs between white houses, laundry on a line overhead.','street, stairs','Lisbon, PT','Lisbon trip',0,{dims:'4032 × 3024',pal:['#f1ece2','#7aa3c2','#c9763f']}],
+['IMG_2251.jpg','photo','Pictures/Camera/2026/09',51,'4.4 MB','River at sunset seen from a viewpoint, red bridge on the right.','sunset, river, bridge','Lisbon, PT','Lisbon trip',0,{dims:'4032 × 3024',pal:['#f08a4b','#6b4a7a','#2d3f6b']}],
+['IMG_2260.jpg','photo','Pictures/Camera/2026/09',50,'3.2 MB','Plate of grilled sardines, lemon, bread, a glass of white wine.','food, dinner','Lisbon, PT','Lisbon trip',0,{dims:'4032 × 3024',pal:['#c7c2b6','#8c6a43','#e9e3cf']}],
+['boarding-pass-LIS.pdf','document','Downloads',55,'212 KB','Boarding pass, outbound flight to Lisbon, seat 23A.','travel, flight','','Lisbon trip',0,{pages:1}],
+['hotel-receipt-alfama.pdf','document','Documents/Receipts',49,'88 KB','Hotel receipt, 4 nights, paid by card.','receipt, hotel','Lisbon, PT','Lisbon trip',0,{pages:1,amount:'€ 412.00'}],
+['IMG_3012.jpg','photo','Pictures/Camera/2026/11',0,'3.9 MB','Two walnut boards on sawhorses, tape measure across the grain.','wood, workshop','Home','Shelf build',1,{dims:'4032 × 3024',pal:['#6b4426','#d9c7a6','#333']}],
+['shelf-sketch-03.png','image','Desktop',1,'640 KB','Hand sketch of two floating shelves with dimensions in millimetres.','sketch, shelves','','Shelf build',1,{dims:'2048 × 1536',pal:['#f6f4ee','#222','#999']}],
+['bracket-order.pdf','document','Downloads',0,'96 KB','Order confirmation: 6 concealed shelf brackets, black steel.','receipt, hardware','','Shelf build',1,{pages:2,amount:'$ 54.90'}],
+['voice-memo-1107.m4a','audio','Recordings',2,'1.1 MB','“…remember the alcove is narrower at the top, measure twice…”','memo','','Shelf build',1,{dur:'0:48'}],
+['Screenshot 2026-11-08 212044.png','screenshot','Desktop',1,'380 KB','Screenshot of a map with a cycling route along a river, 62 km.','map, route, bike','','Bike trip',1,{dims:'2880 × 1800',pal:['#e8efe6','#3d7a52','#2a63c9']}],
+['route-day2.gpx','data','Downloads',3,'54 KB','GPS track, 61.8 km, 840 m climbing.','route, bike','Shenandoah, VA','Bike trip',0,{}],
+['packing-list.md','text','Documents/Notes',4,'2 KB','Packing list for bike camping: tent, stove, spare tubes, headlamp.','list, camping','','Bike trip',0,{lines:['- tent, poles, stakes','- sleeping bag (5 °C)','- spare tube ×2','- headlamp','- stove, one pot']}],
+['IMG_2980.jpg','photo','Pictures/Camera/2026/10',18,'4.0 MB','Loaded bike leaning on a wooden fence, mountains behind in haze.','bike, mountains','Shenandoah, VA','Bike trip',0,{dims:'4032 × 3024',pal:['#7d9bb8','#3e5a3a','#c6b98f']}],
+['tax-summary-2025.pdf','document','Documents/Taxes',210,'340 KB','Annual tax summary, 6 pages, totals on page 2.','tax, 2025','','Taxes 2025',0,{pages:6}],
+['receipts-2025.xlsx','sheet','Documents/Taxes',200,'72 KB','Spreadsheet of deductible receipts, 84 rows, one sheet per quarter.','tax, receipts','','Taxes 2025',0,{rows:84}],
+['demo-riff-02.wav','audio','Music/Demos',24,'18.2 MB','Clean electric guitar riff, about 92 bpm, in D.','guitar, demo','','',0,{dur:'1:42'}],
+['demo-riff-03.wav','audio','Music/Demos',22,'21.0 MB','Same riff with a bass line and drum machine, about 92 bpm.','guitar, bass, demo','','',0,{dur:'2:04'}],
+['lyrics-draft.txt','text','Music/Demos',23,'1 KB','Two verses and a chorus draft about trains at night.','lyrics','','',0,{lines:['verse 1','the last car leaves at ten past one','and every window holds a face','chorus','…']}],
+['empanadas.pdf','document','Documents/Recipes',90,'1.2 MB','Recipe: baked beef empanadas, 24 pieces, dough from scratch.','recipe, baking','','',0,{pages:2}],
+['sourdough-log.md','text','Documents/Notes',33,'3 KB','Feeding log for a sourdough starter, hydration notes.','baking, log','','',0,{lines:['day 1  50 g flour / 50 g water','day 3  bubbles, smells sharp','day 6  doubled in 5 h']}],
+['moodboard-poster.png','image','Desktop/Refs',12,'2.3 MB','Poster study: huge cropped type, lime on black, small mono captions.','design, poster, type','','Design refs',0,{dims:'1800 × 2400',pal:['#0a0a0b','#c2ff16','#f2f2ee']}],
+['ref-swiss-grid.jpg','image','Desktop/Refs',14,'900 KB','Black-and-white poster on a strict grid, red circle top right.','design, grid','','Design refs',0,{dims:'1600 × 2200',pal:['#f2f2ee','#111','#e9042b']}],
+['ref-dither-cover.png','image','Desktop/Refs',11,'1.4 MB','Album-cover style study, ordered dither in orange and blue.','design, dither','','Design refs',0,{dims:'2000 × 2000',pal:['#ef4606','#0400f5','#f2f2ee']}],
+['palette.ase','data','Desktop/Refs',10,'4 KB','Colour swatch file, 9 swatches.','design, color','','Design refs',0,{}],
+['launcher-notes.md','text','Documents/Notes',6,'5 KB','Notes on a phone home screen: slots, a strip at the bottom, no badges.','design, phone','','',0,{lines:['- one strip runs the phone','- slots, not icons','- arrivals take over the strip']}],
+['site-build.py','code','Code/site',2,'9 KB','Python script that builds a static site from a folder of reports.','code, python','','',0,{lines:['import json, re','from pathlib import Path','','def build(root):','    for f in sorted(root.glob("*.html")):','        yield f.stem']}],
+['lease-renewal.pdf','document','Documents/Home',140,'410 KB','Lease renewal, 12 months, signature page at the end.','home, contract','','',0,{pages:9}],
+['insurance-card.png','image','Documents/Home',160,'220 KB','Scan of a car insurance card, policy number blurred.','insurance, card','','',0,{dims:'1200 × 760',pal:['#f2f2ee','#2b5ea8','#ccc']}],
+['IMG_2702.jpg','photo','Pictures/Camera/2026/10',30,'3.5 MB','Dog asleep on a striped rug in a patch of sun.','dog, home','Home','',0,{dims:'4032 × 3024',pal:['#c99a5b','#efe3c9','#3a3a3a']}],
+['IMG_2703.jpg','photo','Pictures/Camera/2026/10',30,'3.6 MB','Same dog, awake now, looking straight at the camera.','dog, home','Home','',0,{dims:'4032 × 3024',pal:['#c99a5b','#efe3c9','#5a4a3a']}],
+['IMG_2890.mov','video','Pictures/Camera/2026/10',21,'88 MB','Short clip of rain on a window, 0:14, city lights blurred behind.','rain, night','Home','',0,{dur:'0:14',pal:['#1b2433','#c7a46b','#4d6a8f']}],
+['italian-a2-vocab.xlsx','sheet','Documents/Learning',8,'40 KB','Vocabulary list, Italian to English, 312 rows with example sentences.','italian, learning','','',0,{rows:312}],
+['podcast-notes.txt','text','Documents/Notes',15,'2 KB','Notes from a podcast about how libraries catalogue books.','notes, libraries','','',0,{lines:['- call numbers are an address','- subject headings change slowly']}],
+['IMG_3020.jpg','photo','Pictures/Camera/2026/11',0,'4.2 MB','Garden strip after clearing, wheelbarrow and a pile of stones.','garden, home','Home','',1,{dims:'4032 × 3024',pal:['#6c7d4a','#9a8f7a','#d8d2c0']}]
+];
+const KIND={photo:'JPG',image:'PNG',screenshot:'PNG',document:'PDF',audio:'AUD',video:'MOV',text:'TXT',sheet:'XLS',code:'PY',data:'DAT'};
+const FILES=RAW.map((r,i)=>{const [name,kind,folder,d,size,caption,tags,place,group,nw,x]=r;const h=hash(name);
+  const f={i,name,kind,folder,date:ago(d+((h%600)/1440)),size,caption,tags:tags.split(', ').filter(Boolean),place,group,new:!!nw,x,h};
+  // what the machine read (facts), guessed, and what you confirmed
+  f.conf=new Set(nw?[]:['caption','tags','place','group'].filter((k,j)=>((h>>j)&3)!==0));
+  f.ladder=nw?(kind==='photo'||kind==='image'?3:2):4;
+  return f});
+const GROUPS=['Lisbon trip','Shelf build','Bike trip','Design refs','Taxes 2025'];
+const PROPOSED=[{n:'Shelf build',why:'5 files from 4 folders share “walnut”, “alcove” and this week'},{n:'Dog',why:'3 photos with the same animal, Oct and Nov'}];
+let accepted=new Set(['Lisbon trip','Bike trip','Design refs','Taxes 2025']);
+const WATCHED=['Downloads','Desktop','Documents','Pictures/Camera','Music','Code'];
+
+/* ---------- thumbnails (drawn, not photos) ---------- */
+function draw(cv,f,W,H){const g=cv.getContext('2d');const R=rng(f.h);const pal=(f.x.pal||['#c4c4bd','#8a8a85','#eeeeea']);
+  const css=getComputedStyle(document.body);const ink=css.getPropertyValue('--ink').trim()||'#111',t1=css.getPropertyValue('--t1').trim(),t2=css.getPropertyValue('--t2').trim();
+  g.fillStyle=t1;g.fillRect(0,0,W,H);
+  if(f.kind==='photo'||f.kind==='video'){const sky=g.createLinearGradient(0,0,0,H);sky.addColorStop(0,pal[1]);sky.addColorStop(1,pal[2]);g.fillStyle=sky;g.fillRect(0,0,W,H);
+    g.fillStyle=pal[0];let y=H*(.5+R()*.2);g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=W/8){g.lineTo(x,y);y+= (R()-.5)*H*.18}g.lineTo(W,H);g.fill();
+    for(let k=0;k<5;k++){g.fillStyle=pal[k%3];g.globalAlpha=.55;const w=W*(.08+R()*.2),h=H*(.1+R()*.35);g.fillRect(R()*W,H-h-R()*H*.2,w,h)}g.globalAlpha=1;
+    if(f.kind==='video'){g.fillStyle='rgba(0,0,0,.45)';g.beginPath();g.arc(W/2,H/2,Math.min(W,H)*.16,0,7);g.fill();g.fillStyle='#fff';g.beginPath();const s=Math.min(W,H)*.07;g.moveTo(W/2-s*.6,H/2-s);g.lineTo(W/2+s,H/2);g.lineTo(W/2-s*.6,H/2+s);g.fill()}}
+  else if(f.kind==='image'||f.kind==='screenshot'){g.fillStyle=pal[0];g.fillRect(0,0,W,H);g.fillStyle=pal[1];
+    if(f.kind==='screenshot'){g.fillRect(0,0,W,H*.08);for(let k=0;k<6;k++)g.fillRect(W*.06,H*(.18+k*.1),W*(.2+R()*.2),H*.03);g.strokeStyle=pal[2];g.lineWidth=Math.max(2,W/60);g.beginPath();g.moveTo(W*.45,H*.85);for(let k=0;k<6;k++)g.lineTo(W*(.45+R()*.5),H*(.2+R()*.6));g.stroke()}
+    else{for(let k=0;k<4;k++){g.fillStyle=pal[1+(k%2)];const s=W*(.1+R()*.5);g.fillRect(R()*W*.7,R()*H*.7,s,s*(.2+R()))}g.fillStyle=pal[1];g.font=`900 ${W*.32|0}px sans-serif`;g.fillText('Aa',W*.05,H*.95)}}
+  else if(f.kind==='audio'){g.fillStyle=t2;g.fillRect(0,0,W,H);g.fillStyle=ink;const n=48;for(let k=0;k<n;k++){const a=(Math.sin(k*.4+f.h%7)*.5+.5)*(.3+R()*.7);const h=a*H*.6;g.fillRect(k*W/n+1,(H-h)/2,W/n-2,h)}}
+  else if(f.kind==='sheet'){g.fillStyle='#f6f6f2';g.fillRect(0,0,W,H);g.strokeStyle='#c9c9c2';g.lineWidth=1;for(let x=0;x<W;x+=W/6){g.beginPath();g.moveTo(x,0);g.lineTo(x,H);g.stroke()}for(let y=0;y<H;y+=H/12){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}g.fillStyle='#2f7a4a';g.fillRect(0,0,W,H/12)}
+  else{g.fillStyle='#fbfbf8';g.fillRect(W*.12,H*.06,W*.76,H*.94);g.fillStyle='#bbb';const lines=f.x.lines;for(let k=0;k<14;k++){const w=W*.56*(k%5===4?.5:.75+R()*.25);g.fillRect(W*.2,H*(.14+k*.058),w,Math.max(1,H*.018))}
+    if(f.kind==='code'){g.fillStyle='#1d1f24';g.fillRect(0,0,W,H);const cs=['#c2ff16','#8fe6f0','#e0216f','#ddd'];for(let k=0;k<14;k++){g.fillStyle=cs[k%4];g.fillRect(W*(.08+(k%3)*.05),H*(.08+k*.064),W*(.2+R()*.5),Math.max(1,H*.022))}}
+    if(f.x.amount){g.fillStyle='#e9042b';g.fillRect(W*.55,H*.7,W*.25,H*.06)}}
+}
+function thumb(f,cls=''){return `<div class="th ${cls}" data-th="${f.i}"><canvas width="96" height="96"></canvas><span>${KIND[f.kind]}</span></div>`}
+function paintThumbs(root){root.querySelectorAll('[data-th]').forEach(el=>{const f=FILES[+el.dataset.th];const c=el.querySelector('canvas');draw(c,f,c.width,c.height)})}
+
+/* ---------- queries ---------- */
+const VIEWS=[{n:'Inbox',q:'is:new'},{n:'Recent',q:'sort:date when:30d'},{n:'Photos',q:'kind:photo sort:date'},{n:'Documents',q:'kind:document'},{n:'Unconfirmed',q:'is:guess'}];
+const SYN={photo:'photo',photos:'photo',pictures:'photo',picture:'photo',image:'image',images:'image',screenshot:'screenshot',screenshots:'screenshot',pdf:'document',pdfs:'document',document:'document',documents:'document',receipt:'receipt',receipts:'receipt',audio:'audio',recording:'audio',recordings:'audio',memo:'audio',video:'video',videos:'video',clip:'video',spreadsheet:'sheet',sheet:'sheet',code:'code',notes:'text',note:'text'};
+const MONTHS={january:1,february:2,march:3,april:4,may:5,june:6,july:7,august:8,september:9,october:10,november:11,december:12,jan:1,feb:2,mar:3,apr:4,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12};
+const FILLER=new Set('the a an of from in on at my me show find all with that i took some last this for and to'.split(' '));
+function parse(q){const t={words:[],phrases:[]};q.replace(/"([^"]+)"/g,(_,p)=>{t.phrases.push(p.toLowerCase());return''}).split(/\s+/).filter(Boolean).forEach(w=>{const m=w.match(/^(\w+):(.+)$/);if(m)(t[m[1].toLowerCase()]=t[m[1].toLowerCase()]||[]).push(m[2].replace(/^"|"$/g,'').toLowerCase());else t.words.push(w.toLowerCase())});return t}
+function translate(q){if(/\w:/.test(q))return'';const w=q.toLowerCase().replace(/[^\w\s-]/g,' ').split(/\s+/).filter(Boolean);if(w.length<2)return'';const out=[];const rest=[];
+  w.forEach((x,i)=>{if(SYN[x]){if(SYN[x]==='receipt')out.push('tag:receipt');else out.push('kind:'+SYN[x])}else if(MONTHS[x])out.push('when:'+new Date().getFullYear()+'-'+String(MONTHS[x]).padStart(2,'0'));else if(x==='yesterday'||x==='today')out.push('when:'+x);else if(x==='week'&&w[i-1]==='this')out.push('when:7d');else if(x==='month'&&w[i-1]==='this')out.push('when:30d');else if(['lisbon','shenandoah','home'].includes(x))out.push('at:'+x);else if(!FILLER.has(x)&&!['week','month'].includes(x))rest.push(x)});
+  if(!out.length)return'';return[...out,...rest].join(' ')}
+function matchWhen(f,v){const d=f.date;if(/^\d+d$/.test(v))return NOW-d<=parseInt(v)*DAY;if(v==='today')return NOW-d<DAY;if(v==='yesterday')return NOW-d>=DAY&&NOW-d<2*DAY;return ym(d).startsWith(v)}
+let likeOf=null;
+function run(q){const t=parse(q);let exact=0,mean=0;const res=[];
+  for(const f of FILES){let ok=true;
+    if(t.is)for(const v of t.is){if(v==='new'&&!f.new)ok=false;if(v==='guess'&&!(f.new||f.conf.size<4))ok=false;if(v==='confirmed'&&(f.new||f.conf.size<4))ok=false}
+    if(t.kind&&!t.kind.some(k=>f.kind===k||(k==='image'&&f.kind==='screenshot')))ok=false;
+    if(t.in&&!t.in.some(v=>f.folder.toLowerCase().startsWith(v)))ok=false;
+    if(t.when&&!t.when.every(v=>matchWhen(f,v)))ok=false;
+    if(t.tag&&!t.tag.every(v=>f.tags.includes(v)))ok=false;
+    if(t.group&&!t.group.some(v=>f.group.toLowerCase()===v))ok=false;
+    if(t.at&&!t.at.some(v=>f.place.toLowerCase().includes(v)))ok=false;
+    if(t.ext&&!t.ext.some(v=>f.name.toLowerCase().endsWith('.'+v)))ok=false;
+    if(t.name&&!t.name.every(v=>f.name.toLowerCase().includes(v)))ok=false;
+    if(t.like&&likeOf){const L=FILES[likeOf];if(f===L||!(f.group&&f.group===L.group||f.tags.some(x=>L.tags.includes(x))))ok=false}
+    if(!ok)continue;
+    const hay=(f.name+' '+f.caption+' '+f.tags.join(' ')+' '+f.group+' '+f.place+' '+f.folder).toLowerCase();
+    let how='exact';
+    for(const p of t.phrases)if(!hay.includes(p)){ok=false}
+    const words=t.words.filter(w=>!FILLER.has(w));
+    if(words.length){const hits=words.filter(w=>hay.includes(w)).length;if(hits===words.length)how='exact';else if(hits>0)how='meaning';else ok=false}
+    if(ok){res.push({f,how});how==='exact'?exact++:mean++}}
+  const sort=(t.sort||['date'])[0];res.sort((a,b)=>sort==='name'?a.f.name.localeCompare(b.f.name):b.f.date-a.f.date);
+  res.sort((a,b)=>(a.how==='exact'?0:1)-(b.how==='exact'?0:1));
+  return{res,exact,mean,headers:!!t.sort}}
+
+/* ---------- state + render ---------- */
+const store={get(k,d){try{const v=localStorage.getItem('kept-demo.'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem('kept-demo.'+k,JSON.stringify(v))}catch(e){}}};
+const SKINS=['base','void','pearl','cobalt'];
+let skin=store.get('skin','base'),grid=false,query='is:new',sel=0,results=[];
+const qi=$('#qi');
+function setSkin(s){skin=s;document.body.dataset.skin=s;store.set('skin',s);render()}
+function views(){$('#views').innerHTML=VIEWS.map((v,i)=>{const n=run(v.q).res.length;return`<button class="view${v.q===query?' on':''}" data-q="${esc(v.q)}"><span>${v.n}</span><i>${n}</i></button>`}).join('')+GROUPS.filter(g=>accepted.has(g)).map(g=>{const q=`group:"${g}"`;return`<button class="view${q===query?' on':''}" data-q="${esc(q)}"><span>${esc(g)}</span><i>${FILES.filter(f=>f.group===g).length}</i></button>`}).join('');
+  $('#props').innerHTML=PROPOSED.filter(p=>!accepted.has(p.n)).map(p=>`<div class="prop"><b>${esc(p.n)}</b><span>${esc(p.why)}</span><div class="row"><button class="btn pri" data-acc="${esc(p.n)}">Accept</button><button class="btn" data-rev="${esc(p.n)}">Review</button></div></div>`).join('')||'<span class="dim" style="font-size:12px">Nothing proposed.</span>';
+  $('#watched').innerHTML=WATCHED.map(w=>`<button data-q="in:${esc(w.toLowerCase())} sort:date">${esc(w)}</button>`).join('')}
+function list(){const r=run(query);results=r.res;if(sel>=results.length)sel=Math.max(0,results.length-1);
+  const view=VIEWS.find(v=>v.q===query);$('#rtitle').textContent=view?view.n:query.startsWith('group:')?query.slice(7,-1):'Search';
+  $('#rmeta').textContent=`${results.length} file${results.length===1?'':'s'}${r.mean?` · ${r.exact} exact · ${r.mean} by meaning`:''}`;
+  const tot=Math.max(1,results.length);$('#rank').children[0].style.width=r.exact/tot*100+'%';$('#rank').children[1].style.width=r.mean/tot*100+'%';
+  const L=$('#list');L.className='list'+(grid?' grid':'');$('#vb').textContent=grid?'Grid':'List';
+  if(!results.length){L.innerHTML=query==='is:new'?`<div class="empty"><b>Inbox clear</b>${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · nothing new since you last looked.</div>`:`<div class="empty"><b>Nothing found</b>Try fewer words, or a sentence like “photos from lisbon in september”.</div>`;$('#pane').innerHTML='';return}
+  let h='',lastM='';results.forEach(({f,how},k)=>{if(r.headers){const m=MON[f.date.getMonth()]+' '+f.date.getFullYear();if(m!==lastM){h+=`<div class="mh">${m}</div>`;lastM=m}}
+    h+=grid?`<button class="it${k===sel?' on':''}" data-k="${k}">${thumb(f)}<span class="nm">${esc(f.name)}</span></button>`
+      :`<button class="it${k===sel?' on':''}" data-k="${k}">${thumb(f)}<span class="tx"><span class="nm">${esc(f.name)}</span><span class="mt">${f.kind} · ${fmtD(f.date)} · ${esc(f.folder.split('/').pop())}</span><span class="gs">${f.group?'→ '+esc(f.group):how==='meaning'?'≈ by meaning':esc(f.caption)}</span></span>${f.new?'<span class="new">NEW</span>':''}</button>`});
+  L.innerHTML=h;L.querySelectorAll('.th canvas').forEach(c=>{if(grid){c.width=c.height=240}});paintThumbs(L);pane()}
+function near(f){return FILES.filter(x=>x!==f).map(x=>({x,s:(x.group&&x.group===f.group?3:0)+x.tags.filter(t=>f.tags.includes(t)).length+(x.kind===f.kind?.5:0)-Math.abs(x.date-f.date)/DAY/400})).sort((a,b)=>b.s-a.s).slice(0,4).map(o=>o.x)}
+function pane(){const it=results[sel];if(!it){$('#pane').innerHTML='';return}const f=it.f;const P=$('#pane');
+  const g=k=>!f.conf.has(k);const segs=f.folder.split('/');
+  const fields=[['fact','kind',f.kind],['fact','captured',f.date.toISOString().slice(0,16).replace('T',' ')],['fact','size',f.size+(f.x.dims?' · '+f.x.dims:f.x.dur?' · '+f.x.dur:f.x.pages?' · '+f.x.pages+' p':f.x.rows?' · '+f.x.rows+' rows':'')]];
+  if(f.place)fields.push([g('place')?'guess':'conf','place',f.place]);
+  if(f.group)fields.push([g('group')?'guess':'conf','group',f.group]);
+  if(f.x.amount)fields.push(['guess','amount',f.x.amount]);
+  fields.push(['guess','people','none found']);fields.push(['fact','hash','b2:'+f.h.toString(16).slice(0,4)+'…'+(f.h*7>>>0).toString(16).slice(-4)]);
+  const L=['L0 facts','L1 look','L2 read','L3 grasp','L4 ask'];
+  P.innerHTML=`<button class="mob btn" id="pclose" style="margin:10px 14px 0;align-self:flex-start">← Results</button><div class="pv" id="pv"><canvas width="720" height="540"></canvas><span class="sz">${esc(f.x.dims||f.x.dur||f.size)}</span></div>
+  <div class="sec"><h1 class="fn">${esc(f.name)}</h1><div class="path">${segs.map((s,i)=>`<button data-q="in:${esc(segs.slice(0,i+1).join('/').toLowerCase())} sort:date">${esc(s)}</button>${i<segs.length-1?'<span>/</span>':''}`).join('')}</div></div>
+  <div class="sec"><div class="fields">${fields.map(([m,k,v])=>`<span class="mk ${m}" title="${m==='fact'?'read from the file':m==='conf'?'confirmed by you':'machine guess'}"></span><span class="k">${k}</span><span class="v${m==='guess'?' g':''}">${esc(v)}</span>`).join('')}</div></div>
+  <div class="sec"><span class="lbl">Caption · ${g('caption')?'machine':'confirmed'}</span><p class="cap${g('caption')?' g':''}">${esc(f.caption)}</p><div class="tags">${f.tags.map(t=>`<button class="tag${g('tags')?' g':''}" data-q="tag:${esc(t)}">${esc(t)}</button>`).join('')}</div></div>
+  <div class="sec"><span class="lbl">Ladder</span><div class="ladder">${L.map((l,k)=>`<div><i class="${k<f.ladder?'done':k===f.ladder?'run':''}"></i>${l}</div>`).join('')}</div></div>
+  <div class="sec"><span class="lbl">Nearest · across folders</span><div class="near">${near(f).map(x=>`<button data-go="${x.i}">${thumb(x)}<span>${esc(x.name)}</span><small>${esc(x.folder.split('/').pop())}</small></button>`).join('')}</div></div>
+  <div class="acts"><button class="pri" data-a="a"><kbd>A</kbd>Accept</button><button data-a="l"><kbd>L</kbd>Like this</button><button data-a="space"><kbd>␣</kbd>Preview</button>${f.new?'<button data-a="x"><kbd>X</kbd>Dismiss</button>':''}</div>`;
+  draw(P.querySelector('#pv canvas'),f,720,540);paintThumbs(P);
+  $('#layer').textContent=f.ladder<5?`${L[Math.min(4,f.ladder)].toUpperCase()} · reading ${f.name}`:''}
+function render(){views();list()}
+function setQ(q,{keep}={}){query=q.trim();if(!keep)qi.value=query;sel=0;$('#tr').innerHTML='';document.body.classList.remove('navon');render()}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1800)}
+function selectK(k,open){if(!results.length)return;sel=Math.max(0,Math.min(results.length-1,k));document.querySelectorAll('#list .it').forEach(b=>b.classList.toggle('on',+b.dataset.k===sel));const b=document.querySelector(`#list .it[data-k="${sel}"]`);b&&b.scrollIntoView({block:'nearest'});pane();if(open)document.body.classList.add('paneon')}
+function accept(){const it=results[sel];if(!it)return;const f=it.f;['caption','tags','place','group'].forEach(k=>f.conf.add(k));const was=f.new;f.new=false;f.ladder=Math.max(f.ladder,4);toast(was?`Accepted · ${f.name}`:`Confirmed · ${f.name}`);const s=sel;render();selectK(Math.min(s,results.length-1))}
+function dismiss(){const it=results[sel];if(!it||!it.f.new)return;it.f.new=false;toast(`Dismissed from the inbox · ${it.f.name} stays where it is`);const s=sel;render();selectK(Math.min(s,results.length-1))}
+function like(){const it=results[sel];if(!it)return;likeOf=it.f.i;setQ('like:'+it.f.name)}
+function preview(){const it=results[sel];if(!it)return;draw($('#fullc'),it.f,1200,900);$('#fullp').textContent=it.f.name+' · '+it.f.caption+'  (Esc to close)';$('#full').classList.add('on')}
+
+/* ---------- events ---------- */
+let qt;qi.addEventListener('input',()=>{clearTimeout(qt);const v=qi.value;const tr=translate(v);$('#tr').innerHTML=tr?'→ '+esc(tr)+'<kbd>Tab</kbd>':'';qt=setTimeout(()=>{const t=translate(v);setQ(v&&!/\w:/.test(v)&&t&&run(v).res.length===0?t:v||'is:new',{keep:true})},150)});
+qi.addEventListener('keydown',e=>{if(e.key==='Tab'){const t=translate(qi.value);if(t){e.preventDefault();qi.value=t;setQ(t)}}if(e.key==='Enter'){qi.blur()}if(e.key==='Escape'){e.stopPropagation();if(qi.value&&qi.value!=='is:new'){qi.value='';setQ('is:new')}qi.blur()}if(e.key==='ArrowDown'){e.preventDefault();qi.blur();selectK(sel)}});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-q],[data-k],[data-go],[data-a],[data-acc],[data-rev],#vb,#navb,#pclose,#full');if(!t)return;
+  if(t.id==='full')return t.classList.remove('on');if(t.id==='vb'){grid=!grid;return list()}if(t.id==='navb')return document.body.classList.toggle('navon');if(t.id==='pclose')return document.body.classList.remove('paneon');
+  if(t.dataset.q)return setQ(t.dataset.q);if(t.dataset.k)return selectK(+t.dataset.k,true);
+  if(t.dataset.go){const f=FILES[+t.dataset.go];likeOf=null;setQ('name:'+f.name.toLowerCase());return}
+  if(t.dataset.acc){accepted.add(t.dataset.acc);FILES.filter(f=>f.group===t.dataset.acc).forEach(f=>f.conf.add('group'));toast(`Group accepted · ${t.dataset.acc}. Nothing moved.`);return setQ(`group:"${t.dataset.acc.toLowerCase()}"`)}
+  if(t.dataset.rev){const n=t.dataset.rev;return setQ(n==='Dog'?'tag:dog':`group:"${n.toLowerCase()}"`)}
+  if(t.dataset.a==='a')accept();else if(t.dataset.a==='x')dismiss();else if(t.dataset.a==='l')like();else if(t.dataset.a==='space')preview()});
+addEventListener('keydown',e=>{if(e.target===qi)return;const k=e.key;
+  if($('#full').classList.contains('on')){if(k==='Escape'||k===' '){e.preventDefault();$('#full').classList.remove('on')}return}
+  if(k==='/'){e.preventDefault();qi.focus();qi.select();return}
+  if(k==='j'||k==='ArrowDown'){e.preventDefault();selectK(sel+(grid&&k==='ArrowDown'?colCount():1))}
+  else if(k==='k'||k==='ArrowUp'){e.preventDefault();selectK(sel-(grid&&k==='ArrowUp'?colCount():1))}
+  else if(grid&&k==='ArrowRight')selectK(sel+1);else if(grid&&k==='ArrowLeft')selectK(sel-1);
+  else if(k===' '){e.preventDefault();preview()}
+  else if(k==='Enter'){const it=results[sel];it&&toast(`Opens ${it.f.name} in its own app (not in the demo)`)}
+  else if(k==='a')accept();else if(k==='x')dismiss();else if(k==='l')like();
+  else if(k==='v'){grid=!grid;list()}
+  else if(k==='t')setSkin(SKINS[(SKINS.indexOf(skin)+1)%SKINS.length]);
+  else if(k==='e')toast('Edit field: in the app this jumps into the first guess');
+  else if(k==='g')toast('Add to a group: in the app this offers your groups');
+  else if(/^[1-5]$/.test(k))setQ(VIEWS[+k-1].q);
+  else if(k==='Escape'){if(document.body.classList.contains('paneon'))document.body.classList.remove('paneon');else if(query!=='is:new')setQ('is:new')}});
+function colCount(){const it=document.querySelectorAll('#list .it');if(it.length<2)return 1;const top=it[0].offsetTop;let n=0;for(const b of it){if(b.offsetTop!==top)break;n++}return n||1}
+$('#nfiles').textContent=FILES.length.toLocaleString()+' files';$('#ncards').textContent=FILES.filter(f=>!f.new).length+' cards';
+qi.placeholder='Search, or a sentence: photos from lisbon in september';
+document.body.dataset.skin=skin;setQ('is:new');
+})();
+</script>
+</body>
+</html>

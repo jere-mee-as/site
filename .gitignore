@@ -14,4 +14,4 @@ __pycache__/
 local.properties
 .gradle/
 launcher/android/**/build/
-place/dist/
+veta/dist/

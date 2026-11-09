@@ -1,4 +1,4 @@
-# Jere's Place: second brain (build notes)
+# Veta (formerly Jere's Place): build notes
 
 A Capacities + Tana hybrid in the FFXIII style (built from the FFXIII v2 template). One page that reads and writes a folder of plain Markdown. Direction:
 - Keyboard first ("clicking is cringe").

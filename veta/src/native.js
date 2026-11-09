@@ -1,5 +1,5 @@
 /* ===================== desktop app (Electron) =====================
-   When the page runs inside the Jere's Place app, files go through window.jpNative (real disk access,
+   When the page runs inside the Veta desktop app, files go through window.jpNative (real disk access,
    folder chosen once and remembered). In a browser this whole block is skipped. */
 const NATIVE={on:!!window.jpNative,info:null};
 if(window.jpNative){const N=window.jpNative;

@@ -1,0 +1,15 @@
+Copyright (c) 2026 JERE.ING. All rights reserved.
+
+Everything in this repository (the site, its pages, the apps and their source,
+the designs, images and text) is shared to be looked at, not reused. You may
+read it, run the demos, and download the archived versions for your own
+private use. You may not copy, modify, redistribute, or use any part of it in
+your own work, commercial or not, without written permission.
+
+Exceptions:
+- Fonts loaded from Google Fonts, and the fonts bundled in launcher/android,
+  are under the SIL Open Font License; their own licences apply.
+- The pages in lab/ are original work inspired by the interfaces of Marathon,
+  Final Fantasy XIII and Mirror's Edge. They contain no assets from those games,
+  and those names belong to their owners.
+- All data in the demos (files, notes, people, apps, events) is made up.

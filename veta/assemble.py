@@ -7,7 +7,7 @@ head='''<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Jere's Place</title>
+<title>Veta</title>
 <meta name="description" content="A second brain in the style of the Crystarium: typed objects, an outliner and daily notes, stored as plain Markdown in your own folder.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,5 +17,5 @@ head='''<!doctype html>
 '''
 out=head+r('base.css')+'\n'+r('app.css')+'\n</style>\n</head>\n'+r('shell.html')+'\n<script>\n(()=>{\'use strict\';\n'+vault+'\n'+r('app1.js')+'\n'+r('audio.js')+'\n'+r('fx.js')+'\n'+r('app2.js').split('/* ===================== boot')[0]+'\n'+r('nav.js')+'\n'+r('native.js')+'\n/* ===================== boot'+r('app2.js').split('/* ===================== boot')[1]+'\n})();\n</script>\n</body>\n</html>\n'
 os.makedirs('dist',exist_ok=True)
-open("dist/Jere's Place.html",'w',encoding='utf-8').write(out)
+open("dist/Veta.html",'w',encoding='utf-8').write(out)
 print(len(out))

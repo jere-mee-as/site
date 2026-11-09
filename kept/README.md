@@ -9,12 +9,14 @@ Kept (working name) is a local AI file manager for Windows. Every view is a quer
 | `docs/kept-concept-v0.md` / `.html` | The first version of the concept, kept for comparison |
 | `docs/skins/skin-base.html` … `skin-cobalt.html` | The four skins (Base, Void, Pearl, Cobalt) rendered as static 1440×900 mockups of Inbox triage |
 | `docs/kept-notes.md` | Build notes for v0.1 (Python indexer + localhost UI) |
+| `demo/index.html` | Interactive mock of the UI with made-up files (the Lab demo) |
 
 The sample files in the mockups are made up.
 
 ## How to run
 
-Nothing to run from this repo yet: the v0.1 source (Python indexer, localhost UI, `Kept.bat` first-run setup) is to be added. Open the docs and skins pages in a browser.
+- **Demo:** `demo/index.html`, also at jere.ing/#lab/kept. An interactive mock of the UI with made-up files: type a query or a sentence, J/K to move, A to accept, X to dismiss, L for files like this one, V for grid, T to change skin.
+- The v0.1 source (Python indexer, localhost UI, `Kept.bat` first-run setup) is still to be added.
 
 ## Status
 

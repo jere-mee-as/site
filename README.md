@@ -5,16 +5,20 @@ Everything I build, in one repo. The root is the live site at https://jere.ing: 
 | Folder | What | Live? |
 |---|---|---|
 | `/` (template.html, build.py, reports/) | The site: Uplink, the runner's shell between runs | yes, jere.ing |
-| `lab/` | Design explorations: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | not yet |
-| `launcher/` | JRL Launcher, Android home screen: Kotlin shell, web UI, previews v0–v4 | not yet |
-| `switchboard/` | Switchboard, a chat-app-layout Android launcher concept | not yet |
-| `kept/` | Kept, a local AI file manager for Windows | not yet |
-| `place/` | Jere's Place, a keyboard-first second brain (app only, never the notes) | not yet |
-| `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, plus the v3.x previews | built into reports/_archive/ |
+| `lab/` | Other worlds for the site: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | in the Lab, jere.ing/#lab |
+| `launcher/` | JRL Launcher, Android home screen: Kotlin shell, web UI, previews v0–v4 | demo in the Lab |
+| `switchboard/` | Switchboard, a chat-app-layout Android launcher concept | demo in the Lab |
+| `kept/` | Kept, a local AI file manager for Windows (concept docs + an interactive mock) | demo in the Lab |
+| `veta/` | Veta, a keyboard-first second brain (the app only, never anyone's notes; the demo uses a made-up vault) | demo in the Lab |
+| `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, the v3.x previews, and earlier Scopes | built into reports/_archive/, and downloadable from the Lab |
 | `docs/` | Site plans and decision records | no |
 | `legacy/` | The old GitHub Pages workflow, parked so it can't run | no |
 
-Read `PUBLISHING.md` before making anything else public.
+Read `PUBLISHING.md` before making anything else public. `LICENSE`: all rights reserved; look, don't reuse.
+
+## The Lab
+
+Slot 08 on the front page (`jere.ing/#lab`, or `go lab` / `run veta` in the terminal). Three shelves: **Tools** (the apps, each with an interactive demo on made-up data), **Worlds** (other directions for this site), **Archive** (every retired version as a zip). A demo opens full-frame over the site; `jere.ing/#lab/<id>` links straight to one. `tools/lab_build.py` builds it into `_site/lab/` on every deploy. Source links stay sealed until the repo is public: flip `REPO.open` in `template.html`.
 
 ## About the "root" / "hack" stuff
 

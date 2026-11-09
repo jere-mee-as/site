@@ -23,7 +23,7 @@ const IDB={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{const r=
   get(st,k){return this.tx(st,'readonly',s=>s.get(k))},set(st,k,v){return this.tx(st,'readwrite',s=>s.put(v,k))},del(st,k){return this.tx(st,'readwrite',s=>s.delete(k))},
   async all(st){const db=await this.open();return new Promise((res,rej)=>{const s=db.transaction(st).objectStore(st),out={};const c=s.openCursor();c.onsuccess=()=>{const x=c.result;if(x){out[x.key]=x.value;x.continue()}else res(out)};c.onerror=()=>rej(c.error)})}};
 const B={kind:'none',name:'',dir:null,files:null,blobs:new Map(),
-  async restore(){if(window.JP_TEST_FILES){this.useMemory(window.JP_TEST_FILES,window.JP_TEST_NAME||"Jere's Place");return'ready'}
+  async restore(){if(window.JP_TEST_FILES){this.useMemory(window.JP_TEST_FILES,window.JP_TEST_NAME||'Sample vault');return'ready'}
     try{const h=await IDB.get('kv','root');if(h&&h.kind==='directory'){this.dir=h;this.name=h.name;this.kind='fs';const p=await h.queryPermission({mode:'readwrite'});return p==='granted'?'ready':'perm'}}catch(e){}
     return'none'},
   async request(fresh){if(!fresh&&this.kind==='fs'&&this.dir){try{if(await this.dir.requestPermission({mode:'readwrite'})==='granted')return true}catch(e){}}
@@ -45,7 +45,7 @@ const S={q:new Set(),t:0,state:'saved',
   async flush(){clearTimeout(this.t);const list=[...this.q];this.q.clear();let ok=true;for(const o of list)ok=(await this.save(o))&&ok;if(!this.q.size)this.set(ok?'saved':'err')},
   async save(o){if(B.kind==='none'){this.set('err');return false}const text=V.text(o);
     try{if(B.kind==='fs'&&!o.virtual&&o.mtime){const st=await B.stat(o.path);if(st&&st.mtime>o.mtime+2){const disk=await B.read(o.path);if(disk.text!==o.disk&&disk.text!==text){
-          const cp=o.path.replace(/\.md$/i,'')+" (edited in Jere's Place).md";await B.write(cp,text.replace(/^title: .*$/m,'title: '+fmtVal(o.title+' (edited copy)')));V.add(cp,await(await B.read(cp)).text,Date.now());
+          const cp=o.path.replace(/\.md$/i,'')+" (edited in Veta).md";await B.write(cp,text.replace(/^title: .*$/m,'title: '+fmtVal(o.title+' (edited copy)')));V.add(cp,await(await B.read(cp)).text,Date.now());
           V.parse(o,disk.text);o.disk=disk.text;o.mtime=disk.mtime;o.dirty=false;V.reindex();notice(`<b>${esc(o.title)}</b> changed on disk. Reloaded it; your edit is saved beside it as a copy.`,7000);if(E.o===o)openObj(o.id,{push:false,quiet:true});return true}}}
       o.mtime=await B.write(o.path,text);o.disk=text;o.dirty=false;
       if(o.virtual){o.virtual=false;V.objs.set(o.id,o);V.reindex();CX.dirty=true}else if(o._tchanged){o._tchanged=false;V.reindex();CX.dirty=true}else V.indexOne(o);

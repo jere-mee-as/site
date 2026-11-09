@@ -1,6 +1,6 @@
 # lab
 
-Design explorations for the site. None of this is live yet; the pages will be published under jere.ing/lab/ later. Each folder is one direction, built as standalone HTML pages you can open straight from disk. All of them are original pages inspired by the UI styles of the games they're named after. No game assets are included.
+Other worlds for the site: directions it could have taken. They run in the Lab (slot 08 on jere.ing, `jere.ing/#lab`), published under jere.ing/lab/worlds/ by `tools/lab_build.py`. Each folder is one direction, built as standalone HTML pages you can open straight from disk. All of them are original pages inspired by the UI styles of the games they're named after. No game assets are included.
 
 | Folder | What |
 |---|---|

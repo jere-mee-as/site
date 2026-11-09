@@ -124,8 +124,8 @@ a{text-decoration:none}
 .P .card .stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}
 .P .card .stats .v{font-size:26px}
 .P .card .hide-p{display:none}
-.loadout{display:grid;grid-template-columns:1fr 340px 1fr;grid-template-rows:repeat(3,1fr) 88px;grid-template-areas:"s1 core s4" "s2 core s5" "s3 core s6" "s7 s7 s7";gap:12px;min-width:0;min-height:0}
-.P .loadout{grid-template-columns:1fr 1fr;grid-template-rows:420px repeat(3,1fr) 84px;grid-template-areas:"core core" "s1 s4" "s2 s5" "s3 s6" "s7 s7"}
+.loadout{display:grid;grid-template-columns:1fr 340px 1fr;grid-template-rows:repeat(3,1fr) 70px 70px;grid-template-areas:"s1 core s4" "s2 core s5" "s3 core s6" "s8 s8 s8" "s7 s7 s7";gap:12px;min-width:0;min-height:0}
+.P .loadout{grid-template-columns:1fr 1fr;grid-template-rows:420px repeat(3,1fr) 84px;grid-template-areas:"core core" "s1 s4" "s2 s5" "s3 s6" "s8 s7"}
 .slot{position:relative;background:var(--white);outline:1px solid rgba(10,10,11,.22);outline-offset:-1px;display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px;min-width:0;overflow:hidden}
 .slot .t{display:flex;justify-content:space-between;font:700 12px/1 var(--f-code)}
 .slot .nm{font:300 34px/.95 var(--f-disp);font-stretch:88%;letter-spacing:-.025em}
@@ -138,6 +138,9 @@ a{text-decoration:none}
 .slot.s7 .ct{color:#9a9b95}
 .slot.s7.sel{background:var(--sel);color:var(--ink)}
 .slot.s7 .ic{position:static}
+.slot.s8{flex-direction:row;align-items:center;gap:18px;padding-left:20px}
+.slot.s8 .ic{position:static}
+.P .slot.s7 .ct,.P .slot.s8 .ct{display:none}
 .corep{grid-area:core;background:var(--ink);position:relative;display:grid;place-items:center;overflow:hidden}
 .corep #bust{position:absolute;inset:34px 0 26px;width:100%;height:calc(100% - 60px);cursor:grab;touch-action:pan-y}
 .corep .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(61,107,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(61,107,255,.07) 1px,transparent 1px);background-size:24px 24px}
@@ -257,6 +260,64 @@ a{text-decoration:none}
 .an.sel{background:var(--teal);color:var(--ink);border-color:var(--white)}
 .an.sel .c,.an.sel .ll{color:var(--ink)}
 .P .an{padding:5px 8px}
+
+
+/* ---------- LAB ---------- */
+#r-lab{background:var(--mint);display:grid;grid-template-columns:1fr 440px;gap:26px}
+.P #r-lab{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 500px;gap:14px}
+.shelves{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px;margin-top:18px;flex:1;min-height:0}
+.P .shelves{margin-top:0;gap:10px}
+.shelf{display:flex;flex-direction:column;gap:6px;min-height:0;min-width:0}
+.shelf .sh{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--ink);padding-bottom:6px;margin-bottom:2px}
+.shelf .sh b{font:700 13px/1 var(--f-code);letter-spacing:.04em}
+.shelf .sh span{font:400 10px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase}
+.lp{position:relative;background:var(--white);outline:1px solid rgba(10,10,11,.2);outline-offset:-1px;padding:10px 12px 10px 18px;display:flex;flex-direction:column;justify-content:space-between;gap:4px;min-width:0;overflow:hidden;flex:1}
+.lp .sw{position:absolute;left:0;top:0;bottom:0;width:6px}
+.lp .t{display:flex;justify-content:space-between;gap:8px;font:700 11px/1 var(--f-code)}
+.lp .nm{font:300 30px/.95 var(--f-disp);font-stretch:88%;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp .pl{font:400 11px/1.3 var(--f-ui);letter-spacing:.05em;color:#3c3d39;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lp .ic{position:absolute;right:12px;top:26px;width:26px;height:26px;opacity:.85}
+.shelf.w .lp .nm{font-size:25px}
+.shelf.a .lp{flex-direction:row;align-items:center;justify-content:space-between;padding:6px 10px 6px 14px;background:transparent;outline-style:dashed}
+.shelf.a .lp .nm{font:400 13px/1.15 var(--f-ui);letter-spacing:0;white-space:normal}
+.shelf.a .lp .t{flex-direction:column;align-items:flex-end;gap:3px;flex:none}
+.lp.sel{background:var(--ink);color:var(--white);outline-color:var(--ink)}
+.lp.sel .pl{color:#b4b5af}
+.shelf.a .lp.sel{background:var(--ink)}
+.P .lp .nm{font-size:21px}.P .shelf.w .lp .nm{font-size:18px}.P .lp .pl,.P .lp .ic{display:none}.P .lp{padding:8px 8px 8px 14px}
+.P .shelf.a .lp .nm{font-size:11px}
+.labi{background:var(--ink);color:var(--white);display:flex;flex-direction:column;gap:12px;padding:22px;position:relative;overflow:hidden;min-width:0}
+.labi .gi{right:-30px;bottom:-26px;font-size:190px;color:#151617}
+.labi > *{position:relative}
+.labi .nm{font:300 60px/.9 var(--f-disp);font-stretch:88%;letter-spacing:-.035em;text-wrap:balance}
+.labi .slog{font-size:21px;color:var(--white)}
+.labi .txt{font-size:15px;color:#c9cac4}
+.labi dl{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;margin:0;font:400 12px/1.35 var(--f-ui)}
+.labi dt{color:#8b8c86;letter-spacing:.1em;text-transform:uppercase}
+.labi dd{margin:0}
+.labi .act{margin-top:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btnB{display:inline-flex;align-items:center;gap:8px;border:1px solid #3a3b38;padding:8px 12px 8px 8px;font:700 12px/1 var(--f-code);letter-spacing:.06em}
+.btnB .k{background:#2a2b29;color:var(--white);min-width:24px;height:24px}
+.btnB:hover,.btnB.on{background:var(--white);color:var(--ink)}
+.seal{display:inline-flex;align-items:center;gap:8px;font:700 11px/1 var(--f-code);padding:7px 10px;background:repeating-linear-gradient(-45deg,var(--yel) 0 8px,var(--ink) 8px 16px);color:var(--ink)}
+.seal span{background:var(--yel);padding:3px 5px}
+.seal em{font-style:normal;background:var(--ink);color:var(--yel);padding:3px 6px}
+a.seal{background:var(--sel)}
+.P .labi .nm{font-size:44px}.P .labi .gi{font-size:150px}
+#labv{position:fixed;inset:0;z-index:100;background:var(--ink);display:flex;flex-direction:column}
+#labv[hidden]{display:none}
+#labv .vh{height:44px;flex:none;display:flex;align-items:stretch;color:var(--white);font:600 12px/1 var(--f-ui);letter-spacing:.12em;text-transform:uppercase;border-bottom:3px solid var(--sel)}
+#labv .vh > *{display:flex;align-items:center;gap:10px;padding:0 14px;border-right:1px solid #222;white-space:nowrap}
+#labv .vh .id{background:var(--sel);color:var(--ink);font:700 15px/1 var(--f-code);letter-spacing:0}
+#labv .vh .ti{flex:1;min-width:0;overflow:hidden}
+#labv .vh .ti b{color:var(--white);font-weight:600}
+#labv .vh .ti span{color:#8b8c86}
+#labv .vh button{cursor:pointer}
+#labv .vh button:hover{background:var(--sel);color:var(--ink)}
+#labv iframe{flex:1;width:100%;border:0;background:var(--white)}
+#labv .cv{position:absolute;inset:44px 0 0;display:none;overflow:hidden}
+#labv .cv.on{display:block}
+@media (max-width:640px){#labv .vh .hide-s{display:none}}
 
 /* ---------- DIAG terminal ---------- */
 #term{position:absolute;left:0;right:0;bottom:52px;height:46%;background:var(--ink);color:var(--white);z-index:25;display:flex;flex-direction:column;border-top:3px solid var(--sel)}
@@ -397,6 +458,14 @@ a{text-decoration:none}
           <div class="anoms" id="anoms"></div>
         </div>
       </section>
+      <!-- LAB -->
+      <section class="room" id="r-lab" hidden aria-label="Lab: projects">
+        <div style="display:flex;flex-direction:column;min-height:0;min-width:0">
+          <div class="rh"><div class="row"><span class="tag">SLOT 08</span><span class="jp" style="font-size:15px">ラボ</span><span class="lab" id="labct" style="color:#2f5e50"></span></div><h2 class="ttl" style="font-size:64px">Lab</h2><p class="slog">Things built between runs. Run any of them here.</p></div>
+          <div class="shelves" id="shelves"></div>
+        </div>
+        <div class="labi" id="labi"></div>
+      </section>
     </main>
 
     <div id="status" hidden></div>
@@ -411,6 +480,10 @@ a{text-decoration:none}
     <i id="brk"><i class="hold"></i></i>
     <div class="sr" aria-live="polite" id="sr"></div>
   </div>
+</div>
+<div id="labv" hidden role="dialog" aria-label="Lab demo">
+  <div class="vh"><span class="id">JRL</span><span class="ti" id="labvt"></span><button class="hide-s" id="labvn">↗ New tab</button><button id="labvx"><span class="k" style="min-width:24px;height:24px;background:var(--white);color:var(--ink)">B</span>Close</button></div>
+  <div class="cv" id="labvc"></div>
 </div>
 
 <script>
@@ -433,6 +506,7 @@ const JRL = (() => {
     place:    ["..#####..",".##...##.",".#..#..#.",".##...##.","..##.##..","...###...","....#....",".........","#########"],
     sound:    ["...#.....","..##..#..","####...#.","####.#.#.","####.#.#.","####...#.","..##..#..","...#.....","........."],
     cube:     ["...###...",".##...##.","#...#...#","#.##.##.#","#...#...#","#...#...#",".##.#.##.","...###...","........."],
+    lab:      ["..#####..","...#.#...","...#.#...","...#.#...","..#...#..",".#.....#.","#..###..#","#.#####.#","#########"],
     vault:    [".#######.",".#.....#.",".#######.",".........",".#######.",".#.....#.",".#######.",".........","#########"],
     comms:    ["#...#...#",".#..#..#.","..#.#.#..","....#....","...###...","....#....","....#....","...###...","..#####.."],
     salvage:  ["#########","#.......#","#.#...#.#","#..#.#..#","#...#...#","#..#.#..#","#.#...#.#","#.......#","#########"],
@@ -741,7 +815,7 @@ const CORE_META = [
  { c:'DC-05', f:'philosophical-investigations-connectome.html', t:'Philosophical Investigations', ty:'BOOK CONNECTOME', kb:42.4, src:'Ludwig Wittgenstein', n:'How the book thinks: an album of remarks, mapped.', w:1, h:1, col:'pink' },
  { c:'DC-06', f:'timaeus-connectome.html', t:'Republic · Timaeus · Critias', ty:'BOOK CONNECTOME', kb:62.6, src:'Plato · requested by aura', n:'How the trilogy thinks. One city, three days.', w:2, h:1, col:'pink' },
  { c:'DC-07', f:'rio.html', t:'RIO — Duran Duran', ty:'TRIBUTE', kb:347.7, src:'Duran Duran · Patrick Nagel', n:'A strobing, cursor-driven fan tribute to the 1982 album Rio and Nagel\'s cover art. Move the mouse, scroll hard, click.', w:2, h:2, col:'lime' },
- { c:'DC-08', f:'scope.html', t:'Scope', ty:'TOOL', kb:31.7, src:'Shell instrument', n:'An oscilloscope for any audio file you drop in.', w:1, h:1, col:'teal', d:'11·02' }
+ { c:'DC-08', f:'scope.html', t:'Scope', ty:'TOOL', kb:38.4, src:'Shell instrument', n:'An oscilloscope for any audio file you drop in.', w:1, h:1, col:'teal', d:'11·02' }
 ];
 const CORES = (() => {
   const rows = [...document.querySelectorAll('#list li')];
@@ -767,10 +841,11 @@ const SLOTS = [
  { id:'cipher', c:'04', n:'Cipher', jp:'暗号', ic:'cipher', ct:'∞ shelves', d:'Babel. Type any phrase and the librarian gives you its shelf.', col:'lav', area:'s4' },
  { id:'paint', c:'05', n:'Paint', jp:'塗装', ic:'paint', ct:'06 colorways', d:'The color generator. Painting the shell changes the signal color on every screen.', col:'lime', area:'s5' },
  { id:'scan', c:'06', n:'Scan', jp:'走査', ic:'scan', ct:'zone · 08 cores', d:'Culture as a zone scan. Every core marks where it was recovered.', col:'teal', area:'s6' },
+ { id:'lab', c:'08', n:'Lab', jp:'ラボ', ic:'lab', ct:'tools · worlds · archive', d:'Things built between runs: apps, other worlds for this site, and every retired version. Each one runs here.', col:'mint', area:'s8' },
  { id:'diag', c:'07', n:'Diagnostics', jp:'診断', ic:'diag', ct:'terminal · /', d:'The shell terminal. Opens over any room.', col:'ink', area:'s7' }
 ];
-const ROOMLOC = { shell:['HANGAR','BAY 04 · TAU CETI IV HIGH ORBIT','格納庫'], vault:['VAULT','SLOT 01 · DATA CORES','保管庫'], comms:['COMMS','SLOT 02 · CARRIER BAND','通信'], salvage:['SALVAGE','SLOT 03 · ARE.NA FEEDS','回収'], cipher:['CIPHER','SLOT 04 · HEXAGON INDEX','暗号'], paint:['PAINT','SLOT 05 · BOOTH','塗装'], scan:['SCAN','SLOT 06 · ZONE','走査'] };
-const ROOMCOL = { shell:'fog', vault:'white', comms:'orange', salvage:'bone', cipher:'lav', paint:'ink', scan:'ink' };
+const ROOMLOC = { shell:['HANGAR','BAY 04 · TAU CETI IV HIGH ORBIT','格納庫'], vault:['VAULT','SLOT 01 · DATA CORES','保管庫'], comms:['COMMS','SLOT 02 · CARRIER BAND','通信'], salvage:['SALVAGE','SLOT 03 · ARE.NA FEEDS','回収'], cipher:['CIPHER','SLOT 04 · HEXAGON INDEX','暗号'], paint:['PAINT','SLOT 05 · BOOTH','塗装'], scan:['SCAN','SLOT 06 · ZONE','走査'], lab:['LAB','SLOT 08 · WORKBENCH','ラボ'] };
+const ROOMCOL = { shell:'fog', vault:'white', comms:'orange', salvage:'bone', cipher:'lav', paint:'ink', scan:'ink', lab:'mint' };
 
 /* ============ STAGE FIT ============ */
 let scale = 1, portrait = false;
@@ -830,9 +905,10 @@ function applyPaint(i) { const w = WAYS[i]; selHex = w.acc; document.documentEle
 /* ============ SHELL ============ */
 const lo = $('#loadout');
 SLOTS.forEach((s, i) => {
-  const b = document.createElement('button'); b.className = 'slot' + (s.id === 'diag' ? ' s7' : ''); b.style.gridArea = s.area; b.dataset.f = ''; b.dataset.slot = i;
+  const b = document.createElement('button'); b.className = 'slot' + (s.id === 'diag' ? ' s7' : s.id === 'lab' ? ' s8' : ''); b.style.gridArea = s.area; b.dataset.f = ''; b.dataset.slot = i;
   b.innerHTML = s.id === 'diag'
     ? `<span class="ic">${JRL.icon(s.ic)}</span><span class="t" style="gap:12px"><span>SLOT ${s.c}</span></span><span class="nm">${s.n}</span><span class="jp" style="font-size:14px">${s.jp}</span><span class="ct" style="margin-left:auto">${s.ct} · [Y]</span>`
+    : s.id === 'lab' ? `<i class="sw" style="background:var(--${s.col})"></i><span class="ic">${JRL.icon(s.ic)}</span><span class="t" style="flex-direction:column;gap:6px"><span>SLOT ${s.c}</span><span class="ak"></span></span><span class="nm">${s.n}</span><span class="jp" style="font-size:14px">${s.jp}</span><span class="ct" style="margin-left:auto">${s.ct}</span>`
     : `<i class="sw" style="background:var(--${s.col})"></i><span class="t"><span>SLOT ${s.c}</span><span class="ak"></span></span><span class="ic">${JRL.icon(s.ic)}</span><span><span class="jp" style="font-size:14px;display:block;margin-bottom:4px">${s.jp}</span><span class="nm">${s.n}</span></span><span class="ct">${s.ct}</span>`;
   b.setAttribute('aria-label', `Slot ${s.c}: ${s.n}. ${s.d}`);
   b.addEventListener('click', () => { if (selSlot === i) equip(i); else { selectSlot(i); setFocus(b); } });
@@ -1023,6 +1099,74 @@ JRL.every(t => {
   $('#scanro').textContent = `POINTS ${PTS.length} · ROT ${(rotY * 57.3 % 360).toFixed(1)}° · TILT ${(rotX * 57.3).toFixed(1)}° · TARGET ${AN[selAn].c.c} · [A] OPEN CORE`;
 });
 
+
+/* ============ LAB ============ */
+/* The source chips stay sealed while the repo is private. Flip REPO.open to true when it goes public. */
+const REPO = { open: false, url: 'https://github.com/jere-mee-as/site' };
+const LABBASE = location.protocol === 'file:' ? 'https://jere.ing/' : '';
+const LAB = [
+ { id:'launcher', sh:'t', c:'T-01', n:'JRL Launcher', ic:'cube', col:'lime', pl:'Android · home screen', st:'v4.0 · field test pending', ver:'v4.0', slog:'The phone as a runner\'s handheld.', d:'An Android home screen in this site\'s language. Rooms instead of pages, a carbon strip that runs the phone, slots instead of icons, and a lit planet that follows the real time of day. The demo runs on a fake phone with made-up apps.', demo:'lab/demo/launcher.html', src:'launcher/', docs:[] },
+ { id:'switchboard', sh:'t', c:'T-02', n:'Switchboard', ic:'comms', col:'blue', pl:'Android · home screen', st:'v0.2 · layout passed', ver:'v0.2', slog:'A home screen laid out like a chat app.', d:'Spaces on a rail, apps as channels, and #feed as the command line: open, remind, play, timer, macros. Notifications split by job so each one counts once. The demo uses example data.', demo:'lab/demo/switchboard.html', src:'switchboard/', docs:[] },
+ { id:'veta', sh:'t', c:'T-03', n:'Veta', ic:'helix', col:'lav', pl:'Windows · second brain', st:'v2.1 · in daily use', ver:'v2.1', slog:'Typed notes that grow like crystal.', d:'A keyboard-first second brain that reads and writes a folder of plain Markdown. Typed objects, an outliner, daily notes, live queries and a Crystarium of every link. The demo opens a made-up vault; your edits stay in your browser.', demo:'lab/demo/veta.html', src:'veta/', docs:[] },
+ { id:'kept', sh:'t', c:'T-04', n:'Kept', ic:'vault', col:'orange', pl:'Windows · file manager', st:'v0.1 · first run pending', ver:'v0.1', slog:'Every view is a query. Nothing moves.', d:'A local file manager. A small model describes each file once; you find things by asking instead of walking folders. Guesses and confirmed facts never look the same. The demo is a mock with made-up files; press T for skins.', demo:'lab/demo/kept.html', src:'kept/', docs:[['Concept docs (zip)','lab/archive/kept-concept-docs.zip']] },
+ { id:'uplink', sh:'w', c:'W-01', n:'Uplink', ic:'slot', col:'lime', pl:'after Marathon · live', st:'live · you are in it', ver:'pass 2', slog:'The site as a runner\'s shell in the hangar.', d:'This site. One fixed stage, rooms as gear, a terminal under everything, no scroll. Its visual development book shows how the language was built.', demo:'lab/worlds/uplink/stylebook.html', demoLbl:'Visual book', src:'lab/uplink/', docs:[] },
+ { id:'crystarium', sh:'w', c:'W-02', n:'Crystarium', ic:'helix', col:'teal', pl:'after Final Fantasy XIII', st:'preview · not shipped', ver:'v3', slog:'Reports as crystals on a growing ring.', d:'The reports site as a game menu: a title screen, a party of report cards, a datalog, and a Crystarium where each month is a ring and each report a crystal. Original work inspired by the game\'s UI; no game assets.', demo:'lab/worlds/ffxiii/index.html', src:'lab/ffxiii/', docs:[['Style audit','lab/worlds/ffxiii/audit.html']] },
+ { id:'runner', sh:'w', c:'W-03', n:'Runner', ic:'spatial', col:'pink', pl:'after Mirror\'s Edge', st:'preview · not shipped', ver:'v1', slog:'Every report is a rooftop.', d:'A first-person rooftop city in WebGL. Red marks the route, the only red in the world. Run to the next roof, quick-turn to go back, open the map to fast travel. Original work inspired by the game; no game assets.', demo:'lab/worlds/mirrors-edge/runner.html', src:'lab/mirrors-edge/', docs:[['Runner style book','lab/worlds/mirrors-edge/stylebook.html']] },
+ { id:'vesta', sh:'w', c:'W-04', n:'Vesta 9', ic:'place', col:'bone', pl:'after Mirror\'s Edge', st:'rev 2.1', ver:'rev 2.1', slog:'An ordinary website in that city.', d:'A luxury tower\'s site from the same world: pristine, paper thin, polite, and watching you. Something lives under the white. Press on the pale numbers, then move slowly.', demo:'lab/worlds/mirrors-edge/vesta9.html', src:'lab/mirrors-edge/', docs:[['City web field guide','lab/worlds/mirrors-edge/field-guide.html']] },
+ { id:'terminal', sh:'w', c:'W-05', n:'Terminal', ic:'diag', col:'orange', pl:'after Marathon · retired', st:'v3.6 · retired Nov 2026', ver:'v3.6', slog:'The terminal of the future.', d:'The front page before this one: six modules, a colony that lives in your browser, a root shell with toys. Retired, still running.', demo:'reports/_archive/2026-11-terminal-of-the-future/', src:'archive/', docs:[['Type specimen','lab/worlds/marathon/type.html'],['Colour map','lab/worlds/marathon/color.html']] },
+ { id:'a-ink', sh:'a', c:'A-01', n:'Site · paper and ink', dl:'site-2026-10-paper-and-ink.zip', live:'reports/_archive/2026-10-paper-and-ink/', pl:'Oct 2026', d:'The first version: a plain numbered list of reports on paper.' },
+ { id:'a-real', sh:'a', c:'A-02', n:'Site · graphic realism', dl:'site-2026-11-graphic-realism.zip', live:'reports/_archive/2026-11-graphic-realism/', pl:'Nov 2026', d:'The first Marathon pass: colour fields, glitch transitions, a terminal.' },
+ { id:'a-term', sh:'a', c:'A-03', n:'Site · terminal v3.0–3.6', dl:'site-2026-11-terminal-of-the-future.zip', live:'reports/_archive/2026-11-terminal-of-the-future/', pl:'Nov 2026', d:'The terminal of the future and every preview on the way to it.' },
+ { id:'a-launch', sh:'a', c:'A-04', n:'Launcher · v0 to v3', dl:'launcher-previews-v0-v3.zip', pl:'Nov 2026', d:'Every launcher mockup before the handheld: first mockup, v2.0 to v3.0.' },
+ { id:'a-crys', sh:'a', c:'A-05', n:'Crystarium · v2', dl:'ffxiii-v2.zip', pl:'Nov 2026', d:'The second Crystarium pass, before the audit rebuilt it.' },
+ { id:'a-vesta', sh:'a', c:'A-06', n:'Vesta 9 · v1', dl:'vesta9-v1.zip', pl:'Nov 2026', d:'The first, scrolling Vesta 9, before it stopped obeying web habits.' },
+ { id:'a-scope', sh:'a', c:'A-07', n:'Scope · earlier', dl:'scope-earlier.zip', pl:'Nov 2026', d:'The first, plain oscilloscope and its Marathon pass.' }
+];
+const SHELVES = [['t', '01 TOOLS', '道具', ''], ['w', '02 WORLDS', '世界', 'w'], ['a', '03 ARCHIVE', '保存', 'a']];
+let selP = 0, labSz = null;
+(function buildLab() {
+  $('#labct').textContent = `${LAB.filter(x => x.sh === 't').length} tools · ${LAB.filter(x => x.sh === 'w').length} worlds · ${LAB.filter(x => x.sh === 'a').length} archived`;
+  $('#shelves').innerHTML = SHELVES.map(([k, t, jp, cls]) => `<div class="shelf ${cls}"><div class="sh"><b>${t}</b><span class="jp">${jp}</span></div>${LAB.map((x, i) => x.sh !== k ? '' : k === 'a'
+    ? `<button class="lp" data-f data-p="${i}"><span class="nm">${x.n}</span><span class="t"><span>${x.c}</span><span class="sz" data-dl="${x.dl}">↓ ZIP</span></span></button>`
+    : `<button class="lp" data-f data-p="${i}"><i class="sw" style="background:var(--${x.col})"></i><span class="ic">${JRL.icon(x.ic)}</span><span class="t"><span>${x.c}</span><span>${x.ver}</span></span><span class="nm">${x.n}</span><span class="pl">${x.pl}</span></button>`).join('')}</div>`).join('');
+  $$('.lp').forEach(el => el.addEventListener('click', () => { const i = +el.dataset.p; if (selP === i && room === 'lab') labRun(i); else { selectProj(i); setFocus(el); } }));
+})();
+function fmtKB(b) { return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; }
+function labSizes() { if (labSz) return; labSz = {}; fetch(LABBASE + 'lab/archive/sizes.json').then(r => r.ok ? r.json() : {}).then(j => { labSz = j || {}; $$('.lp .sz').forEach(el => { const b = labSz[el.dataset.dl]; if (b) el.textContent = '↓ ' + fmtKB(b); }); if (room === 'lab') selectProj(selP, true); }).catch(() => { }); }
+function srcChip(x) { return REPO.open ? `<a class="seal" data-f href="${REPO.url}/tree/main/${x.src}" target="_blank" rel="noopener"><span>SRC</span><em>${x.src} ↗</em></a>` : `<span class="seal" title="Source opens when the repo goes public"><span>SRC // SEALED</span><em>${x.src}</em></span>`; }
+function selectProj(i, silent) {
+  selP = (i + LAB.length) % LAB.length; const x = LAB[selP];
+  $$('.lp').forEach(b => b.classList.toggle('sel', +b.dataset.p === selP));
+  const big = x.n.split(' ')[0].replace('·', '');
+  if (x.sh === 'a') {
+    const b = labSz && labSz[x.dl];
+    $('#labi').innerHTML = `<div class="gi">${big}</div><div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--sel)">${x.c} · ARCHIVE</span><span class="jp" style="font-size:14px">保存</span></div><div class="nm">${x.n}</div><p class="txt">${x.d}</p><dl><dt>Retired</dt><dd>${x.pl}</dd><dt>File</dt><dd>${x.dl}${b ? ' · ' + fmtKB(b) : ''}</dd><dt>Opens</dt><dd>in any browser, offline. Fonts load from the web.</dd></dl><div class="act"><button class="btnA" data-f id="lrun"><span class="k">A</span>Download</button>${x.live ? `<button class="btnB" data-f id="ldoc0"><span class="k">X</span>Run it here</button>` : ''}</div>`;
+    $('#lrun').addEventListener('click', () => labRun(selP)); const l = $('#ldoc0'); if (l) l.addEventListener('click', () => labDocs(selP));
+  } else {
+    $('#labi').innerHTML = `<div class="gi">${big}</div><div style="display:flex;justify-content:space-between"><span class="tag" style="color:var(--sel)">${x.c} · ${x.sh === 't' ? 'TOOL' : 'WORLD'}</span><span style="width:30px;height:30px;color:var(--${x.col})">${JRL.icon(x.ic)}</span></div><div><div class="nm">${x.n}</div><p class="slog" style="margin-top:8px">${x.slog}</p></div><p class="txt">${x.d}</p><dl><dt>${x.sh === 't' ? 'Platform' : 'Lineage'}</dt><dd>${x.pl}</dd><dt>Build</dt><dd>${x.st}</dd><dt>Source</dt><dd>${srcChip(x)}</dd></dl><div class="act"><button class="btnA" data-f id="lrun"><span class="k">A</span>${x.demoLbl || 'Run demo'}</button>${x.docs.map((d, k) => `<button class="btnB" data-f data-doc="${k}"><span class="k">${k ? '·' : 'X'}</span>${d[0]}</button>`).join('')}</div>`;
+    $('#lrun').addEventListener('click', () => labRun(selP)); $$('#labi [data-doc]').forEach(b => b.addEventListener('click', () => labDocs(selP, +b.dataset.doc)));
+  }
+  renderPrompts(); if (!silent) play('move');
+}
+function labRun(i) { const x = LAB[i]; if (x.dl) { play('confirm'); const a = document.createElement('a'); a.href = LABBASE + 'lab/archive/' + x.dl; a.download = x.dl; document.body.appendChild(a); a.click(); a.remove(); status(`PULLING ${x.dl.toUpperCase()} · ${x.c}`); return; } openLab(i); }
+function labDocs(i, k = 0) { const x = LAB[i]; if (x.dl) { if (x.live) openLab(i, { url: x.live, label: 'Archive · running' }); else play('buzz'); return; } const d = x.docs[k]; if (!d) { play('buzz'); status('NO DOCS ON THIS ONE'); return; } if (/\.zip$/.test(d[1])) { const a = document.createElement('a'); a.href = LABBASE + d[1]; a.download = ''; document.body.appendChild(a); a.click(); a.remove(); play('confirm'); return; } openLab(i, { url: d[1], label: d[0] }); }
+let labURL = '';
+function openLab(i, o = {}) {
+  const x = LAB[i]; const url = LABBASE + (o.url || x.demo); labURL = url; selP = i;
+  const v = $('#labv'), c = $('#labvc'); const old = $('#labvf'); if (old) old.remove();
+  $('#labvt').innerHTML = `<b>LAB // ${x.c} · ${x.n}</b>&nbsp;&nbsp;<span>${o.label || (x.sh === 't' ? 'DEMO · MADE-UP DATA' : x.sh === 'a' ? 'ARCHIVE' : 'WORLD')}</span>`;
+  if (o.push !== false && location.hash !== '#lab/' + x.id) history.pushState(null, '', '#lab/' + x.id);
+  v.hidden = false; hideBrk();
+  const name = x.n.split(' ')[0].toUpperCase(), col = HEX[x.col] || HEX.lime;
+  const cards = RM ? [] : [[`<div style="position:absolute;inset:0;background:var(--sel)"><div class="gi" style="left:20px;top:30px;font-size:180px;color:var(--ink)">[A]</div></div>`, 33], [`<div style="position:absolute;inset:0;background:#0a0a0b;color:var(--sel);font:400 15px/1.5 var(--f-code);padding:30px">exec ${x.id} · ${url}<br>${Array.from({ length: 18 }, () => Math.random().toString(36).slice(2, 12).toUpperCase() + ' ' + '▮'.repeat(1 + Math.random() * 24 | 0)).join('<br>')}</div>`, 33], [`<div style="position:absolute;inset:0;background:${col};background-image:radial-gradient(#0a0a0b 2.5px,transparent 3px);background-size:10px 10px"></div>`, 33], [`<div style="position:absolute;inset:0;background:${col};color:#0a0a0b"><div class="gi" style="left:-20px;bottom:-30px;font-size:min(32vw,380px)">${name}</div></div>`, 100]];
+  let k = 0; c.classList.add('on');
+  const next = () => { if (k < cards.length) { c.innerHTML = cards[k][0]; play('crackle', 1); setTimeout(next, cards[k++][1]); } else { c.classList.remove('on'); c.innerHTML = ''; const f = document.createElement('iframe'); f.id = 'labvf'; f.title = x.n; f.allow = 'autoplay; fullscreen; clipboard-write'; f.src = url; v.insertBefore(f, c); play('thump'); setTimeout(() => $('#labvx').focus(), 0); } };
+  next(); S.hum(false);
+}
+function closeLab(o = {}) { const v = $('#labv'); if (v.hidden) return; v.hidden = true; const f = $('#labvf'); if (f) f.remove(); play('back'); if (!o.pop && location.hash.startsWith('#lab/')) history.back(); if (room === 'lab') { selectProj(selP, true); setFocus($(`.lp[data-p="${selP}"]`)); } }
+$('#labvx').addEventListener('click', () => closeLab());
+$('#labvn').addEventListener('click', () => { if (labURL) openURL(labURL); });
+
 /* ============ TERMINAL ============ */
 const tout = $('#tout'), tcmd = $('#tcmd'); let termOpen = false;
 function tl(s, c = '') { const d = document.createElement('div'); d.className = c; d.textContent = s; tout.appendChild(d); while (tout.children.length > 40) tout.firstChild.remove(); }
@@ -1032,7 +1176,7 @@ $('#tin').addEventListener('submit', e => {
   e.preventDefault(); const raw = tcmd.value.trim(); tcmd.value = ''; if (!raw) return; tl('runner@jrl:~$ ' + raw, 'd'); const [c, ...a] = raw.split(/\s+/); const arg = a.join(' ').toLowerCase();
   const ok = m => { tl('[ ok ] ' + m, 'ok'); play('tick'); }, err = m => { tl('[FAIL] ' + m, 'e'); play('buzz'); };
   switch (c.toLowerCase()) {
-    case 'help': tl('ls · cores · open <nn> · archive [n] · go <slot> · paint <name> · mute · unmute · whoami · date · signal · clear · reboot · exit'); break;
+    case 'help': tl('ls · cores · open <nn> · lab · run <name> · archive [n] · go <slot> · paint <name> · mute · unmute · whoami · date · signal · clear · reboot · exit'); break;
     case 'ls': SLOTS.forEach(s => tl(`  SLOT ${s.c}  ${s.n.padEnd(12)} ${s.ct}`)); break;
     case 'cores': CORES.forEach(k => tl(`  ${k.c}  ${k.t}${k.q ? '  [QUARANTINED]' : ''}`)); break;
     case 'open': { const n = parseInt(arg); const k = CORES[n - 1]; if (!k) return err('no such core. try: open 03'); if (k.q && !opened.has(n - 1)) return err(`${k.c} is quarantined. override it in the vault first.`); ok(`extracting ${k.c} ${k.t}`); openURL(BASE + k.f); break; }
@@ -1047,6 +1191,8 @@ $('#tin').addEventListener('submit', e => {
     case 'reboot': closeTerm(); boot(true); break;
     case 'exit': closeTerm(); break;
     case 'archive': { const AR = [['2026-11-terminal-of-the-future', 'terminal of the future (v3.6)'], ['2026-11-graphic-realism', 'graphic realism v1'], ['2026-10-paper-and-ink', 'paper & ink']]; const n = parseInt(arg); if (!n) { AR.forEach((x, k) => tl(`  ${k + 1}  /archive/${x[0]}  ${x[1]}`)); tl('  open one: archive 1'); break; } const x = AR[n - 1]; if (!x) return err('no such archive. try: archive'); ok('opening /archive/' + x[0]); openURL((location.protocol === 'file:' ? 'https://jere.ing/' : '') + 'reports/_archive/' + x[0] + '/'); break; }
+    case 'lab': LAB.forEach(x => tl(`  ${x.c}  ${x.n.padEnd(16)} ${x.pl}`)); tl('  run one: run veta'); break;
+    case 'run': { const i = LAB.findIndex(x => x.id === arg || x.n.toLowerCase() === arg || x.c.toLowerCase() === arg); if (i < 0) return err('nothing on the bench called that. type lab'); ok((LAB[i].dl ? 'pulling ' : 'running ') + LAB[i].n); closeTerm(); if (room !== 'lab') { selP = i; go('lab', { instant: true, quiet: true }); } selectProj(i, true); labRun(i); break; }
     case 'sudo': err('runners do not have root. nice try.'); break;
     default: err(`unknown command: ${c}. type help`);
   }
@@ -1068,7 +1214,7 @@ function hideBrk() { brk.classList.remove('on'); }
 function restoreFocus() { const el = lastFocus[room]; if (el && el.isConnected) setFocus(el); else setFocus(firstIn(room)); }
 document.addEventListener('focusin', e => { if (e.target.closest('[data-f]') && e.target.closest('#rooms')) { cur = e.target.closest('[data-f]'); lastFocus[room] = cur; placeBrk(); } });
 function focusables() { return $$('[data-f]', $(`#r-${room}`)).filter(el => el.getClientRects().length); }
-function firstIn(r) { return r === 'shell' ? $$('.slot')[selSlot] : r === 'vault' ? $(`.item[data-i="${selCore}"]`) : r === 'salvage' ? $$('.crate')[selCh] : r === 'scan' ? $$('.an')[selAn] : r === 'paint' ? $(`.way[data-w="${wayPrev}"]`) : r === 'comms' ? dial : $('#loc8'); }
+function firstIn(r) { return r === 'shell' ? $$('.slot')[selSlot] : r === 'vault' ? $(`.item[data-i="${selCore}"]`) : r === 'salvage' ? $$('.crate')[selCh] : r === 'scan' ? $$('.an')[selAn] : r === 'paint' ? $(`.way[data-w="${wayPrev}"]`) : r === 'comms' ? dial : r === 'lab' ? $(`.lp[data-p="${selP}"]`) : $('#loc8'); }
 function spatial(dir) {
   const list = focusables(); if (!cur || !list.includes(cur)) return setFocus(firstIn(room));
   const a = cur.getBoundingClientRect(), ax = a.left + a.width / 2, ay = a.top + a.height / 2; let best = null, bs = 1e9;
@@ -1082,6 +1228,7 @@ function onFocusMove(el) {
   else if (el.classList.contains('item') && el.dataset.i !== undefined) selectCore(+el.dataset.i, true);
   else if (el.classList.contains('crate')) selectCh(+el.dataset.i, true);
   else if (el.classList.contains('an')) selectAn(+el.dataset.a, true);
+  else if (el.classList.contains('lp')) selectProj(+el.dataset.p, true);
   else if (el.classList.contains('way')) { wayPrev = +el.dataset.w; genInks = WAYS[wayPrev].k.map(k => rgb(HEX[k])); renderWays(); setFocus($(`.way[data-w="${wayPrev}"]`)); }
 }
 
@@ -1092,7 +1239,7 @@ function renderPrompts() {
   if (termOpen) L = [P('B', 'Close', closeTerm), P('↵', 'Run', null, 1)];
   else if (room === 'shell') L = [P('✛', 'Select', null, 1), P('A', 'Equip', () => equip(selSlot)), P('LB', 'Prev', () => { selectSlot(selSlot - 1); setFocus($$('.slot')[selSlot]); }, 1), P('RB', 'Next', () => { selectSlot(selSlot + 1); setFocus($$('.slot')[selSlot]); }, 1), P('Y', 'Diagnostics', openTerm)];
   else {
-    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', 'Open', () => $('#txa').click())], salvage: [P('A', 'Open crate', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openURL(BASE + AN[selAn].c.f))] }[room] || [];
+    const extra = { vault: [P('A', 'Extract', () => { const a = $('#extract'); a ? a.click() : play('buzz'); }), P('X', 'Hold · override', null)], comms: [P('◂▸', 'Tune', null, 1), P('A', 'Open', () => $('#txa').click())], salvage: [P('A', 'Open crate', () => $('#scl').click())], cipher: [P('A', 'Locate', () => $('#phr').requestSubmit())], paint: [P('A', 'Apply', doApply), P('X', 'Roll', () => $('#roll').click())], scan: [P('A', 'Open core', () => openURL(BASE + AN[selAn].c.f))], lab: [P('A', LAB[selP].dl ? 'Download' : 'Run', () => labRun(selP)), P('X', 'Docs', () => labDocs(selP))] }[room] || [];
     L = [P('B', 'Shell', () => go('shell')), ...extra, P('LB', 'Prev room', () => cycle(-1), 1), P('RB', 'Next room', () => cycle(1), 1), P('Y', 'Diag', openTerm)];
   }
   if (portrait) L = L.filter(p => !['Prev room', 'Next room', 'Prev', 'Next', 'Select', 'Tune', 'Run'].includes(p.l));
@@ -1102,7 +1249,7 @@ function renderPrompts() {
 
 /* ============ ROOMS + BURST ============ */
 let room = 'shell', busy = false;
-const ORDER = ['vault', 'comms', 'salvage', 'cipher', 'paint', 'scan'];
+const ORDER = ['vault', 'comms', 'salvage', 'cipher', 'paint', 'scan', 'lab'];
 function cycle(d) { const i = ORDER.indexOf(room); go(ORDER[(i + d + ORDER.length) % ORDER.length]); }
 function setRoom(r) {
   $$('.room').forEach(s => s.hidden = s.id !== 'r-' + r);
@@ -1110,7 +1257,7 @@ function setRoom(r) {
   room = r; stage.dataset.room = r;
   const L = ROOMLOC[r]; $('#loc').innerHTML = `<b>${L[0]}</b>&nbsp;· ${L[1]}&nbsp;&nbsp;<span class="jp">${L[2]}</span>`;
   if (S.on) S.hum(r === 'shell');
-  if (r === 'shell') { selectSlot(selSlot, true); bust.reveal(); bust.draw(JRL.time()); } if (r === 'vault') selectCore(selCore, true); if (r === 'salvage') selectCh(selCh, true); if (r === 'scan') selectAn(selAn, true); if (r === 'paint') drawGen(JRL.time());
+  if (r === 'shell') { selectSlot(selSlot, true); bust.reveal(); bust.draw(JRL.time()); } if (r === 'vault') selectCore(selCore, true); if (r === 'salvage') selectCh(selCh, true); if (r === 'scan') selectAn(selAn, true); if (r === 'paint') drawGen(JRL.time()); if (r === 'lab') { selectProj(selP, true); labSizes(); }
   renderPrompts(); restoreFocus(); say(L[0].toLowerCase());
   if (location.hash.slice(1) !== (r === 'shell' ? '' : r)) history.pushState(null, '', r === 'shell' ? location.pathname + location.search : '#' + r);
 }
@@ -1134,13 +1281,14 @@ function go(r, opts = {}) {
   const next = () => { if (i < cards.length) { b.innerHTML = cards[i][0]; play('crackle', 1); const d = cards[i][1]; i++; setTimeout(next, d); } else { b.hidden = true; b.innerHTML = ''; setRoom(r); play(r === 'shell' ? 'back' : 'thump'); busy = false; } };
   next();
 }
-addEventListener('popstate', () => { const r = location.hash.slice(1); go(ORDER.includes(r) ? r : 'shell'); });
+addEventListener('popstate', () => { const r = location.hash.slice(1); if (r.startsWith('lab/')) { const i = LAB.findIndex(x => x.id === r.slice(4)); if (i >= 0) { if (room !== 'lab') setRoom('lab'); return openLab(i, { push: false }); } } if (!$('#labv').hidden) closeLab({ pop: true }); go(ORDER.includes(r) ? r : 'shell'); });
 
 /* ============ KEYS ============ */
 let lastKey = 0;
 addEventListener('keydown', e => {
   S.init();
   if (!$('#boot').hidden) { endBoot(); return; }
+  if (!$('#labv').hidden) { if (e.key === 'Escape' || e.key === 'Backspace' || e.key.toLowerCase() === 'b') { e.preventDefault(); closeLab(); } return; }
   const typing = e.target.matches('input');
   if (e.key === 'Escape' || (e.key === 'Backspace' && !typing)) { e.preventDefault(); if (termOpen) return closeTerm(); if (typing) { e.target.blur(); return setFocus($('#loc8')); } if (room !== 'shell') go('shell'); return; }
   if (typing) { if (e.target === tcmd || e.key !== 'ArrowDown') return; }
@@ -1155,7 +1303,7 @@ addEventListener('keydown', e => {
   if (k === 'q' || k === 'e') { if (room === 'shell') { selectSlot(selSlot + (k === 'e' ? 1 : -1)); setFocus($$('.slot')[selSlot]); } else cycle(k === 'e' ? 1 : -1); return; }
   if (k === '/' || k === 'y' || k === '`') { e.preventDefault(); return termOpen ? closeTerm() : openTerm(); }
   if (k === 'm') return setSnd(!S.on);
-  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); }
+  if (k === 'x' && !e.repeat) { if (room === 'vault' && $('#ovr')) startHold($('#ovr')); else if (room === 'paint') $('#roll').click(); else if (room === 'lab') labDocs(selP); }
 });
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'x') endHold(); });
 addEventListener('pointerdown', () => S.init(), { once: true });
@@ -1171,14 +1319,15 @@ function boot(force) {
   let t = 0; const at = (ms, fn) => bootT.push(setTimeout(fn, ms));
   for (let r = 0; r < 4; r++) { for (let f = 0; f < 3; f++) { at(t, () => { burst(r); play('crackle', 1); }); t += 33; } at(t, () => { g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 160, 90); }); t += 170; }
   at(t, () => { wm.style.visibility = 'visible'; play('carrier'); });
-  const lines = [['[ ok ]', 'shell bus · bay 04'], ['[ ok ]', 'shell schematic · ' + bust.tri.toLocaleString('en-US') + ' tri'], ['[ ok ]', 'data cores indexed · 08'], ['[warn]', 'DC-02 quarantined'], ['[ ok ]', 'salvage feeds · 12'], ['[ ok ]', 'paint · ' + WAYS[wayIdx].n.toLowerCase()], ['', 'CONNECTION FOUND']];
+  const lines = [['[ ok ]', 'shell bus · bay 04'], ['[ ok ]', 'shell schematic · ' + bust.tri.toLocaleString('en-US') + ' tri'], ['[ ok ]', 'data cores indexed · 08'], ['[warn]', 'DC-02 quarantined'], ['[ ok ]', 'salvage feeds · 12'], ['[ ok ]', 'paint · ' + WAYS[wayIdx].n.toLowerCase()], ['[ ok ]', 'lab · ' + LAB.length + ' projects on the bench'], ['', 'CONNECTION FOUND']];
   lines.forEach((l, i) => at(t + 120 + i * 110, () => { const d = document.createElement('div'); d.innerHTML = `<span class="ok">${l[0]}</span> ${l[1]}`; log.appendChild(d); play('tick'); }));
   at(t + 120 + lines.length * 110 + 260, endBoot);
 }
 
 /* ============ INIT ============ */
 applyPaint(wayIdx); fit(); selectSlot(0, true); selectCore(0, true); selectCh(0, true); selectAn(0, true);
-const startR = location.hash.slice(1); setRoom(ORDER.includes(startR) ? startR : 'shell');
+const startR = location.hash.slice(1); const startL = startR.startsWith('lab/') ? LAB.findIndex(x => x.id === startR.slice(4)) : -1;
+setRoom(startL >= 0 ? 'lab' : ORDER.includes(startR) ? startR : 'shell'); if (startL >= 0) { selectProj(startL, true); history.replaceState(null, '', '#lab'); openLab(startL); }
 $('#snd').setAttribute('aria-pressed', S.on);
 document.fonts && document.fonts.ready.then(placeBrk);
 boot();
