@@ -1,4 +1,5 @@
 # Builds the JRL launcher APK on demand (Actions tab > Launcher APK > Run workflow). Never runs on push or on a schedule.
+# Each run replaces the release tagged jrl-launcher: https://github.com/jere-mee-as/site/releases/download/jrl-launcher/jrl-launcher.apk
 # Repo secrets: JRL_KEYSTORE_B64 (base64 of the .jks), JRL_KEYSTORE_PASSWORD, JRL_KEY_ALIAS, JRL_KEY_PASSWORD.
 # Without JRL_KEYSTORE_B64 the build still runs and the APK is debug-signed.
 name: Launcher APK
@@ -7,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # publishes the APK as a release (rolling tag) so phones can download it without signing in
 
 jobs:
   build:
@@ -60,3 +61,16 @@ jobs:
           name: jrl-launcher-apk
           path: launcher/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+
+      - name: Publish release (jrl-launcher)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          cp "$apk" "$RUNNER_TEMP/jrl-launcher.apk"
+          ver=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          gh release delete jrl-launcher --yes --cleanup-tag || true
+          gh release create jrl-launcher "$RUNNER_TEMP/jrl-launcher.apk" \
+            --target "$GITHUB_SHA" \
+            --title "JRL Launcher $ver" \
+            --notes "JRL Launcher $ver, built from ${GITHUB_SHA::7}. On the phone: open jrl-launcher.apk, allow the install, then App info > ⋮ > Allow restricted settings before granting notification access."

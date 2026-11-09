@@ -1,4 +1,5 @@
 # Builds the Switchboard APK on demand (Actions tab > Switchboard APK > Run workflow). Never runs on push or on a schedule.
+# Each run replaces the release tagged switchboard: https://github.com/jere-mee-as/site/releases/download/switchboard/switchboard.apk
 # Its own repo secrets: SB_KEYSTORE_B64 (base64 of the .jks), SB_KEYSTORE_PASSWORD, SB_KEY_ALIAS, SB_KEY_PASSWORD.
 # Without SB_KEYSTORE_B64 the build still runs and the APK is debug-signed.
 name: Switchboard APK
@@ -7,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # publishes the APK as a release (rolling tag) so phones can download it without signing in
 
 jobs:
   build:
@@ -60,3 +61,16 @@ jobs:
           name: switchboard-apk
           path: switchboard/android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+
+      - name: Publish release (switchboard)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -n1)
+          cp "$apk" "$RUNNER_TEMP/switchboard.apk"
+          ver=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          gh release delete switchboard --yes --cleanup-tag || true
+          gh release create switchboard "$RUNNER_TEMP/switchboard.apk" \
+            --target "$GITHUB_SHA" \
+            --title "Switchboard $ver" \
+            --notes "Switchboard $ver, built from ${GITHUB_SHA::7}. On the phone: open switchboard.apk, allow the install, then App info > ⋮ > Allow restricted settings before granting notification access."

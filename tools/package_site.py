@@ -19,6 +19,13 @@ for name in ("images.json", "tarot.json", "songs.json"):
     else:
         (SITE / name).write_text("[]", encoding="utf-8")
 shutil.copytree(ROOT / "reports", SITE / "reports")
+
+# The JRL launcher's over-the-air page: the phone pulls jere.ing/launcher/app/index.html (see launcher/android).
+# Same file as the one bundled in the APK, so a push to main updates every installed launcher's UI.
+ota = ROOT / "launcher" / "android" / "app" / "src" / "main" / "assets" / "www" / "index.html"
+if ota.exists():
+    (SITE / "launcher" / "app").mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ota, SITE / "launcher" / "app" / "index.html")
 (SITE / ".nojekyll").touch()
 
 # The Lab: demos, other worlds for the site, and archive downloads (see tools/lab_build.py).

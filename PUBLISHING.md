@@ -1,14 +1,14 @@
 # Publishing checklist
 
-The repo is private. jere.ing serves the site (Uplink), its archive, and the Lab: interactive demos of the launcher, Switchboard, Veta and Kept, the other site directions, and the archived versions. The app source and downloadable builds stay private until each item below is cleared.
+The repo is public (Nov 9, 2026). jere.ing serves the site (Uplink), its archive, and the Lab: interactive demos of the launcher, Switchboard, Veta and Kept, the other site directions, and the archived versions. Source chips in the Lab link here, and both Android apps publish their APKs as releases.
 
-## Must fix before the repo goes public
+## Status of the old "must fix before public" list
 
-| # | What | Where | Why | Fix |
-|---|---|---|---|---|
-| 1 | Album cover and a band photo embedded as images | `reports/rio.html` (two `data:image/jpeg` blobs, `IMG.cover` and `IMG.face`) | Both are someone else's copyrighted images. They are already live on jere.ing. | Replace them with original artwork (a drawn or generated stand-in), or show text and link out. |
-| 2 | The hidden cat easter egg sprite (7 frames, 128×896 PNG) | The archived v3.6 site, `archive/2026-11-terminal-of-the-future/template.html` (served at jere.ing/reports/_archive/2026-11-terminal-of-the-future/), and the v3 previews in `archive/2026-11-marathon-v3-previews/` | It looks like third-party meme art, not something drawn for the site. The Uplink front page doesn't use it. | Swap it for an original pixel cat drawn for the site, or drop the egg from the archive. Kept on purpose (Nov 9); it is also in the archived v3 previews under jere.ing/lab/archive/terminal/. Swap it before the repo goes public. |
-| 3 | The Phil Chat reports name real people from a group chat | `reports/phil-chat-*.html` | They were already public on the old site, but a public repo also exposes their full history. | Get the group's OK, or anonymize the names before flipping the repo public. |
+| # | What | Status |
+|---|---|---|
+| 1 | Album cover and band photo embedded in `reports/rio.html` | **Fixed** (Nov 9): replaced with original flat-colour stand-ins. The old JPEGs are still in earlier commits of the history. |
+| 2 | The hidden cat sprite in the archived v3.6 site and v3 previews | **Kept on purpose** (Jeremias, Nov 9). Swap it for an original pixel cat if it's ever a problem. |
+| 3 | The Phil Chat reports name people from a public Discord channel by handle | **Open, Jeremias's call**: they were already public on the site; a public repo also shows their edit history. Anonymize if anyone asks. |
 
 ## Rules that already hold (keep them)
 
@@ -20,9 +20,10 @@ The repo is private. jere.ing serves the site (Uplink), its archive, and the Lab
 ## Switches, when you're ready
 
 - **Lab:** live. `tools/lab_build.py` decides what's published under jere.ing/lab/ (demos, worlds, archive pages, docs). The Mirror's Edge runner site stays repo-only.. Add to its lists to publish more.
-- **Source links:** sealed. Set `REPO.open = true` in `template.html` once the repo is public; every Lab item then links to its folder.
-- **Launcher over-the-air page:** the phone pulls `https://jere.ing/launcher/app/index.html`. Publishing it means copying the current launcher page to that path in `_site/` (same file as `launcher/android/app/src/main/assets/www/index.html`). Until then the launcher just uses its bundled page.
-- **Repo public:** GitHub, Settings, General, Danger Zone, Change visibility. Only after items 1–3.
+- **Source links:** open. `REPO.open` in `template.html` (and the built `index.html`) is `true`; set it to `false` to seal them again.
+- **Launcher over-the-air page:** live. `tools/package_site.py` copies `launcher/android/app/src/main/assets/www/index.html` to `jere.ing/launcher/app/index.html` on every build, and installed launchers pick it up within 30 minutes. Only push a page there that matches the shell's bridge (see `launcher/android/README.md`).
+- **APK downloads:** each manual workflow run replaces a rolling release: `releases/download/jrl-launcher/jrl-launcher.apk` and `releases/download/switchboard/switchboard.apk`. The Lab's launcher and Switchboard cards link to them.
+- **Repo visibility:** GitHub, Settings, General, Danger Zone, Change visibility.
 
 ## Account safety
 
