@@ -2,11 +2,37 @@
   "phil-chat-field-report.html": {
     "title": "Asking Claude to be a master sociologist",
     "comment": "Trash, don't look at this",
-    "date": "2026-10-27"
+    "date": "2026-10-27",
+    "added": 1793150678
   },
   "scope.html": {
     "title": "Scope",
     "comment": "An oscilloscope for any audio file you drop in",
+    "date": "2026-11-02",
+    "added": 1793669676
+  },
+  "metaphors-we-live-by-connectome.html": {
+    "added": 1793315988,
+    "date": "2026-10-29"
+  },
+  "phil-chat-connectome.html": {
+    "added": 1793150348,
+    "date": "2026-10-27"
+  },
+  "phil-chat-weak-ties-oct21-27.html": {
+    "added": 1793149942,
+    "date": "2026-10-27"
+  },
+  "philosophical-investigations-connectome.html": {
+    "added": 1793315987,
+    "date": "2026-10-29"
+  },
+  "rio.html": {
+    "added": 1793664963,
     "date": "2026-11-02"
+  },
+  "timaeus-connectome.html": {
+    "added": 1793303122,
+    "date": "2026-10-29"
   }
 }

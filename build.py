@@ -210,7 +210,9 @@ def main():
         if side in sidecars:
             comment = side.read_text(encoding="utf-8").strip() or comment
         o = overrides.get(f.name, {})
-        ts = first_added(f)
+        # "added" in _meta.json pins the order; hosts that check out only recent history
+        # (Cloudflare Pages) would otherwise date every report to the latest commit.
+        ts = int(o["added"]) if "added" in o else first_added(f)
         items.append({
             "ts": ts,
             "href": f"reports/{f.name}",
