@@ -26,7 +26,7 @@
     {
       "id": "work", "label": "Work",
       "items": [
-        {"title": "Résumé", "sub": "The full version, on one page", "resume": true}
+        {"title": "Résumé", "resume": true}
       ],
       "groups": [
         {"title": "Now", "items": [
