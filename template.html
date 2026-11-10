@@ -139,13 +139,14 @@ html{-webkit-tap-highlight-color:transparent}
 .q:focus-visible,.it:focus-visible,.foot button:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
 .dd{display:grid;grid-template-rows:1fr}
 .js .dd{grid-template-rows:0fr;transition:grid-template-rows .75s var(--ease)}
-.js .dd.open{grid-template-rows:1fr;transition:grid-template-rows 1.2s cubic-bezier(.45,.05,.25,1)}
+/* each panel opens at its own pace: duration grows with its height (set in JS), and every item mists in as the opening reaches it */
+.js .dd.open{grid-template-rows:1fr;transition:grid-template-rows var(--open,1.2s) cubic-bezier(.4,.05,.3,1)}
 .dd>div{overflow:hidden;min-height:0}
 .ddc{padding:6px 0 22px 24px}
 /* panel contents condense out of the air one by one, like the line under the name; the opening edge is feathered, never a hard cut */
 .js .ddc>*{opacity:0;transform:translateY(6px);filter:blur(5px);transition:opacity .4s ease,transform .55s ease,filter .4s ease}
 .dd>div{-webkit-mask-image:linear-gradient(#000 calc(100% - 22px),transparent);mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
-.js .dd.open>div>.ddc>*{opacity:1;transform:none;filter:none;transition:opacity .6s ease,transform .8s var(--ease),filter .65s ease;transition-delay:calc(.15s + var(--i,0)*.045s)}
+.js .dd.open>div>.ddc>*{opacity:1;transform:none;filter:none;transition:opacity .6s ease,transform .8s var(--ease),filter .65s ease;transition-delay:var(--at,calc(.15s + var(--i,0)*.045s))}
 .grp{margin:18px 0 2px !important;font-size:12px !important;letter-spacing:.06em;text-transform:uppercase;color:var(--mute) !important}
 .ddc>.grp:first-child{margin-top:0 !important}
 .ddc p{margin:0 0 14px;font-size:15px;line-height:1.7;color:var(--ink-2)}
@@ -432,6 +433,17 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
   setInterval(applySky, 5 * 60 * 1000);
 
   document.querySelectorAll('.ddc').forEach(function (c) { Array.prototype.forEach.call(c.children, function (el, i) { el.style.setProperty('--i', Math.min(i, 14)); }); });
+  // the opening travels at about the same speed in every panel: short ones open quickly, long ones take longer,
+  // and each item starts to condense when the opening edge reaches it
+  function pace(panel) {
+    var c = panel.querySelector('.ddc'), h = c.scrollHeight, top = c.getBoundingClientRect().top;
+    var dur = Math.min(2.4, Math.max(.6, h / 520));
+    panel.style.setProperty('--open', dur.toFixed(2) + 's');
+    Array.prototype.forEach.call(c.children, function (el) {
+      var y = (el.getBoundingClientRect().top - top) / h;
+      el.style.setProperty('--at', (.12 + y * dur * .8).toFixed(3) + 's');
+    });
+  }
   var buttons = Array.prototype.slice.call(document.querySelectorAll('.q'));
   buttons.forEach(function (b) {
     var panel = document.getElementById(b.getAttribute('aria-controls'));
@@ -440,6 +452,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     b.addEventListener('click', function () {
       var open = b.getAttribute('aria-expanded') !== 'true';
       b.setAttribute('aria-expanded', String(open));
+      if (open) pace(panel);
       panel.classList.toggle('open', open);
       panel.inert = !open;
     });
