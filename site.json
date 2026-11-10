@@ -73,17 +73,11 @@
           {"title": "Republic · Timaeus · Critias", "sub": "Plato", "href": "/reports/timaeus-connectome.html"},
           {"title": "Philosophical Investigations", "sub": "Wittgenstein", "href": "/reports/philosophical-investigations-connectome.html"},
           {"title": "Metaphors We Live By", "sub": "Lakoff and Johnson", "href": "/reports/metaphors-we-live-by-connectome.html"},
-          {"title": "Phil Chat", "sub": "A philosophy group chat", "href": "/reports/phil-chat-connectome.html"},
           {"title": "RIO", "sub": "A tribute to Duran Duran", "href": "/reports/rio.html"}
         ]},
         {"title": "Worlds", "note": "each one leaves this page", "items": [
           {"title": "Uplink", "sub": "After Marathon · a runner’s shell in orbit", "href": "/uplink/", "dot": "background:#c2ff16;box-shadow:0 0 0 2px #0a0a0b"},
-          {"title": "Crystarium", "sub": "After Final Fantasy XIII · a game menu with nothing to sell", "href": "/crystarium/", "dot": "background:radial-gradient(circle at 35% 30%,#ffffff,#9fdde6);box-shadow:0 0 0 2px #5e93a6"},
           {"title": "Vesta 9", "sub": "After Mirror’s Edge · a polite website that watches you", "href": "/vesta9/", "dot": "background:#d0021f"}
-        ]},
-        {"title": "Shelved", "note": "paused, kept for the record", "items": [
-          {"title": "JRL Launcher", "sub": "An Android home screen from another timeline", "href": "https://github.com/jere-mee-as/jrl-launcher"},
-          {"title": "Veta", "sub": "A second brain that lives in plain text", "href": "https://github.com/jere-mee-as/veta"}
         ]}
       ]
     },
