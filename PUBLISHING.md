@@ -20,7 +20,7 @@ This repo holds the site and the Lab, and it is public (Nov 9, 2026). The apps m
 ## Switches, when you're ready
 
 - **Lab:** live. `tools/lab_build.py` decides what's published under jere.ing/lab/ (demos, worlds, archive pages, docs). The Mirror's Edge runner site stays repo-only.. Add to its lists to publish more.
-- **Source links:** the launcher, Switchboard and Veta chips link to their own repos. Everything else (Kept, Scope) links into this repo while `REPO.open` is `true` in `template.html` and the built `index.html`; set it to `false` to seal them.
+- **Source links:** the launcher, Switchboard and Veta chips link to their own repos. Everything else (Scope) links into this repo while `REPO.open` is `true` in `template.html` and the built `index.html`; set it to `false` to seal them.
 - **Launcher over-the-air page:** installed launchers pull `android/app/src/main/assets/www/index.html` from the jrl-launcher repo's main branch (raw.githubusercontent.com), so it needs that repo to stay public.
 - **Downloads:** GitHub Releases in each app repo, built by its manual Release workflow. The Lab's Install chips use `releases/latest/download/…`.
 - **Repo visibility:** GitHub, Settings, General, Danger Zone, Change visibility. App repos must be public for their downloads to work.

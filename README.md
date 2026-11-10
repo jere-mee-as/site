@@ -7,7 +7,6 @@ The live site and its Lab. The root is the site at https://jere.ing: a numbered 
 | `/` (template.html, build.py, reports/) | The site: Uplink, the runner's shell between runs | yes, jere.ing |
 | `lab/` | Other worlds for the site: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | in the Lab, jere.ing/#lab |
 | `lab/apps/` | Demo snapshots of the apps that have their own repos (see below) | demos in the Lab |
-| `kept/` | Kept, a local AI file manager for Windows (concept docs + an interactive mock) | demo in the Lab |
 | `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, the v3.x previews, and earlier Scopes | built into reports/_archive/, and downloadable from the Lab |
 | `docs/` | Site plans and decision records | no |
 | `legacy/` | The old GitHub Pages workflow, parked so it can't run | no |

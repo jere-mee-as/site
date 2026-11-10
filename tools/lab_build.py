@@ -8,7 +8,6 @@ Called by tools/package_site.py. Everything here is generated from files in the 
 
 The apps live in their own repos (jere-mee-as/jrl-launcher, /switchboard, /veta); their demos come from the
 snapshots in lab/apps/ (see lab/apps/README.md).
-  _site/lab/demo/kept.html          Kept, an interactive mock with made-up files (kept/demo/)
   _site/lab/worlds/...              The site directions: FFXIII, Mirror's Edge, Uplink, Marathon
   _site/lab/archive/...             Older versions, each its own page
   _site/lab/docs/...                Concept docs
@@ -66,7 +65,6 @@ WORLDS = {
 DEMOS = {
     "launcher.html": "lab/apps/launcher/v4.0.html",
     "switchboard.html": "lab/apps/switchboard.html",
-    "kept.html": "kept/demo/index.html",
 }
 
 # The Archive shelf: every older version as its own page (opened in a new tab, never downloaded).
@@ -77,7 +75,7 @@ ARCHIVE.update({f"launcher/{n}.html": f"lab/apps/launcher/{s}.html" for n, s in
 ARCHIVE.update({"crystarium/v2.html": "lab/ffxiii/preview-v2.html", "vesta9/v1.html": "lab/mirrors-edge/vesta9-v1.html",
                 "scope/simple.html": "archive/scope/scope-simple.html", "scope/marathon.html": "archive/scope/scope-marathon.html"})
 
-DOCS = {"kept/concept.html": "kept/docs/kept-concept.html", "kept/ui-concept.html": "kept/docs/kept-ui-concept.html"}
+DOCS = {}
 
 
 def build(site):
