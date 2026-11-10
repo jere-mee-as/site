@@ -1278,7 +1278,7 @@ JRL.every(t => {
 
 /* ============ LAB ============ */
 /* Apps with their own public repo (x.repo) always link there. Everything else lives in the site repo: its chip is sealed until REPO.open is true. */
-const REPO = { open: false, url: 'https://github.com/jere-mee-as/site' };
+const REPO = { open: true, url: 'https://github.com/jere-mee-as/site' };
 const LABBASE = location.protocol === 'file:' ? 'https://jere.ing/' : '';
 const LAB = [
  ...CORES.map((k, ci) => k.ty === 'TOOL' ? null : { id: k.f.replace(/\.[^.]+$/, ''), sh: 'r', core: ci, c: k.c, n: k.t, ty: k.ty, cat: k.ty === 'BOOK CONNECTOME' ? 'Books' : /^phil chat/i.test(k.src) || /CONNECTOME|FIELD REPORT|WEAK TIES/.test(k.ty) ? 'Phil Chat' : k.ty === 'TRIBUTE' ? 'Tributes' : 'Reports', src: k.src, d: k.n, kb: k.kb, date: k.d, q: k.q, col: k.col, demo: 'reports/' + k.f }).filter(Boolean),
