@@ -87,10 +87,11 @@ button{font:inherit;color:inherit}
 .l2{transform:translate3d(calc(var(--px,0)*6px),calc(var(--py,0)*3px),0)}
 .l3{transform:translate3d(calc(var(--px,0)*10px),calc(var(--py,0)*5px),0)}
 .cl{position:absolute;display:block;will-change:transform;background:
-  radial-gradient(28% 40% at 30% 58%,var(--cloud),var(--cloud-0)),
-  radial-gradient(26% 44% at 52% 48%,var(--cloud),var(--cloud-0)),
-  radial-gradient(24% 36% at 74% 60%,var(--cloud),var(--cloud-0)),
-  radial-gradient(48% 22% at 50% 76%,var(--cloud),var(--cloud-0))}
+  /* eased falloff: alpha tapers off toward each rim, so no edge shows where an ellipse ends */
+  radial-gradient(28% 40% at 30% 58%,var(--cloud),color-mix(in srgb,var(--cloud) 62%,transparent) 30%,color-mix(in srgb,var(--cloud) 26%,transparent) 58%,color-mix(in srgb,var(--cloud) 7%,transparent) 82%,var(--cloud-0)),
+  radial-gradient(26% 44% at 52% 48%,var(--cloud),color-mix(in srgb,var(--cloud) 62%,transparent) 30%,color-mix(in srgb,var(--cloud) 26%,transparent) 58%,color-mix(in srgb,var(--cloud) 7%,transparent) 82%,var(--cloud-0)),
+  radial-gradient(24% 36% at 74% 60%,var(--cloud),color-mix(in srgb,var(--cloud) 62%,transparent) 30%,color-mix(in srgb,var(--cloud) 26%,transparent) 58%,color-mix(in srgb,var(--cloud) 7%,transparent) 82%,var(--cloud-0)),
+  radial-gradient(40% 21% at 50% 76%,var(--cloud),color-mix(in srgb,var(--cloud) 62%,transparent) 30%,color-mix(in srgb,var(--cloud) 26%,transparent) 58%,color-mix(in srgb,var(--cloud) 7%,transparent) 82%,var(--cloud-0))}
 .a{width:58vw;height:24vh;left:-10vw;top:8vh;opacity:.7;animation:drift 170s ease-in-out infinite alternate}
 .b{width:44vw;height:18vh;right:-6vw;top:22vh;opacity:.55;animation:drift 150s ease-in-out -60s infinite alternate-reverse}
 .c{width:66vw;height:26vh;right:-18vw;top:44vh;opacity:.75;animation:drift 125s ease-in-out -30s infinite alternate}
@@ -100,14 +101,14 @@ button{font:inherit;color:inherit}
 @keyframes drift{from{transform:translateX(-5vw)}to{transform:translateX(9vw)}}
 
 /* the column */
-.stack{position:relative;z-index:1;max-width:360px;margin-inline:auto;padding-inline:12px;padding-block:clamp(120px,26vh,260px) 56px}
+.stack{position:relative;z-index:1;max-width:420px;margin-inline:auto;padding-inline:12px;padding-block:clamp(120px,26vh,260px) 56px}
 .float{animation:bob 14s ease-in-out 4s infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px)}}
 .pfp{width:80px;height:80px;margin:0;border-radius:50%;overflow:hidden;background:linear-gradient(160deg,var(--pfp-a),var(--pfp-b));box-shadow:0 0 0 1px var(--line),0 14px 34px -16px var(--shade)}
 .pfp img{display:block;width:100%;height:100%;object-fit:cover}
 .hi{font-weight:450;font-size:20px;line-height:1.3;letter-spacing:-.012em;margin:28px 0 6px;text-wrap:balance}
 .where{font-size:14px;line-height:1.55;color:var(--mute);margin:0 0 40px}
-.rows{display:flex;flex-direction:column;gap:6px;margin-left:-24px}
+.rows{display:flex;flex-direction:column;gap:6px}
 /* the little degree mark after the name: hover (or tap) for how to say it */
 .hi{position:relative;z-index:4}
 .say{display:inline-block;background:none;border:0;padding:8px 9px;margin:-8px -9px -8px -5px;font:inherit;font-size:17px;line-height:1;color:var(--mute);cursor:default;vertical-align:.32em;border-radius:50%;transition:color .4s ease}
@@ -127,8 +128,8 @@ button{font:inherit;color:inherit}
 .hi:has(.say:focus-visible)+.where .w1{opacity:0}
 .hi:has(.say:focus-visible)+.where .w2{opacity:1;transform:none;filter:none}
 @media (prefers-reduced-motion:reduce){.where>span,.where .w2{transform:none!important;filter:none!important}}
-/* phones: no room for the arrows to hang outside, so the whole column moves in; arrows sit 20px in, text 44px */
-@media (max-width:440px){.stack,.foot{padding-inline:28px}}
+/* the row arrows sit on the same left edge as the photo and name; phones just get a little more side room */
+@media (max-width:460px){.stack,.foot{padding-inline:20px}}
 /* no grey tap box on touch; the arrow turning is the feedback */
 html{-webkit-tap-highlight-color:transparent}
 .q{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;background:none;border:0;text-align:left;font-size:16px;letter-spacing:-.005em;cursor:pointer;border-radius:8px}
@@ -163,7 +164,7 @@ a.it:hover .ar{transform:translate(2px,-2px)}
 .copy:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 .dot{width:8px;height:8px;border-radius:50%;flex:none}
 .foot span#where{flex:1}
-.foot{position:relative;z-index:1;max-width:360px;margin-inline:auto;padding-inline:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:48px 44px;font-size:12px;color:var(--mute)}
+.foot{position:relative;z-index:1;max-width:420px;margin-inline:auto;padding-inline:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:48px 44px;font-size:12px;color:var(--mute)}
 .foot div{display:flex;gap:2px}
 .foot button{background:none;border:0;min-height:44px;padding:0 8px;color:var(--mute);cursor:pointer;border-radius:6px;text-transform:capitalize}
 .foot button:hover{color:var(--ink)}
@@ -417,7 +418,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     <p class="sec rs">Leadership</p>
     <div class="job rs"><ul><li>President, GMU Philosophy Club: ran weekly programming and grew member engagement.</li><li>Advisor, MidTown Educational Foundation: mentored Chicago middle schoolers through tutoring and athletics coaching.</li></ul></div>
 
-    <p class="sheet-end rs">Hello again from the sky. <a href="#" class="back" data-close-resume>Back to the page</a></p>
+    <p class="sheet-end rs"><a href="#" class="back" data-close-resume>Back to the page</a></p>
   </article>
 </div>
 
@@ -429,6 +430,8 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     <button type="button" data-sky="dawn">Dawn</button><button type="button" data-sky="day">Day</button><button type="button" data-sky="dusk">Dusk</button><button type="button" data-sky="night">Night</button>
     <p class="wl">Weather</p>
     <button type="button" data-w="clear">Clear</button><button type="button" data-w="rain">Rain</button><button type="button" data-w="storm">Storm</button>
+    <p class="wl">Sound</p>
+    <button type="button" id="snd-amb" aria-pressed="false">Ambience</button><button type="button" id="snd-ui" aria-pressed="true">Sounds</button>
   </div>
   <button type="button" id="wx-btn" aria-expanded="false" aria-controls="wx-pop" aria-label="Change the sky and weather"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5h9.5a4 4 0 0 0 .4-7.98A5.5 5.5 0 0 0 6.4 11.3 3.6 3.6 0 0 0 7 18.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></button>
 </div>
@@ -464,13 +467,13 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     if (w !== 'clear') root.setAttribute('data-weather', w); else root.removeAttribute('data-weather');
     where.textContent = greet(hourInVirginia());
     rain.set(w === 'clear' ? '' : w);
-    Array.prototype.forEach.call(document.querySelectorAll('.ctrl button'), function (btn) {
+    Array.prototype.forEach.call(document.querySelectorAll('.ctrl button[data-sky], .ctrl button[data-w]'), function (btn) {
       var on = btn.getAttribute('data-sky') === sky || btn.getAttribute('data-w') === w;
       btn.setAttribute('aria-pressed', String(on));
     });
   }
   document.querySelector('.ctrl').addEventListener('click', function (e) {
-    var btn = e.target.closest('button'); if (!btn) return;
+    var btn = e.target.closest('button'); if (!btn || !(btn.hasAttribute('data-sky') || btn.hasAttribute('data-w'))) return;
     if (btn.hasAttribute('data-sky')) { state.sky = btn.getAttribute('data-sky'); save('jere.sky', state.sky); }
     if (btn.hasAttribute('data-w')) { state.weather = btn.getAttribute('data-w'); save('jere.weather', state.weather); }
     if (location.hash) history.replaceState(null, '', location.pathname + location.search);
@@ -643,5 +646,6 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
   }
 })();
 </script>
+<script src="/assets/sound.js" defer></script>
 </body>
 </html>

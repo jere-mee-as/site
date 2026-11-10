@@ -122,7 +122,8 @@ def resume(r):
         if s.get("bullets"):
             k.append('<div class="job rs"><ul>' + "".join(f"<li>{esc(b)}</li>" for b in s["bullets"]) + "</ul></div>")
         k[-1] += "\n"
-    k.append(f'<p class="sheet-end rs">{esc(r["end"])} <a href="#" class="back" data-close-resume>Back to the page</a></p>')
+    end = f'{esc(r["end"])} ' if r.get("end") else ""
+    k.append(f'<p class="sheet-end rs">{end}<a href="#" class="back" data-close-resume>Back to the page</a></p>')
     return ('<div class="sheetwrap" id="resume" role="dialog" aria-modal="true" aria-labelledby="r-name">\n'
             '  <div class="veil" data-close-resume></div>\n'
             '  <article class="sheet">\n' + "\n".join("    " + x for x in k) + "\n  </article>\n</div>")
