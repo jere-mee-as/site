@@ -87,10 +87,10 @@ button{font:inherit;color:inherit}
 .l2{transform:translate3d(calc(var(--px,0)*6px),calc(var(--py,0)*3px),0)}
 .l3{transform:translate3d(calc(var(--px,0)*10px),calc(var(--py,0)*5px),0)}
 .cl{position:absolute;display:block;will-change:transform;background:
-  radial-gradient(34% 46% at 28% 62%,var(--cloud),var(--cloud-0)),
-  radial-gradient(30% 54% at 52% 44%,var(--cloud),var(--cloud-0)),
-  radial-gradient(38% 40% at 77% 63%,var(--cloud),var(--cloud-0)),
-  radial-gradient(60% 26% at 50% 78%,var(--cloud),var(--cloud-0))}
+  radial-gradient(28% 40% at 30% 58%,var(--cloud),var(--cloud-0)),
+  radial-gradient(26% 44% at 52% 48%,var(--cloud),var(--cloud-0)),
+  radial-gradient(24% 36% at 74% 60%,var(--cloud),var(--cloud-0)),
+  radial-gradient(48% 22% at 50% 76%,var(--cloud),var(--cloud-0))}
 .a{width:58vw;height:24vh;left:-10vw;top:8vh;opacity:.7;animation:drift 170s ease-in-out infinite alternate}
 .b{width:44vw;height:18vh;right:-6vw;top:22vh;opacity:.55;animation:drift 150s ease-in-out -60s infinite alternate-reverse}
 .c{width:66vw;height:26vh;right:-18vw;top:44vh;opacity:.75;animation:drift 125s ease-in-out -30s infinite alternate}
@@ -526,8 +526,16 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
   addEventListener('keydown', function (e) { if (e.key === 'Escape' && wx.classList.contains('open')) { wxSet(false); wxBtn.focus(); } });
 
 
-  function wxShow() { var on = scrollY > 80; if (!on && wx.classList.contains('open')) wxSet(false); wx.classList.toggle('show', on); }
-  addEventListener('scroll', wxShow, { passive: true }); wxShow();
+  // the weather control only surfaces once you reach the very bottom; it leaves again once you scroll back up
+  function wxShow() {
+    var gap = document.documentElement.scrollHeight - (scrollY + innerHeight), was = wx.classList.contains('show');
+    var on = was ? gap < 48 : gap < 3;
+    if (!on && wx.classList.contains('open')) wxSet(false);
+    if (on !== was) wx.classList.toggle('show', on);
+  }
+  addEventListener('scroll', wxShow, { passive: true }); addEventListener('resize', wxShow);
+  if (window.ResizeObserver) new ResizeObserver(wxShow).observe(document.body);
+  wxShow();
 
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduced && matchMedia('(pointer: fine)').matches) {
