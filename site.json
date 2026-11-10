@@ -47,19 +47,18 @@
     },
     {
       "id": "writing", "label": "Writing",
+      "items": [
+        {"title": "Performance", "sub": "Who we don’t know we are · 95 min", "href": "https://lesymboliste.substack.com/p/performance"},
+        {"title": "I Have No Idea Why I Do Anything (And Neither Do You)", "sub": "Understanding your flat mind · 21 min", "href": "https://lesymboliste.substack.com/p/i-have-no-idea-why-i-do-anything"},
+        {"title": "What We’re Really Doing When We Argue About Right and Wrong", "sub": "Five cynical essays on morality · 10 min", "href": "https://lesymboliste.substack.com/p/five-cynical-essays-on-morality"},
+        {"title": "Reality Is Very Annoying", "sub": "Why we see meaning where there is none · 17 min", "href": "https://lesymboliste.substack.com/p/reality-is-very-annoying"},
+        {"title": "Derrida, the Conservative?", "sub": "On (mis)reading the spooky philosopher · 19 min", "href": "https://lesymboliste.substack.com/p/derrida-the-conservative"},
+        {"title": "Art & Imagination", "sub": "A treatise on the path to our world · 11 min", "href": "https://lesymboliste.substack.com/p/art-and-imagination"}
+      ],
       "groups": [
-        {"title": "Aesthetics", "items": [
-          {"title": "Art & Imagination", "sub": "A treatise on the path to our world · Aug 2023", "href": "https://lesymboliste.substack.com/p/art-and-imagination"},
-          {"title": "Approaching an Aestheticist Manifesto", "sub": "Imagination as the source of ideas, societies and art · Dec 2023", "href": "https://lesymboliste.substack.com/p/approaching-an-aestheticist-manifesto"}
-        ]},
-        {"title": "Power and society", "items": [
-          {"title": "Power & Performance", "sub": "On performativity and power · 2026", "href": "https://lesymboliste.substack.com/"}
-        ]},
-        {"title": "Human nature", "items": [
-          {"title": "Intensely Normative Species", "sub": "Why humans are such a rule-making species · currently working on it"}
-        ]},
-        {"title": "All of it", "items": [
-          {"title": "Jere Thoughts", "sub": "The full archive on Substack", "href": "https://lesymboliste.substack.com/archive"}
+        {"title": "More", "items": [
+          {"title": "Intensely Normative Species", "sub": "Why humans are such a rule-making species · in progress"},
+          {"title": "Jere Thoughts", "sub": "Everything else, on Substack", "href": "https://lesymboliste.substack.com/archive"}
         ]}
       ]
     },
