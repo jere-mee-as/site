@@ -108,6 +108,15 @@ button{font:inherit;color:inherit}
 .hi{font-weight:450;font-size:20px;line-height:1.3;letter-spacing:-.012em;margin:28px 0 6px;text-wrap:balance}
 .where{font-size:14px;line-height:1.55;color:var(--mute);margin:0 0 40px}
 .rows{display:flex;flex-direction:column;gap:6px;margin-left:-24px}
+/* the little degree mark after the name: hover (or tap) for how to say it */
+.hi{position:relative}
+.say{display:inline-block;background:none;border:0;padding:8px 9px;margin:-8px -9px -8px -5px;font:inherit;font-size:17px;line-height:1;color:var(--mute);cursor:help;vertical-align:.32em;border-radius:50%;transition:color .4s ease}
+.say:hover,.say[aria-expanded="true"]{color:var(--ink)}
+.say:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.tip{position:absolute;left:0;top:calc(100% + 8px);z-index:5;display:flex;flex-direction:column;gap:2px;padding:9px 13px 10px;border-radius:12px;background:var(--paper);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line),0 18px 40px -24px var(--shade);font-size:13px;font-weight:400;letter-spacing:0;line-height:1.45;color:var(--mute);white-space:nowrap;opacity:0;transform:translateY(-3px);filter:blur(4px);pointer-events:none;transition:opacity .45s ease,transform .6s var(--ease),filter .45s ease}
+.tip b{font-weight:500;color:var(--ink)}
+.say:hover+.tip,.say:focus-visible+.tip,.say[aria-expanded="true"]+.tip{opacity:1;transform:none;filter:none}
+@media (prefers-reduced-motion:reduce){.tip{transition:none}}
 /* phones: no room for the arrows to hang outside, so the whole column moves in; arrows sit 20px in, text 44px */
 @media (max-width:440px){.stack,.foot{padding-inline:28px}}
 /* no grey tap box on touch; the arrow turning is the feedback */
@@ -289,7 +298,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
 <main class="stack">
   <div class="float">
     <figure class="pfp m" style="--d:.2s"><picture><source type="image/webp" srcset="/assets/img/jeremias-portrait-160.webp 160w, /assets/img/jeremias-portrait-320.webp 320w" sizes="80px"><img src="/assets/img/jeremias-portrait-160.jpg" srcset="/assets/img/jeremias-portrait-160.jpg 160w, /assets/img/jeremias-portrait-320.jpg 320w" sizes="80px" alt="Jeremias, smiling, in round glasses and a mustard sweater" width="80" height="80"></picture></figure>
-    <h1 class="hi m" style="--d:.45s">Hello, I’m Jeremias</h1>
+    <h1 class="hi m" style="--d:.45s">Hello, I’m Jeremias<button type="button" class="say" id="say" aria-expanded="false" aria-describedby="say-tip" aria-label="How to say it">°</button><span class="tip" id="say-tip" role="tooltip"><span>pronounced <b>heh-reh-MEE-as</b></span><span>born in Córdoba, Argentina</span></span></h1>
     <p class="where m fast" style="--d:1.75s">Operations in architecture and construction.<br>Writer, artist and builder.</p>
     <p class="ln m fast" style="--d:1.95s"><a href="https://www.linkedin.com/in/jeremias-sur-5a6b321b8/">LinkedIn</a><a href="https://lesymboliste.substack.com/">Substack</a><a href="https://github.com/jere-mee-as">GitHub</a><a href="mailto:jere.mee.as@pm.me" id="copy" data-addr="jere.mee.as@pm.me">Email</a></p>
     <p class="mailnote" id="mailnote" aria-live="polite"></p>
@@ -516,6 +525,13 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     history.replaceState(null, '', location.pathname + location.search);
     var pb = document.getElementById('b-projects'); if (pb) { pb.click(); pb.scrollIntoView({ block: 'start' }); }
   }
+
+  // the degree mark: tap toggles on touch, Esc or a tap elsewhere closes
+  var say = document.getElementById('say');
+  function saySet(o) { say.setAttribute('aria-expanded', String(o)); }
+  say.addEventListener('click', function (e) { e.stopPropagation(); saySet(say.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('click', function () { saySet(false); });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') saySet(false); });
 
   var copyBtn = document.getElementById('copy'), note = document.getElementById('mailnote');
   copyBtn.addEventListener('click', function (e) {

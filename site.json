@@ -10,7 +10,9 @@
 
   "intro": {
     "hello": "Hello, I’m Jeremias",
-    "role": ["Operations in architecture and construction.", "Writer, artist and builder."]
+    "role": ["Operations in architecture and construction.", "Writer, artist and builder."],
+    "pronounced": "heh-reh-MEE-as",
+    "born": "Córdoba, Argentina"
   },
 
   "links": [

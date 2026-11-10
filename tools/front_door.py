@@ -141,6 +141,8 @@ def render(reports_oldest_first):
         "og_description": esc(" ".join(intro["role"])),
         "portrait_alt": esc(s["portrait_alt"]),
         "hello": esc(intro["hello"]),
+        "pronounced": esc(intro["pronounced"]),
+        "born": esc(intro["born"]),
         "role": "<br>".join(esc(x) for x in intro["role"]),
         "links": links(data["links"]),
         "rows": "\n".join(row(r, i) for i, r in enumerate(rows)),
