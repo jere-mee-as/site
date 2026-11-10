@@ -142,8 +142,10 @@ html{-webkit-tap-highlight-color:transparent}
 .js .dd.open{grid-template-rows:1fr;transition:grid-template-rows 1.2s cubic-bezier(.45,.05,.25,1)}
 .dd>div{overflow:hidden;min-height:0}
 .ddc{padding:6px 0 22px 24px}
-.js .ddc>*{opacity:0;transform:translateY(-2px);filter:blur(2px);transition:opacity .35s ease,transform .4s ease,filter .4s ease}
-.js .dd.open>div>.ddc>*{opacity:1;transform:none;filter:none;transition:opacity 1s ease,transform 1s var(--ease),filter 1s ease;transition-delay:calc(.18s + var(--i,0)*.045s)}
+/* panel contents condense out of the air one by one, like the line under the name; the opening edge is feathered, never a hard cut */
+.js .ddc>*{opacity:0;transform:translateY(6px);filter:blur(5px);transition:opacity .4s ease,transform .55s ease,filter .4s ease}
+.dd>div{-webkit-mask-image:linear-gradient(#000 calc(100% - 22px),transparent);mask-image:linear-gradient(#000 calc(100% - 22px),transparent)}
+.js .dd.open>div>.ddc>*{opacity:1;transform:none;filter:none;transition:opacity .85s ease,transform 1.1s var(--ease),filter .9s ease;transition-delay:calc(.24s + var(--i,0)*.07s)}
 .grp{margin:18px 0 2px !important;font-size:12px !important;letter-spacing:.06em;text-transform:uppercase;color:var(--mute) !important}
 .ddc>.grp:first-child{margin-top:0 !important}
 .ddc p{margin:0 0 14px;font-size:15px;line-height:1.7;color:var(--ink-2)}
