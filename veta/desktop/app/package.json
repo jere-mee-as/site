@@ -1,9 +1,0 @@
-{
-  "name": "jeres-place",
-  "productName": "Jere's Place",
-  "version": "2.1.0",
-  "description": "Jere's Place: an FFXIII-styled Capacities + Tana second brain over a folder of Markdown.",
-  "main": "main.js",
-  "author": "Jeremias",
-  "license": "UNLICENSED"
-}

@@ -4,7 +4,10 @@ Called by tools/package_site.py. Everything here is generated from files in the 
 
   _site/lab/demo/launcher.html      JRL Launcher v4.0 preview (mock phone bridge)
   _site/lab/demo/switchboard.html   Switchboard v0.2 (example data)
-  _site/lab/demo/veta.html          Veta, loaded with the made-up vault in veta/demo-vault/
+  _site/lab/demo/veta.html          Veta, loaded with the made-up vault
+
+The apps live in their own repos (jere-mee-as/jrl-launcher, /switchboard, /veta); their demos come from the
+snapshots in lab/apps/ (see lab/apps/README.md).
   _site/lab/demo/kept.html          Kept, an interactive mock with made-up files (kept/demo/)
   _site/lab/worlds/...              The site directions: FFXIII, Mirror's Edge, Uplink, Marathon
   _site/lab/archive/...             Older versions, each its own page
@@ -12,7 +15,7 @@ Called by tools/package_site.py. Everything here is generated from files in the 
 
 Nothing in here talks to the network.
 """
-import json, re, shutil, subprocess, sys
+import json, re, shutil, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -24,10 +27,9 @@ def _copy(src, dst):
 
 
 def veta_demo(out):
-    """Assemble Veta from veta/src and preload it with the sample vault (kept in the browser)."""
-    subprocess.run([sys.executable, "assemble.py"], cwd=ROOT / "veta", check=True, capture_output=True)
-    page = (ROOT / "veta" / "dist" / "Veta.html").read_text(encoding="utf-8")
-    vault = ROOT / "veta" / "demo-vault"
+    """Veta (snapshot of the assembled page from jere-mee-as/veta), preloaded with the sample vault (kept in the browser)."""
+    page = (ROOT / "lab" / "apps" / "veta" / "Veta.html").read_text(encoding="utf-8")
+    vault = ROOT / "lab" / "apps" / "veta" / "demo-vault"
     files = [{"path": p.relative_to(vault).as_posix(), "text": p.read_text(encoding="utf-8")}
              for p in sorted(vault.rglob("*.md"))]
     # Dates in the sample vault are relative ({D0} = today, {D3} = three days ago, {D+12} = in 12 days),
@@ -62,15 +64,15 @@ WORLDS = {
 }
 
 DEMOS = {
-    "launcher.html": "launcher/previews/v4.0.html",
-    "switchboard.html": "switchboard/index.html",
+    "launcher.html": "lab/apps/launcher/v4.0.html",
+    "switchboard.html": "lab/apps/switchboard.html",
     "kept.html": "kept/demo/index.html",
 }
 
 # The Archive shelf: every older version as its own page (opened in a new tab, never downloaded).
 ARCHIVE = {f"terminal/{v}.html": f"archive/2026-11-marathon-v3-previews/v{k}.html" for v, k in
            [("v3.0", "3"), ("v3.1", "3.1"), ("v3.2", "3.2"), ("v3.3", "3.3"), ("v3.4", "3.4"), ("v3.5", "3.5")]}
-ARCHIVE.update({f"launcher/{n}.html": f"launcher/previews/{s}.html" for n, s in
+ARCHIVE.update({f"launcher/{n}.html": f"lab/apps/launcher/{s}.html" for n, s in
                 [("v0", "v0-first-mockup"), ("v2.0", "v2.0"), ("v2.1", "v2.1"), ("v2.2", "v2.2"), ("v3.0", "v3.0")]})
 ARCHIVE.update({"crystarium/v2.html": "lab/ffxiii/preview-v2.html", "vesta9/v1.html": "lab/mirrors-edge/vesta9-v1.html",
                 "scope/simple.html": "archive/scope/scope-simple.html", "scope/marathon.html": "archive/scope/scope-marathon.html"})

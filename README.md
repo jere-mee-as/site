@@ -1,18 +1,24 @@
 # JERE.ING
 
-Everything I build, in one repo. The root is the live site at https://jere.ing: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal. The folders around it hold the other projects.
+The live site and its Lab. The root is the site at https://jere.ing: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal. The folders around it hold the other projects.
 
 | Folder | What | Live? |
 |---|---|---|
 | `/` (template.html, build.py, reports/) | The site: Uplink, the runner's shell between runs | yes, jere.ing |
 | `lab/` | Other worlds for the site: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | in the Lab, jere.ing/#lab |
-| `launcher/` | JRL Launcher, Android home screen: Kotlin shell, web UI, previews v0–v4 | demo in the Lab |
-| `switchboard/` | Switchboard, a chat-app-layout Android launcher concept | demo in the Lab |
+| `lab/apps/` | Demo snapshots of the apps that have their own repos (see below) | demos in the Lab |
 | `kept/` | Kept, a local AI file manager for Windows (concept docs + an interactive mock) | demo in the Lab |
-| `veta/` | Veta, a keyboard-first second brain (the app only, never anyone's notes; the demo uses a made-up vault) | demo in the Lab |
 | `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, the v3.x previews, and earlier Scopes | built into reports/_archive/, and downloadable from the Lab |
 | `docs/` | Site plans and decision records | no |
 | `legacy/` | The old GitHub Pages workflow, parked so it can't run | no |
+
+The apps live in their own repos, each with its downloads on its Releases page:
+
+| App | Repo | Download |
+|---|---|---|
+| JRL Launcher (Android home screen) | [jere-mee-as/jrl-launcher](https://github.com/jere-mee-as/jrl-launcher) | `jrl-launcher.apk` |
+| Switchboard (Android home screen, chat-app layout) | [jere-mee-as/switchboard](https://github.com/jere-mee-as/switchboard) | `switchboard.apk` |
+| Veta (second brain, Windows) | [jere-mee-as/veta](https://github.com/jere-mee-as/veta) | `Veta-win-x64.zip` |
 
 Read `PUBLISHING.md` before making anything else public. `LICENSE`: all rights reserved; look, don't reuse.
 

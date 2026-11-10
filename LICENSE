@@ -7,8 +7,9 @@ private use. You may not copy, modify, redistribute, or use any part of it in
 your own work, commercial or not, without written permission.
 
 Exceptions:
-- Fonts loaded from Google Fonts, and the fonts bundled in launcher/android,
-  are under the SIL Open Font License; their own licences apply.
+- Fonts loaded from Google Fonts are under the SIL Open Font License; their
+  own licences apply. The apps (JRL Launcher, Switchboard, Veta) have their own
+  repos and licence files.
 - The pages in lab/ are original work inspired by the interfaces of Marathon,
   Final Fantasy XIII and Mirror's Edge. They contain no assets from those games,
   and those names belong to their owners.
