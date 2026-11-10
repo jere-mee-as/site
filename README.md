@@ -1,11 +1,14 @@
 # JERE.ING
 
-The live site and its Lab. The root is the site at https://jere.ing: a numbered list of reports from my reading group, dressed up as a sci-fi operator terminal. The folders around it hold the other projects.
+The live site. The root, https://jere.ing, is the front door: a quiet page in a time-of-day sky that says who I am and leads to everything else (work, writing, projects, social, the résumé). The worlds live one level down.
 
 | Folder | What | Live? |
 |---|---|---|
-| `/` (template.html, build.py, reports/) | The site: Uplink, the runner's shell between runs | yes, jere.ing |
-| `lab/` | Other worlds for the site: Marathon type/colour, Uplink, Final Fantasy XIII, Mirror's Edge | in the Lab, jere.ing/#lab |
+| `/` (template.html, site.json, build.py) | The front door. **Every word on it is in `site.json`.** | yes, jere.ing |
+| `assets/`, `favicon.svg`, `resume.pdf` | The front door's files: Geist (self-hosted, Latin subset), the portrait, icons, the résumé PDF | yes |
+| `uplink/` (template.html) | Uplink, the runner's shell (the old front page). Its Lab holds only worlds and retired versions now | jere.ing/uplink/ |
+| `reports/` | Reports, each its own page | jere.ing/reports/&lt;file&gt; |
+| `lab/` | The other worlds and their style books: Crystarium (`lab/ffxiii/`), Vesta 9 (`lab/mirrors-edge/`), Uplink's book, Marathon type/colour | jere.ing/crystarium/, /vesta9/, /lab/worlds/ |
 | `lab/apps/` | Demo snapshots of the apps that have their own repos (see below) | demos in the Lab |
 | `archive/` | Earlier versions of the site: terminal of the future (v3.6), graphic realism, paper & ink, the v3.x previews, and earlier Scopes | built into reports/_archive/, and downloadable from the Lab |
 | `docs/` | Site plans and decision records | no |
@@ -21,9 +24,19 @@ The apps live in their own repos, each with its downloads on its Releases page:
 
 Read `PUBLISHING.md` before making anything else public. `LICENSE`: all rights reserved; look, don't reuse.
 
-## The Lab
+## The front door
 
-Slot 01 on the front page (`jere.ing/#lab`, or `go lab` / `run veta` in the terminal). It replaced the Vault: everything made lives here. Four shelves: **Reports** (grouped by kind: books, Phil Chat, tributes), **Tools** (the apps, each with an interactive demo on made-up data, plus Scope), **Worlds** (other directions for this site), **Archive** (every retired version, each opening as its own page in a new tab). A demo opens full-frame over the site, and style books get a download button there; `jere.ing/#lab/<id>` links straight to one. `tools/lab_build.py` builds it into `_site/lab/` on every deploy. Source links stay sealed until the repo is public: flip `REPO.open` in `template.html`.
+`template.html` is the approved design (v18) turned into a template; `site.json` fills it. To add a post, a report or an app, add one entry to the right list in `site.json` (an entry is `title`, `sub`, optional `detail`, and `href` if it links somewhere). Projects are grouped Software, Reports, Worlds, Shelved. The résumé (the sheet at `jere.ing/#resume` and `resume.pdf`) is the `resume` part of the same file.
+
+- Sky and weather are the visitor's choice (the cloud button, bottom right, after scrolling). First visit: Clear, and Day unless the visitor's own clock says 8pm to 6am. Choices stay in their browser. No location, no weather service, no analytics; the page loads nothing from anywhere else.
+- Returning within a day: a one-second fade instead of the intro. Reduced motion: everything at once, no rain or drift. Without JavaScript every row is open.
+- Old links: `/reports/<file>.html` is unchanged; `#report-NN`, `#lab/<id>` and Uplink's room links (`#comms`, `#noise`...) forward to their new homes; `#lab` and `#vault` open Projects.
+- After changing `site.json`'s résumé, the portrait or the font, run `python tools/make_assets.py` (needs Pillow, fontTools + brotli, reportlab, Playwright) and commit what it writes. Cloudflare only copies these files.
+- `python tools/check_front_door.py` runs the browser checks (both screen sizes, every sky, reduced motion, no JavaScript, the résumé, old links).
+
+## The Lab (inside Uplink)
+
+Slot 01 in Uplink (`jere.ing/uplink/#lab`). It now holds two shelves: **Worlds** (other directions for this site) and **Archive** (retired versions of the site and the worlds, each opening as its own page in a new tab). The reports and apps moved to the front door. `tools/lab_build.py` still builds the demos, world docs and archive pages into `_site/lab/` on every deploy.
 
 ## About the "root" / "hack" stuff
 
@@ -33,7 +46,7 @@ The terminal on this site is **set dressing**. The look comes from the *Marathon
 - scan, probe or contact anything except the site's own files,
 - download or run anything.
 
-The only outside things the page loads are fonts (Google Fonts), images from my Are.na channels, and YouTube for the song of the day. The tarot card uses a random id kept in your own browser; there is no IP lookup.
+The only outside things Uplink loads are fonts (Google Fonts), images from my Are.na channels, and YouTube for the song of the day. The front door loads nothing from anywhere else. The tarot card uses a random id kept in your own browser; there is no IP lookup.
 
 ## Adding a report
 
@@ -44,7 +57,7 @@ Drop a file into `reports/`, commit it, and build.
 - **Date:** when the file was first committed.
 - **Overrides:** put anything you want to force in `reports/_meta.json`.
 
-Don't edit `index.html` directly; edit `template.html` for design changes. Old designs live in `archive/<name>/template.html` and are built to `reports/_archive/<name>/`.
+To list it on the front door, add an entry under Projects → Reports in `site.json`. Don't edit `index.html` or `uplink/index.html` directly; they're built from `template.html` + `site.json` and `uplink/template.html`. Old designs live in `archive/<name>/template.html` and are built to `reports/_archive/<name>/`.
 
 ## Building and hosting
 

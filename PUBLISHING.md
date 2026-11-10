@@ -14,7 +14,8 @@ This repo holds the site and the Lab, and it is public (Nov 9, 2026). The apps m
 
 - **No game material.** The style books (reference screenshots, videos and zips for Marathon, Final Fantasy XIII, Mirror's Edge and others) are private reference kept in Proton Drive under `Claude Things/Reference/`. They never enter this repo. The lab pages are original work inspired by those styles.
 - **No personal data.** The Jere's Place notes vault, Downloads, documents and backups stay out. The Veta demo vault (`lab/apps/veta/demo-vault/`) is made up.
-- **Fonts** are SIL Open Font License fonts from Google Fonts.
+- **Fonts** are SIL Open Font License fonts: Geist is self-hosted on the front door (`assets/fonts/`, licence in `assets/fonts/OFL.txt`); the worlds load theirs from Google Fonts.
+- **No phone number** anywhere on the site, in the résumé sheet or in `resume.pdf`.
 - **No secrets in git.** App signing keys are secrets in each app's own repo (`JRL_KEYSTORE_*` in jrl-launcher, `SB_KEYSTORE_*` in switchboard), with a backup in Proton Drive (`Claude Things/Setup/keys/`).
 
 ## Switches, when you're ready

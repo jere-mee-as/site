@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .sky{fill:url(#day)} .cl{fill:#fff;stroke:#333c47}
+    @media (prefers-color-scheme: dark){ .sky{fill:url(#night)} .cl{fill:#3b475b;stroke:#d0d7e1} }
+  </style>
+  <defs>
+    <linearGradient id="day" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9dcec"/><stop offset="1" stop-color="#f3f5f6"/></linearGradient>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#111925"/><stop offset="1" stop-color="#263145"/></linearGradient>
+  </defs>
+  <rect class="sky" width="64" height="64" rx="16"/>
+  <path class="cl" transform="translate(5.7 6) scale(2.2)" d="M7 18.5h9.5a4 4 0 0 0 .4-7.98A5.5 5.5 0 0 0 6.4 11.3 3.6 3.6 0 0 0 7 18.5Z" stroke-width="1.6" stroke-linejoin="round"/>
+</svg>

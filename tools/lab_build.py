@@ -8,7 +8,7 @@ Called by tools/package_site.py. Everything here is generated from files in the 
 
 The apps live in their own repos (jere-mee-as/jrl-launcher, /switchboard, /veta); their demos come from the
 snapshots in lab/apps/ (see lab/apps/README.md).
-  _site/lab/worlds/...              The site directions: FFXIII, Mirror's Edge, Uplink, Marathon
+  _site/lab/worlds/...              Style books and audits for the worlds (the worlds are at /uplink/, /crystarium/, /vesta9/)
   _site/lab/archive/...             Older versions, each its own page
   _site/lab/docs/...                Concept docs
 
@@ -51,11 +51,10 @@ def veta_demo(out):
 
 
 # The Mirror's Edge runner site (lab/mirrors-edge/runner.html and its style book) stays in the repo only; it is never published.
+# The worlds themselves live at /crystarium/ and /vesta9/ (tools/package_site.py); their docs stay here.
 WORLDS = {
     # published path under lab/worlds/      : source in the repo
-    "ffxiii/index.html": "lab/ffxiii/preview.html",
     "ffxiii/audit.html": "lab/ffxiii/audit.html",
-    "mirrors-edge/vesta9.html": "lab/mirrors-edge/vesta9.html",
     "mirrors-edge/field-guide.html": "lab/mirrors-edge/city-web-field-guide.html",
     "uplink/stylebook.html": "lab/uplink/stylebook.html",
     "marathon/type.html": "lab/marathon/type-specimen.html",

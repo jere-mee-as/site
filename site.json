@@ -1,0 +1,165 @@
+{
+  "_readme": "Everything on the front door (jere.ing/) comes from this file. build.py renders template.html with it; tools/make_assets.py resume makes resume.pdf from the 'resume' part. Adding a post, report or app is one entry in the right list. An item: title, sub (grey line), detail (second grey line), href (makes it a link), dot (CSS for a colour dot). A group: title, note, items.",
+
+  "site": {
+    "title": "jere.ing",
+    "url": "https://jere.ing",
+    "description": "Jeremias: operations in architecture and construction; writer, artist and builder. Work, writing and projects.",
+    "portrait_alt": "Jeremias, smiling, in round glasses and a mustard sweater"
+  },
+
+  "intro": {
+    "hello": "Hello, I’m Jeremias",
+    "role": ["Operations in architecture and construction.", "Writer, artist and builder."]
+  },
+
+  "links": [
+    {"label": "LinkedIn", "href": "https://www.linkedin.com/in/jeremias-sur-5a6b321b8/"},
+    {"label": "Substack", "href": "https://lesymboliste.substack.com/"},
+    {"label": "GitHub", "href": "https://github.com/jere-mee-as"},
+    {"label": "Email", "email": "jere.mee.as@pm.me"}
+  ],
+
+  "rows": [
+    {
+      "id": "work", "label": "Work",
+      "items": [
+        {"title": "Résumé", "sub": "The full version, on one page", "resume": true}
+      ],
+      "groups": [
+        {"title": "Now", "items": [
+          {"title": "The Princeton Companies", "sub": "Project Manager & Operations Lead · 2026–now", "detail": "Retail buildouts across Virginia, New Jersey and Florida, permits and land use, job costs, and the firm’s move to modern systems"}
+        ]},
+        {"title": "Before", "items": [
+          {"title": "The Princeton Companies", "sub": "Associate, project operations · 2020–2026"},
+          {"title": "Cresset Capital Management", "sub": "Office Coordinator · 2023–2026"},
+          {"title": "Sunwater Institute", "sub": "Rights and Liberties Research Intern · 2021"}
+        ]},
+        {"title": "Education", "items": [
+          {"title": "George Mason University", "sub": "B.A. Government, PPE concentration · 2020", "detail": "Schar School of Policy and Government · cum laude"}
+        ]},
+        {"title": "Languages", "items": [
+          {"title": "English and Spanish", "sub": "Native fluency"}
+        ]}
+      ]
+    },
+    {
+      "id": "writing", "label": "Writing",
+      "groups": [
+        {"title": "Aesthetics", "items": [
+          {"title": "Art & Imagination", "sub": "A treatise on the path to our world · Aug 2023", "href": "https://lesymboliste.substack.com/p/art-and-imagination"},
+          {"title": "Approaching an Aestheticist Manifesto", "sub": "Imagination as the source of ideas, societies and art · Dec 2023", "href": "https://lesymboliste.substack.com/p/approaching-an-aestheticist-manifesto"}
+        ]},
+        {"title": "Power and society", "items": [
+          {"title": "Power & Performance", "sub": "On performativity and power · 2026", "href": "https://lesymboliste.substack.com/"}
+        ]},
+        {"title": "Human nature", "items": [
+          {"title": "Intensely Normative Species", "sub": "Why humans are such a rule-making species · currently working on it"}
+        ]},
+        {"title": "All of it", "items": [
+          {"title": "Jere Thoughts", "sub": "The full archive on Substack", "href": "https://lesymboliste.substack.com/archive"}
+        ]}
+      ]
+    },
+    {
+      "id": "projects", "label": "Projects",
+      "groups": [
+        {"title": "Software", "items": [
+          {"title": "Switchboard", "sub": "A home screen laid out like a group chat", "href": "https://github.com/jere-mee-as/switchboard"},
+          {"title": "Scope", "sub": "An oscilloscope for any song you drop in", "href": "/reports/scope.html"}
+        ]},
+        {"title": "Reports", "note": "books and conversations, mapped", "items": [
+          {"title": "Republic · Timaeus · Critias", "sub": "Plato", "href": "/reports/timaeus-connectome.html"},
+          {"title": "Philosophical Investigations", "sub": "Wittgenstein", "href": "/reports/philosophical-investigations-connectome.html"},
+          {"title": "Metaphors We Live By", "sub": "Lakoff and Johnson", "href": "/reports/metaphors-we-live-by-connectome.html"},
+          {"title": "Phil Chat", "sub": "A philosophy group chat", "href": "/reports/phil-chat-connectome.html"},
+          {"title": "RIO", "sub": "A tribute to Duran Duran", "href": "/reports/rio.html"}
+        ]},
+        {"title": "Worlds", "note": "each one leaves this page", "items": [
+          {"title": "Uplink", "sub": "After Marathon · a runner’s shell in orbit", "href": "/uplink/", "dot": "background:#c2ff16;box-shadow:0 0 0 2px #0a0a0b"},
+          {"title": "Crystarium", "sub": "After Final Fantasy XIII · a game menu with nothing to sell", "href": "/crystarium/", "dot": "background:radial-gradient(circle at 35% 30%,#ffffff,#9fdde6);box-shadow:0 0 0 2px #5e93a6"},
+          {"title": "Vesta 9", "sub": "After Mirror’s Edge · a polite website that watches you", "href": "/vesta9/", "dot": "background:#d0021f"}
+        ]},
+        {"title": "Shelved", "note": "paused, kept for the record", "items": [
+          {"title": "JRL Launcher", "sub": "An Android home screen from another timeline", "href": "https://github.com/jere-mee-as/jrl-launcher"},
+          {"title": "Veta", "sub": "A second brain that lives in plain text", "href": "https://github.com/jere-mee-as/veta"}
+        ]}
+      ]
+    },
+    {
+      "id": "social", "label": "Social",
+      "items": [
+        {"title": "Instagram", "sub": "@jere.mee.as · photos and everyday things", "href": "https://www.instagram.com/jere.mee.as/"},
+        {"title": "Are.na", "sub": "jere-mi-as · images and references I collect", "href": "https://www.are.na/jere-mi-as"}
+      ]
+    }
+  ],
+
+  "footer": {
+    "greeting": "Good morning from Virginia.",
+    "links": [
+      {"label": "Leave me anonymous feedback ↗", "href": "https://admonymous.co/jere"}
+    ]
+  },
+
+  "resume": {
+    "updated": "Nov 2026",
+    "pdf": "/resume.pdf",
+    "name": "Jeremias “Jeremy” Sur",
+    "headline": "Project Manager & Operations Lead",
+    "location": "Reston, Virginia",
+    "email": "jere.mee.as@pm.me",
+    "summary": "Operations and construction professional with six-plus years running projects from permit to punch list for a multi-state architecture and construction firm. Currently managing commercial retail buildouts across Virginia, New Jersey and Florida while leading the firm’s shift to modern digital systems. Equally comfortable in a zoning hearing packet, a trade coordination call in Spanish, or a cost reconciliation spreadsheet.",
+    "sections": [
+      {"title": "Experience", "jobs": [
+        {"org": "The Princeton Companies", "where": "Architecture & construction · VA, NJ, FL", "roles": [
+          {"title": "Project Manager & Operations Lead", "dates": "May 2026 – now", "bullets": [
+            "Manage on-site delivery of Peter Millar retail buildouts in Short Hills (NJ), Tysons (VA) and Naples (FL), running electrical, lighting, HVAC, millwork and finish trades.",
+            "Built the 84-day (60 working-day) Naples schedule from the Short Hills precedent; rotate between Virginia and Florida to keep the job on track.",
+            "Built a subcontractor outreach tracker from email records to source trades for an out-of-state market.",
+            "Carry permit and land-use submissions end to end: Statements of Justification, responses to county staff comments, and coordination with civil engineers on revised plans.",
+            "Resolved an Arlington County zoning dispute over residential vs. commercial classification and lot-coverage scope on a deck replacement.",
+            "Reconcile job costs and change orders: classify card, travel, materials and payroll charges as billable or non-billable, and track open subcontractor change orders against contract.",
+            "Lead the firm’s operational modernization: CRM rollout, Microsoft Teams, Notion project systems and staff onboarding across three states.",
+            "Maintain contractor licensing compliance across jurisdictions; point of contact for the agency rebuilding the firm’s website and SEO."
+          ]},
+          {"title": "Associate, Project Operations & Business Administration", "dates": "May 2020 – May 2026", "bullets": [
+            "Managed two to three concurrent construction projects ($50K–$500K), holding scope, schedule and budget.",
+            "Prepared job cost estimates and federal government contract bids, navigating procurement and compliance requirements.",
+            "Digitized four years of financial records and built Excel tracking for budgets, costs and deliverables.",
+            "Ran bilingual (English/Spanish) communication with clients and subcontractors to resolve jobsite issues."
+          ]}
+        ]},
+        {"org": "Cresset Capital Management", "where": "Reston, VA", "roles": [
+          {"title": "Office Coordinator, Client Operations & Administration", "dates": "May 2023 – May 2026", "bullets": [
+            "Ran scheduling and operations for a three-person advisory team serving multi-million-dollar client portfolios; coordinated 30+ client meetings a month across time zones.",
+            "Commissioned notary public for estate planning documents, trusts and powers of attorney (about five signings a month).",
+            "Logged transactions in the firm’s compliance system and managed domestic and international shipping of legal and tax documents."
+          ]}
+        ]},
+        {"org": "Sunwater Institute", "where": "Research", "roles": [
+          {"title": "Rights and Liberties Research Intern", "dates": "Jun – Sep 2021", "bullets": [
+            "Researched public policy, legal systems and regulation; built and maintained the institute’s research database."
+          ]}
+        ]}
+      ]},
+      {"title": "Education", "jobs": [
+        {"org": "George Mason University", "where": "Schar School of Policy and Government", "roles": [
+          {"title": "B.A. Government, concentration in Philosophy, Politics and Economics", "dates": "May 2020", "note": "Cum laude · Dean’s List · GPA 3.63"}
+        ]}
+      ]},
+      {"title": "Skills", "skills": [
+        ["Construction", "Field project management, trade coordination (MEP, lighting, millwork, finishes), scheduling, permitting and land-use review, job costing, change orders, federal bids"],
+        ["Operations", "Process design, CRM implementation, licensing compliance, vendor and subcontractor sourcing, multi-state coordination"],
+        ["Tools", "Advanced Excel, Microsoft 365 and Teams, Google Workspace, Notion, Adobe Suite, SPSS; automation with Python and Zapier"],
+        ["Languages", "English and Spanish, native fluency"],
+        ["Certification", "Notary Public"]
+      ]},
+      {"title": "Leadership", "bullets": [
+        "President, GMU Philosophy Club: ran weekly programming and grew member engagement.",
+        "Advisor, MidTown Educational Foundation: mentored Chicago middle schoolers through tutoring and athletics coaching."
+      ]}
+    ],
+    "end": "Hello again from the sky."
+  }
+}

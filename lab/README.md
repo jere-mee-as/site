@@ -1,11 +1,11 @@
 # lab
 
-Other worlds for the site: directions it could have taken. They run in the Lab (slot 08 on jere.ing, `jere.ing/#lab`), published under jere.ing/lab/worlds/ by `tools/lab_build.py`. Each folder is one direction, built as standalone HTML pages you can open straight from disk. All of them are original pages inspired by the UI styles of the games they're named after. No game assets are included.
+Other worlds for the site. The Crystarium is published at jere.ing/crystarium/ and Vesta 9 at jere.ing/vesta9/ (`tools/package_site.py`); their style books and audits stay under jere.ing/lab/worlds/ (`tools/lab_build.py`). Each folder is one direction, built as standalone HTML pages you can open straight from disk. All of them are original pages inspired by the UI styles of the games they're named after. No game assets are included.
 
 | Folder | What |
 |---|---|
 | [`marathon/`](marathon/) | The current live direction for jere.ing: type specimen and color map |
-| [`uplink/`](uplink/) | Marathon pass 2: an in-world "runner's shell" site and its visual development book. **Now the live front page** (the root `template.html`); the copy here is the concept as it was before going live |
+| [`uplink/`](uplink/) | Marathon pass 2: an in-world "runner's shell" site and its visual development book. Live at jere.ing/uplink/ (from `/uplink/template.html`); the copy here is the concept as it was before going live |
 | [`ffxiii/`](ffxiii/) | Final Fantasy XIII-inspired direction: preview, template drop-ins, audit |
 | [`mirrors-edge/`](mirrors-edge/) | Mirror's Edge-inspired direction: vesta 9 in-world site and field guide (in the Lab), plus the runner site, its style book, preview and template (repo only, never published) |
 

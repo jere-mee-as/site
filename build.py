@@ -1,4 +1,10 @@
-"""Builds index.html from everything in reports/.
+"""Builds the site's pages.
+
+  index.html          the front door, from template.html + site.json (tools/front_door.py)
+  uplink/index.html   Uplink, the old front page, from uplink/template.html + the report list below
+  reports/_archive/   older versions of the site
+
+The report list comes from everything in reports/ (HTML, PDF, or anything else):
 
 For each file in reports/ (HTML, PDF, or anything else):
   title   -> the page's <title>, else the PDF's title, else the filename
@@ -232,9 +238,16 @@ def main():
             f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
             for i in items
         )
-    page = (ROOT / "template.html").read_text(encoding="utf-8").replace("<!-- LIST -->", rows_for())
-    (ROOT / "index.html").write_text(page, encoding="utf-8")
-    print(f"Built index.html with {len(items)} entries")
+    # Uplink lives at /uplink/ now, so its links to reports start at the root.
+    page = (ROOT / "uplink" / "template.html").read_text(encoding="utf-8").replace("<!-- LIST -->", rows_for("/"))
+    (ROOT / "uplink" / "index.html").write_text(page, encoding="utf-8")
+    print(f"Built uplink/index.html with {len(items)} reports")
+
+    # The front door. It also needs the reports oldest first, to send old #report-NN links on.
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    import front_door
+    front_door.render([Path(i["href"]).name for i in reversed(items)])
 
     # Older versions of the site, kept for nostalgia: archive/<name>/template.html is
     # rendered to reports/_archive/<name>/index.html (the deploy step copies reports/).
