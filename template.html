@@ -86,7 +86,7 @@ button{font:inherit;color:inherit}
 .l1{transform:translate3d(calc(var(--px,0)*3px),calc(var(--py,0)*2px),0)}
 .l2{transform:translate3d(calc(var(--px,0)*6px),calc(var(--py,0)*3px),0)}
 .l3{transform:translate3d(calc(var(--px,0)*10px),calc(var(--py,0)*5px),0)}
-.cl{position:absolute;display:block;filter:blur(6px);will-change:transform;background:
+.cl{position:absolute;display:block;will-change:transform;background:
   radial-gradient(34% 46% at 28% 62%,var(--cloud),var(--cloud-0)),
   radial-gradient(30% 54% at 52% 44%,var(--cloud),var(--cloud-0)),
   radial-gradient(38% 40% at 77% 63%,var(--cloud),var(--cloud-0)),
@@ -206,7 +206,9 @@ a.it:hover .ar{transform:translate(2px,-2px)}
 :root[data-weather="storm"] .overcast{opacity:1}
 :root[data-sky="night"] .overcast{background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 80%)}
 :root[data-weather="rain"] .stars,:root[data-weather="storm"] .stars{opacity:0}
-:root[data-weather] .cl{filter:blur(7px) grayscale(.35)}
+:root[data-weather] .cl{filter:grayscale(.35)}
+/* perf: freeze the drifting clouds while a panel's blur sits over them */
+body.locked .cl{animation-play-state:paused}
 #rain{position:absolute;inset:0;width:100%;height:100%}
 .bolt{position:absolute;inset:0;background:radial-gradient(90% 60% at 60% 0%,rgba(255,255,255,.9),rgba(235,240,255,.35) 60%,transparent);opacity:0}
 .bolt.on{animation:bolt 1.1s ease-out}
@@ -389,7 +391,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     var ctx = cv.getContext('2d'), drops = [], mode = '', raf = 0, last = 0, boltT = 0;
     var still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     function size() {
-      var d = Math.min(2, devicePixelRatio || 1);
+      var d = Math.min(1.25, devicePixelRatio || 1);
       cv.width = innerWidth * d; cv.height = innerHeight * d; ctx.setTransform(d, 0, 0, d, 0, 0);
     }
     function seed() {
@@ -404,13 +406,17 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
       var wind = mode === 'storm' ? .22 : .12, c = color(), base = mode === 'storm' ? .26 : .2;
       ctx.clearRect(0, 0, innerWidth, innerHeight);
       ctx.lineWidth = 1; ctx.lineCap = 'round';
-      for (var i = 0; i < drops.length; i++) {
-        var p = drops[i];
-        p.y += p.v * dt; p.x -= p.v * wind * dt;
-        if (p.y > innerHeight + 20) { p.y = -20; p.x = Math.random() * innerWidth * 1.2; }
-        if (p.x < -20) p.x += innerWidth + 40;
-        ctx.strokeStyle = 'rgba(' + c + ',' + (base * p.a).toFixed(3) + ')';
-        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.l * wind, p.y - p.l); ctx.stroke();
+      for (var b = 0; b < 4; b++) {
+        ctx.strokeStyle = 'rgba(' + c + ',' + (base * (.43 + b * .19)).toFixed(3) + ')';
+        ctx.beginPath();
+        for (var i = b; i < drops.length; i += 4) {
+          var p = drops[i];
+          p.y += p.v * dt; p.x -= p.v * wind * dt;
+          if (p.y > innerHeight + 20) { p.y = -20; p.x = Math.random() * innerWidth * 1.2; }
+          if (p.x < -20) p.x += innerWidth + 40;
+          ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.l * wind, p.y - p.l);
+        }
+        ctx.stroke();
       }
       if (mode === 'storm' && t > boltT) {
         boltT = t + 7000 + Math.random() * 12000;
