@@ -113,12 +113,20 @@ button{font:inherit;color:inherit}
 .say{display:inline-block;background:none;border:0;padding:8px 9px;margin:-8px -9px -8px -5px;font:inherit;font-size:17px;line-height:1;color:var(--mute);cursor:help;vertical-align:.32em;border-radius:50%;transition:color .4s ease}
 .say:hover,.say[aria-expanded="true"]{color:var(--ink)}
 .say:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
-.tip{position:absolute;left:var(--tip-x,0px);top:var(--tip-y,calc(100% + 8px));z-index:5;display:flex;flex-direction:column;gap:2px;padding:9px 13px 10px;border-radius:12px;background:var(--tip-bg,var(--paper));-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 0 0 1px var(--line),0 18px 40px -24px var(--shade);font-size:13px;font-weight:400;letter-spacing:0;line-height:1.45;color:var(--mute);white-space:nowrap;opacity:0;transform:translateY(-3px);filter:blur(4px);pointer-events:none;transition:opacity .45s ease,transform .6s var(--ease),filter .45s ease}
-:root{--tip-bg:#fafbfc}
-:root[data-sky="night"]{--tip-bg:#18202e}
-.tip b{font-weight:500;color:var(--ink)}
-.say:hover+.tip,.say:focus-visible+.tip,.say[aria-expanded="true"]+.tip{opacity:1;transform:none;filter:none}
-@media (prefers-reduced-motion:reduce){.tip{transition:none}}
+/* the line under the name trades places with how to say it: one mists out upward, the other condenses in */
+.where{display:grid}
+.where>span{grid-area:1/1;transition:opacity .75s ease .14s,transform 1s var(--ease) .14s,filter .75s ease .14s}
+.where .w2 b{font-weight:500;color:var(--ink-2)}
+.where .w2{opacity:0;transform:translateY(6px);filter:blur(5px);pointer-events:none;transition-duration:.4s,.55s,.4s;transition-delay:0s}
+.where.alt .w1{opacity:0;transform:translateY(-6px);filter:blur(5px);transition-duration:.4s,.55s,.4s;transition-delay:0s}
+.where.alt .w2{opacity:1;transform:none;filter:none;pointer-events:auto;transition-duration:.75s,1s,.75s;transition-delay:.14s}
+@media (hover:hover){
+  .hi:has(.say:hover)+.where .w1{opacity:0;transform:translateY(-6px);filter:blur(5px);transition-duration:.4s,.55s,.4s;transition-delay:0s}
+  .hi:has(.say:hover)+.where .w2{opacity:1;transform:none;filter:none;transition-duration:.75s,1s,.75s;transition-delay:.14s}
+}
+.hi:has(.say:focus-visible)+.where .w1{opacity:0}
+.hi:has(.say:focus-visible)+.where .w2{opacity:1;transform:none;filter:none}
+@media (prefers-reduced-motion:reduce){.where>span,.where .w2{transform:none!important;filter:none!important}}
 /* phones: no room for the arrows to hang outside, so the whole column moves in; arrows sit 20px in, text 44px */
 @media (max-width:440px){.stack,.foot{padding-inline:28px}}
 /* no grey tap box on touch; the arrow turning is the feedback */
@@ -300,8 +308,8 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
 <main class="stack">
   <div class="float">
     <figure class="pfp m" style="--d:.2s"><picture><source type="image/webp" srcset="/assets/img/jeremias-portrait-160.webp 160w, /assets/img/jeremias-portrait-320.webp 320w" sizes="80px"><img src="/assets/img/jeremias-portrait-160.jpg" srcset="/assets/img/jeremias-portrait-160.jpg 160w, /assets/img/jeremias-portrait-320.jpg 320w" sizes="80px" alt="{{portrait_alt}}" width="80" height="80"></picture></figure>
-    <h1 class="hi m" style="--d:.45s">{{hello}}<button type="button" class="say" id="say" aria-expanded="false" aria-describedby="say-tip" aria-label="How to say it">°</button><span class="tip" id="say-tip" role="tooltip"><span>pronounced <b>{{pronounced}}</b></span><span>born in {{born}}</span></span></h1>
-    <p class="where m fast" style="--d:1.75s">{{role}}</p>
+    <h1 class="hi m" style="--d:.45s">{{hello}}<button type="button" class="say" id="say" aria-expanded="false" aria-describedby="say-alt" aria-controls="where-line" aria-label="How to say it">°</button></h1>
+    <p class="where m fast" id="where-line" style="--d:1.75s"><span class="w1">{{role}}</span><span class="w2" id="say-alt">pronounced <b>{{pronounced}}</b><br>born in {{born}}</span></p>
     <p class="ln m fast" style="--d:1.95s">{{links}}</p>
     <p class="mailnote" id="mailnote" aria-live="polite"></p>
 
@@ -439,22 +447,16 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     var pb = document.getElementById('b-projects'); if (pb) { pb.click(); pb.scrollIntoView({ block: 'start' }); }
   }
 
-  // the degree mark: tap toggles on touch, Esc or a tap elsewhere closes
-  var say = document.getElementById('say');
-  function saySet(o) { say.setAttribute('aria-expanded', String(o)); }
-  say.addEventListener('click', function (e) { e.stopPropagation(); saySet(say.getAttribute('aria-expanded') !== 'true'); });
-  document.addEventListener('click', function () { saySet(false); });
-  // the card sits to the right of the name when there's room, otherwise under it
-  var tip = document.getElementById('say-tip'), hi = say.parentNode;
-  function placeTip() {
-    var h = hi.getBoundingClientRect(), m = say.getBoundingClientRect();
-    var x = m.right - h.left - 2;
-    if (m.right - 2 + tip.offsetWidth <= document.documentElement.clientWidth - 16) {
-      hi.style.setProperty('--tip-x', x + 'px'); hi.style.setProperty('--tip-y', (m.top - h.top - 2) + 'px');
-    } else { hi.style.removeProperty('--tip-x'); hi.style.removeProperty('--tip-y'); }
+  // the degree mark: hover swaps the line under the name (CSS); a tap swaps it until the next tap,
+  // a tap elsewhere, Esc, or eight seconds
+  var say = document.getElementById('say'), whereLine = document.getElementById('where-line'), sayT = 0;
+  function saySet(o) {
+    clearTimeout(sayT);
+    say.setAttribute('aria-expanded', String(o)); whereLine.classList.toggle('alt', o);
+    if (o) sayT = setTimeout(function () { saySet(false); }, 8000);
   }
-  placeTip(); addEventListener('resize', placeTip);
-  if (document.fonts) document.fonts.ready.then(placeTip);
+  say.addEventListener('click', function (e) { e.stopPropagation(); saySet(say.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('click', function () { if (say.getAttribute('aria-expanded') === 'true') saySet(false); });
   addEventListener('keydown', function (e) { if (e.key === 'Escape') saySet(false); });
 
   var copyBtn = document.getElementById('copy'), note = document.getElementById('mailnote');
