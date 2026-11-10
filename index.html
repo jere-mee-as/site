@@ -108,6 +108,10 @@ button{font:inherit;color:inherit}
 .hi{font-weight:450;font-size:20px;line-height:1.3;letter-spacing:-.012em;margin:28px 0 6px;text-wrap:balance}
 .where{font-size:14px;line-height:1.55;color:var(--mute);margin:0 0 40px}
 .rows{display:flex;flex-direction:column;gap:6px;margin-left:-24px}
+/* phones: no room for the arrows to hang outside, so the whole column moves in; arrows sit 20px in, text 44px */
+@media (max-width:440px){.stack,.foot{padding-inline:28px}}
+/* no grey tap box on touch; the arrow turning is the feedback */
+html{-webkit-tap-highlight-color:transparent}
 .q{display:flex;align-items:center;gap:10px;width:100%;min-height:52px;padding:0;background:none;border:0;text-align:left;font-size:16px;letter-spacing:-.005em;cursor:pointer;border-radius:8px}
 .q.sub{font-size:15px;min-height:48px}
 .ch{display:inline-flex;width:14px;justify-content:center;color:var(--mute);transition:transform .7s var(--ease),color .5s var(--ease)}
