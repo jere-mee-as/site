@@ -12,6 +12,10 @@ if SITE.exists():
     shutil.rmtree(SITE)
 SITE.mkdir()
 shutil.copy2(ROOT / "index.html", SITE / "index.html")
+# The Crystarium world lives one folder down and links back to ../reports/.
+if (ROOT / "crystarium" / "index.html").exists():
+    (SITE / "crystarium").mkdir()
+    shutil.copy2(ROOT / "crystarium" / "index.html", SITE / "crystarium" / "index.html")
 for name in ("images.json", "tarot.json", "songs.json"):
     src = ROOT / name
     if src.exists():

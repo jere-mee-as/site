@@ -220,6 +220,8 @@ def main():
             "comment": o.get("comment") or comment or "",
             "date": o.get("date") or datetime.fromtimestamp(ts, TZ).date().isoformat(),
             "kb": round(f.stat().st_size / 1024, 1),
+            # Optional: how the Crystarium world files this report ("connectome", "field", "ties", "scope", "tribute", "doc").
+            "type": o.get("type", ""),
         })
 
     # Newest upload on top (highest number); oldest at the bottom is 01
@@ -227,7 +229,7 @@ def main():
 
     def rows_for(prefix=""):
         return "\n".join(
-            f'    <li data-kb="{i["kb"]}"><a href="{html.escape(prefix + i["href"])}">{html.escape(i["title"])}</a>'
+            f'    <li data-kb="{i["kb"]}"' + (f' data-type="{html.escape(i["type"])}"' if i["type"] else "") + f'><a href="{html.escape(prefix + i["href"])}">{html.escape(i["title"])}</a>'
             f'<span class="note">{html.escape(i["comment"])}</span>'
             f'<time datetime="{i["date"]}">{i["date"].replace("-", ".")}</time></li>'
             for i in items
@@ -235,6 +237,19 @@ def main():
     page = (ROOT / "template.html").read_text(encoding="utf-8").replace("<!-- LIST -->", rows_for())
     (ROOT / "index.html").write_text(page, encoding="utf-8")
     print(f"Built index.html with {len(items)} entries")
+
+    # The second world: jere.ing/crystarium/ (the Final Fantasy XIII direction). Same reports, one folder down.
+    # The gate on the front page sends first-time visitors to either world and remembers the choice in their browser.
+    ff = ROOT / "crystarium" / "template.html"
+    if ff.exists():
+        # The Crystarium's Lab shelves use the same list as the Uplink Lab: copy the tools, worlds and archive
+        # entries (everything in LAB after the reports line) out of template.html, so there is one list to edit.
+        up = (ROOT / "template.html").read_text(encoding="utf-8")
+        m = re.search(r"^const LAB = \[\n(.*?)^\];", up, re.S | re.M)
+        works = "".join(l for l in (m.group(1).splitlines(True) if m else []) if l.lstrip().startswith("{"))
+        page = ff.read_text(encoding="utf-8").replace("/*LAB*/", "\n" + works).replace("<!-- LIST -->", rows_for("../"))
+        (ROOT / "crystarium" / "index.html").write_text(page, encoding="utf-8")
+        print("Built crystarium/index.html")
 
     # Older versions of the site, kept for nostalgia: archive/<name>/template.html is
     # rendered to reports/_archive/<name>/index.html (the deploy step copies reports/).

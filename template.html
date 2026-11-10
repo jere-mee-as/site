@@ -1,4 +1,102 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!-- ====== The gate: two worlds, one archive. Shown once; the choice stays in this browser (localStorage key jere.world). ====== -->
+<script>(function(){var K='jere.world',w=null,q=location.search,h=location.hash,forced=/[?&]gate\b/.test(q),deep=h&&!/^#report-\d+$/.test(h);
+try{w=localStorage.getItem(K)}catch(e){}
+if(!forced&&w==='crystarium'&&!deep){location.replace('crystarium/index.html'+h);document.documentElement.style.visibility='hidden';return}
+if(forced||(!w&&!deep)){window.__JG={wait:true};document.documentElement.classList.add('gating')}})();</script>
+<style>
+#gate{display:none}
+.gating #gate{display:flex;position:fixed;inset:0;z-index:2147483000;overflow:hidden;background:#0a0a0b;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.gating body{overflow:hidden}
+#gate .g-side{position:relative;flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(20px,5vw,72px);text-decoration:none;overflow:hidden;outline:none}
+#gate .g-up{background:#0a0a0b;color:#f2f2ee;transition:flex-grow 133ms steps(4,end)}
+#gate .g-ff{background:radial-gradient(120% 100% at 62% 40%,#ffffff 0%,#f8f7f9 50%,#e6e2ea 100%);color:#24343a;transition:flex-grow 600ms cubic-bezier(.16,1,.3,1)}
+#gate.l .g-up,#gate.r .g-ff{flex-grow:1.4}
+#gate .g-cv{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+#gate .g-up>span{position:relative}
+#gate .g-up .g-code{font:700 12px/1 "Kode Mono",ui-monospace,monospace;letter-spacing:.12em;color:#c2ff16}
+#gate .g-up .g-name{font-family:"Hubot Sans",ui-sans-serif,sans-serif;font-weight:300;font-stretch:88%;font-size:clamp(54px,9vw,148px);line-height:.9;letter-spacing:-.03em;margin:14px 0 18px -4px}
+#gate .g-up .g-sub{font-family:"Hubot Sans",ui-sans-serif,sans-serif;font-weight:300;font-size:clamp(14px,1.4vw,19px);max-width:30ch;color:#c9c9c4}
+#gate .g-up .g-key{font:700 11px/1 "Kode Mono",ui-monospace,monospace;letter-spacing:.14em;color:#0a0a0b;background:#c2ff16;padding:6px 8px;align-self:flex-start;margin-top:22px}
+#gate .g-up .g-tag{position:absolute;left:clamp(20px,5vw,72px);top:clamp(20px,4vw,48px);font:400 11px/1.4 "JetBrains Mono",ui-monospace,monospace;color:#8a8a85;letter-spacing:.06em}
+#gate .g-ff .g-sky{position:absolute;inset:-10%;background:radial-gradient(40% 22% at 30% 30%,rgba(255,255,255,.95),transparent 70%),radial-gradient(36% 18% at 72% 62%,rgba(255,255,255,.9),transparent 70%),radial-gradient(50% 30% at 50% 90%,rgba(206,214,224,.55),transparent 70%);animation:gdrift 70s linear infinite alternate}
+@keyframes gdrift{to{transform:translateX(-6%)}}
+#gate .g-ff svg{position:absolute;right:8%;top:10%;width:min(32vw,300px);height:auto;opacity:.95}
+#gate .g-ff .g-name{position:relative;font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-transform:uppercase;font-size:clamp(36px,4.9vw,92px);letter-spacing:.035em;line-height:.95}
+#gate .g-ff .g-rule{position:relative;height:3px;margin:12px 0 14px calc(-1*clamp(20px,5vw,72px));width:min(560px,90%);background:linear-gradient(90deg,transparent 0,#1f6f78 18%,#5cc6cc 70%,rgba(92,198,204,0))}
+#gate .g-ff .g-sub{position:relative;font-family:"Saira",ui-sans-serif,sans-serif;font-stretch:112%;font-size:clamp(14px,1.35vw,18px);max-width:32ch;color:#4a5a60}
+#gate .g-ff .g-key{position:relative;align-self:flex-start;margin-top:22px;font:700 11px/1 "Saira",ui-sans-serif,sans-serif;font-stretch:125%;letter-spacing:.16em;color:#24343a;padding:2px 0 5px 34px;border-bottom:1px solid #24343a}
+#gate .g-ff .g-key::before{content:"";position:absolute;left:0;top:-3px;width:26px;height:14px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 44 24'%3E%3Cpath d='M2 6.5h6v12H2z' fill='%236f7a86' stroke='%2324282f' stroke-width='1.2'/%3E%3Cpath d='M8 6H39.5a2.7 2.7 0 0 1 0 5.4H24.5a2.4 2.4 0 0 1 0 4.8h-.5a2.2 2.2 0 0 1 -.6 4.3H21a2 2 0 0 1 -1.5 3H8z' fill='%23eef1f4' stroke='%2324282f' stroke-width='1.2' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;opacity:0;transition:opacity .12s}
+#gate .g-ff:focus-visible .g-key::before,#gate.r .g-ff .g-key::before{opacity:1}
+#gate .g-up:focus-visible .g-key,#gate.l .g-up .g-key{box-shadow:0 0 0 2px #0a0a0b,0 0 0 4px #c2ff16}
+#gate .g-mid{position:absolute;left:50%;top:0;bottom:0;width:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+#gate .g-mid::before{content:"";position:absolute;top:0;bottom:0;left:-.5px;width:1px;background:linear-gradient(180deg,rgba(255,255,255,.0),rgba(255,255,255,.55) 20%,rgba(140,140,140,.6) 50%,rgba(0,0,0,.25) 80%,rgba(0,0,0,0))}
+#gate .g-mid div{position:relative;display:grid;gap:6px;justify-items:center;padding:12px 16px;background:#808080;color:#fff;white-space:nowrap;text-align:center}
+#gate .g-mid b{font-weight:600;font-size:13px;letter-spacing:.32em;padding-left:.32em}
+#gate .g-mid span{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.85}
+#gate .g-note{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);margin:0;padding:6px 12px;font-size:11px;letter-spacing:.04em;color:#fff;background:#808080;white-space:nowrap}
+#gate.go-up .g-up{flex-grow:60;transition:flex-grow 100ms steps(3,end)}
+#gate.go-ff .g-ff{flex-grow:60;transition:flex-grow 700ms cubic-bezier(.16,1,.3,1)}
+#gate.go-up .g-mid,#gate.go-ff .g-mid,#gate.go-up .g-note,#gate.go-ff .g-note{opacity:0}
+#gate .g-white{position:absolute;inset:0;background:radial-gradient(circle at 70% 45%,#fff 0,#fff 30%,rgba(255,255,255,0) 70%);opacity:0;pointer-events:none}
+@media (max-width:760px){
+  #gate{flex-direction:column}
+  #gate .g-side{padding:22px 22px 26px}
+  #gate .g-mid{left:0;right:0;top:50%;bottom:auto;width:auto;height:0}
+  #gate .g-mid::before{top:-.5px;bottom:auto;left:0;right:0;width:auto;height:1px;background:rgba(140,140,140,.7)}
+  #gate .g-ff svg{width:34vw;right:6%;top:8%}
+  #gate .g-note{bottom:auto;top:12px;white-space:normal;width:max-content;max-width:90vw;text-align:center}
+}
+@media (prefers-reduced-motion:reduce){#gate .g-side{transition:none!important}#gate .g-ff .g-sky{animation:none}}
+</style>
+<div id="gate" role="dialog" aria-modal="true" aria-label="Choose a world">
+  <a class="g-side g-up" href="index.html" data-w="uplink" aria-label="Enter Uplink">
+    <canvas class="g-cv" width="160" height="90" aria-hidden="true"></canvas>
+    <span class="g-tag" aria-hidden="true">jrl // bay 04 · shell ready</span>
+    <span class="g-code" aria-hidden="true">W-01 // 未来</span>
+    <span class="g-name">Uplink</span>
+    <span class="g-sub">The archive as a runner's shell between runs. Black, lime, hard cuts, a terminal.</span>
+    <span class="g-key" aria-hidden="true">← · 1 · ENTER</span>
+  </a>
+  <a class="g-side g-ff" href="crystarium/index.html" data-w="crystarium" aria-label="Enter Crystarium">
+    <span class="g-sky" aria-hidden="true"></span>
+    <svg viewBox="0 0 200 330" aria-hidden="true"><defs><linearGradient id="gfl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#d5f2f6"/><stop offset="1" stop-color="#9fd8e4"/></linearGradient><linearGradient id="gfr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a4dde9"/><stop offset=".55" stop-color="#5a96bb"/><stop offset="1" stop-color="#2d4f78"/></linearGradient><radialGradient id="gha"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="#bfeff6" stop-opacity=".4"/><stop offset="1" stop-color="#bfeff6" stop-opacity="0"/></radialGradient></defs><ellipse cx="100" cy="170" rx="96" ry="160" fill="url(#gha)"/><path d="M42 170L58 226L46 270L26 222Z" fill="url(#gfr)" opacity=".85"/><path d="M42 170L26 222L46 270Z" fill="url(#gfl)" opacity=".85"/><path d="M100 10L72 92L84 280L100 322Z" fill="url(#gfl)"/><path d="M100 10L130 98L118 276L100 322Z" fill="url(#gfr)"/><path d="M100 10L72 92L100 104L130 98Z" fill="#fff" opacity=".45"/><path d="M100 10L100 322" stroke="#fff" stroke-width="1.2" opacity=".9"/><path d="M158 150L176 196L162 238L150 202Z" fill="url(#gfr)" opacity=".9"/><path d="M158 150L150 202L162 238Z" fill="url(#gfl)" opacity=".85"/></svg>
+    <span class="g-name">Crystarium</span>
+    <span class="g-rule" aria-hidden="true"></span>
+    <span class="g-sub">The archive above the clouds. Every report a crystal on a growing ring.</span>
+    <span class="g-key" aria-hidden="true">→ · 2 · ENTER</span>
+  </a>
+  <div class="g-mid" aria-hidden="true"><div><b>JERE.ING</b><span>Two worlds · one archive</span></div></div>
+  <p class="g-note">Pick one. This browser remembers it; nothing is sent anywhere. You can switch from inside either world.</p>
+  <div class="g-white" aria-hidden="true"></div>
+</div>
+<script>(function(){var G=document.getElementById('gate'),J=window.__JG;if(!J){G.remove();return}
+var RM=matchMedia('(prefers-reduced-motion: reduce)').matches,done=false,cur=null;
+['https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Saira:wdth,wght@100..125,400..800&display=swap'].forEach(function(u){var l=document.createElement('link');l.rel='stylesheet';l.href=u;document.head.appendChild(l)});
+var up=G.querySelector('.g-up'),ff=G.querySelector('.g-ff');
+function lean(s){cur=s;G.classList.toggle('l',s==='uplink');G.classList.toggle('r',s==='crystarium')}
+up.addEventListener('pointerenter',function(){lean('uplink')});ff.addEventListener('pointerenter',function(){lean('crystarium')});
+up.addEventListener('focus',function(){lean('uplink')});ff.addEventListener('focus',function(){lean('crystarium')});
+/* Uplink's half: lime pixel blocks, three frames on the 30 fps grid, then a hold */
+var cv=G.querySelector('.g-cv'),g=cv.getContext('2d'),tick=0,hold=0,raf=0,last=0,CW=160,CH=90;
+function fit(){var b=up.getBoundingClientRect();CW=Math.max(40,Math.round(b.width/6));CH=Math.max(40,Math.round(b.height/6));cv.width=CW;cv.height=CH}fit();addEventListener('resize',function(){fit();field(0)});
+function field(k){g.fillStyle='#0a0a0b';g.fillRect(0,0,CW,CH);g.fillStyle='rgba(194,255,22,.22)';for(var x=4;x<CW;x+=8)for(var y=4;y<CH;y+=8)g.fillRect(x,y,1,1);if(k){g.fillStyle='#c2ff16';for(var i=0;i<4+k*4;i++)g.fillRect(Math.random()*CW|0,Math.random()*CH*.6|0,2+Math.random()*12|0,1+Math.random()*5|0)}}
+function loop(t){raf=requestAnimationFrame(loop);if(t-last<33)return;last=t;if(hold>0){hold--;return}tick++;if(tick%4===0){field(0);hold=40+Math.random()*50|0}else field(tick%4)}
+field(0);if(!RM)raf=requestAnimationFrame(loop);
+function remember(w){try{localStorage.setItem('jere.world',w)}catch(e){}}
+function choose(w){if(done)return;done=true;remember(w);cancelAnimationFrame(raf);
+  if(w==='crystarium'){if(RM){location.href='crystarium/index.html';return}G.classList.add('go-ff');var wh=G.querySelector('.g-white');wh.animate([{opacity:0},{opacity:0,offset:.4},{opacity:1}],{duration:800,easing:'ease-in',fill:'forwards'});setTimeout(function(){location.href='crystarium/index.html'},820);return}
+  /* Uplink: the half snaps across in three steps, lime bursts, then the shell's own boot takes over */
+  G.classList.add('go-up');var f=0;function burst(){field(3);if(++f<3)setTimeout(burst,33);else setTimeout(enter,RM?0:120)}
+  function enter(){document.removeEventListener('keydown',keys,true);G.remove();document.documentElement.classList.remove('gating');J.wait=false;if(history.replaceState&&/[?&]gate\b/.test(location.search))history.replaceState(null,'',location.pathname+location.hash);if(J.go)J.go()}
+  if(RM)enter();else burst()}
+up.addEventListener('click',function(e){if(e.button||e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();choose('uplink')});
+ff.addEventListener('click',function(e){if(e.button||e.metaKey||e.ctrlKey||e.shiftKey)return;e.preventDefault();choose('crystarium')});
+function keys(e){if(done)return;var k=e.key;e.stopImmediatePropagation();
+  if(k==='ArrowLeft'||k==='ArrowUp'||k==='1'){e.preventDefault();up.focus()}else if(k==='ArrowRight'||k==='ArrowDown'||k==='2'){e.preventDefault();ff.focus()}
+  else if(k==='Enter'||k===' '){e.preventDefault();if(cur)choose(cur)}else if(k!=='Tab')e.preventDefault()}
+document.addEventListener('keydown',keys,true)})();</script>
+
 <ol id="list" hidden>
 <!-- LIST -->
 </ol>
@@ -1288,7 +1386,7 @@ const LAB = [
  { id:'kept', sh:'t', c:'T-04', n:'Kept', ic:'vault', col:'orange', pl:'Windows · file manager', st:'v0.1 · first run pending', ver:'v0.1', slog:'Every view is a query. Nothing moves.', d:'A local file manager. A small model describes each file once; you find things by asking instead of walking folders. Guesses and confirmed facts never look the same. The demo is a mock with made-up files; press T for skins.', demo:'lab/demo/kept.html', src:'kept/', docs:[['Concept','lab/docs/kept/concept.html'],['UI concept','lab/docs/kept/ui-concept.html']] },
  { id:'scope', sh:'t', c:'T-05', n:'Scope', ic:'sound', col:'teal', pl:'Web · oscilloscope', st:'live · Uplink pass', ver:'v3', slog:'The trace is the signal you hear.', d:'An oscilloscope for any audio file. Drop a song in and watch the waveform you\'re hearing: line, dots, a dot-matrix or round-pixel bars, locked to the pitch.', demo:'reports/scope.html', src:'reports/scope.html', docs:[] },
  { id:'uplink', sh:'w', c:'W-01', n:'Uplink', ic:'slot', col:'lime', pl:'after Marathon · live', st:'live · you are in it', ver:'pass 2', slog:'The site as a runner\'s shell in the hangar.', d:'This site. One fixed stage, rooms as gear, a terminal under everything, no scroll. Its visual development book shows how the language was built.', demo:'lab/worlds/uplink/stylebook.html', demoLbl:'Visual book', demoSB:1, src:'lab/uplink/', docs:[] },
- { id:'crystarium', sh:'w', c:'W-02', n:'Crystarium', ic:'helix', col:'teal', pl:'after Final Fantasy XIII', st:'preview · not shipped', ver:'v3', slog:'Reports as crystals on a growing ring.', d:'The reports site as a game menu: a title screen, a party of report cards, a datalog, and a Crystarium where each month is a ring and each report a crystal. Original work inspired by the game\'s UI; no game assets.', demo:'lab/worlds/ffxiii/index.html', src:'lab/ffxiii/', docs:[['Style audit','lab/worlds/ffxiii/audit.html',1]] },
+ { id:'crystarium', sh:'w', c:'W-02', n:'Crystarium', ic:'helix', col:'teal', pl:'after Final Fantasy XIII', st:'live · the second world', ver:'v3', slog:'Reports as crystals on a growing ring.', d:'The reports site as a game menu: a title screen, a party of report cards, a datalog, and a Crystarium where each month is a ring and each report a crystal. Live at jere.ing/crystarium, the second world: type world crystarium to cross over. Original work inspired by the game\'s UI; no game assets.', demo:'crystarium/index.html', src:'lab/ffxiii/', docs:[['Style audit','lab/worlds/ffxiii/audit.html',1]] },
  { id:'vesta', sh:'w', c:'W-03', n:'Vesta 9', ic:'place', col:'bone', pl:'after Mirror\'s Edge', st:'rev 2.1', ver:'rev 2.1', slog:'An ordinary website in that city.', d:'A luxury tower\'s website in a Mirror\'s Edge city: pristine, paper thin, polite, and watching you. Something lives under the white. Press on the pale numbers, then move slowly.', demo:'lab/worlds/mirrors-edge/vesta9.html', src:'lab/mirrors-edge/', docs:[['City web field guide','lab/worlds/mirrors-edge/field-guide.html',1]] },
  { id:'terminal', sh:'w', c:'W-04', n:'Terminal', ic:'diag', col:'orange', pl:'after Marathon · retired', st:'v3.6 · retired Nov 2026', ver:'v3.6', slog:'The terminal of the future.', d:'The front page before this one: six modules, a colony that lives in your browser, a root shell with toys. Retired, still running.', demo:'reports/_archive/2026-11-terminal-of-the-future/', src:'archive/', docs:[['Type specimen','lab/worlds/marathon/type.html',1],['Colour map','lab/worlds/marathon/color.html',1]] },
  { id:'a-ink', sh:'a', c:'A-01', n:'Site · paper and ink', pl:'Oct 2026', d:'The first version: a plain numbered list of reports on paper.', links:[['Paper and ink','reports/_archive/2026-10-paper-and-ink/']] },
@@ -1474,7 +1572,7 @@ function award(id) { if (!ACH[id] || GOT.has(id)) return; GOT.add(id); try { loc
 let toyT = [], toyMode = null; const toy = (fn, ms) => { const t = setInterval(fn, ms); toyT.push(t); return t; }, later = (fn, ms) => { const t = setTimeout(fn, ms); toyT.push(t); return t; };
 function stopToys() { toyT.forEach(t => { clearInterval(t); clearTimeout(t); }); toyT = []; if (toyMode === 'snake') tl('snake // ended', 'g'); toyMode = null; $('#term').classList.remove('redalert'); }
 const R = (a) => a[Math.random() * a.length | 0];
-const CMDS = ['help', 'ls', 'go', 'lab', 'run', 'cores', 'open', 'archive', 'paint', 'noise', 'play', 'pause', 'tune', 'hint', 'song', 'whoami', 'uname', 'neofetch', 'uptime', 'date', 'time', 'signal', 'history', 'scan', 'top', 'ps', 'kill', 'ping', 'weather', 'roll', 'coin', '8ball', 'fortune', 'decrypt', 'babel', 'runnersay', 'banner', 'rain', 'launch', 'morse', 'synth', 'snake', 'achievements', 'mute', 'unmute', 'clear', 'reboot', 'exit', 'sudo', 'root', 'hack', 'cat', 'echo', 'sleep', 'goodnight'];
+const CMDS = ['help', 'ls', 'go', 'world', 'lab', 'run', 'cores', 'open', 'archive', 'paint', 'noise', 'play', 'pause', 'tune', 'hint', 'song', 'whoami', 'uname', 'neofetch', 'uptime', 'date', 'time', 'signal', 'history', 'scan', 'top', 'ps', 'kill', 'ping', 'weather', 'roll', 'coin', '8ball', 'fortune', 'decrypt', 'babel', 'runnersay', 'banner', 'rain', 'launch', 'morse', 'synth', 'snake', 'achievements', 'mute', 'unmute', 'clear', 'reboot', 'exit', 'sudo', 'root', 'hack', 'cat', 'echo', 'sleep', 'goodnight'];
 function lev(a, b) { const d = Array.from({ length: a.length + 1 }, (_, i) => [i]); for (let j = 1; j <= b.length; j++) d[0][j] = j; for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); return d[a.length][b.length]; }
 function didYouMean(c) { let best = null, bd = 3; CMDS.forEach(x => { const d = lev(c, x); if (d < bd) { bd = d; best = x; } }); return best; }
 function moon() { const syn = 29.530588853, d = ((Date.now() / 864e5 - 10957.76) % syn + syn) % syn, f = d / syn, names = ['new', 'waxing crescent', 'first quarter', 'waxing gibbous', 'full', 'waning gibbous', 'last quarter', 'waning crescent']; return { name: names[Math.round(f * 8) % 8], pct: Math.round((1 - Math.cos(f * 2 * Math.PI)) / 2 * 100), age: d.toFixed(1) }; }
@@ -1572,12 +1670,16 @@ $('#tin').addEventListener('submit', e => {
   e.preventDefault(); const raw = tcmd.value.trim(); tcmd.value = ''; if (!raw) return; stopToys(); HIST.push(raw); hi = HIST.length; tl('runner@jrl:~$ ' + raw, 'd'); if (PHRASE(raw.toLowerCase().replace(/[?!.]+$/, ''))) return; const [c, ...a] = raw.split(/\s+/); const arg = a.join(' ').toLowerCase();
   const ok = m => { tl('[ ok ] ' + m, 'ok'); play('tick'); }, err = m => { tl('[FAIL] ' + m, 'e'); play('buzz'); };
   switch (c.toLowerCase()) {
-    case 'help': tl('shell   ls · go <slot> · lab · run <name> · cores · open <nn> · archive [n] · paint <name> · noise [colour|off]', 'w'); tl('radio   play · pause · tune <MHz> · hint · song', 'w'); tl('unit    whoami · uname · neofetch · uptime · date · time · signal · history · scan · top · ps · kill <p> · ping <host> · weather', 'w'); tl('toys    roll NdM · coin · 8ball <q> · fortune · decrypt [text] · babel <text> · runnersay <text> · banner · rain · launch · morse <text> · synth · snake', 'w'); tl('etc     achievements · mute · unmute · clear · reboot · exit     (some commands are not listed)', 'g'); break;
+    case 'help': tl('shell   ls · go <slot> · world [name] · lab · run <name> · cores · open <nn> · archive [n] · paint <name> · noise [colour|off]', 'w'); tl('radio   play · pause · tune <MHz> · hint · song', 'w'); tl('unit    whoami · uname · neofetch · uptime · date · time · signal · history · scan · top · ps · kill <p> · ping <host> · weather', 'w'); tl('toys    roll NdM · coin · 8ball <q> · fortune · decrypt [text] · babel <text> · runnersay <text> · banner · rain · launch · morse <text> · synth · snake', 'w'); tl('etc     achievements · mute · unmute · clear · reboot · exit     (some commands are not listed)', 'g'); break;
     case 'ls': if (/-a/.test(arg)) { ['.', '..', ...Object.keys(DOT)].forEach(f => tl('  ' + f, f.startsWith('.d') ? 'y' : 'g')); award('dotfiles'); break; } SLOTS.forEach(s => tl(`  SLOT ${s.c}  ${s.n.padEnd(12)} ${s.ct}`)); break;
     case 'cores': CORES.forEach(k => tl(`  ${k.c}  ${k.t}${k.q ? '  [QUARANTINED]' : ''}`)); break;
     case 'open': { const n = parseInt(arg); const k = CORES[n - 1]; if (!k) return err('no such core. try: open 03'); if (k.q && !opened.has(n - 1)) return err(`${k.c} is quarantined. override it in the vault first.`); ok(`extracting ${k.c} ${k.t}`); closeTerm(); openCore(n - 1); break; }
     case 'go': { const s = SLOTS.find(s => s.id === (arg === 'vault' ? 'lab' : arg) || s.n.toLowerCase() === arg || s.c === arg.padStart(2, '0')) || (arg === 'shell' ? { id: 'shell' } : null); if (!s || s.id === 'diag') return err('unknown slot. try: go vault'); ok('equipping ' + s.id); closeTerm(); go(s.id); break; }
     case 'paint': { const i = WAYS.findIndex(w => w.n.toLowerCase().startsWith(arg)); if (i < 0) return err('colorways: ' + WAYS.map(w => w.n.toLowerCase()).join(', ')); wayPrev = i; doApply(); ok('shell repainted ' + WAYS[i].n); break; }
+    case 'world': { if (!arg) { tl('  uplink      here · the runner\'s shell'); tl('  crystarium  the archive above the clouds'); tl('  cross over: world crystarium'); break; }
+      if (arg === 'uplink') { try { localStorage.setItem('jere.world', 'uplink'); } catch (e) { } ok('already here. remembered.'); break; }
+      if (arg === 'crystarium' || arg === 'ff' || arg === 'ffxiii') { try { localStorage.setItem('jere.world', 'crystarium'); } catch (e) { } ok('crossing to crystarium'); closeTerm(); leaveWorld('crystarium/index.html'); break; }
+      return err('worlds: uplink, crystarium'); }
     case 'mute': setSnd(false); ok('sound off'); break;
     case 'unmute': setSnd(true); ok('sound on'); break;
     case 'whoami': tl('runner · JERE.ING · bay 04 · ' + String(visits).padStart(3, '0') + ' visits logged'); break;
@@ -1710,6 +1812,11 @@ addEventListener('keyup', e => { if (e.key.toLowerCase() === 'x') endHold(); });
 addEventListener('pointerdown', () => S.init(), { once: true });
 $('#boot').addEventListener('pointerdown', endBoot);
 
+/* ============ LEAVE FOR THE OTHER WORLD ============ */
+function leaveWorld(href) { if (RM) { location.href = href; return; } const el = $('#boot'); el.hidden = false; el.querySelector('.log').innerHTML = ''; el.querySelector('.bwm').style.visibility = 'hidden'; const g = el.querySelector('canvas').getContext('2d'); let f = 0;
+  const fr = () => { g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 160, 90); g.fillStyle = '#c2ff16'; for (let i = 0; i < 14 + f * 6; i++) g.fillRect(Math.random() * 160 | 0, Math.random() * 90 | 0, 2 + Math.random() * 14 | 0, 1 + Math.random() * 6 | 0); play('crackle', 1); if (++f < 4) setTimeout(fr, 33); else { g.fillStyle = '#f2f2ee'; g.fillRect(0, 0, 160, 90); play('thump'); setTimeout(() => { location.href = href; }, 120); } };
+  fr(); }
+
 /* ============ BOOT ============ */
 let bootT = [];
 function endBoot() { bootT.forEach(clearTimeout); bootT = []; $('#boot').hidden = true; play('swell'); restoreFocus(); }
@@ -1731,7 +1838,8 @@ const startR = location.hash.slice(1) === 'vault' ? 'lab' : location.hash.slice(
 setRoom(startL >= 0 ? 'lab' : ORDER.includes(startR) ? startR : 'shell'); if (startL >= 0) { selectProj(startL, true); history.replaceState(null, '', '#lab'); openLab(startL); }
 $('#snd').setAttribute('aria-pressed', S.on);
 document.fonts && document.fonts.ready.then(placeBrk);
-boot();
+/* the gate (top of the page) holds the boot until a world is chosen */
+if (window.__JG && window.__JG.wait) window.__JG.go = () => boot(); else boot();
 })();
 </script>
 
