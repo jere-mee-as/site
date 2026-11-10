@@ -276,6 +276,10 @@ body.locked{overflow:hidden}
 .wx-pop button[aria-pressed="true"]::after{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .wx-pop button:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 .foot{padding-bottom:84px}
+/* no footer: the greeting lives at the top of the sky panel, the page just ends in air */
+.stack{padding-bottom:120px}
+.wx-pop{width:214px}
+.wgreet{margin:4px 10px 12px;font-size:12.5px;line-height:1.45;color:var(--mute)}
 @media (prefers-reduced-motion:reduce){.wx-pop,#wx-btn{transition:none}}
 .wx{opacity:0;transform:translateY(10px);filter:blur(4px);pointer-events:none;visibility:hidden;transition:opacity .9s ease,transform 1s var(--ease),filter .9s ease,visibility 0s 1s}
 .wx.show{opacity:1;transform:none;filter:none;pointer-events:auto;visibility:visible;transition:opacity .9s ease,transform 1s var(--ease),filter .9s ease,visibility 0s}
@@ -372,6 +376,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
         <div class="dd" id="p-social" role="region" aria-labelledby="b-social"><div><div class="ddc">
           <a class="it" href="https://www.instagram.com/jere.mee.as/"><span><span class="n">Instagram</span><span class="s">@jere.mee.as · photos and everyday things</span></span><span class="ar">↗</span></a>
           <a class="it" href="https://www.are.na/jere-mi-as"><span><span class="n">Are.na</span><span class="s">jere-mi-as · images and references I collect</span></span><span class="ar">↗</span></a>
+          <a class="it" href="https://admonymous.co/jere"><span><span class="n">Admonymous</span><span class="s">Leave me anonymous feedback</span></span><span class="ar">↗</span></a>
         </div></div></div>
       </section>
     </nav>
@@ -416,6 +421,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
 
 <div class="wx">
   <div class="wx-pop ctrl" id="wx-pop" aria-label="Sky and weather">
+    <p class="wgreet" id="where">Good morning from Virginia.</p>
     <p class="wl">Sky</p>
     <button type="button" data-sky="dawn">Dawn</button><button type="button" data-sky="day">Day</button><button type="button" data-sky="dusk">Dusk</button><button type="button" data-sky="night">Night</button>
     <p class="wl">Weather</p>
@@ -423,10 +429,6 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
   </div>
   <button type="button" id="wx-btn" aria-expanded="false" aria-controls="wx-pop" aria-label="Change the sky and weather"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5h9.5a4 4 0 0 0 .4-7.98A5.5 5.5 0 0 0 6.4 11.3 3.6 3.6 0 0 0 7 18.5Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg></button>
 </div>
-<footer class="foot m fast" style="--d:2.85s">
-  <span id="where">Good morning from Virginia.</span>
-  <span class="fl"><a href="https://admonymous.co/jere">Leave me anonymous feedback ↗</a></span>
-</footer>
 
 <script>
 (function () {

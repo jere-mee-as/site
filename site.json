@@ -92,7 +92,8 @@
       "id": "social", "label": "Social",
       "items": [
         {"title": "Instagram", "sub": "@jere.mee.as · photos and everyday things", "href": "https://www.instagram.com/jere.mee.as/"},
-        {"title": "Are.na", "sub": "jere-mi-as · images and references I collect", "href": "https://www.are.na/jere-mi-as"}
+        {"title": "Are.na", "sub": "jere-mi-as · images and references I collect", "href": "https://www.are.na/jere-mi-as"},
+        {"title": "Admonymous", "sub": "Leave me anonymous feedback", "href": "https://admonymous.co/jere"}
       ]
     }
   ],
