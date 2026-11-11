@@ -1,5 +1,5 @@
 /* jere.ing front door sounds. Everything is synthesized with Web Audio; no sound files.
-   Picks (Nov 10, 2026 soundboard): air swell intro, three loose chimes per row to open, "settle" to close,
+   Picks (Nov 10, 2026 soundboard): air swell intro, far-away chimes per row to open and close,
    rising pair for links out, major third for the email copy, small chime for every choice in the weather panel (the button itself appears silently), far roll thunder with storm flashes. Hover is silent.
    Ambience is off by default and switched in the weather panel: birds with barely any wind by day,
    crickets and insects by night, drizzle for rain, heavy storm for storm.
@@ -89,13 +89,14 @@
       [220, 330, 440].forEach(function (f, i) { tone({ f: f, d: 2.2, a: .9, peak: .05, detune: i * 4 - 4, wet: .6 }); });
       hiss({ buf: 'pink', f: 1200, q: .4, a: .9, d: 1.6, peak: .03, wet: .5 });
     },
+    // "far away" (picked Nov 10, both at 200%): heard only through the reverb, like chimes on a porch down the street
     open: function (r, quiet) {
       var k = quiet ? .6 : 1;
-      shuffled(r.notes).slice(0, 3).forEach(function (f, i) { chime(f, i * rnd(.08, .16), .045 * k, 1.7, r.pan + rnd(-.15, .15)); });
+      shuffled(r.notes).slice(0, 3).forEach(function (f, i) { tone({ at: i * rnd(.1, .18), f: f, d: 1.4, a: .02, peak: .06 * k, lp: 2600, pan: r.pan, dest: verbIn }); });
     },
     close: function (r, quiet) {
       var k = quiet ? .6 : 1;
-      [r.notes[3], r.notes[1]].forEach(function (f, i) { chime(f, i * .13, .03 * k, .6, r.pan); });
+      [r.notes[3], r.notes[1]].forEach(function (f, i) { tone({ at: i * .14, f: f, d: .9, a: .02, peak: .044 * k, lp: 2400, pan: r.pan, dest: verbIn }); });
     },
     link: function () { tone({ f: 660, d: .18, a: .003, peak: .09, wet: .4 }); tone({ at: .07, f: 990, d: .3, a: .003, peak: .08, wet: .5 }); },
     copy: function () { tone({ f: 784, d: .3, a: .003, peak: .08, wet: .45 }); tone({ at: .09, f: 988, d: .5, a: .003, peak: .08, wet: .5 }); },
