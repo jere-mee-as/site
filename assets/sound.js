@@ -1,7 +1,6 @@
 /* jere.ing front door sounds. Everything is synthesized with Web Audio; no sound files.
    Picks (Nov 10, 2026 soundboard): air swell intro, three loose chimes per row to open, "settle" to close,
-   rising pair for links out, major third for the email copy, small chime when the weather button appears,
-   soft tick for sky/weather choices, far roll thunder with storm flashes. Hover is silent.
+   rising pair for links out, major third for the email copy, small chime for every choice in the weather panel (the button itself appears silently), far roll thunder with storm flashes. Hover is silent.
    Ambience is off by default and switched in the weather panel: birds with barely any wind by day,
    crickets and insects by night, drizzle for rain, heavy storm for storm.
    Nothing is built until the first tap or key press, and the audio sleeps while the tab is hidden. */
@@ -268,17 +267,16 @@
       var open = t.getAttribute('aria-expanded') === 'true';
       fx(open ? 'open' : 'close', tuningFor(t), t.classList.contains('sub'));
     } else if (t.id === 'copy') fx('copy');
-    else if (t.matches('#wx-pop button[data-sky], #wx-pop button[data-w]')) fx('tick');
+    else if (t.matches('#wx-pop button[data-sky], #wx-pop button[data-w]')) fx('appear');
     else if (t.tagName === 'A' && /^https?:/i.test(t.getAttribute('href') || '') && t.hostname !== location.hostname) fx('link');
   });
 
-  // weather button arriving at the bottom of the page
+  // weather button arriving at the bottom of the page: silent on purpose (Nov 10); kept so a sound can come back easily
   var wx = document.querySelector('.wx');
   if (wx) {
     var shown = wx.classList.contains('show');
     new MutationObserver(function () {
       var now = wx.classList.contains('show');
-      if (now && !shown) fx('appear');
       shown = now;
     }).observe(wx, { attributes: true, attributeFilter: ['class'] });
   }
@@ -298,12 +296,12 @@
   }
   var ambBtn = document.getElementById('snd-amb'), uiBtn = document.getElementById('snd-ui');
   if (ambBtn) ambBtn.addEventListener('click', function () {
-    wake(); prefs.ambience = !prefs.ambience; paint();
+    wake(); prefs.ambience = !prefs.ambience; paint(); fx('appear');
     if (ctx && ctx.state !== 'running') ctx.resume().then(syncAmbience, function () {}); else syncAmbience();
   });
   if (uiBtn) uiBtn.addEventListener('click', function () {
     wake(); prefs.sounds = !prefs.sounds; store('jere.sounds', prefs.sounds ? '1' : '0'); paint();
-    if (prefs.sounds) setTimeout(function () { fx('tick'); }, 30);
+    if (prefs.sounds) setTimeout(function () { fx('appear'); }, 30);
   });
   paint();
 })();
