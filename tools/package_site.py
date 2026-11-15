@@ -8,6 +8,8 @@ Run build.py first. Cloudflare Pages runs both on every push to main and serves 
   /vesta9/            Vesta 9 (lab/mirrors-edge/vesta9.html)
   /reports/<file>     reports, unchanged
   /lab/...            demos, world docs and archive pages (tools/lab_build.py)
+  /sites/             the list of arguing sites (sites/index.html)
+  /sure, /arguing, …  short addresses that forward to those sites on GitHub Pages (OUTSIDE below)
 """
 import shutil
 from pathlib import Path
@@ -26,6 +28,13 @@ MOVED = {
     "/lab/worlds/ffxiii/": "/crystarium/",
     "/lab/worlds/mirrors-edge/vesta9.html": "/vesta9/",
     "/lab/worlds/mirrors-edge/vesta9": "/vesta9/",   # Cloudflare also serves .html pages without the extension
+}
+# Sites that live on GitHub Pages but are known by a jere.ing address (a 302, so they can move later).
+OUTSIDE = {
+    "/sure": "https://jere-mee-as.github.io/sosureabout/",
+    "/arguing": "https://jere-mee-as.github.io/philosophyarguing/",
+    "/philosophy-ragebait": "https://jere-mee-as.github.io/philosophyragebait/",
+    "/ragebait": "https://jere-mee-as.github.io/ragebait/",
 }
 
 # Crystarium's tab icon and link preview, from the two-worlds branch.
@@ -84,7 +93,11 @@ def main():
             p = SITE / old.lstrip("/")
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(stub(new), encoding="utf-8")
-    (SITE / "_redirects").write_text("".join(f"{a} {b} 301\n" for a, b in MOVED.items()), encoding="utf-8")
+    shutil.copytree(ROOT / "sites", SITE / "sites")
+    rules = [f"{a} {b} 301" for a, b in MOVED.items()]
+    for a, b in OUTSIDE.items():
+        rules += [f"{a} {b} 302", f"{a}/ {b} 302"]
+    (SITE / "_redirects").write_text("\n".join(rules) + "\n", encoding="utf-8")
 
     files = [p for p in SITE.rglob("*") if p.is_file()]
     size = sum(p.stat().st_size for p in files) / 1024 / 1024
