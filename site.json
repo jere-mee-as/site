@@ -69,11 +69,8 @@
           {"title": "Switchboard", "sub": "A home screen laid out like a group chat", "href": "https://github.com/jere-mee-as/switchboard"},
           {"title": "Scope", "sub": "An oscilloscope for any song you drop in", "href": "/reports/scope.html"}
         ]},
-        {"title": "Arguing", "note": "each one leaves this page", "items": [
-          {"title": "So you’re sure about…", "sub": "Uncomfortable facts on fifteen hot subjects, each with its source and its catch", "href": "/sure"},
-          {"title": "So you’re arguing about…", "sub": "163 philosophies, three ways to argue with each, and how they answer back", "href": "/arguing"},
-          {"title": "Philosophy rage bait", "sub": "One line to annoy the fans of 72 philosophies", "href": "/philosophy-ragebait"},
-          {"title": "Rage bait", "sub": "Something to say to anyone, about anything", "href": "/ragebait"}
+        {"title": "Sites", "items": [
+          {"title": "Sites for arguing", "sub": "Facts, philosophies and rage bait", "href": "/sites/"}
         ]},
         {"title": "Reports", "note": "books and conversations, mapped", "items": [
           {"title": "Republic · Timaeus · Critias", "sub": "Plato", "href": "/reports/timaeus-connectome.html"},

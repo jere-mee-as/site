@@ -1,50 +1,47 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sites · jere.ing</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sites for arguing · jere.ing</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Four small sites for arguing: facts, philosophies and rage bait.">
+<meta name="description" content="Sites for arguing: facts, philosophies and rage bait.">
 <link rel="icon" href="/favicon.svg">
 <script>var t='ink';try{var s=localStorage.getItem('st-theme');if(['ink','day','night','paper'].indexOf(s)>=0)t=s}catch(e){}document.documentElement.dataset.theme=t</script>
 <style>
-:root{--ink:#111;--dim:#9a9a9a;--faint:#e6e6e6;--bg:#fff;color-scheme:light dark}
-@media (prefers-color-scheme:dark){:root:not([data-theme]){--ink:#ebebeb;--dim:#6c6c6c;--faint:#222;--bg:#0b0b0b}}
-:root[data-theme=day]{--ink:#111;--dim:#9a9a9a;--faint:#e6e6e6;--bg:#fff;color-scheme:light}
+:root[data-theme=day]{--ink:#111;--dim:#8a8a8a;--faint:#e6e6e6;--bg:#fff;color-scheme:light}
 :root[data-theme=night]{--ink:#ebebeb;--dim:#6c6c6c;--faint:#222;--bg:#0b0b0b;color-scheme:dark}
 :root[data-theme=paper]{--ink:#2b241d;--dim:#9a8c79;--faint:#e3d9c6;--bg:#f5efe3;color-scheme:light}
 :root[data-theme=ink]{--ink:#e9eef6;--dim:#7f93ad;--faint:#22385a;--bg:#0f2240;color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.4 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;transition:background-color .3s,color .3s}
-button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:46em;margin:0 auto;padding:clamp(70px,14vh,130px) 28px 18vh}
-h1{font:inherit;font-size:clamp(30px,4.6vw,48px);line-height:1.15;margin:0 0 12px;opacity:0;animation:up .7s ease-out .05s forwards}
-.lede{color:var(--dim);font-size:15px;margin:0 0 46px;opacity:0;animation:up .7s ease-out .2s forwards}
-.site{display:flex;align-items:baseline;gap:16px;padding:14px 0 16px;opacity:0;animation:up .55s ease-out forwards;animation-delay:calc(.35s + var(--n)*.09s)}
-h2{font:inherit;font-size:14px;color:var(--ink);margin:42px 0 10px;opacity:0;animation:up .55s ease-out forwards;animation-delay:calc(.35s + var(--n)*.09s)}h2:first-of-type{margin-top:0}h2 span{color:var(--dim);margin-left:8px}
-.site+h2,.site:last-of-type{border-bottom:0}.site+.site{border-top:1px solid var(--faint)}
-.site .n{display:block;font-size:clamp(22px,2.6vw,27px);line-height:1.2;transition:opacity .2s}
-.site .s{display:block;color:var(--dim);font-size:14.5px;margin-top:5px;line-height:1.4}
-.site .ar{margin-left:auto;color:var(--dim);font-size:18px;transition:transform .25s,color .2s;flex:none}
-.site:hover .n{opacity:.65}.site:hover .ar{color:var(--ink);transform:translateX(4px)}
-.home{display:inline-block;margin-top:40px;color:var(--dim);font-size:14px}.home:hover{color:var(--ink)}
+a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+/* the group names sit in the left margin; everything else starts from one left edge */
+.wrap{max-width:44em;margin:0 auto;padding:clamp(80px,16vh,150px) 28px 14vh}
+h1{font:inherit;font-size:clamp(30px,4.4vw,44px);line-height:1.15;margin:0 0 56px 9rem}
+.grp{display:grid;grid-template-columns:9rem 1fr;align-items:baseline;margin-bottom:40px}
+.lab{color:var(--dim);font-size:14px;text-align:right;padding-right:28px}
+.it{display:block;padding:0 0 20px}
+.n{display:block;font-size:24px;line-height:1.2;transition:opacity .2s}.it:hover .n{opacity:.6}
+.s{display:block;color:var(--dim);font-size:15px;margin-top:3px}
+.back{display:inline-block;margin-left:9rem;color:var(--dim);font-size:14px}.back:hover{color:var(--ink)}
+h1,.grp,.back{opacity:0;animation:up .6s ease-out forwards}.grp:nth-of-type(1){animation-delay:.15s}.grp:nth-of-type(2){animation-delay:.27s}.back{animation-delay:.4s}
 #theme{position:fixed;top:18px;right:20px;width:28px;height:28px;color:var(--dim);display:grid;place-items:center}#theme:hover{color:var(--ink)}#theme svg{width:15px;height:15px}
 @keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}h1,.lede,.site,h2{opacity:1}}
+@media (max-width:640px){h1,.back{margin-left:0}.grp{grid-template-columns:1fr}.lab{text-align:left;padding:0 0 10px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}h1,.grp,.back{opacity:1}}
 </style></head><body>
 <button id="theme" aria-label="Change theme" title="Theme: ink, day, night, paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
 <main class="wrap">
   <h1>Sites for arguing</h1>
-  <p class="lede">Facts, philosophies and rage bait. Each one opens on its own.</p>
-  <h2 style="--n:0">Facts <span>for when someone is sure</span></h2>
-  <a class="site" style="--n:1" href="/sure"><span><span class="n">So you’re sure about…</span><span class="s">Uncomfortable facts on fifteen hot subjects, each with its source and its catch.</span></span><span class="ar">→</span></a>
-  <h2 style="--n:2">Philosophy <span>for when it’s about ideas</span></h2>
-  <a class="site" style="--n:3" href="/arguing"><span><span class="n">So you’re arguing about…</span><span class="s">163 philosophies, three ways to argue with each, and how they answer back.</span></span><span class="ar">→</span></a>
-  <a class="site" style="--n:4" href="/philosophy-ragebait"><span><span class="n">Philosophy rage bait</span><span class="s">One line to annoy the fans of 72 philosophies.</span></span><span class="ar">→</span></a>
-  <h2 style="--n:5">Anything <span>for when it’s about nothing in particular</span></h2>
-  <a class="site" style="--n:6" href="/ragebait"><span><span class="n">Rage bait</span><span class="s">Something to say to anyone, about anything.</span></span><span class="ar">→</span></a>
-  <a class="home" href="/">← jere.ing</a>
+  <div class="grp"><div class="lab">Arguing</div><div>
+    <a class="it" href="https://jere-mee-as.github.io/sosureabout/"><span class="n">So you’re sure about…</span><span class="s">Uncomfortable facts, sourced</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/philosophyarguing/"><span class="n">So you’re arguing about…</span><span class="s">163 philosophies, argued</span></a>
+  </div></div>
+  <div class="grp"><div class="lab">Rage bait</div><div>
+    <a class="it" href="https://jere-mee-as.github.io/philosophyragebait/"><span class="n">Philosophy rage bait</span><span class="s">For any philosophy’s fans</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/ragebait/"><span class="n">Rage bait</span><span class="s">For any argument</span></a>
+  </div></div>
+  <a class="back" href="/">← jere.ing</a>
 </main>
 <script>
 (function(){ const r = document.documentElement, order = ['ink', 'day', 'night', 'paper'];
-  document.getElementById('theme').onclick = () => { const i = order.indexOf(r.dataset.theme || 'ink'), t = order[(i + 1) % order.length];
+  document.getElementById('theme').onclick = () => { const t = order[(order.indexOf(r.dataset.theme) + 1) % order.length];
     r.dataset.theme = t; try { localStorage.setItem('st-theme', t); } catch(e){} }; })();
 </script>
 </body></html>
