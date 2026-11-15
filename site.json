@@ -66,7 +66,7 @@
       "id": "projects", "label": "Projects",
       "groups": [
         {"title": "Software", "items": [
-          {"title": "Switchboard", "sub": "A home screen laid out like a group chat", "href": "https://github.com/jere-mee-as/switchboard"},
+          {"title": "Paper", "sub": "An Android home screen: your apps as a plain list", "href": "https://github.com/jere-mee-as/paper"},
           {"title": "Scope", "sub": "An oscilloscope for any song you drop in", "href": "/reports/scope.html"}
         ]},
         {"title": "Sites", "items": [
