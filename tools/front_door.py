@@ -19,7 +19,6 @@ esc = lambda s: html.escape(str(s), quote=True)
 UPLINK_ROOMS = ["comms", "salvage", "cipher", "paint", "scan", "noise"]
 OLD_LAB = {
     "launcher": "/lab/demo/launcher.html",
-    "switchboard": "/lab/demo/switchboard.html",
     "veta": "/lab/demo/veta.html",
     "scope": "/reports/scope.html",
     "uplink": "/uplink/",

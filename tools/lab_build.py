@@ -3,10 +3,9 @@
 Called by tools/package_site.py. Everything here is generated from files in the repo:
 
   _site/lab/demo/launcher.html      JRL Launcher v4.0 preview (mock phone bridge)
-  _site/lab/demo/switchboard.html   Switchboard v0.2 (example data)
   _site/lab/demo/veta.html          Veta, loaded with the made-up vault
 
-The apps live in their own repos (jere-mee-as/jrl-launcher, /switchboard, /veta); their demos come from the
+The apps live in their own repos (jere-mee-as/jrl-launcher, /veta); their demos come from the
 snapshots in lab/apps/ (see lab/apps/README.md).
   _site/lab/worlds/...              Style books and audits for the worlds (the worlds are at /uplink/, /crystarium/, /vesta9/)
   _site/lab/archive/...             Older versions, each its own page
@@ -63,7 +62,6 @@ WORLDS = {
 
 DEMOS = {
     "launcher.html": "lab/apps/launcher/v4.0.html",
-    "switchboard.html": "lab/apps/switchboard.html",
 }
 
 # The Archive shelf: every older version as its own page (opened in a new tab, never downloaded).
