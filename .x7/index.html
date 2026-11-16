@@ -856,6 +856,11 @@
       g.style.display = '';
       const A = anchor(a), B = anchor(b);
       let dx = B.x - A.x, dy = B.y - A.y; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
+      if (from === 'changed') { // "Yes! ❤️" → "Yes 🎁": the original simple arc
+        const x1 = A.x + dx * (A.r + 6), y1 = A.y + dy * (A.r + 6), x2 = B.x - dx * (B.r + 14), y2 = B.y - dy * (B.r + 14);
+        const cx = (x1 + x2) / 2 + dy * len * .35, cy = (y1 + y2) / 2 - dx * len * .35;
+        g.children[1].setAttribute('d', `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`); head(g, x2, y2, x2 - cx, y2 - cy); return;
+      }
       if (!OBS.length) obstacles();
       // try bowing out to either side; keep whichever squiggle ends up shorter
       let pick = null, pl = Infinity;
