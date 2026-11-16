@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta property="og:title" content="So you want to buy something for Jere?">
 <meta property="og:description" content="A Christmas gift tree. Pick an answer and watch it grow 🎄">
@@ -187,9 +187,7 @@
   #player.playing .eq i{animation:eq .8s ease-in-out infinite}
   #player.playing .eq i:nth-child(2){animation-delay:-.3s} #player.playing .eq i:nth-child(3){animation-delay:-.55s}
   @keyframes eq{0%,100%{height:4px}50%{height:14px}}
-  #player .hint{position:absolute;left:0;bottom:72px;white-space:nowrap;font-size:14px;font-weight:800;color:var(--gold-2);background:rgba(15,42,31,.9);
     border:2px dashed var(--gold-2);border-radius:999px;padding:6px 12px;transition:opacity .4s}
-  #player.started .hint{opacity:0;pointer-events:none}
 
   .n-sure .disc{width:270px;height:270px;padding:26px}
   .n-sure ul{list-style:none;margin:8px 0 6px;padding:0;font-size:12.5px;font-weight:700;line-height:1.55;color:var(--cream)}
@@ -279,14 +277,13 @@
   .lfoot{text-align:center;margin-top:30px;font-family:Fraunces,serif;font-style:italic;font-size:20px;color:var(--gold-2)}
   @media (max-width:560px){.li{grid-template-columns:52px 1fr auto;border-radius:22px}.lim{width:52px;height:52px}.lig{display:none}}
   @media (max-width:640px){
-    .ui button{font-size:12.5px;padding:9px 12px}
+    .ui button{font-size:15px;padding:11px 15px}
     #uiTR{gap:6px} #uiTR button.round{width:40px;height:40px;font-size:17px}
     #player{padding:6px 10px 6px 6px;gap:6px} #player button{width:40px;height:40px;font-size:15px}
-    #player .hint{font-size:12px;bottom:58px}
   }
   .acc{position:absolute;left:0;top:0;width:180px;height:180px;overflow:visible;z-index:4;pointer-events:none;opacity:0;transform:translateY(-40px) scale(.7);
     transition:opacity .2s,transform .5s cubic-bezier(.2,1.6,.4,1)}
-  #pfp:hover[data-acc="0"] .acc-0,#pfp:hover[data-acc="1"] .acc-1,#pfp:hover[data-acc="2"] .acc-2,#pfp:hover[data-acc="3"] .acc-3,#pfp:hover[data-acc="4"] .acc-4{opacity:1;transform:none}
+  :is(#pfp:hover,#pfp.tapdress)[data-acc="0"] .acc-0,:is(#pfp:hover,#pfp.tapdress)[data-acc="1"] .acc-1,:is(#pfp:hover,#pfp.tapdress)[data-acc="2"] .acc-2,:is(#pfp:hover,#pfp.tapdress)[data-acc="3"] .acc-3,:is(#pfp:hover,#pfp.tapdress)[data-acc="4"] .acc-4{opacity:1;transform:none}
   #pfp:hover .acc-1 circle:first-of-type{filter:drop-shadow(0 0 8px #ff2a3a)}
   #pfp .cap{transition:opacity .2s}
   #pfp:hover .cap{opacity:0}
@@ -305,6 +302,26 @@
     box-shadow:none!important;animation:none!important}
   .n-subtle .disc:hover{background:rgba(255,255,255,.12)!important}
   .n-subtle.picked .disc{border-style:solid!important;color:var(--gold-2)!important}
+  #stage{touch-action:pan-x pan-y}
+  #player{left:calc(14px + env(safe-area-inset-left));bottom:calc(14px + env(safe-area-inset-bottom))}
+  #uiMenu{top:calc(14px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right))}
+  #uiTR{top:calc(72px + env(safe-area-inset-top));right:calc(14px + env(safe-area-inset-right))}
+  #mercy{bottom:calc(24px + env(safe-area-inset-bottom))}
+  @media (max-width:640px){
+    #player{padding:5px 10px 5px 5px;gap:5px}
+    #player button{width:44px;height:44px;font-size:16px}
+    #player .now{font-size:14px;min-width:40px}
+    #menuBtn{padding:9px 14px!important}
+    #uiTR{top:calc(68px + env(safe-area-inset-top));padding:12px;min-width:250px}
+    #uiTR > button{font-size:15px;padding:13px 14px}
+    .li{grid-template-columns:56px 1fr auto}.lin b{font-size:17px}.lin small{font-size:13.5px}.lip{font-size:19px}
+    .listview h3{font-size:24px}
+    .n-vid .detail{width:420px}
+    .listview{padding:calc(18px + env(safe-area-inset-top)) 12px calc(40px + env(safe-area-inset-bottom))}
+    .lhead h2{font-size:24px} .lface{width:64px;height:64px}
+    #mercy{font-size:13px;padding:9px 14px}
+    .lightbox{padding:10px}
+  }
 </style>
 </head>
 <body>
@@ -327,7 +344,6 @@
 <canvas id="snow"></canvas>
 <button type="button" id="mercy">😱 Ok ok, I change my mind!</button>
 <div id="player" aria-label="Christmas soundtrack">
-  <span class="hint">🎶 Tap anywhere to start the music</span>
   <button type="button" id="pPlay" aria-label="Play">▶</button>
   <button type="button" id="pNext" aria-label="Next song">⏭</button>
   <button type="button" id="pMute" aria-label="Mute">🔊</button>
@@ -380,8 +396,8 @@
     <h1>So you want to buy something for <em>Jere?</em></h1>
   </div>
 
-  <div class="node n-a" data-id="startyes" data-parent="root" data-auto data-ang="-58"><button type="button" class="disc">Yes 🎁</button></div>
-  <div class="node n-a alt" data-id="startno" data-parent="root" data-auto data-ang="-122"><button type="button" class="disc">No</button></div>
+  <div class="node n-a" data-id="startyes" data-parent="root" data-auto data-ang="-58" data-ang-m="-66"><button type="button" class="disc">Yes 🎁</button></div>
+  <div class="node n-a alt" data-id="startno" data-parent="root" data-auto data-ang="-122" data-ang-m="-114"><button type="button" class="disc">No</button></div>
   <div class="node n-q n-sure" data-id="sure" data-parent="startno" data-ang="180"><div class="disc"><b>Are you sure?</b><span>He's got a lot going for him:</span>
     <ul><li>Bilingual 🇦🇷🇺🇸</li><li>Is sexy 😏</li><li>Is hilarious 😂</li><li>Has a lot of money 💸</li><li>Writes philosophy essays ✍️</li><li>Takes great photos 📸</li><li>Built this website 🎄</li></ul><b class="cm">Change your mind?</b></div></div>
   <div class="node n-a" data-id="changed" data-parent="sure" data-auto><button type="button" class="disc" data-goto="startyes">Yes! ❤️</button></div>
@@ -546,7 +562,7 @@
 (() => {
   const $ = id => document.getElementById(id);
   const stage = $('stage'), sizer = $('sizer'), canvas = $('canvas'), svg = $('edges');
-  const BASE = () => innerWidth < 700 ? .74 : 1.18;
+  const BASE = () => innerWidth < 700 ? .92 : 1.18;
   let scale = BASE();
 
   // ---------- sound effects: every click plays the next note of "Jingle Bells" on a music box, with a soft sleigh-bell shimmer ----------
@@ -630,7 +646,8 @@
       const fan = p === root ? 1.5 : Math.min(2.2, .95 * (k - 1));
       const base = p === root ? -Math.PI / 2 : p.ang;
       n.ang = k === 1 ? base + (depth(n) % 2 ? .35 : -.35) : base - fan / 2 + fan * i / (k - 1);
-      if (n.el.dataset.ang) n.ang = +n.el.dataset.ang * Math.PI / 180;
+      const ang = innerWidth < 700 && n.el.dataset.angM ? n.el.dataset.angM : n.el.dataset.ang;
+      if (ang) n.ang = +ang * Math.PI / 180;
       const L = rad(p) * .8 + rad(n) * .8 + 105;
       n.x = p.x + Math.cos(n.ang) * L; n.y = p.y + Math.sin(n.ang) * L;
       n.placed = true; n.fresh = true;
@@ -829,6 +846,15 @@
     const d = Math.max(-25, Math.min(25, e.deltaMode ? e.deltaY * 16 : e.deltaY));
     queueZoom(Math.exp(-d * .004), e.clientX, e.clientY);
   }, { passive: false });
+  let pinch = null; // two-finger pinch on phones zooms the tree, not the page
+  stage.addEventListener('touchstart', e => { if (e.touches.length === 2) { const [a, b] = e.touches; pinch = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); } }, { passive: true });
+  stage.addEventListener('touchmove', e => {
+    if (e.touches.length !== 2 || !pinch) return;
+    e.preventDefault();
+    const [a, b] = e.touches, d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    queueZoom(d / pinch, (a.clientX + b.clientX) / 2, (a.clientY + b.clientY) / 2); pinch = d;
+  }, { passive: false });
+  stage.addEventListener('touchend', e => { if (e.touches.length < 2) pinch = null; });
   let gs = 1; // Safari trackpad pinch
   stage.addEventListener('gesturestart', e => { e.preventDefault(); gs = e.scale; });
   stage.addEventListener('gesturechange', e => { e.preventDefault(); const f = Math.pow(e.scale / gs, .6); gs = e.scale; queueZoom(f, e.clientX, e.clientY); });
@@ -902,6 +928,7 @@
       if (moved) return;
       e.stopPropagation();
       SFX.pfp(); pfp.classList.remove('spin'); void pfp.offsetWidth; pfp.classList.add('spin');
+      if (matchMedia('(hover: none)').matches) { pfp.dataset.acc = acc; acc = (acc + 1) % 5; pfp.classList.add('tapdress'); clearTimeout(pfp._dt); pfp._dt = setTimeout(() => pfp.classList.remove('tapdress'), 2600); }
       const L = lines[lang] || lines.en; say.textContent = L[li++ % L.length];
       say.classList.add('show'); clearTimeout(t); t = setTimeout(() => say.classList.remove('show'), 1800);
     });
@@ -948,10 +975,6 @@
     $('pPlay').addEventListener('click', e => { e.stopPropagation(); audio.paused ? play() : audio.pause(); });
     $('pNext').addEventListener('click', e => { e.stopPropagation(); load(cur + 1); play(); });
     $('pMute').addEventListener('click', e => { e.stopPropagation(); audio.muted = !audio.muted; SFX.setMuted(audio.muted); $('pMute').textContent = audio.muted ? '🔇' : '🔊'; $('pMute').setAttribute('aria-label', audio.muted ? 'Unmute' : 'Mute'); });
-    // browsers block sound until the visitor interacts, so start on the first tap/click
-    play();
-    const first = e => { removeEventListener('pointerdown', first, true); if (!e.target.closest('#player') && audio.paused) play(); };
-    addEventListener('pointerdown', first, true);
   })();
 
   document.querySelectorAll('img').forEach(i => i.draggable = false);
