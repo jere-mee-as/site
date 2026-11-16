@@ -85,6 +85,8 @@ def main():
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(stub(new), encoding="utf-8")
     shutil.copytree(ROOT / "sites", SITE / "sites")
+    if (ROOT / ".x7").exists():                # unlisted page, shared by link only
+        shutil.copytree(ROOT / ".x7", SITE / "jerechristmas")
     (SITE / "_redirects").write_text("".join(f"{a} {b} 301\n" for a, b in MOVED.items()), encoding="utf-8")
 
     files = [p for p in SITE.rglob("*") if p.is_file()]
