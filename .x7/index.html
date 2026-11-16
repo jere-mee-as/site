@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" translate="no" class="notranslate">
 <head>
 <meta charset="utf-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta property="og:title" content="So you want to buy something for Jere?">
@@ -901,7 +902,7 @@
   const T = s => lang === 'es' && ES[s] ? ES[s] : s;
   const orig = new WeakMap();
   function setLang(l) {
-    lang = l; document.documentElement.lang = l === 'es' ? 'es-AR' : 'en';
+    lang = l; document.documentElement.lang = l === 'es' ? 'es-AR' : 'en'; document.documentElement.setAttribute('translate', 'no');
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n;
     while ((n = w.nextNode())) {
       const p = n.parentElement; if (!p || p.tagName === 'SCRIPT' || p.tagName === 'STYLE' || p.id === 'langBtn') continue;
