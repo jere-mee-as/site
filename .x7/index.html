@@ -767,7 +767,7 @@
     if (n.el.classList.contains('picked')) { n.el.classList.remove('picked'); n.kids.forEach(hide); update(); setTimeout(() => view([n]), 60); return; }
     n.el.classList.add('picked');
     n.kids.forEach(k => show(k));
-    if (btn.dataset.path) { const t = nodes[btn.dataset.path]; backLinks[n.id] = t.id; t.el.classList.add('picked'); t.kids.forEach(k => show(k)); openPath(t.id); return; }
+    if (btn.dataset.path) { const t = nodes[btn.dataset.path]; backLinks[n.id] = t.id; if (t.shown) { update(); setTimeout(() => view([t]), 60); } else openPath(t.id); return; }
     if (btn.dataset.goto) { const t = nodes[btn.dataset.goto]; backLinks[n.id] = t.id; if (!t.el.classList.contains('picked')) { t.el.classList.add('picked'); t.kids.forEach(k => show(k)); } update(); setTimeout(() => view([t, ...t.kids.filter(k => k.shown)]), 60); return; }
     update();
     const fam = [n, ...n.kids.filter(k => k.shown)]; n.kids.forEach(k => k.kids.forEach(g => g.shown && fam.push(g)));
