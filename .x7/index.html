@@ -177,7 +177,8 @@
   .modal .actions button.alt{background:transparent;color:var(--cream);border:1.5px solid rgba(255,255,255,.5)}
   .lightbox{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(5,14,10,.94);cursor:zoom-out}
   .lightbox.open{display:flex;animation:fade .2s}
-  .lightbox img{max-width:100%;max-height:90vh;border-radius:14px}
+  .lightbox{touch-action:none;overflow:hidden}
+  .lightbox img{max-width:100%;max-height:90vh;border-radius:14px;transform-origin:0 0;will-change:transform}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
   /* music player */
@@ -955,8 +956,32 @@
   // modal / lightbox / venmo
   const lb = $('lightbox');
   document.querySelectorAll('[data-zoom]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); $('lbImg').src = b.dataset.zoom; lb.classList.add('open'); }));
-  lb.addEventListener('click', () => lb.classList.remove('open'));
-  addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('open'); });
+  // pinch to zoom + drag to pan inside the lightbox (the page itself blocks browser zoom)
+  const lbImg = $('lbImg'); let z = { s: 1, x: 0, y: 0 }, pts = new Map(), g0 = null, lbMoved = false;
+  const lbApply = () => { lbImg.style.transform = `translate(${z.x}px,${z.y}px) scale(${z.s})`; };
+  const lbReset = () => { z = { s: 1, x: 0, y: 0 }; lbImg.style.transition = ''; lbApply(); };
+  const lbClose = () => { lb.classList.remove('open'); lbReset(); };
+  const gest = () => { const [a, b] = [...pts.values()]; return b ? { cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) } : { cx: a.x, cy: a.y, d: 0 }; };
+  lb.addEventListener('pointerdown', e => { pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (pts.size === 1) lbMoved = false; g0 = { ...gest(), z: { ...z } }; });
+  lb.addEventListener('pointermove', e => {
+    if (!pts.has(e.pointerId)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); const g = gest();
+    if (Math.hypot(g.cx - g0.cx, g.cy - g0.cy) > 6 || (g.d && Math.abs(g.d - g0.d) > 6)) lbMoved = true;
+    if (!lbMoved) return;
+    const r = lbImg.offsetParent ? lb.getBoundingClientRect() : { left: 0, top: 0 };
+    const ox = lbImg.offsetLeft + r.left, oy = lbImg.offsetTop + r.top;   // image's untransformed top-left
+    let s = g0.z.s; if (g.d && g0.d) s = Math.min(6, Math.max(1, g0.z.s * g.d / g0.d));
+    if (pts.size === 1 && g0.z.s === 1) return;                            // nothing to pan at 1×
+    const k = s / g0.z.s;                                                   // keep the point under the fingers fixed
+    z = { s, x: g.cx - ox - (g0.cx - ox - g0.z.x) * k, y: g.cy - oy - (g0.cy - oy - g0.z.y) * k }; lbApply();
+  });
+  const lbUp = e => { pts.delete(e.pointerId); if (pts.size) g0 = { ...gest(), z: { ...z } }; else if (z.s <= 1.02) lbReset(); };
+  lb.addEventListener('pointerup', lbUp); lb.addEventListener('pointercancel', lbUp);
+  lb.addEventListener('wheel', e => { e.preventDefault(); const r = lb.getBoundingClientRect(), ox = lbImg.offsetLeft + r.left, oy = lbImg.offsetTop + r.top;
+    const s = Math.min(6, Math.max(1, z.s * Math.exp(-e.deltaY * .002))), k = s / z.s;
+    z = s === 1 ? { s: 1, x: 0, y: 0 } : { s, x: e.clientX - ox - (e.clientX - ox - z.x) * k, y: e.clientY - oy - (e.clientY - oy - z.y) * k }; lbApply(); }, { passive: false });
+  lb.addEventListener('gesturestart', e => e.preventDefault());
+  lb.addEventListener('click', () => { if (!lbMoved) lbClose(); lbMoved = false; });
+  addEventListener('keydown', e => { if (e.key === 'Escape') lbClose(); });
   $('copyV').addEventListener('click', async e => {
     e.stopPropagation(); const b = e.currentTarget;
     try { await navigator.clipboard.writeText('@Jeremias-Sur'); b.textContent = T('Copied!'); } catch { b.textContent = '@Jeremias-Sur'; }
