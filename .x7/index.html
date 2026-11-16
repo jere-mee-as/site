@@ -703,6 +703,22 @@
         else { const s = Math.sign(dy || (i - j)) * oy; a.y -= s * ma / sum; b.y += s * mb / sum; }
       }
     }
+    // keep lines from running through other nodes: push nodes off parent→child segments they're not part of
+    const E = S.filter(n => n !== root && nodes[n.parent].shown);
+    for (let t = 0; t < 90; t++) {
+      E.forEach(n => {
+        const p = nodes[n.parent], ex = n.x - p.x, ey = n.y - p.y, el2 = ex * ex + ey * ey || 1;
+        S.forEach(c => {
+          if (c === n || c === p || c === root) return;
+          let u = ((c.x - p.x) * ex + (c.y - p.y) * ey) / el2; if (u <= .05 || u >= .95) return;
+          const qx = p.x + ex * u, qy = p.y + ey * u, dx = c.x - qx, dy = c.y - qy, d = Math.hypot(dx, dy) || .01;
+          const need = Math.min(c.w, c.h) / 2 + 26; if (d >= need) return;
+          const k = (need - d) * .5, nx = dx / d, ny = dy / d;
+          c.x += nx * k; c.y += ny * k;
+          if (!n.fresh) return; n.x -= nx * k * .3; n.y -= ny * k * .3;
+        });
+      });
+    }
     S.forEach(n => n.fresh = false);
   }
 
@@ -747,21 +763,81 @@
     const tx = Math.abs(dirx) > 1e-6 ? a.box.w / Math.abs(dirx) : Infinity, ty = Math.abs(diry) > 1e-6 ? a.box.h / Math.abs(diry) : Infinity;
     return Math.min(tx, ty) + 6;
   }
+  // obstacles = every shown node, as circles (round nodes) or boxes (gift cards)
+  let OBS = [];
+  function boxOf(n, el) { const m = new DOMMatrixReadOnly(getComputedStyle(n.el).transform), er = n.el.getBoundingClientRect(), ar = el.getBoundingClientRect();
+    return { x: m.m41 + (ar.left - er.left) / scale + el.offsetWidth / 2, y: m.m42 + (ar.top - er.top) / scale + el.offsetHeight / 2, r: 0, box: { w: el.offsetWidth / 2, h: el.offsetHeight / 2 } }; }
+  const obstacles = () => { OBS = shown().map(n => ({ n, a: anchor(n) })); const h = root.el.querySelector('h1'); if (h) OBS.push({ n: root, a: boxOf(root, h) }); return OBS; };
+  let EPTS = {}; // sampled points of every drawn tree line, to count crossings
+  const segX = (a, b, c, d) => { const o = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; };
+  function crossings(P, skipIds) { let c = 0; Object.entries(EPTS).forEach(([id, Q]) => { if (skipIds.includes(id)) return;
+    for (let i = 0; i < P.length - 1; i++) for (let j = 0; j < Q.length - 1; j++) if (segX(P[i], P[i + 1], Q[j], Q[j + 1])) { c++; return; } }); return c; }
+  function outside(px, py, a, m) { // push point out of an obstacle; returns [x,y,hit]
+    if (a.box) {
+      const hw = a.box.w + m, hh = a.box.h + m, dx = px - a.x, dy = py - a.y;
+      const ox = hw - Math.abs(dx), oy = hh - Math.abs(dy);
+      if (ox <= 0 || oy <= 0) return [px, py, 0];
+      return ox < oy ? [a.x + Math.sign(dx || 1) * hw, py, 1] : [px, a.y + Math.sign(dy || 1) * hh, 1];
+    }
+    const dx = px - a.x, dy = py - a.y, d = Math.hypot(dx, dy), R = a.r + m;
+    if (d >= R) return [px, py, 0];
+    const k = R / (d || .01); return [a.x + (d ? dx : 1) * k, a.y + dy * k, 1];
+  }
+  const hits = (pts, skip) => { let h = 0; pts.forEach(([x, y]) => OBS.forEach(o => { if (!skip.includes(o.n) && outside(x, y, o.a, 4)[2]) h++; })); return h; };
+  const quadPts = (x1, y1, cx, cy, x2, y2, N) => Array.from({ length: N + 1 }, (_, i) => { const t = i / N, u = 1 - t; return [u * u * x1 + 2 * u * t * cx + t * t * x2, u * u * y1 + 2 * u * t * cy + t * t * y2]; });
+  // elastic band: start from a curve, then smooth it while pushing it out of every node it would cross
+  function band(A, B, skip, sx, sy) {
+    const N = 24; let P = quadPts(A.x, A.y, sx, sy, B.x, B.y, N);
+    for (let it = 0; it < 50; it++) {
+      for (let i = 1; i < N; i++) {
+        let [x, y] = P[i]; x = x * .5 + (P[i - 1][0] + P[i + 1][0]) * .25; y = y * .5 + (P[i - 1][1] + P[i + 1][1]) * .25;
+        OBS.forEach(o => { if (!skip.includes(o.n)) [x, y] = outside(x, y, o.a, 22); });
+        P[i] = [x, y];
+      }
+    }
+    // trim the parts inside the two end nodes
+    let i0 = 0, i1 = N; while (i0 < N && outside(P[i0][0], P[i0][1], A, 6)[2]) i0++; while (i1 > 0 && outside(P[i1][0], P[i1][1], B, 16)[2]) i1--;
+    if (i1 - i0 < 2) return null;
+    const Q = P.slice(i0, i1 + 1);
+    // Catmull-Rom → cubic Béziers for a smooth squiggle
+    let d = `M${Q[0][0]},${Q[0][1]}`;
+    for (let i = 0; i < Q.length - 1; i++) {
+      const p0 = Q[i - 1] || Q[i], p1 = Q[i], p2 = Q[i + 1], p3 = Q[i + 2] || p2;
+      d += ` C${p1[0] + (p2[0] - p0[0]) / 6},${p1[1] + (p2[1] - p0[1]) / 6} ${p2[0] - (p3[0] - p1[0]) / 6},${p2[1] - (p3[1] - p1[1]) / 6} ${p2[0]},${p2[1]}`;
+    }
+    const e = Q[Q.length - 1], f = Q[Q.length - 2]; let len = 0; for (let i = 1; i < Q.length; i++) len += Math.hypot(Q[i][0] - Q[i - 1][0], Q[i][1] - Q[i - 1][1]);
+    return { d, len, pts: Q, x2: e[0], y2: e[1], tx: e[0] - f[0], ty: e[1] - f[1] };
+  }
+  function head(g, x2, y2, tx, ty) { const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+    g.children[2].setAttribute('points', `${x2 + tx * 10},${y2 + ty * 10} ${x2 - ty * 8},${y2 + tx * 8} ${x2 + ty * 8},${y2 - tx * 8}`); }
   function drawEdges() {
+    obstacles(); EPTS = {};
     Object.values(nodes).forEach(n => {
       if (!n.parent) return;
       const p = nodes[n.parent];
       let g = edgeEls[n.id];
       if (!(n.shown && p.shown)) { if (g) g.style.display = 'none'; return; }
-      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge' + (n.el.dataset.edge ? ' ' + n.el.dataset.edge : '')); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; svg.appendChild(g); edgeEls[n.id] = g; }
+      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge' + (n.el.dataset.edge ? ' ' + n.el.dataset.edge : '')); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; g.dataset.for = n.id; svg.appendChild(g); edgeEls[n.id] = g; }
       g.style.display = '';
       const A = anchor(p), B = anchor(n);
       let dx = B.x - A.x, dy = B.y - A.y; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
       const s1 = clip(A, dx, dy), s2 = clip(B, dx, dy) + 8;
       if (len < s1 + s2 + 4) { g.style.display = 'none'; return; }
+      if (n.el.dataset.edge === 'dotted') { // dotted lines wind around whatever is in the way
+        const b = band(A, B, [n, p], (A.x + B.x) / 2 - dy * len * .2, (A.y + B.y) / 2 + dx * len * .2);
+        if (!b) { g.style.display = 'none'; return; }
+        EPTS[n.id] = b.pts; g.children[0].setAttribute('d', b.d); g.children[1].setAttribute('d', b.d); head(g, b.x2, b.y2, b.tx, b.ty); return;
+      }
       const x1 = A.x + dx * s1, y1 = A.y + dy * s1, x2 = B.x - dx * s2, y2 = B.y - dy * s2;
-      const bend = (n.idx % 2 ? 1 : -1) * Math.min(28, len * .12);
+      // pick the bend that clips the fewest other nodes
+      const b0 = (n.idx % 2 ? 1 : -1) * Math.min(28, len * .12);
+      let bend = b0, best = Infinity;
+      for (const c of [b0, -b0, 0, b0 * 2.5, -b0 * 2.5]) {
+        const h = hits(quadPts(x1, y1, (x1 + x2) / 2 - dy * c, (y1 + y2) / 2 + dx * c, x2, y2, 12), [n, p]);
+        if (h < best) { best = h; bend = c; } if (!h) break;
+      }
       const cx = (x1 + x2) / 2 - dy * bend, cy = (y1 + y2) / 2 + dx * bend;
+      EPTS[n.id] = quadPts(x1, y1, cx, cy, x2, y2, 12);
       const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
       g.children[0].setAttribute('d', d); g.children[1].setAttribute('d', d);
       // arrowhead along the curve's end tangent
@@ -776,16 +852,22 @@
       const a = nodes[from], b = nodes[to];
       let g = backEls[from];
       if (!a.shown || !b.shown) { if (g) g.style.display = 'none'; return; }
-      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge back'); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; svg.appendChild(g); backEls[from] = g; }
+      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge back'); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; g.dataset.for = 'back:' + from; svg.appendChild(g); backEls[from] = g; }
       g.style.display = '';
       const A = anchor(a), B = anchor(b);
       let dx = B.x - A.x, dy = B.y - A.y; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
-      const x1 = A.x + dx * (A.r + 6), y1 = A.y + dy * (A.r + 6), x2 = B.x - dx * (B.r + 14), y2 = B.y - dy * (B.r + 14);
-      const cx = (x1 + x2) / 2 + dy * len * .35, cy = (y1 + y2) / 2 - dx * len * .35;
-      const d = `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`;
-      g.children[1].setAttribute('d', d);
-      let tx = x2 - cx, ty = y2 - cy; const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
-      g.children[2].setAttribute('points', `${x2 + tx * 10},${y2 + ty * 10} ${x2 - ty * 8},${y2 + tx * 8} ${x2 + ty * 8},${y2 - tx * 8}`);
+      if (!OBS.length) obstacles();
+      // try bowing out to either side; keep whichever squiggle ends up shorter
+      let pick = null, pl = Infinity;
+      // try bowing out to either side, a little or a lot; fewest line crossings wins, then the shortest
+      const skipIds = [a.id, b.id, ...a.kids.map(k => k.id), ...b.kids.map(k => k.id)];
+      for (const bow of [.35, .9]) for (const side of [1, -1]) {
+        const r = band(A, B, [a, b], (A.x + B.x) / 2 + side * dy * len * bow, (A.y + B.y) / 2 - side * dx * len * bow);
+        if (!r) continue; const sc = crossings(r.pts, skipIds) * 1e5 + r.len;
+        if (sc < pl - 1) { pl = sc; pick = r; }
+      }
+      if (!pick) { g.style.display = 'none'; return; }
+      g.children[1].setAttribute('d', pick.d); head(g, pick.x2, pick.y2, pick.tx, pick.ty);
     });
   }
   let until = 0, raf = 0;
