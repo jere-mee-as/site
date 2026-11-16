@@ -298,6 +298,11 @@
   #uiTR > button{width:100%}
   #uiTR > div{justify-content:center}
   @keyframes menuIn{from{opacity:0;transform:translateY(-8px) scale(.96)}to{opacity:1;transform:none}}
+  .edge.dotted .base{stroke:none} .edge.dotted .stripe{stroke:rgba(246,220,149,.55);stroke-dasharray:2 8;stroke-linecap:round;stroke-width:3} .edge.dotted .head{fill:rgba(246,220,149,.55)}
+  .n-subtle .disc{width:96px;height:96px;font-size:13px;background:rgba(255,255,255,.05)!important;color:var(--gold-2)!important;border:2px dashed rgba(246,220,149,.6)!important;
+    box-shadow:none!important;animation:none!important}
+  .n-subtle .disc:hover{background:rgba(255,255,255,.12)!important}
+  .n-subtle.picked .disc{border-style:solid!important;color:var(--gold-2)!important}
 </style>
 </head>
 <body>
@@ -410,10 +415,10 @@
       </div>
     </div>
   </div>
-  <div class="node n-q" data-id="qlens" data-parent="camera" data-auto><div class="disc"><b>Add a lens? 👀</b></div></div>
-  <div class="node n-a" data-id="lensyes" data-parent="qlens" data-auto><button type="button" class="disc">Yes, make him cry 😭</button></div>
-  <div class="node n-a alt" data-id="lensno" data-parent="qlens" data-auto><button type="button" class="disc">I'm not made of money</button></div>
-  <div class="node n-a alt n-topoff" data-id="lensnote" data-parent="lensno"><button type="button" class="disc" data-path="q4">That's ok! Top it off with something smaller? 🎁</button></div>
+  <div class="node n-a n-subtle" data-id="qlens" data-parent="camera" data-auto data-edge="dotted"><button type="button" class="disc">Add a lens? 👀</button></div>
+  <div class="node n-a" data-id="lensyes" data-parent="qlens"><button type="button" class="disc">Yes, make him cry 😭</button></div>
+  <div class="node n-a alt" data-id="lensno" data-parent="qlens"><button type="button" class="disc">I'm not made of money</button></div>
+  <div class="node n-a alt n-topoff" data-id="lensnote" data-parent="lensno"><button type="button" class="disc" data-path="little">That's ok! Top it off with something smaller? 🎁</button></div>
   <div class="node n-gift" data-id="lens" data-parent="lensyes">
     <div class="orb"><div class="face"><img src="p-lens85.jpg" alt="Sony FE 85mm f/1.8"></div><span class="sticker">~$600</span></div>
     <div class="label">Sony 85mm f/1.8</div><div class="tap">🎁 tap to open</div>
@@ -704,7 +709,7 @@
       const p = nodes[n.parent];
       let g = edgeEls[n.id];
       if (!(n.shown && p.shown)) { if (g) g.style.display = 'none'; return; }
-      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge'); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; svg.appendChild(g); edgeEls[n.id] = g; }
+      if (!g) { g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'edge' + (n.el.dataset.edge ? ' ' + n.el.dataset.edge : '')); g.innerHTML = '<path class="base"/><path class="stripe"/><polygon class="head"/>'; svg.appendChild(g); edgeEls[n.id] = g; }
       g.style.display = '';
       const A = anchor(p), B = anchor(n);
       let dx = B.x - A.x, dy = B.y - A.y; const len = Math.hypot(dx, dy) || 1; dx /= len; dy /= len;
@@ -762,7 +767,7 @@
     if (n.el.classList.contains('picked')) { n.el.classList.remove('picked'); n.kids.forEach(hide); update(); setTimeout(() => view([n]), 60); return; }
     n.el.classList.add('picked');
     n.kids.forEach(k => show(k));
-    if (btn.dataset.path) { backLinks[n.id] = btn.dataset.path; openPath(btn.dataset.path); return; }
+    if (btn.dataset.path) { const t = nodes[btn.dataset.path]; backLinks[n.id] = t.id; t.el.classList.add('picked'); t.kids.forEach(k => show(k)); openPath(t.id); return; }
     if (btn.dataset.goto) { const t = nodes[btn.dataset.goto]; backLinks[n.id] = t.id; if (!t.el.classList.contains('picked')) { t.el.classList.add('picked'); t.kids.forEach(k => show(k)); } update(); setTimeout(() => view([t, ...t.kids.filter(k => k.shown)]), 60); return; }
     update();
     const fam = [n, ...n.kids.filter(k => k.shown)]; n.kids.forEach(k => k.kids.forEach(g => g.shown && fam.push(g)));
@@ -786,7 +791,7 @@
     let n = nodes[id]; const chain = [];
     while (n) { chain.unshift(n); n = n.parent ? nodes[n.parent] : null; }
     chain.forEach(c => { show(c); if (c.el.classList.contains('n-a')) c.el.classList.add('picked'); c.kids.filter(k => k.auto).forEach(k => show(k)); });
-    update(); setTimeout(() => view([nodes[id], ...nodes[id].kids]), 60);
+    update(); setTimeout(() => view([nodes[id], ...nodes[id].kids.filter(k => k.shown)]), 60);
   }
   $('showAll').addEventListener('click', () => {
     SFX.big();
