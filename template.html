@@ -201,6 +201,27 @@ a.it:hover .ar{transform:translate(2px,-2px)}
 .ln a:focus-visible,.ln button:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
 .mailnote{margin:0 0 34px;min-height:1.4em;font-size:13px;color:var(--mute);user-select:all;opacity:0;transition:opacity .6s ease}
 .mailnote.on{opacity:1}
+
+/* featured essay: a frosted card between the links and the rows (site.json "featured") */
+:root{--card:rgba(250,251,252,.62);--card-hi:rgba(255,255,255,.86);--new:#3a6ea5}
+:root[data-sky="dawn"]{--new:#8a6a9c}
+:root[data-sky="dusk"]{--new:#a2556a}
+:root[data-sky="night"]{--card:rgba(24,32,46,.55);--card-hi:rgba(30,40,58,.85);--new:#9cc0ec}
+.feat{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;margin:-22px 0 32px;padding:12px 14px 12px 12px;border-radius:16px;text-decoration:none;
+  background:var(--card);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1);
+  box-shadow:0 0 0 1px var(--line),0 22px 50px -32px var(--shade);transition:transform .8s var(--ease),box-shadow .8s var(--ease),background .8s}
+.feat:hover{transform:translateY(-2px);background:var(--card-hi);box-shadow:0 0 0 1px var(--line),0 30px 60px -30px var(--shade)}
+.feat:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
+.feat picture,.feat img{display:block;width:76px;height:76px;border-radius:10px;object-fit:cover}
+.feat .fk{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mute);margin-bottom:5px}
+.feat .ft{display:block;font-size:16px;font-weight:500;letter-spacing:-.01em;line-height:1.25}
+.feat .fs{display:block;font-size:13px;color:var(--mute);margin-top:3px}
+.feat .fg{display:block;font-size:12.5px;color:var(--mute);margin-top:7px;transition:color .5s}
+.feat:hover .fg{color:var(--ink)}
+.feat .pip{width:6px;height:6px;border-radius:50%;background:var(--new);flex:none;animation:pip 3.2s ease-out 3s infinite}
+.feat.old .pip,.feat.old .fnew{display:none}
+@keyframes pip{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--new) 45%,transparent)}70%,100%{box-shadow:0 0 0 7px transparent}}
+@media (prefers-reduced-motion:reduce){.feat,.feat .fg{transition:none}.feat .pip{animation:none}}
 .foot{justify-content:flex-start}
 
 /* weather: rain and storms dim the sky; lightning flashes it */
@@ -334,6 +355,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     <p class="where m fast" id="where-line" style="--d:1.75s"><span class="w1">{{role}}</span><span class="w2" id="say-alt">pronounced <b>{{pronounced}}</b><br>born in {{born}}</span></p>
     <p class="ln m fast" style="--d:1.95s">{{links}}</p>
     <p class="mailnote" id="mailnote" aria-live="polite"></p>
+{{featured}}
 
     <nav class="rows" aria-label="About Jeremias">
 {{rows}}

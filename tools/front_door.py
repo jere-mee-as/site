@@ -79,9 +79,29 @@ def row(r, i):
             '\n        </div></div></div>\n      </section>')
 
 
+START = 2.15   # the rows' first delay; render() moves it later by .15 s when there is a featured card
+
+
 def delay(i):
-    """The rows mist in .15 s apart, starting at 2.15 s (as in the approved design)."""
-    return f"{2.15 + 0.15 * i:.2f}".rstrip("0") + "s"
+    """The rows mist in .15 s apart, starting at START (2.15 s in the approved design)."""
+    return f"{START + 0.15 * i:.2f}".rstrip("0") + "s"
+
+
+def featured(f):
+    """The featured essay card (site.json "featured"; null or absent = no card).
+    The dot and "New" show for 30 days after "date"; the inline script hides them after that."""
+    if not f:
+        return ""
+    c = esc(f["cover"])
+    return (f'    <a class="feat m fast" id="feat" style="--d:2.15s" href="{esc(f["url"])}" data-date="{esc(f["date"])}">'
+            f'<picture><source type="image/webp" srcset="{c}-152.webp 152w, {c}-304.webp 304w" sizes="76px">'
+            f'<img src="{c}-152.jpg" srcset="{c}-152.jpg 152w, {c}-304.jpg 304w" sizes="76px" alt="" width="76" height="76"></picture>'
+            f'<span><span class="fk"><span class="pip" aria-hidden="true"></span><span><span class="fnew">New on </span>'
+            f'{esc(f["kicker"])} · {esc(f["date_label"])}</span></span>'
+            f'<span class="ft">{esc(f["title"])}</span><span class="fs">{esc(f["subtitle"])}</span>'
+            f'<span class="fg">Read on Substack ↗</span></span></a>\n'
+            '    <script>(function(){var a=document.getElementById(\'feat\'),d=Date.parse(a.dataset.date+\'T00:00:00\');'
+            'if(Date.now()-d>30*864e5)a.classList.add(\'old\')})()</script>')
 
 
 def links(ls):
@@ -133,6 +153,8 @@ def render(reports_oldest_first):
     page = (ROOT / "template.html").read_text(encoding="utf-8")
     s, intro = data["site"], data["intro"]
     rows = data["rows"]
+    global START
+    START = 2.3 if data.get("featured") else 2.15
     fill = {
         "title": esc(s["title"]),
         "url": esc(s["url"].rstrip("/")),
@@ -145,9 +167,10 @@ def render(reports_oldest_first):
         "born": esc(intro["born"]),
         "role": "<br>".join(esc(x) for x in intro["role"]),
         "links": links(data["links"]),
+        "featured": featured(data.get("featured")),
         "rows": "\n".join(row(r, i) for i, r in enumerate(rows)),
         "resume": resume(data["resume"]),
-        "footer_delay": f"{2.15 + 0.15 * (len(rows) - 1) + 0.25:.2f}".rstrip("0") + "s",
+        "footer_delay": f"{START + 0.15 * (len(rows) - 1) + 0.25:.2f}".rstrip("0") + "s",
         "greeting": esc(data["footer"]["greeting"]),
         "footer_links": "".join(f'<a href="{esc(l["href"])}">{esc(l["label"])}</a>' for l in data["footer"]["links"]),
     }

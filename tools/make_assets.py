@@ -7,6 +7,7 @@ for the favicon PNGs, Playwright with Chromium.
   python tools/make_assets.py fonts      assets/fonts/geist-latin.woff2 (Latin subset, wght 300-600)
   python tools/make_assets.py portrait   assets/img/jeremias-portrait-{160,320}.{webp,jpg}
   python tools/make_assets.py icons      assets/img/favicon-32.png, apple-touch-icon.png
+  python tools/make_assets.py featured   assets/img/featured/<name>-{152,304}.{webp,jpg} (the essay card's cover)
   python tools/make_assets.py resume     resume.pdf (from site.json, same order as the sheet)
   python tools/make_assets.py            all of the above
 
@@ -80,6 +81,26 @@ def icons():
         b.close()
 
 
+def featured():
+    """Square-crops tools/assets-src/featured-<name>.jpg into the cover sizes site.json's "featured" points at."""
+    from PIL import Image
+    f = json.loads((ROOT / "site.json").read_text(encoding="utf-8")).get("featured")
+    if not f:
+        return
+    name = Path(f["cover"]).name
+    im = Image.open(SRC / f"featured-{name}.jpg").convert("RGB")
+    s = min(im.size)
+    im = im.crop(((im.width - s) // 2, (im.height - s) // 2, (im.width + s) // 2, (im.height + s) // 2))
+    out = ROOT / f["cover"].lstrip("/")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    for size in (152, 304):
+        r = im.resize((size, size), Image.LANCZOS)
+        r.save(f"{out}-{size}.webp", "WEBP", quality=82, method=6)
+        r.save(f"{out}-{size}.jpg", "JPEG", quality=84, optimize=True, progressive=True)
+    for p in sorted(out.parent.glob(name + "-*")):
+        print(f"{p.relative_to(ROOT)}: {p.stat().st_size / 1024:.1f} KB")
+
+
 def resume():
     sys.path.insert(0, str(ROOT / "tools"))
     import resume_pdf
@@ -87,6 +108,6 @@ def resume():
 
 
 if __name__ == "__main__":
-    jobs = {"fonts": fonts, "portrait": portrait, "icons": icons, "resume": resume}
+    jobs = {"fonts": fonts, "portrait": portrait, "icons": icons, "featured": featured, "resume": resume}
     for name in (sys.argv[1:] or jobs):
         jobs[name]()

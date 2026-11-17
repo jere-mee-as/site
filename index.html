@@ -201,6 +201,27 @@ a.it:hover .ar{transform:translate(2px,-2px)}
 .ln a:focus-visible,.ln button:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
 .mailnote{margin:0 0 34px;min-height:1.4em;font-size:13px;color:var(--mute);user-select:all;opacity:0;transition:opacity .6s ease}
 .mailnote.on{opacity:1}
+
+/* featured essay: a frosted card between the links and the rows (site.json "featured") */
+:root{--card:rgba(250,251,252,.62);--card-hi:rgba(255,255,255,.86);--new:#3a6ea5}
+:root[data-sky="dawn"]{--new:#8a6a9c}
+:root[data-sky="dusk"]{--new:#a2556a}
+:root[data-sky="night"]{--card:rgba(24,32,46,.55);--card-hi:rgba(30,40,58,.85);--new:#9cc0ec}
+.feat{display:grid;grid-template-columns:76px minmax(0,1fr);gap:14px;align-items:center;margin:-22px 0 32px;padding:12px 14px 12px 12px;border-radius:16px;text-decoration:none;
+  background:var(--card);-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1);
+  box-shadow:0 0 0 1px var(--line),0 22px 50px -32px var(--shade);transition:transform .8s var(--ease),box-shadow .8s var(--ease),background .8s}
+.feat:hover{transform:translateY(-2px);background:var(--card-hi);box-shadow:0 0 0 1px var(--line),0 30px 60px -30px var(--shade)}
+.feat:focus-visible{outline:2px solid var(--focus);outline-offset:4px}
+.feat picture,.feat img{display:block;width:76px;height:76px;border-radius:10px;object-fit:cover}
+.feat .fk{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mute);margin-bottom:5px}
+.feat .ft{display:block;font-size:16px;font-weight:500;letter-spacing:-.01em;line-height:1.25}
+.feat .fs{display:block;font-size:13px;color:var(--mute);margin-top:3px}
+.feat .fg{display:block;font-size:12.5px;color:var(--mute);margin-top:7px;transition:color .5s}
+.feat:hover .fg{color:var(--ink)}
+.feat .pip{width:6px;height:6px;border-radius:50%;background:var(--new);flex:none;animation:pip 3.2s ease-out 3s infinite}
+.feat.old .pip,.feat.old .fnew{display:none}
+@keyframes pip{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--new) 45%,transparent)}70%,100%{box-shadow:0 0 0 7px transparent}}
+@media (prefers-reduced-motion:reduce){.feat,.feat .fg{transition:none}.feat .pip{animation:none}}
 .foot{justify-content:flex-start}
 
 /* weather: rain and storms dim the sky; lightning flashes it */
@@ -334,9 +355,11 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
     <p class="where m fast" id="where-line" style="--d:1.75s"><span class="w1">Operations in architecture and construction.<br>Writer, artist and builder.</span><span class="w2" id="say-alt">pronounced <b>heh-reh-MEE-as</b><br>born in Córdoba, Argentina</span></p>
     <p class="ln m fast" style="--d:1.95s"><a href="https://www.linkedin.com/in/jeremias-sur-5a6b321b8/">LinkedIn</a><a href="https://lesymboliste.substack.com/">Substack</a><a href="https://github.com/jere-mee-as">GitHub</a><a href="mailto:jere.mee.as@pm.me" id="copy" data-addr="jere.mee.as@pm.me">Email</a></p>
     <p class="mailnote" id="mailnote" aria-live="polite"></p>
+    <a class="feat m fast" id="feat" style="--d:2.15s" href="https://lesymboliste.substack.com/p/intensely-normative-species" data-date="2026-11-17"><picture><source type="image/webp" srcset="/assets/img/featured/intensely-normative-species-152.webp 152w, /assets/img/featured/intensely-normative-species-304.webp 304w" sizes="76px"><img src="/assets/img/featured/intensely-normative-species-152.jpg" srcset="/assets/img/featured/intensely-normative-species-152.jpg 152w, /assets/img/featured/intensely-normative-species-304.jpg 304w" sizes="76px" alt="" width="76" height="76"></picture><span><span class="fk"><span class="pip" aria-hidden="true"></span><span><span class="fnew">New on </span>Jere Thoughts · Nov 17</span></span><span class="ft">Intensely Normative Species</span><span class="fs">Within Good and Evil</span><span class="fg">Read on Substack ↗</span></span></a>
+    <script>(function(){var a=document.getElementById('feat'),d=Date.parse(a.dataset.date+'T00:00:00');if(Date.now()-d>30*864e5)a.classList.add('old')})()</script>
 
     <nav class="rows" aria-label="About Jeremias">
-      <section class="m fast" style="--d:2.15s">
+      <section class="m fast" style="--d:2.3s">
         <button class="q" id="b-work" aria-expanded="true" aria-controls="p-work"><span class="ch"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Work</button>
         <div class="dd" id="p-work" role="region" aria-labelledby="b-work"><div><div class="ddc">
           <a class="it rbtn" href="#resume" data-open-resume><span><span class="n">Résumé</span></span><span class="ar">→</span></a>
@@ -352,9 +375,10 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
           <div class="it plain"><span><span class="n">English and Spanish</span><span class="s">Native fluency</span></span><span></span></div>
         </div></div></div>
       </section>
-      <section class="m fast" style="--d:2.3s">
+      <section class="m fast" style="--d:2.45s">
         <button class="q" id="b-writing" aria-expanded="true" aria-controls="p-writing"><span class="ch"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Writing</button>
         <div class="dd" id="p-writing" role="region" aria-labelledby="b-writing"><div><div class="ddc">
+          <a class="it" href="https://lesymboliste.substack.com/p/intensely-normative-species"><span><span class="n">Intensely Normative Species</span><span class="s">Within Good and Evil · Nov 2026</span></span><span class="ar">↗</span></a>
           <a class="it" href="https://lesymboliste.substack.com/p/performance"><span><span class="n">Performance</span><span class="s">Who we don’t know we are · 95 min</span></span><span class="ar">↗</span></a>
           <a class="it" href="https://lesymboliste.substack.com/p/i-have-no-idea-why-i-do-anything"><span><span class="n">I Have No Idea Why I Do Anything (And Neither Do You)</span><span class="s">Understanding your flat mind · 21 min</span></span><span class="ar">↗</span></a>
           <a class="it" href="https://lesymboliste.substack.com/p/five-cynical-essays-on-morality"><span><span class="n">What We’re Really Doing When We Argue About Right and Wrong</span><span class="s">Five cynical essays on morality · 10 min</span></span><span class="ar">↗</span></a>
@@ -362,11 +386,10 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
           <a class="it" href="https://lesymboliste.substack.com/p/derrida-the-conservative"><span><span class="n">Derrida, the Conservative?</span><span class="s">On (mis)reading the spooky philosopher · 19 min</span></span><span class="ar">↗</span></a>
           <a class="it" href="https://lesymboliste.substack.com/p/art-and-imagination"><span><span class="n">Art &amp; Imagination</span><span class="s">A treatise on the path to our world · 11 min</span></span><span class="ar">↗</span></a>
           <p class="grp">More</p>
-          <div class="it plain"><span><span class="n">Intensely Normative Species</span><span class="s">Why humans are such a rule-making species · in progress</span></span><span></span></div>
           <a class="it" href="https://lesymboliste.substack.com/archive"><span><span class="n">Jere Thoughts</span><span class="s">Everything else, on Substack</span></span><span class="ar">↗</span></a>
         </div></div></div>
       </section>
-      <section class="m fast" style="--d:2.45s">
+      <section class="m fast" style="--d:2.6s">
         <button class="q" id="b-projects" aria-expanded="true" aria-controls="p-projects"><span class="ch"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Projects</button>
         <div class="dd" id="p-projects" role="region" aria-labelledby="b-projects"><div><div class="ddc">
           <p class="grp">Software</p>
@@ -384,7 +407,7 @@ html:not(.js) .sheetwrap:target .veil,html:not(.js) .sheetwrap:target .sheet,htm
           <a class="it" href="/vesta9/"><span><span class="n"><span class="dot" style="background:#d0021f"></span>Vesta 9</span><span class="s">After Mirror’s Edge · a polite website that watches you</span></span><span class="ar">↗</span></a>
         </div></div></div>
       </section>
-      <section class="m fast" style="--d:2.6s">
+      <section class="m fast" style="--d:2.75s">
         <button class="q" id="b-social" aria-expanded="true" aria-controls="p-social"><span class="ch"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>Social</button>
         <div class="dd" id="p-social" role="region" aria-labelledby="b-social"><div><div class="ddc">
           <a class="it" href="https://www.instagram.com/jere.mee.as/"><span><span class="n">Instagram</span><span class="s">@jere.mee.as · photos and everyday things</span></span><span class="ar">↗</span></a>

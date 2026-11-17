@@ -1,5 +1,5 @@
 {
-  "_readme": "Everything on the front door (jere.ing/) comes from this file. build.py renders template.html with it; tools/make_assets.py resume makes resume.pdf from the 'resume' part. Adding a post, report or app is one entry in the right list. An item: title, sub (grey line), detail (second grey line), href (makes it a link), dot (CSS for a colour dot). A group: title, note, items.",
+  "_readme": "Everything on the front door (jere.ing/) comes from this file. build.py renders template.html with it; tools/make_assets.py resume makes resume.pdf from the 'resume' part. Adding a post, report or app is one entry in the right list. An item: title, sub (grey line), detail (second grey line), href (makes it a link), dot (CSS for a colour dot). A group: title, note, items. 'featured' is the essay card above the rows (set it to null to remove it); its cover is cover-{152,304}.{webp,jpg}, made by tools/make_assets.py featured from tools/assets-src/featured-<name>.jpg.",
 
   "site": {
     "title": "jere.ing",
@@ -21,6 +21,13 @@
     {"label": "GitHub", "href": "https://github.com/jere-mee-as"},
     {"label": "Email", "email": "jere.mee.as@pm.me"}
   ],
+
+  "featured": {
+    "kicker": "Jere Thoughts", "date": "2026-11-17", "date_label": "Nov 17",
+    "title": "Intensely Normative Species", "subtitle": "Within Good and Evil",
+    "url": "https://lesymboliste.substack.com/p/intensely-normative-species",
+    "cover": "/assets/img/featured/intensely-normative-species"
+  },
 
   "rows": [
     {
@@ -48,6 +55,7 @@
     {
       "id": "writing", "label": "Writing",
       "items": [
+        {"title": "Intensely Normative Species", "sub": "Within Good and Evil · Nov 2026", "href": "https://lesymboliste.substack.com/p/intensely-normative-species"},
         {"title": "Performance", "sub": "Who we don’t know we are · 95 min", "href": "https://lesymboliste.substack.com/p/performance"},
         {"title": "I Have No Idea Why I Do Anything (And Neither Do You)", "sub": "Understanding your flat mind · 21 min", "href": "https://lesymboliste.substack.com/p/i-have-no-idea-why-i-do-anything"},
         {"title": "What We’re Really Doing When We Argue About Right and Wrong", "sub": "Five cynical essays on morality · 10 min", "href": "https://lesymboliste.substack.com/p/five-cynical-essays-on-morality"},
@@ -57,7 +65,6 @@
       ],
       "groups": [
         {"title": "More", "items": [
-          {"title": "Intensely Normative Species", "sub": "Why humans are such a rule-making species · in progress"},
           {"title": "Jere Thoughts", "sub": "Everything else, on Substack", "href": "https://lesymboliste.substack.com/archive"}
         ]}
       ]
