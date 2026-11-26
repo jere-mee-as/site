@@ -2,11 +2,10 @@
 
 Called by build.py. Standard library only, because Cloudflare's build has nothing else.
 
-site.json holds every word on the page. An item is one entry:
-  {"title": ..., "sub": ..., "detail": ..., "href": ..., "dot": "<css>"}
-  - with "href" it is a link (↗), without it plain text;
-  - "resume": true makes it the button that opens the résumé sheet (#resume).
-A row has optional loose "items" first, then "groups" (title, note, items).
+The Nov 25, 2026 layout ("Maison"): one open list, no tabs or accordions. site.json holds every word:
+intro (name, pronounced, facts, headline with *italics*), links, featured (the new-essay row), work, writing,
+writing_more, made, elsewhere and resume (the slide-in panel at #resume). The old sky front door is
+archived at archive/2026-11-sky/.
 """
 import html, json
 from pathlib import Path
@@ -46,140 +45,107 @@ def redirects(reports_oldest_first):
     return r
 
 
-CHEVRON = ('<span class="ch"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 2.5 8 6 4.5 9.5" '
-           'fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>')
-
-
-def item(it):
-    dot = f'<span class="dot" style="{esc(it["dot"])}"></span>' if it.get("dot") else ""
-    inner = (f'<span><span class="n">{dot}{esc(it["title"])}</span>'
-             + (f'<span class="s">{esc(it["sub"])}</span>' if it.get("sub") else "")
-             + (f'<span class="s2">{esc(it["detail"])}</span>' if it.get("detail") else "")
-             + "</span>")
-    if it.get("resume"):
-        return f'<a class="it rbtn" href="#resume" data-open-resume>{inner}<span class="ar">→</span></a>'
-    if it.get("href"):
-        return f'<a class="it" href="{esc(it["href"])}">{inner}<span class="ar">↗</span></a>'
-    return f'<div class="it plain">{inner}<span></span></div>'
-
-
-def row(r, i):
-    pad = " " * 10
-    lines = [pad + item(it) for it in r.get("items", [])]
-    for g in r.get("groups", []):
-        note = f' <span class="note">{esc(g["note"])}</span>' if g.get("note") else ""
-        lines.append(f'{pad}<p class="grp">{esc(g["title"])}{note}</p>')
-        lines += [pad + item(it) for it in g["items"]]
-    rid = r["id"]
-    # Rows ship open (aria-expanded="true") so the page reads fully without JavaScript; the script closes them.
-    return (f'      <section class="m fast" style="--d:{delay(i)}">\n'
-            f'        <button class="q" id="b-{rid}" aria-expanded="true" aria-controls="p-{rid}">{CHEVRON}{esc(r["label"])}</button>\n'
-            f'        <div class="dd" id="p-{rid}" role="region" aria-labelledby="b-{rid}"><div><div class="ddc">\n'
-            + "\n".join(lines) +
-            '\n        </div></div></div>\n      </section>')
-
-
-START = 2.15   # the rows' first delay; render() moves it later by .15 s when there is a featured card
-
-
-def delay(i):
-    """The rows mist in .15 s apart, starting at START (2.15 s in the approved design)."""
-    return f"{START + 0.15 * i:.2f}".rstrip("0") + "s"
-
-
-def featured(f):
-    """The featured essay card (site.json "featured"; null or absent = no card).
-    The dot and "New" show for 30 days after "date"; the inline script hides them after that."""
-    if not f:
-        return ""
-    c = esc(f["cover"])
-    return (f'    <a class="feat m fast" id="feat" style="--d:2.15s" href="{esc(f["url"])}" data-date="{esc(f["date"])}">'
-            f'<picture><source type="image/webp" srcset="{c}-152.webp 152w, {c}-304.webp 304w" sizes="76px">'
-            f'<img src="{c}-152.jpg" srcset="{c}-152.jpg 152w, {c}-304.jpg 304w" sizes="76px" alt="" width="76" height="76"></picture>'
-            f'<span><span class="fk"><span class="pip" aria-hidden="true"></span><span><span class="fnew">New on </span>'
-            f'{esc(f["kicker"])} · {esc(f["date_label"])}</span></span>'
-            f'<span class="ft">{esc(f["title"])}</span><span class="fs">{esc(f["subtitle"])}</span>'
-            f'<span class="fg">Read on Substack ↗</span></span></a>\n'
-            '    <script>(function(){var a=document.getElementById(\'feat\'),d=Date.parse(a.dataset.date+\'T00:00:00\');'
-            'if(Date.now()-d>30*864e5)a.classList.add(\'old\')})()</script>')
-
-
 def links(ls):
     out = []
     for l in ls:
-        if l.get("email"):
-            # Without JavaScript it is a mailto link; with it, tapping shows the address and copies it.
-            out.append(f'<a href="mailto:{esc(l["email"])}" id="copy" data-addr="{esc(l["email"])}">{esc(l["label"])}</a>')
-        else:
-            out.append(f'<a href="{esc(l["href"])}">{esc(l["label"])}</a>')
-    return "".join(out)
+        href = "mailto:" + l["email"] if l.get("email") else l["href"]
+        out.append(f'      <a href="{esc(href)}">{esc(l["label"])}</a>')
+    return "\n".join(out)
+
+
+def headline(text):
+    """*word* becomes italic."""
+    parts = esc(text).split("*")
+    return "".join(f"<i>{p}</i>" if i % 2 else p for i, p in enumerate(parts))
+
+
+def featured(f):
+    if not f:
+        return ""
+    c = esc(f["cover"])
+    return (f'      <a class="new" href="{esc(f["url"])}">\n'
+            f'        <picture class="cover">\n'
+            f'          <source type="image/webp" srcset="{c}-152.webp 152w, {c}-304.webp 304w" sizes="120px">\n'
+            f'          <img class="bw" src="{c}-304.jpg" alt="" width="120" height="96">\n'
+            f'        </picture>\n'
+            f'        <span>\n'
+            f'          <span class="label mute">New essay · {esc(f["date_label"])}</span>\n'
+            f'          <span class="t">{esc(f["title"])}</span>\n'
+            f'          <span class="mute sub">{esc(f["subtitle"])} · on Substack ↗</span>\n'
+            f'        </span>\n'
+            f'      </a>')
+
+
+def work(rows):
+    out = []
+    for r in rows:
+        # "Full time" / "Part time" also show inline under the role where the type column is hidden
+        kk = f'<span class="kk"> · {esc(r["type"])}</span>' if "time" in r.get("type", "").lower() else ""
+        out.append(f'        <div class="row"><span><b>{esc(r["org"])}</b><span class="s mute">{esc(r["role"])}{kk}</span></span>'
+                   f'<span class="k label mute">{esc(r.get("type", ""))}</span><span class="d mute">{esc(r["dates"])}</span></div>')
+    return "\n".join(out)
+
+
+def writing(items, more):
+    out = [f'        <a class="w" href="{esc(w["href"])}"><span class="t">{esc(w["title"])}</span><span class="d mute">{esc(w["time"])}</span></a>' for w in items]
+    if more:
+        out.append(f'        <a class="more mute u" href="{esc(more["href"])}">{esc(more["label"])}</a>')
+    return "\n".join(out)
 
 
 def resume(r):
-    k = []   # each .rs block fades in on its own
-    top = (f'<div class="sheet-top rs"><a href="#" class="back" data-close-resume>← Back</a>'
-           f'<span class="st-r"><span>Résumé · {esc(r["updated"])}</span>'
-           f'<a class="dl" href="{esc(r["pdf"])}" download="jeremias-resume.pdf">Download PDF</a></span></div>')
-    k.append(top)
-    k.append(f'<header class="rs">\n      <h2 id="r-name">{esc(r["name"])}</h2>\n'
-             f'      <p class="rmeta">{esc(r["headline"])} · {esc(r["location"])} · <span class="sel">{esc(r["email"])}</span></p>\n    </header>')
-    k.append(f'<p class="summary rs">{esc(r["summary"])}</p>\n')
+    o = [f'<div class="rs-top label"><span class="mute">Résumé · {esc(r["updated"])}</span><span class="rs-act">'
+         f'<a class="u" href="{esc(r["pdf"])}" target="_blank" rel="noopener">View PDF ↗</a>'
+         f'<button type="button" class="rs-x" data-close aria-label="Close résumé">Close</button></span></div>',
+         f'<header class="rs-head"><h2 id="rs-name">{esc(r["name"])}</h2><p class="mute">{esc(r["headline"])} · {esc(r["location"])} · '
+         f'<a class="u" href="mailto:{esc(r["email"])}">{esc(r["email"])}</a></p></header>',
+         f'<p class="rs-sum">{esc(r["summary"])}</p>']
     for s in r["sections"]:
-        k.append(f'<p class="sec rs">{esc(s["title"])}</p>')
+        o.append(f'<section class="rs-sec"><div class="h label">{esc(s["title"])}</div>')
         for j in s.get("jobs", []):
-            body = f'<p class="org">{esc(j["org"])}<span>{esc(j["where"])}</span></p>'
-            for role in j["roles"]:
-                body += f'<p class="role">{esc(role["title"])}<span>{esc(role["dates"])}</span></p>'
-                if role.get("bullets"):
-                    body += "<ul>" + "".join(f"<li>{esc(b)}</li>" for b in role["bullets"]) + "</ul>"
-                if role.get("note"):
-                    body += f'<p class="note2">{esc(role["note"])}</p>'
-            k.append(f'<div class="job rs">{body}</div>')
+            o.append(f'<div class="rs-job"><p class="rs-org"><b>{esc(j["org"])}</b><span class="mute">{esc(j["where"])}</span></p>')
+            for ro in j["roles"]:
+                o.append(f'<p class="rs-role"><span>{esc(ro["title"])}</span><span class="mute">{esc(ro["dates"])}</span></p>')
+                if ro.get("bullets"):
+                    o.append("<ul>" + "".join(f"<li>{esc(b)}</li>" for b in ro["bullets"]) + "</ul>")
+                if ro.get("note"):
+                    o.append(f'<p class="rs-note mute">{esc(ro["note"])}</p>')
+            o.append("</div>")
         if s.get("skills"):
-            k.append('<dl class="skills rs">\n' + "\n".join(
-                f"      <div><dt>{esc(a)}</dt><dd>{esc(b)}</dd></div>" for a, b in s["skills"]) + "\n    </dl>")
+            o.append('<dl class="rs-skills">' + "".join(f'<div><dt class="label mute">{esc(a)}</dt><dd>{esc(b)}</dd></div>' for a, b in s["skills"]) + "</dl>")
         if s.get("bullets"):
-            k.append('<div class="job rs"><ul>' + "".join(f"<li>{esc(b)}</li>" for b in s["bullets"]) + "</ul></div>")
-        k[-1] += "\n"
-    end = f'{esc(r["end"])} ' if r.get("end") else ""
-    k.append(f'<p class="sheet-end rs">{end}<a href="#" class="back" data-close-resume>Back to the page</a></p>')
-    return ('<div class="sheetwrap" id="resume" role="dialog" aria-modal="true" aria-labelledby="r-name">\n'
-            '  <div class="veil" data-close-resume></div>\n'
-            '  <article class="sheet">\n' + "\n".join("    " + x for x in k) + "\n  </article>\n</div>")
+            o.append('<ul class="rs-plain">' + "".join(f"<li>{esc(b)}</li>" for b in s["bullets"]) + "</ul>")
+        o.append("</section>")
+    return ('<div class="rs-wrap" id="resume" role="dialog" aria-modal="true" aria-labelledby="rs-name" hidden>\n'
+            '  <div class="rs-veil" data-close></div>\n'
+            '  <article class="rs-panel" tabindex="-1">\n      ' + "\n      ".join(o) + "\n  </article>\n</div>")
 
 
 def render(reports_oldest_first):
     data = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
     page = (ROOT / "template.html").read_text(encoding="utf-8")
-    s, intro = data["site"], data["intro"]
-    rows = data["rows"]
-    global START
-    START = 2.3 if data.get("featured") else 2.15
+    s, intro, made = data["site"], data["intro"], data["made"]
     fill = {
         "title": esc(s["title"]),
         "url": esc(s["url"].rstrip("/")),
         "description": esc(s["description"]),
-        "og_title": esc(intro["hello"]),
-        "og_description": esc(" ".join(intro["role"])),
-        "portrait_alt": esc(s["portrait_alt"]),
-        "hello": esc(intro["hello"]),
+        "name": esc(intro["name"]),
         "pronounced": esc(intro["pronounced"]),
-        "born": esc(intro["born"]),
-        "role": "<br>".join(esc(x) for x in intro["role"]),
+        "facts": "<br>".join(esc(x) for x in intro["facts"]),
+        "headline": headline(intro["headline"]),
+        "portrait_alt": esc(s["portrait_alt"]),
         "links": links(data["links"]),
         "featured": featured(data.get("featured")),
-        "rows": "\n".join(row(r, i) for i, r in enumerate(rows)),
+        "work": work(data["work"]),
+        "writing": writing(data["writing"], data.get("writing_more")),
+        "made_title": esc(made["title"]), "made_label": esc(made["label"]), "made_href": esc(made["href"]),
+        "elsewhere": "\n".join(f'            <a class="u" href="{esc(x["href"])}">{esc(x["label"])}</a>' for x in data["elsewhere"]),
         "resume": resume(data["resume"]),
-        "footer_delay": f"{START + 0.15 * (len(rows) - 1) + 0.25:.2f}".rstrip("0") + "s",
-        "greeting": esc(data["footer"]["greeting"]),
-        "footer_links": "".join(f'<a href="{esc(l["href"])}">{esc(l["label"])}</a>' for l in data["footer"]["links"]),
     }
     for key, val in fill.items():
         page = page.replace("{{" + key + "}}", val)
-    left = [p for p in ("{{",) if p in page]
-    if left:
+    if "{{" in page:
         raise SystemExit("template.html: unfilled " + page[page.index("{{"):page.index("{{") + 30])
     page = page.replace("/*REDIRECTS*/{}", json.dumps(redirects(reports_oldest_first), separators=(",", ":")), 1)
     (ROOT / "index.html").write_text(page, encoding="utf-8")
-    n = sum(len(r.get("items", [])) + sum(len(g["items"]) for g in r.get("groups", [])) for r in rows)
-    print(f"Built index.html (front door): {len(rows)} rows, {n} entries")
+    print(f"Built index.html (front door): {len(data['work'])} work rows, {len(data['writing'])} essays")
