@@ -25,11 +25,12 @@ BADGE = {"read": "READ", "generator": "GENERATOR", "look": "LOOK", "android": "A
 
 # Fonts the drawn thumbnails use. Loaded with Google Fonts' text= option, so only
 # the letters the drawings need are downloaded.
-SKIN_FONTS = ("family=Anton&family=Oswald:wght@500;600&family=Libre+Caslon+Text:ital@0;1"
-              "&family=Archivo+Black&family=Archivo:wght@400;700&family=PT+Serif:wght@700"
+SKIN_FONTS = ("family=Anton&family=Oswald:wght@500;600&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400"
+              "&family=Archivo+Black&family=Archivo:wght@400;600;700&family=PT+Serif:wght@700"
               "&family=Fraunces:ital,opsz,wght@0,9..144,800;1,9..144,900&family=IM+Fell+English"
               "&family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400"
-              "&family=Cabin+Sketch:wght@700&family=Kalam:wght@400;700")
+              "&family=Cabin+Sketch:wght@700&family=Kalam:wght@400;700&family=Source+Serif+4:wght@400"
+              "&family=IBM+Plex+Mono")
 
 BAR = '<span style="height:.7cqw;background:{c};width:{w}%"></span>'
 
@@ -201,6 +202,160 @@ def t_app(it):
     return ('<div style="position:absolute;inset:0;background:#e6e1d7;display:flex;justify-content:center;align-items:center">'
             '<span style="width:46cqw;height:94cqw;border-radius:6cqw;border:1cqw solid #1c1c1c;background:#fbf9f4;color:#1c1c1c;font-family:Georgia,serif;padding:5cqw 4.5cqw;box-sizing:border-box;display:flex;flex-direction:column;gap:2cqw;font-size:4cqw">'
             f'<span style="font-size:9cqw;margin-bottom:2cqw">12:04</span>{apps}</span></div>')
+
+
+# ---- v5 thumbnails (Nov 25, 2026): the arguing sites' shared layout (header sentence, index, rows) ----
+def v5(c, say, index, rows, tabs=""):
+    """c: colors/fonts dict. say: header sentence html. index: list of (icon, name, items or None, current item index).
+    rows: list of row html; the first is drawn selected."""
+    head = (f'<div style="height:11cqw;flex:none;display:flex;align-items:center;gap:2.4cqw;padding:0 3cqw;background:{c["bar"]};color:{c["barfg"]};'
+            f'border-bottom:{c.get("barline", "0.2cqw solid " + c["line"])}">'
+            f'<span style="flex:none;width:3.2cqw;height:2.4cqw;background:linear-gradient(currentColor 0 0) 0 0/100% .35cqw no-repeat,linear-gradient(currentColor 0 0) 0 50%/100% .35cqw no-repeat,linear-gradient(currentColor 0 0) 0 100%/100% .35cqw no-repeat"></span>'
+            f'<span style="font:{c.get("sayw", 400)} {c.get("says", 4.4)}cqw/1.05 {c["disp"]};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;{c.get("saycss", "")}">{say}</span>'
+            f'{tabs}</div>')
+    ix = [f'<span style="font:600 2.2cqw {c["text"]};padding:1.4cqw 2.4cqw;background:{c["sel"]};box-shadow:inset .5cqw 0 0 {c["acc"]}">Overview</span>']
+    for icon, name, items, cur in index:
+        ix.append(f'<span style="display:flex;gap:1.2cqw;padding:1.3cqw 2.4cqw;border-top:.15cqw solid {c["line"]};font:600 2.1cqw {c.get("label", c["text"])};{c.get("gcss", "")}">'
+                  f'<span style="color:{c["dim"]};font-size:1.4cqw">{"▼" if items else "▶"}</span><span style="color:{c["acc"]}">{icon}</span>{name}</span>')
+        for i, it in enumerate(items or []):
+            on = i == cur
+            ix.append(f'<span style="padding:.7cqw 2.4cqw .7cqw 6.2cqw;font:2.1cqw {c["text"]};'
+                      + (f'background:{c["sel"]};box-shadow:inset .5cqw 0 0 {c["acc"]}' if on else "") + f'">{it}</span>')
+    body = "".join(
+        f'<div style="padding:2.2cqw 3cqw;border-top:.15cqw solid {c["line"]};' + (f'background:{c["sel"]};box-shadow:inset .5cqw 0 0 {c["acc"]}' if i == 0 else "") + f'">{r}</div>'
+        for i, r in enumerate(rows))
+    return (f'<div style="position:absolute;inset:0;background:{c["bg"]};color:{c["fg"]};font-family:{c["text"]};display:flex;flex-direction:column">{head}'
+            f'<div style="flex:1;display:grid;grid-template-columns:31% 1fr;min-height:0">'
+            f'<div style="border-right:.15cqw solid {c["line"]};display:flex;flex-direction:column;padding-top:1.2cqw;overflow:hidden">{"".join(ix)}</div>'
+            f'<div style="overflow:hidden">{body}</div></div></div>')
+
+
+def tag(t, col, fg="#fff"):
+    return f'<span style="display:inline-block;font:600 1.6cqw/1 Oswald,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:.6cqw .9cqw .5cqw;background:{col};color:{fg};margin-top:.8cqw">{t}</span>'
+
+
+def t_fight(it):
+    c = dict(bg="#efe3c8", fg="#1b140e", dim="#6b5744", line="#d4c09b", acc="#c3261b", sel="#e4d2ac", bar="#1b140e", barfg="#f0e4c8",
+             disp="Anton,Impact,sans-serif", text="'Libre Caslon Text',Georgia,serif", label="Oswald,sans-serif",
+             saycss="text-transform:uppercase", gcss="text-transform:uppercase;letter-spacing:.05em;font-weight:500")
+    rep = lambda t, col, b=False: f'<span style="border-top:.4cqw solid {col};padding-top:.6cqw;font-size:1.65cqw;line-height:1.35;{"font-weight:700" if b else ""}">{t}</span>'
+    row = lambda claim, a, b, r: (f'<span style="display:block;font:italic 2.4cqw/1.25 \'Libre Caslon Text\',serif;margin-bottom:1cqw">{claim}</span>'
+                                  f'<span style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.6cqw">{rep(a, "#1b140e")}{rep(b, "#9a5200")}{rep(r, "#c3261b", True)}</span>')
+    return v5(c, 'So you’re arguing about <b style="color:#ffd76a;font-weight:400">Socrates</b>?',
+              [("Ω", "Ancients", ["Socrates", "Plato", "Aristotle", "Stoicism", "Epicurus"], 0), ("∃", "Metaphysics", None, 0), ("Ψ", "Mind", None, 0),
+               ("§", "Ethics", None, 0), ("†", "Religion", None, 0), ("⚑", "Politics", None, 0)],
+              [row("“The unexamined life is not worth living”", "Plenty of people live decent lives without scrutiny.", "Examining things is what got him executed.", "Socrates lost his own trial."),
+               row("“He knew that he knew nothing”", "The modesty is selective.", "If he knew nothing, he didn’t know that either.", "“I know nothing,” then corrected people for fifty years."),
+               row("“He died for his principles”", "The sources are admirers writing afterwards.", "He was offered exile and turned it down.", "He picked hemlock to make a point."),
+               row("“No one does wrong knowingly”", "Weakness of will is one of the most familiar things about people.", "Everyone who has eaten a second dessert knew.", "He’d never met Athenians."),
+               row("“The Socratic method gets at the truth”", "The early dialogues mostly end in a shrug.", "A method that worked would finish at some point.", "It’s asking “but what is justice?” until they leave.")])
+
+
+def t_label(it):
+    c = dict(bg="#f6f5ef", fg="#0d0d0d", dim="#5f5d57", line="#d6d3c9", acc="#c4320a", sel="#ffffff", bar="#0d0d0d", barfg="#ffffff",
+             barline=".8cqw solid #c4320a", disp="'Archivo Black',sans-serif", text="Archivo,Arial,sans-serif", saycss="text-transform:uppercase", says=4)
+    row = lambda h, f: (f'<span style="display:block;font-size:1.7cqw;color:#5f5d57">You’ve heard <b style="color:#1f1f1c">“{h}”</b></span>'
+                        f'<span style="display:block;font-size:2.15cqw;line-height:1.4;margin-top:.4cqw">{f}</span>')
+    return v5(c, 'So you’re sure about <span style="color:#ff6a3d">abortion</span>?',
+              [("⚕", "Health", ["Abortion and end of life", "Bodies and consent", "Mental health", "Vaccines and COVID"], 0), ("⚖", "Crime and justice", None, 0),
+               ("¤", "Economics", None, 0), ("✎", "Education", None, 0), ("☘", "Environment", None, 0)],
+              [row("Late-term abortions are common", "CDC data for 2022: 40% happened by six weeks, 7% after the first trimester."),
+               row("Most Americans support abortion rights", "Gallup 2023: 69% back legality in the first three months, 22% in the last."),
+               row("Brain dead patients sometimes wake up", "A 2023 guideline from four US medical societies says they do not recover."),
+               row("Abortion patients are mostly young and childless", "About six in ten had already given birth at least once."),
+               row("Death is a medical fact everyone agrees on", "US law has defined it since 1981, but a 2023 revision effort stalled."),
+               row("Organs are only taken once the donor is dead", "A 2025 federal review flagged 351 cases for a closer look."),
+               row("Overturning Roe cut the number of abortions", "Monthly totals rose in 2023 and 2024, helped by telehealth.")])
+
+
+def t_tabloid(it):
+    c = dict(bg="#fbf9f1", fg="#111", dim="#5e5e5e", line="#d9d6cc", acc="#d10600", sel="#fff6b8", bar="#d10600", barfg="#fff",
+             barline=".8cqw solid #ffe500", disp="Anton,Impact,sans-serif", text="'PT Serif',Georgia,serif", label="Oswald,sans-serif",
+             gcss="text-transform:uppercase;letter-spacing:.05em;font-weight:500", says=4.6)
+    row = lambda h, v, col: f'<span style="display:block;font:700 2.35cqw/1.25 \'PT Serif\',serif">{h}</span>{tag(v, col)}'
+    return v5(c, 'DiD yOu KnOw <span style="color:#ffe500">holding a pen in your teeth</span>…',
+              [("◇", "By field", ["Psychology", "Medicine", "Food & lifestyle", "The paranormal", "Animals"], 0), ("●", "By how it ended", None, 0),
+               ("✦", "By kind of crazy", None, 0)],
+              [row("Holding a pen in your teeth makes cartoons funnier", "Contested", "#a25f00"),
+               row("Standing like Wonder Woman raises your testosterone", "Dead", "#d10600"),
+               row("Listening to Mozart makes you smarter", "Dead", "#d10600"),
+               row("Taking a test teaches you more than rereading", "Held up, somehow", "#0a7a3a"),
+               row("A marshmallow wait predicts later achievement", "Real data, wrong conclusion", "#555"),
+               row("Washing your hands makes your moral judgments less harsh", "Dead", "#d10600"),
+               row("Holding a warm cup makes people seem warmer", "Dead", "#d10600"),
+               row("Hurricanes with female names kill more people", "Contested", "#a25f00")])
+
+
+def t_riso(it):
+    c = dict(bg="#f5f0e6", fg="#2340b8", dim="#4f5ca8", line="#e6c3d6", acc="#c81d70", sel="#fbe3ef", bar="#f5f0e6", barfg="#2340b8",
+             disp="Fraunces,Georgia,serif", text="Fraunces,Georgia,serif", sayw=800, saycss="font-style:italic;letter-spacing:-.02em", says=4.8)
+    hl = lambda w: f'<em style="font-style:italic;background:#ff4fae;color:#fff;padding:0 .6cqw">{w}</em>'
+    row = lambda a, w, ex: (f'<span style="display:grid;grid-template-columns:44% 1fr;gap:2cqw"><span style="font:800 2.5cqw/1.2 Fraunces,serif">{a} {hl(w)}</span>'
+                            f'<span style="display:flex;flex-direction:column;gap:.5cqw;font-size:1.9cqw">' + "".join(f'<span>“{e}”</span>' for e in ex) + '</span></span>')
+    return v5(c, 'Metaphors for <span style="color:#c81d70">the mind</span>',
+              [("◇", "By picture", None, 0), ("◉", "Mind & knowing", ["The mind", "Ideas", "Understanding", "Reason"], 0), ("❝", "Argument", None, 0),
+               ("✺", "Emotion", None, 0), ("∞", "Love", None, 0), ("⧗", "Time", None, 0)],
+              [row("The mind is a", "container", ["I can’t get that song out of my head.", "Keep that in mind.", "It just popped into my head."]),
+               row("The mind is a", "machine", ["My brain isn’t working today.", "I’m a little rusty.", "She’s running out of steam."]),
+               row("Memory is a", "storehouse", ["Let me dig that up.", "It’s filed away somewhere."]),
+               row("The mind is a", "body", ["I can’t stomach that argument.", "Let me chew on it."]),
+               row("The self is a", "container", ["I’m bottling it all up.", "She opened up to me."]),
+               row("Ideas are", "food", ["That’s food for thought.", "Half-baked ideas.", "Hard to swallow."])])
+
+
+def t_dict(it):
+    c = dict(bg="#f2ead8", fg="#251c12", dim="#6b5b43", line="#d8c9aa", acc="#8b1a1a", sel="#e7d9ba", bar="#f2ead8", barfg="#251c12",
+             disp="'IM Fell English',serif", text="'EB Garamond',Garamond,serif", says=4.6)
+    col = ["#2f6b3a", "#2f6e55", "#55722b", "#7a6510", "#8f5d10", "#985020", "#8f3f1d", "#86251a", "#560c0c"]
+    def scale(v, o=None):
+        p = lambda k: f"{(k + .5) / 9 * 100:.1f}%"
+        s = (f'<span style="position:relative;display:block;height:2cqw;width:20cqw;flex:none;background:linear-gradient({c["line"]},{c["line"]}) 0 50%/100% .15cqw no-repeat">'
+             + (f'<i style="position:absolute;left:{p(o)};top:50%;width:1.4cqw;height:1.4cqw;margin:-.7cqw;border-radius:50%;border:.25cqw solid {col[o]};box-sizing:border-box;background:{c["bg"]}"></i>' if o is not None else "")
+             + f'<i style="position:absolute;left:{p(v)};top:50%;width:1.7cqw;height:1.7cqw;margin:-.85cqw;border-radius:50%;background:{col[v]}"></i></span>')
+        return s
+    vd = ["expected", "admired", "fine", "laughed at", "eyebrows", "divided", "frowned on", "not okay", "illegal"]
+    row = lambda t, v, o=None: (f'<span style="display:flex;align-items:center;gap:2cqw"><span style="flex:1;font-size:2.15cqw;line-height:1.3">{t}</span>{scale(v, o)}'
+                                f'<i style="width:10cqw;flex:none;font-size:1.9cqw;color:{col[v]}">{vd[v]}</i></span>')
+    tabs = ('<span style="margin-left:auto;display:flex;gap:2cqw;font:2cqw \'EB Garamond\',serif;color:#6b5b43;flex:none">'
+            '<span style="color:#251c12;border-bottom:.3cqw solid #8b1a1a">Dictionary</span><span>Outline</span><span>Granular</span></span>')
+    return v5(c, 'Norm Dictionary: <span style="color:#8b1a1a">bodies</span>',
+              [("○", "Bodies", ["Changing your body", "Changing your mind", "Showing skin", "Showing wealth"], 0), ("☉", "Faith", None, 0), ("✕", "Harm", None, 0),
+               ("♥", "Love and family", None, 0), ("¤", "Money", None, 0), ("≠", "Words", None, 0)],
+              [row("Braces, on a twelve-year-old.", 0), row("A full sleeve tattoo, at 30.", 2, 6), row("Pierced ears, on a baby girl.", 2, 4),
+               row("A face tattoo, at 30.", 4, 7), row("A tattoo, on a baby.", 7), row("Testosterone, for a 25-year-old athlete.", 8, 2),
+               row("A weight-loss drug, for a wedding.", 4), row("Testosterone, at 55, from his doctor.", 2), row("Coffee, every morning.", 0), row("A line of cocaine, at a party.", 8, 2)], tabs)
+
+
+def t_arxiv(it):
+    c = dict(bg="#fdfdfb", fg="#141414", dim="#5f5f5f", line="#e0dfda", acc="#b31b1b", sel="#fbf3e9", bar="#fdfdfb", barfg="#141414",
+             disp="'STIX Two Text',Times,serif", text="'STIX Two Text',Times,serif", sayw=600, says=4.2)
+    row = lambda y, t, a: (f'<span style="display:grid;grid-template-columns:6cqw 1fr;gap:1.6cqw;align-items:baseline"><span style="font:1.7cqw \'IBM Plex Mono\',monospace;color:#5f5f5f">{y}</span>'
+                           f'<span><i style="font-size:2.2cqw">{t}</i><span style="display:block;font-size:1.7cqw;color:#5f5f5f;font-variant:small-caps">{a}</span></span></span>')
+    return v5(c, 'The ten best papers for <span style="color:#b31b1b">History</span>',
+              [("❦", "Humanities", ["History", "Philosophy", "Religious studies", "Literature"], 0), ("⚖", "Social sciences", None, 0), ("☉", "Natural sciences", None, 0),
+               ("∑", "Formal sciences", None, 0), ("⚒", "Applied sciences", None, 0)],
+              [row(1971, "The World of Late Antiquity", "Brown"), row(1973, "The Ancient Economy", "Finley"), row(1977, "The Emperor in the Roman World", "Millar"),
+               row(1980, "Taxes and Trade in the Roman Empire", "Hopkins"), row(1998, "Becoming Roman", "Woolf"), row(2000, "The Corrupting Sea", "Horden & Purcell"),
+               row(2007, "The Cambridge Economic History of the Greco-Roman World", "Scheidel, Morris & Saller"), row(2008, "Democracy and Knowledge", "Ober"),
+               row(2017, "The Fate of Rome", "Harper"), row(2019, "Escape from Rome", "Scheidel")])
+
+
+def t_chalk(it):
+    c = dict(bg="#22362c", fg="#efede2", dim="#a9bcb0", line="#3b5246", acc="#f6e27f", sel="#2f4a3c", bar="#1d2f26", barfg="#efede2",
+             disp="'Cabin Sketch',cursive", text="'Source Serif 4',Georgia,serif", label="Kalam,cursive", sayw=700, says=4.4)
+    row = lambda q, a: (f'<span style="display:block;font:700 2.5cqw/1.2 Kalam,cursive;color:#f6e27f">{q}</span>'
+                        f'<span style="display:block;font-size:1.95cqw;line-height:1.4;margin-top:.4cqw;color:#dcdfd3">{a}</span>')
+    return v5(c, 'So you want to understand <span style="color:#f6e27f">History</span>?',
+              [("❦", "Humanities", ["History", "Philosophy", "Religious studies", "Arts & music"], 0), ("⚖", "Social sciences", None, 0), ("☉", "Natural sciences", None, 0),
+               ("∑", "Formal sciences", None, 0), ("⚒", "Applied sciences", None, 0)],
+              [row("Did Rome fall, or just change?", "Real collapse in the West, from politics, invasion and climate; the East carried on."),
+               row("Great men or deep structures?", "Leaders matter most where constraints are weak; structures set the menu."),
+               row("Why did the West get rich first?", "No single factor wins: wages, coal, empire and ideas all mattered."),
+               row("Did religion fight science?", "Historians dropped the war story; real clashes were local."),
+               row("Why did Latin America fall behind?", "Institutions lead; dependency theory kept a point but lost the whole."),
+               row("Was there a Scientific Revolution?", "The label survives; the one-event, one-genius version is dead."),
+               row("Is the world heading for too many people?", "Too few is now the bigger worry in most of the world.")])
+
 
 
 THUMBS = {"fight": t_fight, "label": t_label, "tabloid": t_tabloid, "riso": t_riso, "dict": t_dict, "arxiv": t_arxiv,
