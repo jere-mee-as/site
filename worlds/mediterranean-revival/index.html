@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mediterranean Revival</title>
+<meta name="description" content="One day on a 1920s stucco wall, dawn to the casino at night: the sun crosses it as you go, and the photographs (hotels, tile, linen, the beach club) are set into it in different ways.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stucco:#efe4d2; --ink:#3a2a1e; --ink2:#6b5442; --terra:#a9502b; --cobalt:#22408a;
+  --cap:"Marcellus","Cardo","Optima","Palatino Linotype","Book Antiqua",Palatino,serif;
+  --txt:"Cormorant Garamond","Cormorant","Cardo","EB Garamond",Garamond,"Crimson Text",Georgia,serif;
+  --sx:0px; --sy:6px; --tint:#ffd9a8; --ta:.25; --b:1; --s:1; --sep:0; --cast:.32;
+  --gut:clamp(16px,4vw,56px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+body{background:var(--stucco);color:var(--ink);font-family:var(--txt);-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;cursor:default;transition:color 1.2s}
+body.night{--ink:#f1e6d4;--ink2:#cdbba2;--terra:#e7a37c;--cast:.5}
+img{-webkit-user-drag:none;user-select:none;pointer-events:none}
+#wall{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+#shade{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:4;pointer-events:none;mix-blend-mode:multiply;opacity:0;transition:opacity 1.2s}
+body.photo #shade{opacity:.55}
+#veil{position:fixed;inset:0;z-index:9;background:#1c130e;opacity:0;pointer-events:none;transition:opacity 1.4s ease}
+#veil.on{opacity:1;transition:opacity .8s ease}
+
+/* ---------- beats ---------- */
+.beat{position:fixed;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;gap:clamp(28px,5vw,88px);
+  padding:calc(var(--gut) + 30px) var(--gut) calc(var(--gut) + 40px);opacity:0;visibility:hidden;
+  transition:opacity 1.1s ease, visibility 0s linear 1.1s}
+.beat.on{opacity:1;visibility:visible;transition:opacity 1.1s ease .15s, visibility 0s}
+.beat.nofx,.beat.nofx *{transition:none!important}
+.beat.r{flex-direction:row-reverse}
+.txt{max-width:30rem;flex:0 1 30rem}
+.lab,.kick{font-family:var(--cap);font-size:clamp(11px,.95vw,14px);font-weight:400;letter-spacing:.26em;text-transform:uppercase;color:var(--terra);margin-bottom:.9em;transition:color 1.2s}
+.kick{letter-spacing:.32em;margin-bottom:1.4em}
+.st{font-size:clamp(23px,2.7vw,42px);line-height:1.16;font-weight:500;letter-spacing:-.005em}
+.st em,.big em{font-style:italic;font-weight:400}
+.sm{font-size:clamp(17px,1.5vw,23px);line-height:1.38;color:var(--ink2);margin-top:.8em;font-style:italic;transition:color 1.2s}
+.beat.on .txt>*{animation:rise 1.4s cubic-bezier(.2,.6,.2,1) both}
+.beat.on .txt>*:nth-child(2){animation-delay:.25s}.beat.on .txt>*:nth-child(3){animation-delay:.5s}.beat.on .txt>*:nth-child(4){animation-delay:.75s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* transitions: house = fade; breaks below */
+.beat.on.tr-wipe{opacity:1;transition:visibility 0s;animation:wipe 1.6s cubic-bezier(.65,.05,.3,1) both}
+@keyframes wipe{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+.beat.on.tr-blind{opacity:1;transition:visibility 0s;animation:blind 1.3s cubic-bezier(.55,.1,.25,1) both}
+@keyframes blind{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+.beat.on.tr-rise{animation:lift 1.3s cubic-bezier(.2,.7,.2,1) .2s both}
+@keyframes lift{from{transform:translateY(7vh)}to{transform:none}}
+
+/* photo wrapper: graded by the hour */
+.ph{position:relative;overflow:hidden;background:#cdbfa8}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+  filter:brightness(var(--b)) saturate(var(--s)) sepia(var(--sep))}
+.ph::before{content:"";position:absolute;inset:0;z-index:1;background:var(--tint);opacity:var(--ta);mix-blend-mode:soft-light;pointer-events:none}
+.fr{position:relative;flex:none;box-shadow:var(--sx) var(--sy) 22px rgba(52,26,10,var(--cast)), 0 0 0 1px rgba(60,38,20,.18)}
+
+/* the one arch (Havana) */
+.arch{--ar:1.32;position:relative;flex:none;overflow:hidden;
+  --fh:min(76svh, calc(56vw / var(--ar)), 720px);height:var(--fh);width:calc(var(--fh) * var(--ar));
+  border-top-left-radius:50% 34%;border-top-right-radius:50% 34%;background:#cdbfa8}
+.arch img{transform:scale(1.04);transition:transform 9s ease-out}
+.beat.on .arch img{transform:scale(1)}
+.arch::after{content:"";position:absolute;inset:0;z-index:2;border-radius:inherit;pointer-events:none;
+  box-shadow:inset var(--sx) var(--sy) 26px rgba(48,24,10,.55), inset 0 0 0 1px rgba(60,38,20,.25)}
+
+/* wall-only beats */
+.beat.wallb .txt{max-width:46rem;flex-basis:46rem;text-align:center}
+.title{font-family:var(--cap);font-weight:400;font-size:clamp(44px,8.4vw,128px);line-height:.98;letter-spacing:.01em}
+.title span{display:block;font-size:.62em;letter-spacing:.14em}
+.hint{margin-top:2.2em;font-style:italic;font-weight:500;font-size:clamp(16px,1.3vw,19px);color:var(--ink2)}
+.big{font-size:clamp(30px,4.2vw,62px);line-height:1.08;font-weight:500}
+.rule{width:56px;height:1px;background:currentColor;opacity:.45;margin:1.4em auto}
+.gram{font-family:var(--cap);font-size:clamp(30px,4.6vw,66px);line-height:1.12;letter-spacing:.02em}
+.gram em{font-family:var(--txt);font-style:italic;font-size:1.1em;color:var(--terra);transition:color 1.2s}
+
+/* 02 — the composite: three panels arrive with three phrases */
+.trip .txt{flex:0 1 27rem}
+.trip .big{font-size:clamp(30px,3.3vw,50px)}
+.panels{display:flex;gap:clamp(10px,1.4vw,22px);flex:none}
+.pn{--h:min(62svh,560px);width:calc(var(--h) * .56);flex:none}
+.pn .ph{height:var(--h)}
+.pn figcaption{font-family:var(--cap);font-size:clamp(10.5px,.85vw,13px);letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);margin-top:.9em;line-height:1.4;transition:color 1.2s}
+.beat.on .pn{animation:up 1.2s cubic-bezier(.2,.7,.2,1) both}
+.beat.on .pn:nth-child(1){animation-delay:.9s}.beat.on .pn:nth-child(2){animation-delay:1.7s}.beat.on .pn:nth-child(3){animation-delay:2.5s}
+.beat.on .trip-fin{animation-delay:3.4s!important}
+.trip-fin{font-size:clamp(19px,1.7vw,26px);margin-top:1.1em;line-height:1.3}
+
+/* full-bleed (only images ≥1600px wide) */
+.fb{padding:0}
+.bleed{position:absolute;inset:0;overflow:hidden}
+.bleed img{object-position:var(--op,50% 50%);transform:scale(1.1);transition:transform 18s cubic-bezier(.2,.4,.3,1)}
+.beat.on .bleed img{transform:scale(1.03) translateX(var(--tx,0))}
+.cap{position:absolute;left:var(--gut);bottom:calc(var(--gut) + 30px);z-index:5;max-width:27rem;
+  background:rgba(239,228,210,.93);color:#3a2a1e;padding:1.05em 1.3em 1.15em;box-shadow:0 0 0 1px rgba(60,38,20,.2), inset 0 0 0 5px rgba(239,228,210,1), inset 0 0 0 6px rgba(169,80,43,.35)}
+.cap .lab{color:#a9502b}
+.cap .st{font-size:clamp(20px,1.9vw,29px)}
+.cap.quiet{padding:.75em 1.1em .8em}
+.cap.quiet .lab{margin:0;white-space:nowrap}
+
+/* half-bleed */
+.hb{justify-content:flex-start}
+.half{position:absolute;top:0;bottom:0;right:0;width:50%;z-index:1}
+.half img{object-position:50% 38%}
+.hb .txt{width:50%;max-width:none;flex:none;padding-right:clamp(24px,5vw,80px);padding-left:clamp(0px,3vw,48px)}
+.hb .txt>*{max-width:26rem}
+
+/* door in the wall */
+.door{--d:min(70svh,44vw,640px);width:var(--d);height:var(--d)}
+.beat.on .door{animation:door 1.7s cubic-bezier(.6,0,.25,1) .7s both}
+@keyframes door{from{clip-path:inset(0 49.6% 0 49.6%)}to{clip-path:inset(0 0 0 0)}}
+.door img{transform:scale(1.08);transition:transform 10s ease-out .7s}
+.beat.on .door img{transform:scale(1)}
+
+/* pairs */
+.tilep .tile{--t:min(30svh,22vw,300px);width:var(--t);height:var(--t);border-radius:50%}
+.tilep .tile .ph{width:100%;height:100%;border-radius:50%}
+.tilep .tall,.pair2 .tall{--h:min(70svh,640px);height:var(--h);width:calc(var(--h) * .8)}
+.tilep .tall .ph,.pair2 .tall .ph,.snaps .ph{width:100%;height:100%}
+.tilep .txt{flex:0 1 20rem;text-align:center}
+.pair2{gap:clamp(14px,1.6vw,26px)}
+.pair2 .txt{flex:0 1 19rem;margin-left:clamp(10px,2vw,40px)}
+.pair2 .tall{--h:min(68svh,600px)}
+
+/* grid of looks */
+.tiles{--gh:min(76svh,700px);width:calc(var(--gh) * .8);display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:5px;
+  background:#f7f0e4;flex:none}
+.tiles .ph{aspect-ratio:4/5;background:#e9e9e9}
+.beat.on .tiles .ph{animation:up .9s cubic-bezier(.2,.7,.2,1) both}
+.tiles .ph:nth-child(1){animation-delay:.3s!important}.tiles .ph:nth-child(2){animation-delay:.38s!important}.tiles .ph:nth-child(3){animation-delay:.46s!important}
+.tiles .ph:nth-child(4){animation-delay:.54s!important}.tiles .ph:nth-child(5){animation-delay:.62s!important}.tiles .ph:nth-child(6){animation-delay:.7s!important}
+.tiles .ph:nth-child(7){animation-delay:.78s!important}.tiles .ph:nth-child(8){animation-delay:.86s!important}.tiles .ph:nth-child(9){animation-delay:.94s!important}
+.grid .txt{flex:0 1 22rem}
+
+/* coral: the word dyes, then the photographs appear */
+.coral .txt{flex:0 1 27rem}
+.cw{background:linear-gradient(#e07a63,#e07a63) 0 88%/0% .32em no-repeat;transition:background-size 1.3s cubic-bezier(.6,0,.3,1) 0s;padding:0 .04em}
+.beat.on .cw{background-size:100% .32em;transition-delay:1.1s}
+.snaps{position:relative;flex:none;width:min(42vw,560px);height:min(70svh,600px)}
+.snaps .fr{position:absolute;border:7px solid #f8f2e8}
+.snaps .s1{width:46%;aspect-ratio:4/5;left:0;top:6%}
+.snaps .s2{width:56%;aspect-ratio:4/5;right:0;bottom:2%}
+.beat.on .snaps .s1{animation:up 1.1s cubic-bezier(.2,.7,.2,1) 2s both}
+.beat.on .snaps .s2{animation:up 1.1s cubic-bezier(.2,.7,.2,1) 2.5s both}
+
+/* slow pan band */
+.panb{flex-direction:column;gap:clamp(16px,2.4svh,28px)}
+.band{width:min(1180px,88vw);height:min(50svh,470px)}
+.band img{object-position:50% 10%}
+.beat.on .band img{animation:panv 20s ease-in-out .6s infinite alternate}
+@keyframes panv{from{object-position:50% 10%}to{object-position:50% 88%}}
+.panb .txt{max-width:none;flex:none;width:min(1180px,88vw);display:flex;gap:2.4em;align-items:baseline}
+.panb .txt .lab{margin:0;flex:none}
+.panb .txt .st{font-size:clamp(20px,2vw,30px)}
+
+/* postcard */
+.post{width:min(620px,48vw);aspect-ratio:1024/815;border:12px solid #f4ecdf;box-shadow:var(--sx) var(--sy) 34px rgba(0,0,0,.55),0 0 60px rgba(255,170,90,.18)}
+.post .ph{width:100%;height:100%}
+
+/* the card to keep */
+.keep .card{position:relative;width:min(980px,100%);max-height:100%;background:#f3ead9;color:#3a2a1e;padding:clamp(18px,3vw,44px) clamp(18px,3.4vw,52px);
+  box-shadow:var(--sx) var(--sy) 40px rgba(0,0,0,.5), inset 0 0 0 8px #f3ead9, inset 0 0 0 9px rgba(169,80,43,.55), inset 0 0 0 13px #f3ead9, inset 0 0 0 14px rgba(169,80,43,.3)}
+.k1{font-family:var(--cap);font-size:clamp(26px,3.2vw,46px);letter-spacing:.04em;line-height:1}
+.k2{font-family:var(--cap);font-size:clamp(10px,.9vw,13px);letter-spacing:.3em;text-transform:uppercase;color:#a9502b;margin-top:.7em}
+.kgrid{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(18px,3vw,48px);margin-top:clamp(16px,2.4vw,30px);border-top:1px solid rgba(169,80,43,.35);padding-top:clamp(14px,2vw,26px)}
+.kl{font-family:var(--cap);font-size:clamp(10px,.8vw,12px);letter-spacing:.28em;text-transform:uppercase;color:#a9502b;margin:0 0 .6em}
+.kl:not(:first-child){margin-top:1.3em}
+.sw{list-style:none;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.sw li{font-size:clamp(11px,.85vw,13px);line-height:1.2;color:#6b5442}
+.sw i{display:block;aspect-ratio:1;margin-bottom:.35em;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.ty1{font-family:var(--cap);font-size:clamp(20px,1.9vw,28px);line-height:1.1}
+.ty2{font-family:var(--txt);font-size:clamp(21px,2vw,30px);font-style:italic;line-height:1.1;margin-top:.35em}
+.tyn{font-size:clamp(13px,1vw,15px);color:#6b5442;font-style:italic}
+.rules{list-style:none;counter-reset:r}
+.rules li{counter-increment:r;font-size:clamp(16px,1.35vw,20px);line-height:1.3;padding-left:2em;position:relative;margin-bottom:.22em}
+.rules li::before{content:counter(r,upper-roman);position:absolute;left:0;top:.18em;font-family:var(--cap);font-size:.7em;color:#a9502b;letter-spacing:.1em}
+.nm{font-size:clamp(15px,1.2vw,18px);line-height:1.35}
+
+/* credits */
+.beat.cred .txt{max-width:48rem;flex-basis:48rem;text-align:left}
+.cred ol{list-style:none;columns:2;column-gap:2.4em;font-size:clamp(11px,.86vw,13px);line-height:1.38;margin-top:1em}
+.cred li{break-inside:avoid;margin-bottom:.1em}
+.cred li b{font-family:var(--cap);font-weight:400;color:var(--terra);margin-right:.5em;font-size:.9em;transition:color 1.2s}
+.cred a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(160,110,70,.4)}
+.cred .foot{margin-top:1em;font-style:italic;font-size:clamp(13px,1vw,15px);color:var(--ink2)}
+
+.more{display:none}
+
+/* in-world marks */
+.mark{position:fixed;z-index:6;font-family:var(--cap);font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--ink2);transition:color 1.2s, opacity .6s;
+  background:none;border:0;font-weight:400}
+button.mark{cursor:pointer;padding:8px 0}
+.mark.lt{color:#f6ecdc;text-shadow:0 1px 10px rgba(20,10,4,.7),0 0 2px rgba(20,10,4,.5)}
+#num{right:var(--gut);top:calc(var(--gut) - 4px)}
+#mute{left:var(--gut);top:calc(var(--gut) - 12px)}
+#mute.off{text-decoration:line-through;text-decoration-thickness:1px;opacity:.7}
+#back{left:var(--gut);bottom:calc(var(--gut) - 16px)}
+#more{right:var(--gut);bottom:calc(var(--gut) - 16px)}
+#back.gone,#more.gone{opacity:0;pointer-events:none}
+#back:hover,#more:hover,#mute:hover{color:var(--terra)}
+#dial{left:50%;bottom:calc(var(--gut) - 10px);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;cursor:ew-resize;padding:6px 14px;touch-action:none}
+#dial svg{display:block;overflow:visible}
+#dial #hr{font-size:11px;letter-spacing:.2em}
+
+/* depth: a plaque that rises from the foot of the wall */
+#depth{position:fixed;z-index:8;left:50%;bottom:0;width:min(36rem,100%);transform:translate(-50%,105%);transition:transform .6s cubic-bezier(.2,.7,.2,1);
+  background:#f3ead9;color:#3a2a1e;padding:26px clamp(20px,3vw,34px) calc(22px + env(safe-area-inset-bottom));
+  box-shadow:0 -10px 40px rgba(40,20,8,.28), inset 0 0 0 6px #f3ead9, inset 0 0 0 7px rgba(169,80,43,.4);user-select:text;-webkit-user-select:text}
+#depth.open{transform:translate(-50%,0)}
+#depth .lab{color:#a9502b;margin-bottom:.7em}
+#depth p.d{font-size:clamp(16px,1.25vw,19px);line-height:1.4;margin-bottom:.45em}
+#depth .lk{display:flex;flex-wrap:wrap;gap:0 1.4em;margin-top:.8em;font-family:var(--cap);font-size:11px;letter-spacing:.18em;text-transform:uppercase;line-height:2}
+#depth .lk a{color:#a9502b;text-decoration:none;border-bottom:1px solid rgba(169,80,43,.35);white-space:nowrap}
+#depth .x{position:absolute;right:18px;top:12px;font-family:var(--cap);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6b5442;background:none;border:0;cursor:pointer;padding:6px}
+
+/* ---------- portrait / phone ---------- */
+@media (max-aspect-ratio: 11/10){
+  .beat,.beat.r{flex-direction:column;justify-content:center;gap:clamp(16px,3svh,30px);padding:calc(var(--gut) + 34px) var(--gut) calc(var(--gut) + 46px)}
+  .arch{--fh:min(46svh, calc((100vw - 2 * var(--gut)) / var(--ar)))}
+  .txt,.beat.wallb .txt,.cred .txt,.trip .txt,.grid .txt,.coral .txt,.tilep .txt,.pair2 .txt{flex:none;width:100%;max-width:36rem}
+  .txt{text-align:left}
+  .st{font-size:clamp(21px,5.6vw,30px)}
+  .sm{font-size:clamp(16px,4.2vw,20px);margin-top:.55em}
+  .lab{margin-bottom:.6em}
+  .trip{flex-direction:column}
+  .panels{width:100%;gap:8px}
+  .pn{--h:auto;width:auto;flex:1}
+  .pn .ph{height:auto;aspect-ratio:.56/1;max-height:40svh}
+  .pn figcaption{font-size:9.5px;letter-spacing:.14em;margin-top:.6em}
+  .bleed img{object-position:var(--opp,var(--op,50% 50%))}
+  .cap{right:var(--gut);max-width:none;bottom:calc(var(--gut) + 40px)}
+  .hb{justify-content:flex-end;padding-bottom:calc(var(--gut) + 50px)}
+  .half{left:0;width:100%;bottom:auto;height:62svh}
+  .hb .txt{width:100%;padding:0}
+  .door{--d:min(52svh,calc(100vw - 2 * var(--gut)))}
+  .tilep{flex-direction:row!important;flex-wrap:wrap;align-content:center;gap:16px 14px}
+  .tilep .tile{--t:min(34vw,150px)}
+  .tilep .tall{--h:min(44svh,calc((100vw - 2 * var(--gut) - 14px - min(34vw,150px)) * 1.25))}
+  .tilep .txt{order:3;text-align:left}
+  .pair2{flex-direction:row!important;flex-wrap:wrap;align-content:center;gap:16px 10px}
+  .pair2 .tall{--h:min(48svh,calc((100vw - 2 * var(--gut) - 10px) / 2 * 1.25))}
+  .pair2 .txt{margin:0}
+  .tiles{width:min(100%,calc(60svh * .8))}
+  .snaps{width:100%;height:min(46svh,400px)}
+  .snaps .s1{width:44%;height:auto}
+  .snaps .s2{width:52%}
+  .band{width:100%;height:min(46svh,400px)}
+  .panb .txt{width:100%;display:block}
+  .panb .txt .lab{margin-bottom:.6em}
+  .post{width:100%}
+  .keep{padding-top:calc(var(--gut) + 26px);padding-bottom:calc(var(--gut) + 40px)}
+  .kgrid{grid-template-columns:1fr;gap:12px}
+  .kl:not(:first-child){margin-top:.9em}
+  .sw{gap:4px}.sw li{font-size:9.5px}
+  .rules li{font-size:15px;margin-bottom:.1em}
+  .nm{font-size:14px}
+  .ty1{font-size:19px}.ty2{font-size:20px}
+  .tyn{font-size:12.5px}
+  .cred ol{columns:1}
+  #more{bottom:calc(var(--gut) - 16px)}
+}
+@media (max-aspect-ratio: 11/10) and (max-height: 760px){ .sm{display:none} .keep .tyn{display:none} }
+@media (prefers-reduced-motion: reduce){
+  .beat,.beat.on{transition:opacity .25s, visibility 0s}
+  .beat.on,.beat.on *{animation:none!important}
+  .ph img,.beat.on .ph img{transform:none!important;transition:none!important}
+  .cw{background-size:100% .32em}
+}
+</style>
+</head>
+<body>
+<canvas id="wall" aria-hidden="true"></canvas>
+
+<main id="beats">
+  <!-- I · MORNING -->
+  <section class="beat wallb" data-h="7.1" data-ch="0" data-hold>
+    <div class="txt">
+      <p class="kick">Florida · California · Havana &nbsp;—&nbsp; the 1920s</p>
+      <h1 class="title">Mediterranean<span>Revival</span></h1>
+      <p class="hint">Hold anywhere and the day goes by.</p>
+    </div>
+  </section>
+
+  <section class="beat trip" data-h="7.8" data-ch="0">
+    <div class="txt">
+      <p class="big">A Mediterranean that <em>never quite existed.</em></p>
+      <p class="sm">Assembled from parts, by Americans who had wintered abroad:</p>
+      <p class="trip-fin">— and built in Florida, during the land boom of the 1920s.</p>
+    </div>
+    <div class="panels">
+      <figure class="pn"><div class="ph fr"><img data-src="img/17.webp" alt="The Freedom Tower, Miami, its ornate belfry against a deep blue sky" style="object-position:50% 20%"></div><figcaption>A tower from Seville</figcaption></figure>
+      <figure class="pn"><div class="ph fr"><img data-src="img/34.webp" alt="A belvedere tower of The Breakers, Palm Beach" style="object-position:50% 30%"></div><figcaption>Towers from a Roman villa</figcaption></figure>
+      <figure class="pn"><div class="ph fr"><img data-src="img/16.webp" alt="The carved Spanish Baroque portal of the Wolfsonian building, Miami Beach" style="object-position:50% 70%"></div><figcaption>A Baroque portal from Spain</figcaption></figure>
+    </div>
+    <div class="more"><p class="lab">The parts list</p>
+      <p class="d">The <b>Freedom Tower</b> in Miami (1925, Schultze &amp; Weaver) copies the Giralda, the bell tower of Seville Cathedral. So does the Biltmore in Coral Gables, by the same firm, a year later.</p>
+      <p class="d">The <b>Breakers</b> in Palm Beach (1926) took its twin belvederes from the Villa Medici in Rome.</p>
+      <p class="d">The <b>Wolfsonian</b> on Miami Beach began in 1927 as the Washington Storage Company — a warehouse with a carved Spanish Baroque doorway.</p>
+      <p class="lk"><a href="https://en.wikipedia.org/wiki/Mediterranean_Revival_architecture" target="_blank" rel="noopener">Wikipedia</a><a href="https://www.aesdes.org/?p=59514" target="_blank" rel="noopener">AESDES</a></p></div>
+  </section>
+
+  <section class="beat fb" data-h="8.7" data-ch="0" data-tr="wipe" data-lm="tl tr bl br bc" data-lmp="tl tr bl br bc">
+    <div class="bleed ph"><img data-src="img/02.webp" alt="The Everglades Club on Worth Avenue, Palm Beach: white stucco, arched loggia, tile roofs and palms" style="--op:50% 28%;--opp:24% 50%;--tx:-1.2%"></div>
+    <div class="cap"><p class="lab">Everglades Club · Palm Beach · 1919</p><p class="st">Addison Mizner’s first Palm Beach building. The town has looked like this since.</p></div>
+    <div class="more"><p class="lab">Mizner and Singer</p>
+      <p class="d">Paris Singer, heir to the sewing-machine fortune, hired the society architect <b>Addison Mizner</b> to build a convalescent home for officers of the First World War. The war ended first; it opened in 1919 as a private club.</p>
+      <p class="d">Mizner went on to make his own roof tile, pottery, ironwork and furniture to supply the style, and laid out Via Mizner off Worth Avenue as a little Spanish lane.</p>
+      <p class="lk"><a href="https://en.wikipedia.org/wiki/Addison_Mizner" target="_blank" rel="noopener">Addison Mizner</a><a href="https://en.wikipedia.org/wiki/Via_Mizner" target="_blank" rel="noopener">Via Mizner</a><a href="https://www.architecturalrecord.com/articles/13370-addison-mizner-the-architect-whose-genius-defined-palm-beach" target="_blank" rel="noopener">Architectural Record</a></p></div>
+  </section>
+
+  <section class="beat" data-h="10.1" data-ch="0">
+    <figure class="arch"><div class="ph" style="position:absolute;inset:0"><img data-src="img/06.webp" alt="The Hotel Nacional, Havana, on its bluff above the sea" style="object-position:52% 50%"></div></figure>
+    <div class="txt"><p class="lab">Hotel Nacional · Havana · 1930</p>
+      <p class="st">The style crossed the water with the winter crowd.</p></div>
+    <div class="more"><p class="lab">Havana</p>
+      <p class="d">Designed by the New York firm McKim, Mead &amp; White and opened in 1930 on a rise above the Malecón, the sea wall.</p>
+      <p class="d">The same towers, tile roofs and loggias as Palm Beach, ninety miles south: the winter season ran between them by steamer, rail and seaplane.</p></div>
+  </section>
+
+  <!-- II · NOON -->
+  <section class="beat wallb" data-h="12.2" data-ch="1" data-tr="cut" data-hold data-shadow="strong">
+    <div class="txt">
+      <p class="kick">II · Noon</p>
+      <p class="gram">Barrel tile.<br>Rough stucco.<br>The round arch.<br>Wrought iron.<br><em>Shade.</em></p>
+      <p class="hint">Hold: the sun moves, and the arcade’s shadow follows it.</p>
+    </div>
+    <div class="more"><p class="lab">The grammar</p>
+      <p class="d">Half-round clay barrel tile on low roofs; thick white or ochre stucco; round arches on every opening; wrought-iron grilles, lanterns and balconies.</p>
+      <p class="d">Above all, shade you can walk through: loggias, arcades, courtyards with a fountain, striped awnings. White walls throw the heat back.</p>
+      <p class="lk"><a href="https://www.miamibeachfl.gov/architecture/mediterranean-revival/" target="_blank" rel="noopener">Miami Beach guide</a><a href="https://www.thehistoryofart.org/architecture/styles/mediterranean-revival/" target="_blank" rel="noopener">History of Art</a></p></div>
+  </section>
+
+  <section class="beat r" data-h="13.3" data-ch="1">
+    <div class="ph fr door"><img data-src="img/10.webp" alt="An interior seen through an arched doorway: terracotta floor, beams, plaster walls and green beyond" style="object-position:50% 50%"></div>
+    <div class="txt"><p class="lab">Inside</p>
+      <p class="st">Out of the glare: terracotta underfoot, beams overhead, plaster smoothed by hand.</p>
+      <p class="sm">The arch frames the garden.</p></div>
+    <div class="more"><p class="lab">Interiors</p>
+      <p class="d">Saltillo and terracotta floors, dark-stained beams, iron stair rails, hand-painted tile on stair risers and fountains.</p>
+      <p class="d">Florida added its own material: <b>pecky cypress</b>, swamp cypress pocked by fungus, used for ceilings and panelling.</p>
+      <p class="d">The grandest version is <b>Vizcaya</b> on Biscayne Bay (1916), James Deering’s house, furnished with Italian and Spanish rooms bought whole.</p>
+      <p class="lk"><a href="https://www.vizcaya.org" target="_blank" rel="noopener">Vizcaya</a><a href="https://commons.wikimedia.org/wiki/Category:Interior_of_Villa_Vizcaya" target="_blank" rel="noopener">Vizcaya interiors</a></p></div>
+  </section>
+
+  <!-- III · AFTERNOON -->
+  <section class="beat tilep" data-h="14.5" data-ch="2" data-tr="blind">
+    <figure class="fr tile"><div class="ph"><img data-src="img/09.webp" alt="A hand-painted tile, cobalt on white"></div></figure>
+    <div class="txt"><p class="kick">III · Four o’clock</p>
+      <p class="st">The tile, <em>worn.</em></p>
+      <p class="sm">Cobalt on white, from the stair riser to the shirt.</p></div>
+    <figure class="fr tall"><div class="ph"><img data-src="img/28.webp" alt="A woman in a matching cobalt palm-print shirt, bikini top and shorts" style="object-position:50% 30%"></div></figure>
+    <div class="more"><p class="lab">Tile</p>
+      <p class="d">Cobalt-and-white glazed tile came to Spain with Moorish potters; Seville and Valencia made it an industry. In 1920s Florida it went on stair risers, fountains, door surrounds and bathroom walls.</p>
+      <p class="d">Today’s resortwear borrows the same two colours: big blue leaf and palm prints on white linen and cotton.</p></div>
+  </section>
+
+  <section class="beat grid" data-h="15.2" data-ch="2">
+    <div class="tiles">
+      <div class="ph"><img data-src="img/19.webp" alt="A man in an open white linen shirt and white trousers"></div>
+      <div class="ph"><img data-src="img/20.webp" alt="A woman in a blue linen shirt dress"></div>
+      <div class="ph"><img data-src="img/21.webp" alt="A man in a cream linen shirt and trousers"></div>
+      <div class="ph"><img data-src="img/22.webp" alt="A woman in a long blue and yellow floral dress"></div>
+      <div class="ph"><img data-src="img/23.webp" alt="A man in a green terry camp-collar shirt"></div>
+      <div class="ph"><img data-src="img/24.webp" alt="A woman in a navy palm-leaf shirt dress"></div>
+      <div class="ph"><img data-src="img/25.webp" alt="A man in a matching palm-tree print shirt and shorts"></div>
+      <div class="ph"><img data-src="img/26.webp" alt="A woman in a white broderie anglaise shirt and trousers"></div>
+      <div class="ph"><img data-src="img/27.webp" alt="A man in an open yellow shirt and floral swim shorts"></div>
+    </div>
+    <div class="txt"><p class="lab">The resort wardrobe</p>
+      <p class="st">Linen, terry, eyelet and print. Cut loose, worn with sandals.</p>
+      <p class="sm">Whites and sand from the walls; cobalt, green and yellow from the tile and the garden.</p></div>
+    <div class="more"><p class="lab">Who makes it now</p>
+      <p class="d">Shirt dresses and camp-collar shirts in linen, terry polos, eyelet cotton, tailored swim shorts with matching shirts, espadrilles and flat sandals.</p>
+      <p class="d"><b>Orlebar Brown</b> (London, 2007) built a label on tailored swim shorts; <b>Vilebrequin</b> (Saint-Tropez, 1971) on printed ones. Brunello Cucinelli, Ralph Lauren and Margaret Howell do the linen.</p>
+      <p class="lk"><a href="https://www.orlebarbrown.com" target="_blank" rel="noopener">Orlebar Brown</a><a href="https://www.vilebrequin.com" target="_blank" rel="noopener">Vilebrequin</a><a href="https://www.brunellocucinelli.com" target="_blank" rel="noopener">Cucinelli</a></p></div>
+  </section>
+
+  <section class="beat hb" data-h="15.9" data-ch="2" data-lm="tr br" data-lmp="tl tr">
+    <div class="half ph"><img data-src="img/30.webp" alt="A woman in a long white gauze cover-up walking into the sea"></div>
+    <div class="txt"><p class="lab">The beach club</p>
+      <p class="st">White gauze, bare feet, the sea right there.</p>
+      <p class="sm">The resort hotels built cabanas and bath clubs on the sand below the loggias.</p></div>
+  </section>
+
+  <section class="beat coral" data-h="16.6" data-ch="2">
+    <div class="txt"><p class="st">Linen and open collars, in the colours of the walls — sand, ochre, and <span class="cw">coral</span> faded by salt.</p></div>
+    <div class="snaps">
+      <figure class="fr s1"><div class="ph"><img data-src="img/12.webp" alt="A man in an open coral linen shirt beside a lake" style="object-position:50% 25%"></div></figure>
+      <figure class="fr s2"><div class="ph"><img data-src="img/29.webp" alt="A woman in a cerise swimsuit with a sheer cover-up by the sea" style="object-position:50% 30%"></div></figure>
+    </div>
+  </section>
+
+  <section class="beat panb" data-h="17.3" data-ch="2" data-tr="wipe">
+    <div class="band fr ph"><img data-src="img/31.webp" alt="A woman in a pale green one-piece standing on warm rock above the sea"></div>
+    <div class="txt"><p class="lab">Late afternoon</p><p class="st">A plain one-piece, warm rock, the sea going gold.</p></div>
+  </section>
+
+  <section class="beat pair2" data-h="18.1" data-ch="2">
+    <figure class="fr tall"><div class="ph"><img data-src="img/32.webp" alt="A woman in a cobalt palm-print bikini top and trousers among rocks and trees" style="object-position:50% 35%"></div></figure>
+    <figure class="fr tall"><div class="ph"><img data-src="img/33.webp" alt="A man in a palm-print shirt and green shorts on a wooden terrace in the trees" style="object-position:50% 40%"></div></figure>
+    <div class="txt"><p class="lab">Garden &amp; terrace</p>
+      <p class="st">The garden comes indoors: <em>the same leaf, printed on both.</em></p></div>
+  </section>
+
+  <!-- IV · DUSK -->
+  <section class="beat fb" data-h="19.25" data-ch="3" data-tr="dusk" data-lm="tl tr bl br bc" data-lmp="tl tr bl br bc">
+    <div class="bleed ph"><picture><source media="(max-aspect-ratio: 11/10)" data-srcset="img/35.webp"><img data-src="img/14.webp" alt="Hayes Mansion, San Jose, at dusk: tile roofs, a tower and palms, lit arcades" style="--op:72% 50%;--opp:50% 50%;--tx:1%"></picture></div>
+    <div class="cap quiet"><p class="lab">IV · Dusk &nbsp;—&nbsp; Hayes Mansion, San Jose</p></div>
+    <div class="more"><p class="lab">California</p>
+      <p class="d">Hayes Mansion (1905, George Page) is an early West Coast version. In California the style met real Spanish colonial roots: the missions.</p>
+      <p class="d">Bertram Goodhue’s 1915 exposition in San Diego set the fashion; Pasadena’s City Hall (1927) followed, and <b>Paul R. Williams</b> built Mediterranean houses across Los Angeles.</p>
+      <p class="lk"><a href="https://en.wikipedia.org/wiki/Mediterranean_Revival_architecture" target="_blank" rel="noopener">Wikipedia</a></p></div>
+  </section>
+
+  <section class="beat wallb" data-h="19.8" data-ch="3">
+    <div class="txt">
+      <p class="big">Nobody in Seville <em>built this.</em></p>
+      <div class="rule"></div>
+      <p class="sm">It is the Mediterranean as remembered by people who went there in winter: a romance, not a copy. The 2020s revival keeps the dream — rattan, terrazzo, white walls, cobalt and citrus.</p>
+    </div>
+    <div class="more"><p class="lab">How it ended, and came back</p>
+      <p class="d">The Florida boom broke in 1926: land prices collapsed, and a hurricane hit Miami that September. The Depression finished the building spree.</p>
+      <p class="d">The houses stayed. Preservation districts in Palm Beach, Coral Gables and Miami Beach protect them, and interiors since about 2020 have borrowed the look again.</p>
+      <p class="lk"><a href="https://mdpl.org/blog/2023/06/5-mediterranean-revival-landmarks-in-south-florida/" target="_blank" rel="noopener">MDPL landmarks</a><a href="https://www.tclf.org/content/mediterranean" target="_blank" rel="noopener">TCLF gardens</a></p></div>
+  </section>
+
+  <section class="beat" data-h="21" data-ch="3">
+    <figure class="post fr"><div class="ph"><img data-src="img/15.webp" alt="The casino at the Hotel Nacional, Havana, black and white, under a chandelier"></div></figure>
+    <div class="txt"><p class="lab">After dark · Hotel Nacional</p>
+      <p class="st">The chandeliers come on.</p>
+      <p class="sm">Dance bands, bolero and rumba drifting out over the terrace.</p></div>
+  </section>
+
+  <section class="beat keep" data-h="21.2" data-ch="3" data-tr="rise">
+    <div class="card">
+      <p class="k1">Mediterranean Revival</p>
+      <p class="k2">Florida · California · Havana — the 1920s</p>
+      <div class="kgrid">
+        <div>
+          <p class="kl">Palette</p>
+          <ul class="sw">
+            <li><i style="background:#efe4d2"></i>Stucco</li><li><i style="background:#b4552d"></i>Barrel tile</li><li><i style="background:#c99a4b"></i>Ochre</li>
+            <li><i style="background:#e07a63"></i>Coral</li><li><i style="background:#22408a"></i>Cobalt</li><li><i style="background:#3d5f3a"></i>Palm</li><li><i style="background:#2e2621"></i>Iron</li>
+          </ul>
+          <p class="kl">Type</p>
+          <p class="ty1">Marcellus</p><p class="tyn">cast-stone capitals, as on a hotel portal</p>
+          <p class="ty2">Cormorant Garamond</p><p class="tyn">a warm old-style book face and its italic</p>
+        </div>
+        <div>
+          <p class="kl">Rules</p>
+          <ol class="rules"><li>White walls, clay roofs.</li><li>Every opening is an arch.</li><li>Build the shade: arcade, loggia, courtyard.</li><li>Ornament is tile and iron.</li><li>Dress in linen the colour of the walls.</li></ol>
+          <p class="kl">Names</p>
+          <p class="nm">Addison Mizner · Schultze &amp; Weaver · George Merrick · Bertram Goodhue · Paul R. Williams</p>
+          <p class="kl">Places</p>
+          <p class="nm">Palm Beach · Coral Gables · Española Way · Vizcaya · Havana · Pasadena</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="beat wallb cred" data-h="21.4" data-ch="3">
+    <div class="txt">
+      <p class="lab">Images</p>
+      <ol id="credits"></ol>
+      <p class="foot">From Jere’s Are.na board; the original sources were not recorded, so each links to its Are.na block. Text: paraphrased from the Aesthetics Wiki (CC BY-SA).</p>
+    </div>
+  </section>
+</main>
+
+<canvas id="shade" aria-hidden="true"></canvas>
+<div id="veil" aria-hidden="true"></div>
+
+<button id="mute" class="mark" type="button" aria-label="Toggle sound" data-c="tl">Sound</button>
+<div id="num" class="mark" aria-live="polite" data-c="tr">i / xvii</div>
+<button id="back" class="mark gone" type="button" data-c="bl">← Back</button>
+<button id="more" class="mark gone" type="button" data-c="br" aria-controls="depth">More ↑</button>
+<div id="dial" class="mark" data-c="bc" aria-label="Time of day; drag to move the sun">
+  <svg width="74" height="20" viewBox="0 0 74 20" aria-hidden="true"><path d="M3 18 Q37 -8 71 18" fill="none" stroke="currentColor" stroke-width=".8" opacity=".5"/><line x1="0" y1="18.5" x2="74" y2="18.5" stroke="currentColor" stroke-width=".8" opacity=".5"/><circle id="sun" cx="3" cy="18" r="3.4" fill="currentColor"/></svg>
+  <span id="hr">7:00</span>
+</div>
+<aside id="depth" aria-hidden="true"><button class="x" type="button">Close ↓</button><div id="dbody"></div></aside>
+
+<script>
+(()=>{
+const CRED=[
+ ["Freedom_Tower_Downtown_Miami_(38075844515)",53253064],["Breakers_CIMG0089 (detail)",53252996],["The_Wolfsonian—FIU (detail)",53253033],
+ ["PB_FL_Everglades_Club01",53253084],["The_Hotel_Nacional,_Havana,_Cuba_LCCN2010638840",53253069],["Screenshot-2025-01-25-191319 (interior)",53253123],
+ ["keyfeatures-tile",53253102],["image (palm-print set)",53253542],
+ ["image (white linen)",53253646],["image (blue shirt dress)",53253482],["image (cream linen)",53253620],["image (floral maxi)",53253398],["image (green terry)",53253616],
+ ["image (palm-leaf dress)",53253486],["image (palm-tree set)",53253660],["image (eyelet)",53253548],["image (yellow shirt)",53253401],
+ ["image (gauze cover-up)",53253499],["image (coral linen shirt)",53253192],["image (cerise swimsuit)",53253521],["image (one-piece on rock)",53253529],
+ ["image (palm print among rocks)",53253564],["image (terrace)",53253651],["Dolce_Hayes_Mansion_at_dusk_(cropped)",53253048],["Hotel_Nacional_de_Cuba_Casino",53253074]];
+const ol=document.getElementById('credits');
+CRED.forEach(([t,id],i)=>{const li=document.createElement('li');
+  li.innerHTML=`<b>${String(i+1).padStart(2,'0')}</b>${t.replace(/_/g,' ')} — <a href="https://www.are.na/block/${id}" target="_blank" rel="noopener">are.na/block/${id}</a>`;ol.appendChild(li)});
+
+const beats=[...document.querySelectorAll('.beat')];
+const N=beats.length, RM=matchMedia('(prefers-reduced-motion: reduce)').matches, PORT=matchMedia('(max-aspect-ratio: 11/10)');
+const roman=n=>{const m=[[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']];let s='';for(const[v,r]of m)while(n>=v){s+=r;n-=v}return s};
+const $=id=>document.getElementById(id);
+const numEl=$('num'),backEl=$('back'),moreEl=$('more'),depth=$('depth'),dbody=$('dbody'),veil=$('veil');
+let cur=0;
+document.querySelectorAll('img').forEach(im=>{im.draggable=false});
+addEventListener('dragstart',e=>e.preventDefault());
+addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('#depth'))e.preventDefault()});
+
+/* ---------- images: load current + next two ---------- */
+function load(i){const b=beats[i];if(!b)return;
+  b.querySelectorAll('source[data-srcset]').forEach(s=>{s.srcset=s.dataset.srcset;s.removeAttribute('data-srcset')});
+  b.querySelectorAll('img[data-src]').forEach(im=>{im.decoding='async';im.src=im.dataset.src;im.removeAttribute('data-src')})}
+
+/* ---------- the sun ---------- */
+const DAY0=6, DAY1=21.6;
+let hour=+beats[0].dataset.h, glide=null;
+const lerp=(a,b,t)=>a+(b-a)*t, clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const mix=(c1,c2,t)=>c1.map((v,k)=>lerp(v,c2[k],t));
+const KEYS=[
+ [5.5,[90,100,150],0,.34],[6.6,[255,184,146],.5,.64],[8,[255,222,186],.62,.6],[12,[255,246,232],.66,.64],
+ [16,[255,226,180],.64,.62],[18.2,[255,176,104],.58,.54],[19.3,[236,120,92],.36,.42],[20.3,[110,110,170],.08,.25],[22,[70,80,140],0,.2]];
+function sunAt(h){for(let i=0;i<KEYS.length-1;i++){const a=KEYS[i],b=KEYS[i+1];if(h<=b[0]){const t=clamp((h-a[0])/(b[0]-a[0]),0,1);return{c:mix(a[1],b[1],t),I:lerp(a[2],b[2],t),A:lerp(a[3],b[3],t)}}}const k=KEYS[KEYS.length-1];return{c:k[1],I:k[2],A:k[3]}}
+const elevAt=h=>Math.max(0,Math.sin(Math.PI*(h-6.4)/13.2));
+const azAt=h=>clamp((h-13)/6.6,-1.1,1.1);
+
+const cv=$('wall'),ctx=cv.getContext('2d'),sv=$('shade'),sctx=sv.getContext('2d');
+const T=512, tile=document.createElement('canvas');tile.width=tile.height=T;const tctx=tile.getContext('2d');
+const img=tctx.createImageData(T,T);
+let NX,NY,NZ,ALB;
+(function makeStucco(){
+  const H=new Float32Array(T*T);
+  let seed=7;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+  function octave(G,amp,ridge){const g=new Float32Array(G*G);for(let i=0;i<g.length;i++)g[i]=rnd();
+    for(let y=0;y<T;y++){const fy=y/T*G,y0=Math.floor(fy),ty=fy-y0,sy=ty*ty*(3-2*ty),y1=(y0+1)%G;
+      for(let x=0;x<T;x++){const fx=x/T*G,x0=Math.floor(fx),tx=fx-x0,sx=tx*tx*(3-2*tx),x1=(x0+1)%G;
+        let v=lerp(lerp(g[y0*G+x0],g[y0*G+x1],sx),lerp(g[y1*G+x0],g[y1*G+x1],sx),sy);
+        if(ridge)v=1-Math.abs(v*2-1);H[y*T+x]+=v*amp}}}
+  octave(4,1.0,0);octave(7,.7,1);octave(14,.5,0);octave(28,.2,0);octave(56,.2,0);octave(112,.12,0);octave(224,.06,0);
+  NX=new Float32Array(T*T);NY=new Float32Array(T*T);NZ=new Float32Array(T*T);ALB=new Float32Array(T*T);
+  const k=2.2;
+  for(let y=0;y<T;y++)for(let x=0;x<T;x++){const i=y*T+x;
+    const dx=(H[y*T+(x+1)%T]-H[y*T+(x+T-1)%T])*k, dy=(H[((y+1)%T)*T+x]-H[((y+T-1)%T)*T+x])*k;
+    const l=Math.hypot(dx,dy,1);NX[i]=-dx/l;NY[i]=-dy/l;NZ[i]=1/l;ALB[i]=.93+.07*(H[i]/2.9)}
+})();
+const BASE=[239,228,210];
+let W=0,Hh=0,DPR=1,dirty=true;
+function resize(){DPR=Math.min(devicePixelRatio||1,1.5);W=innerWidth;Hh=innerHeight;
+  cv.width=sv.width=Math.round(W*DPR);cv.height=sv.height=Math.round(Hh*DPR);dirty=true;marks()}
+// the loggia's shadow: arches of sunlight thrown across a surface
+function shadow(c,alpha,blurAdd){
+  const s=sunAt(hour),el=elevAt(hour),az=azAt(hour),vis=clamp(s.I*1.4,0,1);
+  if(vis<=.02)return;
+  const P=Math.max(200,Math.min(W,Hh)*.5), a=P*.58, hp=Hh*(.42+.62*(1-el)), y0=Hh-hp;
+  const sh=az*.85, phase=((az*P*.9)%P+P)%P;
+  c.save();c.globalAlpha=alpha*vis;
+  if('filter' in c)c.filter=`blur(${Math.round(6+(1-el)*10+blurAdd)}px)`;
+  c.setTransform(DPR,0,sh*DPR,DPR,-sh*Hh*DPR,0);
+  c.beginPath();const ext=Hh*1.2+P;
+  c.rect(-ext-W,-50,W*3+ext*2,Hh+100);
+  for(let x=-ext+phase-P;x<W+ext;x+=P){const cx=x+P/2,r=a/2;
+    c.moveTo(cx-r,Hh+60);c.lineTo(cx-r,y0+r);c.arc(cx,y0+r,r,Math.PI,0,false);c.lineTo(cx+r,Hh+60);c.closePath()}
+  const sc=s.c;c.fillStyle=`rgb(${sc[0]*.62|0},${sc[1]*.5|0},${sc[2]*.44|0})`;
+  c.fill('evenodd');c.restore();
+}
+function drawWall(){
+  const s=sunAt(hour),el=elevAt(hour),az=azAt(hour);
+  let lx=az*1.0, ly=-.35, lz=.18+el*1.1;const ll=Math.hypot(lx,ly,lz);lx/=ll;ly/=ll;lz/=ll;
+  const d=img.data,amb=s.A,I=s.I*1.05,c=s.c;
+  const ar=amb*(.75+.25*c[0]/255),ag=amb*(.78+.22*c[1]/255),ab=amb*(.9+.1*c[2]/255);
+  for(let i=0,p=0;i<T*T;i++,p+=4){
+    let df=NX[i]*lx+NY[i]*ly+NZ[i]*lz;df=df>0?df:0;const a=ALB[i];
+    d[p]=BASE[0]*a*(ar+I*df*c[0]/255);d[p+1]=BASE[1]*a*(ag+I*df*c[1]/255);d[p+2]=BASE[2]*a*(ab+I*df*c[2]/255);d[p+3]=255}
+  tctx.putImageData(img,0,0);
+  const pat=ctx.createPattern(tile,'repeat');
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=pat;ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+  const g=ctx.createRadialGradient(W*.3,Hh*.25,0,W*.3,Hh*.25,Math.max(W,Hh)*.9);
+  g.addColorStop(0,'rgba(255,250,240,.10)');g.addColorStop(1,'rgba(120,90,60,.10)');ctx.fillStyle=g;ctx.fillRect(0,0,W,Hh);
+  const b=beats[cur], strong=b.dataset.shadow==='strong';
+  ctx.save();ctx.globalCompositeOperation='multiply';
+  shadow(ctx,strong?.55:(b.classList.contains('wallb')?.26:.4),0);ctx.restore();
+  const night=clamp((hour-19.4)/1,0,1);
+  if(night>0){ctx.save();ctx.globalCompositeOperation='screen';const lg=ctx.createRadialGradient(W*.5,-Hh*.05,0,W*.5,-Hh*.05,Math.max(W,Hh)*.75);
+    lg.addColorStop(0,`rgba(255,170,90,${.32*night})`);lg.addColorStop(1,'rgba(255,170,90,0)');ctx.fillStyle=lg;ctx.fillRect(0,0,W,Hh);ctx.restore()}
+  // the same shade, laid over full-bleed photographs
+  sctx.setTransform(1,0,0,1,0,0);sctx.clearRect(0,0,sv.width,sv.height);
+  if(document.body.classList.contains('photo'))shadow(sctx,.5,8);
+}
+const root=document.documentElement.style, sunDot=$('sun'), hrEl=$('hr');
+function applyHour(){
+  const s=sunAt(hour),el=elevAt(hour),az=azAt(hour);
+  const len=8+(1-el)*16;
+  root.setProperty('--sx',(-az*len).toFixed(1)+'px');root.setProperty('--sy',(4+el*10).toFixed(1)+'px');
+  const c=s.c;root.setProperty('--tint',`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`);
+  const warm=clamp(1-Math.abs(hour-13)/7,0,1);
+  root.setProperty('--ta',(.14+(1-warm)*.42).toFixed(2));
+  root.setProperty('--b',(.5+.54*Math.min(1,s.I+s.A*.4)).toFixed(3));
+  root.setProperty('--s',(.78+.32*s.I).toFixed(2));
+  root.setProperty('--sep',(hour<8||hour>17.5?.14:0).toFixed(2));
+  document.body.classList.toggle('night',s.A+s.I*.5<.66);
+  document.body.style.background=`rgb(${(BASE[0]*(s.A+s.I*.5))|0},${(BASE[1]*(s.A+s.I*.48))|0},${(BASE[2]*(s.A+s.I*.45))|0})`;
+  const t=clamp((hour-6)/(20-6),0,1);sunDot.setAttribute('cx',(3+68*t).toFixed(1));
+  sunDot.setAttribute('cy',(18-Math.sin(Math.PI*t)*13).toFixed(1));
+  sunDot.setAttribute('opacity',hour>20?.4:1);
+  const hh=Math.floor(hour),mm=Math.floor((hour-hh)*60/10)*10;hrEl.textContent=`${((hh+11)%12)+1}:${String(mm).padStart(2,'0')} ${hh<12?'am':'pm'}`;
+  dirty=true;
+}
+let lastT=0;
+function frame(now){
+  if(glide){const t=clamp((now-glide.t0)/glide.d,0,1),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;hour=lerp(glide.a,glide.b,e);applyHour();if(t>=1)glide=null}
+  if(holding&&!scrub){hour+=(now-(lastT||now))/1000*1.5;if(hour>DAY1)hour=DAY0;applyHour()}
+  lastT=now;
+  if(dirty){dirty=false;drawWall()}
+  requestAnimationFrame(frame);
+}
+
+/* ---------- in-world marks: light over photographs ---------- */
+function marks(){const b=beats[cur];if(!b)return;
+  const lm=((PORT.matches?b.dataset.lmp:b.dataset.lm)||'').split(' ');
+  document.querySelectorAll('.mark[data-c]').forEach(m=>m.classList.toggle('lt',lm.includes(m.dataset.c)));
+  document.body.classList.toggle('photo',b.classList.contains('fb'));
+  backEl.classList.toggle('gone',cur===0);
+  moreEl.classList.toggle('gone',!b.querySelector('.more'));
+  moreEl.textContent=PORT.matches?'More ↑':'More ↑';
+}
+
+/* ---------- depth ---------- */
+let open=false;
+function openDepth(){const m=beats[cur].querySelector('.more');if(!m||open)return false;
+  dbody.innerHTML=m.innerHTML;depth.classList.add('open');depth.setAttribute('aria-hidden','false');open=true;audio.page();return true}
+function closeDepth(){if(!open)return;depth.classList.remove('open');depth.setAttribute('aria-hidden','true');open=false}
+
+/* ---------- navigation ---------- */
+const TR=['tr-wipe','tr-blind','tr-rise'];
+let busy=false;
+function swap(from,to,tr){
+  beats.forEach(b=>b.classList.remove(...TR));
+  if(tr==='cut'||RM&&tr!=='fade'){from.classList.add('nofx');to.classList.add('nofx');from.classList.remove('on');to.classList.add('on');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{from.classList.remove('nofx');to.classList.remove('nofx')}))}
+  else{if(tr!=='fade')to.classList.add('tr-'+tr);from.classList.remove('on');to.classList.add('on')}
+}
+function go(i){
+  i=clamp(i,0,N-1);if(i===cur||busy)return;
+  closeDepth();
+  const from=beats[cur],to=beats[i],fwd=i>cur;
+  let tr=fwd?(to.dataset.tr||'fade'):'fade';
+  if(!fwd&&from.dataset.tr==='cut')tr='cut';
+  if(Math.abs(i-cur)>1)tr='fade';
+  cur=i;
+  try{parent!==window&&parent.postMessage({aw:'beat',i:cur,n:N},'*')}catch(e){}
+  [cur,cur+1,cur+2,cur-1].forEach(load);
+  numEl.textContent=`${roman(cur+1)} / ${roman(N)}`;
+  const target=+to.dataset.h;
+  if(tr==='dusk'&&!RM){busy=true;veil.classList.add('on');
+    setTimeout(()=>{swap(from,to,'cut');marks();veil.classList.remove('on');busy=false},900);
+    glide={a:hour,b:target,t0:performance.now(),d:900}}
+  else{swap(from,to,tr==='dusk'?'fade':tr);marks();
+    if(RM){hour=target;applyHour()}else glide={a:hour,b:target,t0:performance.now(),d:2200}}
+  audio.step(fwd?1:-1);audio.chapter(+to.dataset.ch);
+  if(to.querySelector('.post'))setTimeout(()=>audio.guitar(),900);
+}
+const next=()=>go(cur+1), prev=()=>go(cur-1);
+
+let down=null,holding=false,scrub=false,holdTimer=0;
+function startHold(){holding=true;glide=null;audio.wind(true)}
+function endHold(){if(holding){holding=false;audio.wind(false)}scrub=false}
+const UI='#mute,#back,#more,#depth,a,button';
+addEventListener('pointerdown',e=>{
+  if(e.button>0)return;audio.init();
+  if(e.target.closest(UI)){down=null;return}
+  e.preventDefault();
+  down={x:e.clientX,y:e.clientY,t:performance.now(),hx:hour,moved:false};
+  if(e.target.closest('#dial')){down.dial=true;scrub=true;startHold();return}
+  if(beats[cur].hasAttribute('data-hold')&&!open)holdTimer=setTimeout(()=>{if(down&&!down.moved)startHold()},300);
+});
+addEventListener('pointermove',e=>{
+  if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;
+  if(holding){if(scrub||Math.abs(dx)>6){scrub=true;hour=clamp(down.hx+dx/Math.max(240,W*.6)*14,DAY0,DAY1);applyHour()}return}
+  if(Math.hypot(dx,dy)>12){down.moved=true;clearTimeout(holdTimer)}
+});
+function up(e){
+  clearTimeout(holdTimer);if(!down)return;const d=down;down=null;
+  const dx=e.clientX-d.x,dy=e.clientY-d.y;
+  if(holding){const quick=!d.dial&&performance.now()-d.t<600&&(Math.abs(dx)>40||Math.abs(dy)>40);endHold();if(!quick)return;hour=d.hx;applyHour()}
+  if(Math.abs(dx)>40||Math.abs(dy)>40){
+    if(Math.abs(dx)>Math.abs(dy)){dx<0?next():prev()}
+    else if(dy<0){if(open)return;if(!openDepth())next()}
+    else{open?closeDepth():prev()}
+  }
+  else if(!d.moved){open?closeDepth():next()}
+}
+addEventListener('pointerup',up);
+addEventListener('pointercancel',()=>{clearTimeout(holdTimer);down=null;endHold()});
+addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey)return;audio.init();
+  const k=e.key;
+  if(k==='Escape'){closeDepth();return}
+  if(e.target.closest&&e.target.closest('button')&&(k===' '||k==='Enter'))return;
+  if([' ','ArrowRight','PageDown','Enter'].includes(k)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(k)){e.preventDefault();prev()}
+  else if(k==='ArrowUp'){e.preventDefault();openDepth()}
+  else if(k==='ArrowDown'){e.preventDefault();open?closeDepth():next()}
+  else if(k==='Home')go(0);else if(k==='End')go(N-1);
+});
+backEl.addEventListener('click',e=>{e.stopPropagation();prev()});
+moreEl.addEventListener('click',e=>{e.stopPropagation();open?closeDepth():openDepth()});
+depth.querySelector('.x').addEventListener('click',e=>{e.stopPropagation();closeDepth()});
+addEventListener('wheel',e=>{e.preventDefault()},{passive:false});
+addEventListener('resize',resize);
+PORT.addEventListener&&PORT.addEventListener('change',marks);
+addEventListener('contextmenu',e=>{if(holding||e.target.tagName==='IMG')e.preventDefault()});
+
+/* ---------- sound: one quiet bed per chapter, after the first gesture ---------- */
+const muteBtn=$('mute');
+let muted=false;try{muted=localStorage.getItem('mr-mute')==='1'}catch(e){}
+muteBtn.classList.toggle('off',muted);
+// layer levels per chapter: surf, fountain, cicadas, palms, crickets, room
+const LV=[[1,0,0,.15,0,0],[.22,1,1,0,0,0],[.6,0,.25,1,0,0],[.3,0,0,0,1,1]];
+const audio={ac:null,out:null,L:[],ch:0,
+  buf(sec,fn){const ac=this.ac,n=Math.floor(ac.sampleRate*sec),b=ac.createBuffer(1,n,ac.sampleRate),d=b.getChannelData(0);fn(d,ac.sampleRate,n);return b},
+  layer(buf,chain,base){const ac=this.ac,s=ac.createBufferSource();s.buffer=buf;s.loop=true;const g=ac.createGain();g.gain.value=0;
+    let node=s;chain.forEach(c=>{node.connect(c);node=c});const bg=ac.createGain();bg.gain.value=base;node.connect(bg).connect(g).connect(this.out);s.start(0,Math.random()*buf.duration);this.L.push(g);return s},
+  init(){if(this.ac){if(this.ac.state==='suspended')this.ac.resume();return}
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    const ac=this.ac=new AC();this.out=ac.createGain();this.out.gain.value=muted?0:1;this.out.connect(ac.destination);
+    const brown=this.noise=this.buf(4,(d,sr,n)=>{let l=0;for(let i=0;i<n;i++){l=(l+.02*(Math.random()*2-1))/1.02;d[i]=l*3.2}});
+    const white=this.buf(3,(d,sr,n)=>{for(let i=0;i<n;i++)d[i]=Math.random()*2-1});
+    const bq=(type,f,q)=>{const b=ac.createBiquadFilter();b.type=type;b.frequency.value=f;if(q)b.Q.value=q;return b};
+    // surf: brown noise, breathing
+    const lp=bq('lowpass',520);const sg=ac.createGain();sg.gain.value=1;const lfo=ac.createOscillator();lfo.frequency.value=.075;const lg=ac.createGain();lg.gain.value=.6;lfo.connect(lg).connect(sg.gain);lfo.start();
+    this.layer(brown,[lp,sg],.05);
+    // fountain: droplets in a stone basin
+    const drops=this.buf(3,(d,sr,n)=>{for(let k=0;k<260;k++){const t0=Math.floor(Math.random()*n),f=700+Math.random()*2400,dur=.02+Math.random()*.06,A=.08+Math.random()*.25;
+      for(let j=0;j<dur*sr&&t0+j<n;j++){const t=j/sr;d[t0+j]+=Math.sin(2*Math.PI*f*(1+t*6)*t)*Math.exp(-t/(dur*.3))*A}}
+      for(let i=0;i<n;i++)d[i]+=(Math.random()*2-1)*.05});
+    this.layer(drops,[bq('bandpass',1700,.5)],.06);
+    // cicadas: pulsed hiss, swelling
+    const cic=this.buf(6,(d,sr,n)=>{for(let i=0;i<n;i++){const t=i/sr,am=Math.pow(.5+.5*Math.sin(2*Math.PI*46*t),3),env=.25+.75*Math.pow(Math.sin(Math.PI*t/6),2);d[i]=(Math.random()*2-1)*am*env}});
+    this.layer(cic,[bq('bandpass',4700,4)],.05);
+    // wind in the palms
+    const pb=bq('bandpass',700,.7);const pl=ac.createOscillator();pl.frequency.value=.11;const pg=ac.createGain();pg.gain.value=380;pl.connect(pg).connect(pb.frequency);pl.start();
+    this.layer(white,[pb],.022);
+    // crickets
+    const crk=this.buf(4,(d,sr,n)=>{let t0=.05;while(t0<3.9){for(let p=0;p<3;p++){const s=Math.floor((t0+p*.034)*sr);for(let j=0;j<.018*sr&&s+j<n;j++){const t=j/sr;d[s+j]+=Math.sin(2*Math.PI*4400*t)*Math.sin(Math.PI*t/.018)*.4}}t0+=.38+Math.random()*.12}});
+    this.layer(crk,[],.05);
+    // night room tone
+    this.layer(brown,[bq('lowpass',180)],.05);
+    // warm air for holding
+    const ws=ac.createBufferSource();ws.buffer=brown;ws.loop=true;ws.playbackRate.value=1.7;
+    this.wg=ac.createGain();this.wg.gain.value=0;ws.connect(bq('bandpass',1500,.6)).connect(this.wg).connect(this.out);ws.start();
+    this.chapter(+beats[cur].dataset.ch,true);
+  },
+  chapter(c,now){this.ch=c;const ac=this.ac;if(!ac)return;const t=ac.currentTime;
+    this.L.forEach((g,k)=>{g.gain.cancelScheduledValues(t);g.gain.setTargetAtTime(LV[c][k],t,now?.6:1.6)})},
+  step(dir){const ac=this.ac;if(!ac)return;const t=ac.currentTime;
+    const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(dir>0?196:174,t);o.frequency.exponentialRampToValueAtTime(dir>0?150:132,t+.18);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.08,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+.28);o.connect(g).connect(this.out);o.start(t);o.stop(t+.3);
+    const n=ac.createBufferSource();n.buffer=this.noise;const bp=ac.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=1.2;
+    const ng=ac.createGain();ng.gain.setValueAtTime(.1,t);ng.gain.exponentialRampToValueAtTime(.0001,t+.07);n.connect(bp).connect(ng).connect(this.out);n.start(t,Math.random()*3);n.stop(t+.09)},
+  page(){const ac=this.ac;if(!ac)return;const t=ac.currentTime;const n=ac.createBufferSource();n.buffer=this.noise;n.playbackRate.value=2.4;
+    const bp=ac.createBiquadFilter();bp.type='highpass';bp.frequency.value=1800;const g=ac.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.35);
+    n.connect(bp).connect(g).connect(this.out);n.start(t,Math.random()*2);n.stop(t+.4)},
+  wind(on){const ac=this.ac;if(!ac)return;const t=ac.currentTime;this.wg.gain.cancelScheduledValues(t);this.wg.gain.setTargetAtTime(on?.05:0,t,on?.6:.4)},
+  pluck(f,t,v){const ac=this.ac,sr=ac.sampleRate,len=Math.floor(sr*2.4),b=ac.createBuffer(1,len,sr),d=b.getChannelData(0),p=Math.round(sr/f);
+    const ring=new Float32Array(p);for(let i=0;i<p;i++)ring[i]=Math.random()*2-1;let k=0;
+    for(let i=0;i<len;i++){const a=ring[k],c=ring[(k+1)%p];d[i]=a;ring[k]=(a+c)*.4985;k=(k+1)%p}
+    const s=ac.createBufferSource();s.buffer=b;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2400;
+    const g=ac.createGain();g.gain.value=v;s.connect(lp).connect(g).connect(this.out);s.start(t)},
+  guitar(){const ac=this.ac;if(!ac||muted)return;const t=ac.currentTime+.05;
+    const seq=[[110,0],[220,.42],[261.6,.63],[329.6,.84],[261.6,1.26],[82.4,1.9],[207.7,2.32],[246.9,2.53],[329.6,2.74],[246.9,3.16],[110,3.8],[261.6,4.22],[220,4.64]];
+    seq.forEach(([f,o])=>this.pluck(f,t+o,.14))}
+};
+muteBtn.addEventListener('click',e=>{e.stopPropagation();muted=!muted;muteBtn.classList.toggle('off',muted);
+  try{localStorage.setItem('mr-mute',muted?'1':'0')}catch(err){}
+  audio.init();if(audio.out)audio.out.gain.setTargetAtTime(muted?0:1,audio.ac.currentTime,.1)});
+
+/* ---------- start ---------- */
+let start=0;try{const m=location.hash.match(/^#(\d+)$/);if(m)start=clamp(+m[1]-1,0,N-1)}catch(e){}
+cur=start;beats[cur].classList.add('on');[cur,cur+1,cur+2,cur-1].forEach(load);
+numEl.textContent=`${roman(cur+1)} / ${roman(N)}`;hour=+beats[cur].dataset.h;
+resize();applyHour();
+requestAnimationFrame(frame);
+})();
+</script>
+<script>addEventListener('load',()=>{setTimeout(()=>{try{parent!==window&&parent.postMessage({aw:'beat',i:0,n:document.querySelectorAll('.beat').length||0,init:1},'*')}catch(e){}},300)})</script></body>
+</html>

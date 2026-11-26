@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Post-Punk</title>
+<meta name="description" content="Post-Punk as a cold, Factory-minded catalogue in nineteen parts: photographs, sleeves, a live pulsar plot and a contact sheet of the scene, one at a time, with liner notes under each.">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&family=Cormorant+SC:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ebe7df; --paper2:#f4f1ea; --room:#d3cfc7; --ink:#121212; --grey:#7d786f;
+  --black:#0b0b0b; --bone:#e6e2d9; --dim:#8d897f;
+  --signal:#e2582c; --cold:#7e9bbd; --rose:#c48c8a; --amber:#d6a24a;
+  --sans:Jost,Futura,"Futura PT","Century Gothic","URW Gothic","TeX Gyre Adventor","Gillius ADF",Inter,sans-serif;
+  --mono:"IBM Plex Mono","DejaVu Sans Mono",Menlo,Consolas,monospace;
+  --roman:"Cormorant SC","Cormorant Garamond","EB Garamond",Garamond,"DejaVu Serif",Georgia,serif;
+  --ease:cubic-bezier(.6,.05,.25,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--black)}
+body{font-family:var(--sans);font-weight:300;color:var(--ink);-webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;cursor:default}
+img{-webkit-user-drag:none;user-select:none;-webkit-user-select:none}
+
+/* chrome */
+.chrome{position:fixed;z-index:30;color:#fff;mix-blend-mode:difference;font-size:11px;line-height:1.5;pointer-events:none}
+#tl{left:32px;top:26px;font-weight:500;letter-spacing:.32em;text-transform:uppercase}
+#tl span{display:block;font-family:var(--mono);font-weight:400;letter-spacing:.12em;font-size:10px;opacity:.75}
+#tr{right:32px;top:26px;font-family:var(--mono);letter-spacing:.14em;text-align:right;font-variant-numeric:tabular-nums}
+#tr i{display:block;margin-left:auto;margin-top:7px;height:1px;width:72px;background:currentColor;opacity:.35;position:relative}
+#tr i b{position:absolute;left:0;top:0;height:1px;background:currentColor;opacity:1;width:0;transition:width .7s var(--ease)}
+.btn{pointer-events:auto;cursor:pointer;background:none;border:0;font:inherit;font-family:var(--mono);
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#fff;padding:6px 0}
+.btn:focus-visible{outline:1px solid #fff;outline-offset:3px}
+#snd{right:32px;bottom:24px;padding-left:12px}
+#bk{left:32px;bottom:24px;padding-right:12px;transition:opacity .4s}
+#bk.off{opacity:0;pointer-events:none}
+#dp{left:50%;bottom:24px;transform:translateX(-50%);display:flex;align-items:center;gap:10px;transition:opacity .4s}
+#dp i{display:inline-block;width:14px;height:6px;border:1px solid currentColor;border-bottom:0}
+#dp.off{opacity:0;pointer-events:none}
+
+/* beats + transitions: a crossfade is the house turn; cut, wipe, hold and rise break it on purpose */
+.beat{position:fixed;inset:0;opacity:0;visibility:hidden;z-index:1;transition:opacity .75s ease,visibility 0s linear .75s;overflow:hidden}
+.beat.on{opacity:1;visibility:visible;z-index:2;transition:opacity .75s ease .05s}
+.beat.on.tr-cut{transition:none}
+.beat.out-cut{transition:none}
+.beat.out-hold{transition:opacity .3s ease,visibility 0s linear .3s}
+.beat.on.tr-hold{transition:opacity 1.1s ease .75s}
+.beat.on.tr-wipe{transition:none;animation:wipe 1s var(--ease) both}
+.beat.on.tr-rise{transition:none;animation:rise 1.05s var(--ease) both}
+.beat.out-wipe,.beat.out-rise{transition:opacity 0s linear 1.05s,visibility 0s linear 1.05s}
+@keyframes wipe{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+@keyframes rise{from{transform:translateY(100%)}to{transform:none}}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+
+.paper{background:var(--paper);color:var(--ink)}
+.black{background:var(--black);color:var(--bone)}
+.room{background:var(--room);color:var(--ink);background-image:radial-gradient(ellipse at 35% 45%,#dedad3 0,var(--room) 62%,#c6c1b8 100%)}
+.paper::before,.room::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5  0 0 0 0 .48  0 0 0 0 .44  0 0 0 .28 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+.cat{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;display:flex;gap:14px;align-items:center}
+.cat em{font-style:normal;opacity:.55}
+.rule{display:block;width:44px;height:1px;background:currentColor;margin:22px 0 22px}
+h2{font-weight:300;font-size:clamp(25px,2.55vw,40px);line-height:1.14;letter-spacing:-.005em}
+.note{font-weight:400;font-size:14.5px;line-height:1.6;margin-top:18px;max-width:30em;opacity:.72}
+.black .note{opacity:.66}
+.names{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;line-height:1.9;text-transform:uppercase;margin-top:18px;opacity:.75}
+figcaption,.fig{font-family:var(--mono);font-size:10px;letter-spacing:.12em;opacity:.6}
+
+/* ---- 01 title: PUNK, then POST- arrives in front of it, spelled out in a colour code ---- */
+.t-title .blk{position:absolute;left:9vw;right:9vw;top:50%;transform:translateY(-52%)}
+.t-title h1{font-weight:300;font-size:clamp(54px,11vw,180px);letter-spacing:.015em;line-height:.9;text-transform:uppercase;margin-top:28px;white-space:nowrap}
+.t-title h1 .w1{display:inline-block;opacity:0;transform:translateX(-.35em)}
+.t-title h1 .hy{display:inline-block;width:.36em;height:.06em;background:var(--signal);vertical-align:.3em;margin:0 .08em 0 .06em;transform:scaleX(0);transform-origin:left}
+.t-title.on h1 .w1{animation:pin 1.1s var(--ease) .85s both}
+.t-title.on h1 .hy{animation:hy .5s var(--ease) 1.7s both}
+@keyframes pin{to{opacity:1;transform:none}}
+@keyframes hy{to{transform:scaleX(1)}}
+.t-title .code{display:flex;gap:6px;margin-top:34px}
+.t-title .code span{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em}
+.t-title .code i{display:block;width:clamp(16px,1.9vw,28px);height:clamp(16px,1.9vw,28px)}
+.t-title.on .code span{animation:up .45s var(--ease) both}
+.t-title .yrs{font-family:var(--roman);font-size:clamp(15px,1.35vw,21px);letter-spacing:.5em;margin-top:26px}
+.t-title .key{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.5;margin-top:10px}
+.t-title .how{position:absolute;left:9vw;bottom:9vh;font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;opacity:.55}
+.t-title.on .yrs,.t-title.on .key{animation:fin .8s ease 2.6s both}
+
+/* framed photograph + text column */
+.fr .pic{position:absolute;left:7vw;top:13vh;width:57vw;height:68vh;display:flex;align-items:center;justify-content:center}
+.fr figure{position:relative;max-width:100%;max-height:100%;display:flex}
+.fr figure img{display:block;max-width:100%;max-height:68vh;width:auto;height:auto;object-fit:contain;box-shadow:0 22px 50px -30px #0007}
+.fr figcaption{position:absolute;top:100%;left:0;margin-top:12px;white-space:nowrap}
+.fr .txt{position:absolute;left:69vw;right:6vw;top:50%;transform:translateY(-50%)}
+
+/* 03 slow pan across one wide photograph */
+.pan .strip{position:absolute;left:50%;transform:translateX(-50%);top:14vh;width:min(84vw,980px);height:50vh;overflow:hidden;box-shadow:0 22px 50px -30px #0007}
+.pan .strip img{position:absolute;top:0;left:0;height:100%;width:118%;object-fit:cover;object-position:50% 40%}
+.pan.on .strip img{animation:pan 18s ease-in-out .4s infinite alternate}
+@keyframes pan{from{transform:translateX(0)}to{transform:translateX(-15.25%)}}
+.pan .strip figcaption{position:absolute;right:12px;bottom:10px;color:#fff;opacity:.8}
+.pan .txt{position:absolute;left:50%;transform:translateX(-50%);width:min(84vw,980px);top:calc(14vh + 50vh + 34px);display:grid;grid-template-columns:1.25fr 1fr;gap:5vw;align-items:start}
+.pan .txt .names{margin-top:34px}
+
+/* full-bleed photograph with a paper label */
+.fu img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--op,50% 50%)}
+.fu .lab{position:absolute;left:5vw;bottom:8vh;width:min(420px,40vw);background:var(--paper2);color:var(--ink);padding:26px 28px 24px;box-shadow:0 20px 40px -25px #000a}
+.fu .lab h2{font-size:clamp(22px,2vw,30px)}
+.fu .lab .note{font-size:13.5px;margin-top:12px}
+.fu .lab .rule{margin:16px 0}
+.fu::after{content:"";position:absolute;left:0;right:0;top:0;height:120px;pointer-events:none;background:linear-gradient(#000b,#0000)}
+.fu .lfig{margin-top:16px;padding-top:10px;border-top:1px solid #0002;font-size:9.5px}
+
+/* 05 the pulsar plot, drawn live */
+.pl .plot{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:min(62vh,42vw);height:min(62vh,42vw)}
+.pl canvas{display:block;width:100%;height:100%}
+.pl .read{position:absolute;left:50%;transform:translateX(-50%);top:calc(46% + min(31vh,21vw) + 22px);font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:12px;white-space:nowrap}
+.pl .read i{display:block;width:6px;height:6px;background:var(--signal);opacity:.15}
+.pl.on .read i{animation:pulse 1.3373s steps(1) infinite}
+@keyframes pulse{0%{opacity:1}12%{opacity:.15}}
+.pl .txt{position:absolute;left:6vw;bottom:9vh;width:min(330px,24vw)}
+.pl .txt h2{font-size:clamp(20px,1.7vw,26px)}
+.pl .txt .note{font-size:13px;margin-top:12px}
+.pl .txt .rule{margin:16px 0}
+.pl .fig{position:absolute;right:6vw;bottom:9vh;width:min(260px,20vw);text-align:right;line-height:1.7}
+
+/* sleeve beats */
+.sl{--s:min(60vh,36vw)}
+.rig{position:absolute;top:50%;left:calc(50% - var(--s) - 3vw);width:var(--s);height:var(--s);transform:translateY(-50%)}
+.sleeve{position:absolute;inset:0;z-index:3;background:#111;box-shadow:0 1px 0 #fff6 inset,0 34px 60px -30px #0008,0 10px 22px -12px #0005}
+.sleeve img{width:100%;height:100%;object-fit:cover;object-position:var(--op,50% 50%);display:block}
+.sleeve::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,transparent 61%,#ffffff0a 62.5%,transparent 64%),linear-gradient(115deg,#ffffff14,transparent 40%,transparent 70%,#00000014)}
+.disc{position:absolute;left:3%;top:3%;width:94%;height:94%;border-radius:50%;z-index:1;transform:translateX(11%);transition:transform .9s var(--ease);
+  background:radial-gradient(circle,var(--lc,#e9e4da) 0 15.5%,#151515 15.6% 17%,transparent 17.1%),
+   conic-gradient(from 30deg,#ffffff12,#0000 12%,#ffffff1a 26%,#0000 40%,#ffffff10 55%,#0000 66%,#ffffff18 80%,#0000 92%,#ffffff12),
+   repeating-radial-gradient(circle,#121212 0 1.3px,#1c1c1c 1.3px 2.6px);box-shadow:0 18px 40px -18px #0009}
+.disc::after{content:"";position:absolute;left:49%;top:49%;width:2%;height:2%;border-radius:50%;background:var(--room)}
+.sl.spin .disc{animation:spin 1.9s linear infinite}
+@keyframes spin{from{transform:translateX(11%) rotate(0)}to{transform:translateX(11%) rotate(360deg)}}
+.inner{position:absolute;inset:0;z-index:2;background:var(--paper2);container-type:size;transition:transform 1.25s var(--ease),box-shadow 1.25s;box-shadow:0 10px 26px -18px #0006}
+.sl.pulled .inner{transform:translateX(calc(100% + 6vw));box-shadow:0 30px 50px -30px #0007}
+.inner .in{position:absolute;inset:8cqw 8cqw 7cqw;display:flex;flex-direction:column}
+.inner .hd{font-family:var(--mono);font-size:2.9cqw;letter-spacing:.22em;text-transform:uppercase;display:flex;justify-content:space-between;padding-bottom:2.4cqw;border-bottom:1px solid var(--ink)}
+.inner .hd b{font-weight:500}
+.inner .ndl{display:inline-block;width:1.8cqw;height:1.8cqw;background:var(--signal);margin-right:1.6cqw;vertical-align:.05em;opacity:0;transition:opacity .3s}
+.sl.spin .inner .ndl{opacity:1;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.15}}
+.inner .ti{font-size:7.4cqw;line-height:1.05;font-weight:300;margin-top:7cqw}
+.inner .ar{font-family:var(--mono);font-size:3.1cqw;letter-spacing:.18em;text-transform:uppercase;margin-top:3cqw}
+.inner .nt{font-size:4.15cqw;line-height:1.5;font-weight:400;margin-top:auto;color:#2a2926}
+.inner .ft{font-family:var(--mono);font-size:2.7cqw;letter-spacing:.16em;text-transform:uppercase;margin-top:5cqw;padding-top:2.4cqw;border-top:1px solid var(--ink);display:flex;justify-content:space-between;color:var(--grey)}
+.sl .txt{position:absolute;left:calc(50% + 3vw);width:min(34vw,440px);top:50%;transform:translateY(-50%);transition:opacity .5s}
+.sl.pulled .txt{opacity:0;transition:opacity .35s}
+.sl .hold{font-family:var(--mono);font-size:10px;letter-spacing:.24em;text-transform:uppercase;margin-top:30px;opacity:.55;display:flex;align-items:center;gap:12px}
+.sl .hold i{display:inline-block;width:9px;height:9px;border:1px solid currentColor}
+
+/* 09 the names, then the photograph they lead to */
+.wm .lst{position:absolute;left:8vw;top:50%;transform:translateY(-50%);width:44vw}
+.wm .nm{list-style:none;margin-top:26px}
+.wm .nm li{font-size:clamp(20px,2.15vw,32px);line-height:1.22;display:flex;align-items:baseline;gap:16px;position:relative;width:max-content;max-width:100%}
+.wm .nm li i{font-style:normal;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
+.wm.on .nm li{animation:up .5s var(--ease) var(--d,0s) both}
+.wm.on .nm li:not(.me){animation:up .5s var(--ease) var(--d,0s) both,dimn .8s ease 2.1s forwards}
+@keyframes dimn{to{opacity:.24}}
+.wm .nm li.me::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;background:var(--signal);transform:scaleX(0);transform-origin:left}
+.wm.on .nm li.me::after{animation:hy .7s var(--ease) 2.3s both}
+.wm .ph{position:absolute;right:8vw;top:12vh;bottom:12vh;width:31vw;clip-path:inset(0 100% 0 0)}
+.wm.on .ph{animation:reveal 1.1s var(--ease) 2.7s both}
+@keyframes reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.wm .ph img{width:100%;height:100%;object-fit:cover;object-position:22% 30%;display:block}
+.wm .ph figcaption{position:absolute;left:0;top:100%;margin-top:12px;white-space:nowrap}
+.wm .sub{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-top:12px}
+
+/* 10 then / now */
+.pr .pa{position:absolute;top:14vh;height:58vh}
+.pr .a{left:6vw;width:38vw}.pr .b{left:46vw;width:19vw}
+.pr .pa img{width:100%;height:100%;object-fit:contain;object-position:left bottom;display:block}
+.pr .tag{position:absolute;top:100%;left:0;margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.65}
+.pr .tag b{font-weight:500;color:var(--signal);margin-right:10px}
+.pr.on .a{animation:froml .9s var(--ease) both}.pr.on .b{animation:fromr .9s var(--ease) .15s both}
+@keyframes froml{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}
+@keyframes fromr{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+.pr .txt{position:absolute;left:69vw;right:6vw;top:50%;transform:translateY(-50%)}
+
+/* 11 the uniform, as a catalogue plate */
+.lu .row{position:absolute;left:5vw;right:5vw;top:11vh;display:grid;grid-template-columns:repeat(6,1fr);gap:1.6vw;align-items:start}
+.lu figure{display:flex;flex-direction:column}
+.lu figure img{width:100%;height:50vh;object-fit:cover;object-position:center top;mix-blend-mode:multiply;display:block}
+.lu figcaption{border-top:1px solid #0003;padding-top:8px;margin-top:0;font-size:9.5px;line-height:1.5;opacity:.75}
+.lu figcaption b{font-weight:500;display:block;opacity:.6}
+.lu.on figure img,.lu.on figcaption{animation:up .7s var(--ease) var(--d,0s) both}
+.lu .txt{position:absolute;left:5vw;right:5vw;top:calc(11vh + 50vh + 104px);display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:start}
+.lu .txt .note{margin-top:0}
+
+/* 13 contact sheet */
+.cs .sheet{position:absolute;left:6vw;right:6vw;top:11vh;display:grid;grid-template-columns:repeat(6,1fr);gap:14px 10px}
+.cs .fc{display:flex;flex-direction:column;gap:4px}
+.cs .en{font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--amber);opacity:.85;display:flex;justify-content:space-between}
+.cs .fx{position:relative;aspect-ratio:4/5;background:#151515;overflow:visible}
+.cs .fx img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--op,50% 30%);display:block;filter:contrast(1.05)}
+.cs .fog .fx{background:radial-gradient(ellipse at 90% 10%,#e2a55c 0,#a0542a55 35%,#151515 75%)}
+.cs.on .fc{animation:fin .25s steps(2) both}
+.cs .mark{position:absolute;inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px);overflow:visible;pointer-events:none}
+.cs .mark path{fill:none;stroke:var(--signal);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:900;stroke-dashoffset:900}
+.cs.on .mark path{animation:draw 1s ease 1.4s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.cs .txt{position:absolute;left:6vw;right:6vw;bottom:8vh;display:grid;grid-template-columns:1.2fr 1fr;gap:5vw;align-items:end}
+.cs .txt .names{margin-top:0}
+
+/* 15 pure type */
+.ty .tw{position:absolute;left:9vw;right:9vw;top:50%;transform:translateY(-50%)}
+.ty h2.big{font-size:clamp(44px,7.4vw,124px);line-height:.98;letter-spacing:-.01em;margin-top:26px}
+.ty .wing{display:block;width:min(46vw,640px);height:auto;margin-top:8px;overflow:visible}
+.ty .wing path{fill:none;stroke:var(--signal);stroke-width:3;stroke-linecap:round;stroke-dasharray:800;stroke-dashoffset:800}
+.ty.on .wing path{animation:draw 1.2s ease 1.7s forwards}
+.ty .rom{font-family:var(--roman);font-size:clamp(14px,1.3vw,20px);letter-spacing:.34em;margin-top:30px;opacity:.8}
+
+/* 17 wide photo, slow push, statement under */
+.wd .ph{position:absolute;left:50%;transform:translateX(-50%);top:11vh;width:min(58vw,880px);aspect-ratio:885/651;max-height:56vh;overflow:hidden}
+.wd .ph img{width:100%;height:100%;object-fit:cover;display:block;transform-origin:42% 60%}
+.wd.on .ph img{animation:push 14s ease-out both}
+@keyframes push{from{transform:scale(1)}to{transform:scale(1.08)}}
+.wd .txt{position:absolute;left:50%;transform:translateX(-50%);width:min(58vw,880px);top:calc(11vh + min(56vh, min(58vw,880px)*651/885) + 34px);display:grid;grid-template-columns:1fr 1.1fr;gap:4vw}
+.wd .txt .note{margin-top:4px}
+.wd figcaption{position:absolute;right:10px;bottom:8px;color:#fff;opacity:.7}
+
+/* 18 the card to keep */
+.kc .card{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:min(1120px,88vw);background:var(--paper2);color:var(--ink);padding:30px 38px 26px;box-shadow:0 40px 70px -40px #0009,0 8px 20px -14px #0006}
+.kc .ch{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--ink);padding-bottom:16px}
+.kc .ch h2{font-size:clamp(28px,3vw,46px);text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.kc .ch .m{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;text-align:right;line-height:1.7;opacity:.7}
+.kc .cb{display:grid;grid-template-columns:1.15fr 1fr 1fr;gap:34px;margin-top:20px}
+.kc h3{font-family:var(--mono);font-weight:500;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;opacity:.6}
+.kc .sw{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 8px}
+.kc .sw span{font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;line-height:1.35;opacity:.85}
+.kc .sw i{display:block;aspect-ratio:1.6;margin-bottom:4px;box-shadow:inset 0 0 0 1px #0002}
+.kc .tp{margin-top:18px;display:grid;gap:7px}
+.kc .tp div{display:flex;align-items:baseline;gap:12px;border-top:1px solid #0001;padding-top:6px}
+.kc .tp b{font-weight:inherit;font-size:22px;min-width:3.4em}
+.kc .tp span{font-family:var(--mono);font-size:9px;letter-spacing:.08em;opacity:.7}
+.kc ol{list-style:none;counter-reset:r}
+.kc ol li{counter-increment:r;font-size:15px;font-weight:400;line-height:1.35;padding:7px 0 7px 32px;border-top:1px solid #0001;position:relative}
+.kc ol li::before{content:"0" counter(r);position:absolute;left:0;top:9px;font-family:var(--mono);font-size:9.5px;color:var(--signal)}
+.kc .ky p{font-family:var(--mono);font-size:10px;letter-spacing:.05em;line-height:1.65;margin-bottom:12px}
+.kc .ky p b{display:block;font-weight:500;font-size:9px;letter-spacing:.2em;text-transform:uppercase;opacity:.55;margin-bottom:2px}
+.kc .cf{margin-top:14px;padding-top:10px;border-top:1px solid var(--ink);font-family:var(--mono);font-size:9px;letter-spacing:.16em;text-transform:uppercase;display:flex;justify-content:space-between;color:var(--grey)}
+
+/* credits */
+.cr .in{position:absolute;left:10vw;right:10vw;top:13vh;bottom:10vh;display:grid;grid-template-columns:1fr 2.2fr;gap:6vw}
+.cr h2{font-size:clamp(22px,2.1vw,32px)}
+.cr ol{list-style:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;line-height:1.55;columns:2;column-gap:4vw;align-self:start}
+.cr li{break-inside:avoid;display:grid;grid-template-columns:2.6em 1fr;margin-bottom:.7em}
+.cr li span{opacity:.5}
+.cr li small{display:block;opacity:.55;font-size:inherit}
+.cr .lic{font-family:var(--mono);font-size:10px;letter-spacing:.12em;line-height:1.8;text-transform:uppercase;margin-top:26px;opacity:.7}
+
+/* liner notes: the second layer, an insert pulled up from the bottom edge */
+.liner{position:absolute;left:50%;bottom:0;z-index:20;width:min(600px,100%);transform:translate(-50%,104%);
+  transition:transform .7s var(--ease),box-shadow .7s;background:var(--paper2);color:var(--ink);padding:24px 32px 30px;
+  box-shadow:0 0 0 100vmax #0000;touch-action:pan-y;cursor:default}
+.beat.deep .liner{transform:translate(-50%,0);box-shadow:0 0 0 100vmax #000a}
+.liner .lh{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;display:flex;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--ink)}
+.liner .lh button{background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--grey);cursor:pointer;padding:0 0 0 12px}
+.liner p{font-weight:400;font-size:14px;line-height:1.6;margin-top:12px;color:#2a2926}
+.liner .lk{margin-top:16px;display:flex;flex-wrap:wrap;gap:6px 18px}
+.liner .lk a{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--signal);padding-bottom:1px}
+.liner .lk a::after{content:" ↗";color:var(--signal)}
+
+/* ---------- phone / narrow ---------- */
+@media (max-width:720px){
+  .chrome{font-size:10px}
+  #tl{left:16px;top:16px}#tr{right:16px;top:16px}#snd{right:16px;bottom:8px}#bk{left:16px;bottom:8px}#dp{bottom:8px}
+  #tr i{width:48px}
+  .t-title .blk{left:16px;right:16px}
+  .t-title h1{font-size:clamp(56px,21vw,120px);white-space:normal;line-height:.92}
+  .t-title h1 .br{display:block}
+  .t-title .code{gap:5px;margin-top:28px}
+  .t-title .code i{width:calc((100vw - 32px - 40px)/9);height:calc((100vw - 32px - 40px)/9)}
+  .t-title .yrs{letter-spacing:.38em}
+  .t-title .how{left:16px;right:16px;bottom:44px;font-size:9px;letter-spacing:.16em;line-height:1.8}
+  .fr .pic{left:16px;right:16px;width:auto;top:68px;height:47vh;height:47svh;align-items:flex-end}
+  .fr figure img{max-height:47vh;max-height:47svh}
+  .fr figcaption{margin-top:9px;white-space:normal;width:100%;font-size:9px}
+  .fr .txt{left:16px;right:16px;top:calc(68px + 47vh + 40px);top:calc(68px + 47svh + 40px);transform:none}
+  h2{font-size:clamp(21px,5.8vw,28px)}
+  .rule{margin:14px 0}
+  .note{font-size:13.5px;line-height:1.52;margin-top:12px}
+  .names{font-size:9.5px;margin-top:12px;line-height:1.8}
+  .pan .strip{top:68px;width:calc(100vw - 32px);height:40svh}
+  .pan .txt{top:calc(68px + 40svh + 26px);width:calc(100vw - 32px);display:block}
+  .pan .txt .names{margin-top:14px}
+  .fu .lab{left:16px;right:16px;bottom:44px;width:auto;padding:18px 18px 16px}
+  .fu .lab .note{font-size:13px}
+  .fu .lfig{display:none}
+  .fu .lab .names{margin-top:8px}
+  .pl .plot{top:74px;transform:translateX(-50%);width:calc(100vw - 40px);height:calc(100vw - 40px)}
+  .pl .read{top:calc(74px + 100vw - 40px + 16px);font-size:9px}
+  .pl .txt{left:16px;right:16px;width:auto;bottom:auto;top:calc(74px + 100vw - 40px + 56px)}
+  .pl .fig{display:none}
+  .sl{--s:min(calc(100vw - 72px),42vh)}
+  .rig{left:50%;top:70px;transform:translateX(-56%)}
+  .sl.pulled .inner{transform:translateY(calc(100% + 22px))}
+  .sl .txt{left:16px;right:16px;width:auto;top:calc(70px + var(--s) + 34px);transform:none}
+  .sl .hold{margin-top:18px}
+  .wm .lst{left:16px;right:16px;width:auto;top:62px;transform:none}
+  .wm .rule{margin:12px 0}
+  .wm .nm{margin-top:12px}
+  .wm .nm li{font-size:18px;line-height:1.28;gap:10px}
+  .wm .nm li i{font-size:8.5px}
+  .wm .sub{font-size:9.5px;margin-top:8px}
+  .wm .ph{left:16px;right:auto;width:58vw;top:auto;bottom:62px;height:calc(100svh - 500px)}
+  .wm .ph figcaption{white-space:normal;width:calc(100vw - 32px);font-size:9px;margin-top:8px}
+  .pr .a{left:16px;width:calc(100vw - 32px);top:66px;height:26svh}
+  .pr .b{left:16px;width:calc(100vw - 32px);top:calc(66px + 26svh + 36px);height:30svh}
+  .pr .tag{margin-top:7px;font-size:9px}
+  .pr .txt{left:16px;right:16px;top:calc(66px + 56svh + 84px);transform:none}
+  .pr .txt .rule,.pr .txt .cat{display:none}
+  .lu .row{left:16px;right:16px;top:60px;grid-template-columns:repeat(3,1fr);gap:14px 10px}
+  .lu figure img{height:23svh}
+  .lu figcaption{font-size:8px;padding-top:5px;line-height:1.4}
+  .lu .txt{left:16px;right:16px;top:calc(60px + 46svh + 120px);display:block}
+  .lu .txt .note{margin-top:10px}
+  .cs .sheet{left:16px;right:16px;top:58px;grid-template-columns:repeat(3,1fr);gap:8px 6px}
+  .cs .fx{aspect-ratio:5/6}
+  .cs .en{font-size:8px}
+  .cs .txt{left:16px;right:16px;bottom:44px;display:block}
+  .cs .txt .names{display:none}
+  .ty .tw{left:16px;right:16px}
+  .ty h2.big{font-size:clamp(40px,12.5vw,64px)}
+  .ty .wing{width:78vw}
+  .ty .rom{font-size:13px;letter-spacing:.22em;line-height:1.8}
+  .wd .ph{top:68px;width:calc(100vw - 32px);max-height:none}
+  .wd .txt{top:calc(68px + (100vw - 32px)*651/885 + 30px);width:calc(100vw - 32px);display:block}
+  .wd .txt .note{margin-top:12px}
+  .kc .card{left:10px;right:10px;width:auto;top:50px;bottom:36px;transform:none;padding:16px 16px 12px;overflow:hidden}
+  .kc .ch{padding-bottom:10px}
+  .kc .ch h2{font-size:26px}
+  .kc .ch .m{font-size:8px;line-height:1.5}
+  .kc .cb{display:block;margin-top:12px}
+  .kc .cb>div{margin-bottom:12px}
+  .kc h3{margin-bottom:6px;font-size:8.5px}
+  .kc .sw{grid-template-columns:repeat(7,1fr);gap:4px}
+  .kc .sw i{aspect-ratio:1;margin-bottom:3px}
+  .kc .sw span{font-size:6.5px;letter-spacing:0}
+  .kc .sw span em{display:none}
+  .kc .tp{margin-top:10px;gap:3px}
+  .kc .tp div{padding-top:3px}
+  .kc .tp b{font-size:16px}
+  .kc .tp span{font-size:8px}
+  .kc ol li{font-size:12.5px;padding:4px 0 4px 26px}
+  .kc ol li::before{top:6px;font-size:8.5px}
+  .kc .ky p{font-size:8.5px;line-height:1.5;margin-bottom:6px}
+  .kc .cf{display:none}
+  .cr .in{left:16px;right:16px;top:64px;bottom:40px;display:block}
+  .cr h2{font-size:20px}
+  .cr .rule{margin:12px 0}
+  .cr ol{columns:1;font-size:8.5px;line-height:1.3;margin-top:12px}
+  .cr li{margin-bottom:.38em;grid-template-columns:2.4em 1fr}
+  .cr li small{display:inline}
+  .cr li small::before{content:" — "}
+  .cr .lic{font-size:8.5px;margin-top:10px;line-height:1.6}
+  .liner{width:100%;padding:18px 18px 34px;max-height:72svh;overflow:auto}
+  .liner p{font-size:13.5px}
+}
+@media (max-width:720px) and (max-height:700px){
+  .note{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .beat,.beat.on,.beat.on.tr-hold{transition-duration:.01s;transition-delay:0s}
+  .beat.on.tr-wipe,.beat.on.tr-rise{animation:none}
+  *,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}
+  .inner,.disc,.sl .txt,#tr i b,.liner{transition-duration:.01s}
+}
+</style>
+</head>
+<body>
+
+<div id="tl" class="chrome">Post-Punk<span id="catno">PPK 001</span></div>
+<div id="tr" class="chrome"><span id="prog">01 / 19</span><i><b id="bar"></b></i></div>
+<button id="bk" class="chrome btn off" aria-label="previous">← Back</button>
+<button id="dp" class="chrome btn off" aria-label="open liner notes"><i></i><span id="dpl">Liner notes</span></button>
+<button id="snd" class="chrome btn" aria-label="toggle sound">Sound · on</button>
+
+<main id="deck">
+
+<!-- 01 title -->
+<section class="beat paper t-title" data-ch="1" data-sec="Index">
+  <div class="blk">
+    <div class="cat"><span>PPK 001</span><em>A catalogue in nineteen parts</em></div>
+    <h1 aria-label="Post-Punk"><span class="w1">Post</span><span class="hy"></span><span class="br"></span><span class="w2">Punk</span></h1>
+    <div class="code" id="code" aria-hidden="true"></div>
+    <div class="yrs">1978 — 1984</div>
+    <div class="key">Title set twice: in Jost, and in a colour code after Saville's</div>
+  </div>
+  <div class="how">Tap · Space · → next &nbsp;&nbsp; ← back &nbsp;&nbsp; ↑ liner notes</div>
+</section>
+
+<!-- 02 what -->
+<section class="beat black fr" data-ch="1" data-sec="What it is" data-tr="fade">
+  <div class="pic"><figure><img data-src="img/01.webp" alt="Joy Division on a small stage, drum kit in the foreground" decoding="async"><figcaption>Fig. 01 — Joy Division, live, late 1970s</figcaption></figure></div>
+  <div class="txt">
+    <div class="cat"><span>PPK 002</span><em>What it is</em></div><span class="rule"></span>
+    <h2>After punk, the unrest turned inward.</h2>
+    <p class="note">Rock from the late '70s that kept punk's do-it-yourself nerve but traded the three chords for experiment, distance and art-school ideas.</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 002</span><button class="x">↓ Close</button></div>
+    <p>The name spread through the British music press in 1978–79 for the bands that came after the Sex Pistols' first wave. Many came out of art schools; most recorded for small independent labels: Rough Trade in London, Factory in Manchester, Mute.</p>
+    <p>Joy Division (Ian Curtis, Bernard Sumner, Peter Hook, Stephen Morris) played their first gig as Warsaw in May 1977.</p>
+    <div class="lk"><a href="https://en.wikipedia.org/wiki/Post-punk" target="_blank" rel="noopener">Post-punk, Wikipedia</a><a href="https://commons.wikimedia.org/wiki/Category:Joy_Division" target="_blank" rel="noopener">Joy Division, Commons</a></div>
+  </aside>
+</section>
+
+<!-- 03 origins: slow pan -->
+<section class="beat paper pan" data-ch="1" data-sec="Origins" data-tr="wipe">
+  <figure class="strip"><img data-src="img/02.webp" alt="A brick wall with ANYTHING painted in white, a dog crossing the pavement" decoding="async"><figcaption>Fig. 02 — Wall, northern England</figcaption></figure>
+  <div class="txt">
+    <div><div class="cat"><span>PPK 003</span><em>Origins</em></div><span class="rule"></span>
+    <h2>1978. Punk had proved anyone could make a record.</h2></div>
+    <div><p class="note">The next wave asked what else a record could be, and found its answers in grey cities.</p>
+    <p class="names">Manchester · Sheffield · Leeds · Glasgow · London<br>Akron · Cleveland · New York</p></div>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 003</span><button class="x">↓ Close</button></div>
+    <p>June 1976: the Sex Pistols play Manchester's Lesser Free Trade Hall to a small crowd that included future members of Joy Division and The Fall. In January 1977 Buzzcocks pressed their own EP, <i>Spiral Scratch</i>, and showed that a band could skip the record industry.</p>
+    <p>Sheffield had Cabaret Voltaire and The Human League; Ohio had Pere Ubu and Devo; New York had no wave.</p>
+    <div class="lk"><a href="https://magazine.waxpoetics.com/article/the-birth-and-rebirth-of-manchester-post-punk" target="_blank" rel="noopener">Wax Poetics: Manchester</a></div>
+  </aside>
+</section>
+
+<!-- 04 place -->
+<section class="beat black fr" data-ch="1" data-sec="Place" data-tr="fade">
+  <div class="pic"><figure><img data-src="img/03.webp" alt="A mother and two children walk a muddy path below the curved concrete Hulme Crescents" decoding="async"><figcaption>Fig. 03 — Hulme Crescents, Manchester</figcaption></figure></div>
+  <div class="txt">
+    <div class="cat"><span>PPK 004</span><em>Place</em></div><span class="rule"></span>
+    <h2>Concrete decks, cheap rent, failing on arrival.</h2>
+    <p class="note">Hulme's crescents emptied of families and filled with students, squatters and bands. A few streets away the first Factory club nights ran at the Russell Club in 1978.</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 004</span><button class="x">↓ Close</button></div>
+    <p>Finished in 1972 to designs by Hugh Wilson and Lewis Womersley: four deck-access crescents named after Georgian architects (Adam, Barry, Nash, Kent), built where rows of terraced houses had been cleared.</p>
+    <p>Within a few years the council stopped housing families there. The flats were let cheaply, then squatted, and pulled down in 1993–94.</p>
+    <div class="lk"><a href="https://en.wikipedia.org/wiki/Hulme_Crescents" target="_blank" rel="noopener">Hulme Crescents</a><a href="https://manchesterhistory.net/architecture/1970/crescents.html" target="_blank" rel="noopener">Manchester History</a><a href="https://www.lensculture.com/projects/1387052-hulme-manchester-1991-1994" target="_blank" rel="noopener">Hulme 1991–94</a></div>
+  </aside>
+</section>
+
+<!-- 05 pulsar: the whole page black, a plot drawn live -->
+<section class="beat black pl" data-ch="2" data-sec="Look" data-tr="hold">
+  <div class="plot"><canvas id="pulsar" aria-label="Stacked white ridge lines on black, drawn live and drifting upward"></canvas></div>
+  <div class="read"><i></i>CP 1919 · P = 1.3373 s</div>
+  <div class="txt">
+    <div class="cat"><span>PPK 005</span><em>Look</em></div><span class="rule"></span>
+    <h2>No band name. No title. A plot of a dead star.</h2>
+    <p class="note">Joy Division's first album, 1979: the sleeve was a radio-astronomy chart and nothing else.</p>
+  </div>
+  <div class="fig">Fig. 05 — drawn live from noise, one pulse per line, after Harold Craft's 1970 plot of pulsar CP 1919</div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 005</span><button class="x">↓ Close</button></div>
+    <p>The source was a plot of 80 successive radio pulses from pulsar CP 1919, made by astronomer Harold Craft from Arecibo data for his 1970 thesis and reprinted in <i>The Cambridge Encyclopaedia of Astronomy</i>. Bernard Sumner brought it to Peter Saville, who printed it white on black, with no band name. Factory catalogue number: FACT 10.</p>
+    <p>The lines on this page are not the original: they are drawn from noise, a new set every visit.</p>
+    <div class="lk"><a href="https://collections.vam.ac.uk/item/O191218/unknown-pleasures-record-sleeve-peter-saville" target="_blank" rel="noopener">V&amp;A: the sleeve</a><a href="https://en.wikipedia.org/wiki/Peter_Saville_(graphic_designer)" target="_blank" rel="noopener">Peter Saville</a></div>
+  </aside>
+</section>
+
+<!-- 06 sleeve: Closer -->
+<section class="beat room sl" data-ch="2" data-sec="Look" data-tr="fade" style="--lc:#f0ede6">
+  <div class="rig">
+    <div class="disc"></div>
+    <div class="inner"><div class="in">
+      <div class="hd"><b><i class="ndl"></i>FACT 25</b><span>Factory · 1980</span></div>
+      <div class="ti">Closer</div><div class="ar">Joy Division</div>
+      <p class="nt">Bernard Pierre Wolff's photograph of the Appiani family tomb, Staglieno cemetery, Genoa. Released two months after Ian Curtis died.</p>
+      <div class="ft"><span>Sleeve: Saville · Atkins</span><span>33⅓</span></div>
+    </div></div>
+    <div class="sleeve"><img data-src="img/05.webp" alt="The Closer sleeve: a tomb photograph framed on off-white card under spaced Roman capitals" decoding="async"></div>
+  </div>
+  <div class="txt">
+    <div class="cat"><span>PPK 006</span><em>Look</em></div><span class="rule"></span>
+    <h2>Roman capitals, a hairline rule, a body in marble.</h2>
+    <p class="note">Classical, funereal, nearly silent. The restraint was the statement.</p>
+    <div class="hold"><i></i>Hold — pull the inner</div>
+  </div>
+</section>
+
+<!-- 07 Staglieno -->
+<section class="beat black fu" data-ch="2" data-sec="Look" data-tr="fade" style="--op:22% 45%">
+  <img class="bg" data-src="img/06.webp" alt="A marble figure lying across a tomb, Staglieno cemetery" decoding="async">
+  <div class="lab">
+    <div class="cat"><span>PPK 007</span><em>Look</em></div><span class="rule"></span>
+    <h2>Mourning marble, Genoa.</h2>
+    <p class="note">The Ribaudo family tomb. Wolff's photograph of it fronted "Love Will Tear Us Apart" in 1980.</p>
+    <div class="fig lfig">Fig. 06 — Tomba Ribaudo, Staglieno</div>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 007</span><button class="x">↓ Close</button></div>
+    <p>Staglieno opened in 1851 on a hillside above Genoa and became one of Europe's great monumental cemeteries: realist marble mourners, veiled women, angels.</p>
+    <p>Bernard Pierre Wolff's photographs of its tombs gave Factory two sleeves in 1980: <i>Closer</i> and the "Love Will Tear Us Apart" single.</p>
+  </aside>
+</section>
+
+<!-- 08 sleeve: PCL -->
+<section class="beat room sl" data-ch="2" data-sec="Look" data-tr="fade" style="--lc:#d9c7a3;--op:50% 50%">
+  <div class="rig">
+    <div class="disc"></div>
+    <div class="inner"><div class="in">
+      <div class="hd"><b><i class="ndl"></i>FACT 75</b><span>Factory · 1983</span></div>
+      <div class="ti">Power, Corruption &amp; Lies</div><div class="ar">New Order</div>
+      <p class="nt">Fantin-Latour's <i>A Basket of Roses</i> (1890), from the National Gallery, London. The strip of coloured squares spells the catalogue number in Saville's colour alphabet.</p>
+      <div class="ft"><span>Sleeve: Peter Saville</span><span>33⅓</span></div>
+    </div></div>
+    <div class="sleeve"><img data-src="img/07.webp" alt="Power, Corruption and Lies sleeve: a painted basket of roses with a strip of coloured squares at the edge" decoding="async"></div>
+  </div>
+  <div class="txt">
+    <div class="cat"><span>PPK 008</span><em>Look</em></div><span class="rule"></span>
+    <h2>A borrowed still life, and a code.</h2>
+    <p class="note">By 1983 the language could quote a museum painting and still read as cold. Only the edge of the sleeve gives it away.</p>
+    <div class="hold"><i></i>Hold — pull the inner</div>
+  </div>
+</section>
+
+<!-- 09 the women: names lead to the photograph -->
+<section class="beat black wm" data-ch="3" data-sec="People" data-tr="cut">
+  <div class="lst">
+    <div class="cat"><span>PPK 009</span><em>People</em></div><span class="rule"></span>
+    <h2>Not a boys' club.</h2>
+    <p class="sub">On bass, on tape, at the front</p>
+    <ol class="nm">
+      <li style="--d:.25s"><b>Ari Up</b><i>The Slits</i></li>
+      <li style="--d:.4s"><b>Viv Albertine</b><i>The Slits</i></li>
+      <li style="--d:.55s"><b>Gina Birch</b><i>The Raincoats</i></li>
+      <li class="me" style="--d:.7s"><b>Siouxsie Sioux</b><i>Siouxsie and the Banshees</i></li>
+      <li style="--d:.85s"><b>Cosey Fanni Tutti</b><i>Throbbing Gristle</i></li>
+      <li style="--d:1s"><b>Alison Statton</b><i>Young Marble Giants</i></li>
+      <li style="--d:1.15s"><b>Tina Weymouth</b><i>Talking Heads</i></li>
+      <li style="--d:1.3s"><b>Gillian Gilbert</b><i>New Order</i></li>
+    </ol>
+  </div>
+  <figure class="ph"><img data-src="img/09.webp" alt="Siouxsie Sioux in a long coat at the front of the Banshees on a city street" decoding="async"><figcaption>Fig. 09 — Siouxsie Sioux, front, with the Banshees</figcaption></figure>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 009</span><button class="x">↓ Close</button></div>
+    <p>Siouxsie and the Banshees formed in London in 1976 and played their first show that September at the 100 Club Punk Festival. <i>The Scream</i> (1978) set their cold, circling sound; by <i>Juju</i> (1981) her backcombed black hair and winged eyes were the look goth would copy.</p>
+    <p>The Slits' <i>Cut</i> and The Raincoats' first album both came out in 1979, on Island and on Rough Trade.</p>
+    <div class="lk"><a href="https://commons.wikimedia.org/wiki/Category:Siouxsie_and_the_Banshees" target="_blank" rel="noopener">Siouxsie, Commons</a><a href="https://en.wikipedia.org/wiki/Post-punk" target="_blank" rel="noopener">Post-punk</a></div>
+  </aside>
+</section>
+
+<!-- 10 then / now -->
+<section class="beat paper pr" data-ch="3" data-sec="Fashion" data-tr="fade">
+  <div class="pa a"><img data-src="img/10.webp" alt="Three panels: Ian Curtis smoking, a hanging trench coat, David Byrne in a trench coat" decoding="async"><div class="tag"><b>Then</b>Ian Curtis · the coat · David Byrne</div></div>
+  <div class="pa b"><img data-src="img/12.webp" alt="A woman in a camel trench coat leans by a shop wall lined with black Dr. Martens boots" decoding="async"><div class="tag"><b>Now</b>Trench, Dr. Martens wall</div></div>
+  <div class="txt">
+    <div class="cat"><span>PPK 010</span><em>Fashion</em></div><span class="rule"></span>
+    <h2>The trench coat. Then, and still.</h2>
+    <p class="note">Army surplus or charity shop, collar up, shirt buttoned to the throat. Writer Mimi Haddon's phrase for it: “Eastern Bloc chic.”</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 010</span><button class="x">↓ Close</button></div>
+    <p>Away from studs, leather and mohawks: post-punk dressed down on purpose. Second-hand overcoats were cheap, warm in a northern winter, and made a twenty-year-old look like he had read something.</p>
+    <p>The same coat still sells every autumn, worn now as much by women as by the men in the old photographs.</p>
+    <div class="lk"><a href="https://www.drmartens.com/us/en/" target="_blank" rel="noopener">Dr. Martens</a></div>
+  </aside>
+</section>
+
+<!-- 11 the uniform -->
+<section class="beat paper lu" data-ch="3" data-sec="Fashion" data-tr="wipe">
+  <div class="row">
+    <figure style="--d:.15s"><img data-src="img/l1.webp" alt="A woman in a short-sleeved black dress, ankle socks and brogues" decoding="async"><figcaption><b>01</b>Black dress, ankle socks, brogues</figcaption></figure>
+    <figure style="--d:.27s"><img data-src="img/l2.webp" alt="A man in a navy hooded jacket" decoding="async"><figcaption><b>02</b>Navy jacket, zipped to the chin</figcaption></figure>
+    <figure style="--d:.39s"><img data-src="img/l3.webp" alt="A woman with a black fringe in a dark tartan cardigan" decoding="async"><figcaption><b>03</b>Dark tartan, high neck</figcaption></figure>
+    <figure style="--d:.51s"><img data-src="img/l4.webp" alt="A woman in a white shirt buttoned to the collar and black trousers" decoding="async"><figcaption><b>04</b>White shirt, buttoned up</figcaption></figure>
+    <figure style="--d:.63s"><img data-src="img/l5.webp" alt="A blonde woman in a navy crewneck and track trousers" decoding="async"><figcaption><b>05</b>Navy crewneck, laurel</figcaption></figure>
+    <figure style="--d:.75s"><img data-src="img/l6.webp" alt="A woman in a black overshirt and brown trousers" decoding="async"><figcaption><b>06</b>Black overshirt, brown trousers</figcaption></figure>
+  </div>
+  <div class="txt">
+    <div><div class="cat"><span>PPK 011</span><em>Fashion</em></div><span class="rule"></span>
+    <h2>The uniform is still in production.</h2></div>
+    <p class="note">Black, navy, grey. One collar, buttoned. Trousers straight and a little long. Nothing that shines. The shops that sell it now are the ones the scene shopped at then.</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 011</span><button class="x">↓ Close</button></div>
+    <p>Margaret Howell has made plain shirts and coats in London since the early 1970s. Fred Perry's laurel shirt went from tennis to mods, skinheads and 2 Tone. The Dr. Martens 1460 boot dates from 1960.</p>
+    <p>For a sharper, darker version of the same idea, Rick Owens.</p>
+    <div class="lk"><a href="https://www.margarethowell.co.uk" target="_blank" rel="noopener">Margaret Howell</a><a href="https://www.fredperry.com" target="_blank" rel="noopener">Fred Perry</a><a href="https://www.rickowens.eu" target="_blank" rel="noopener">Rick Owens</a></div>
+  </aside>
+</section>
+
+<!-- 12 fashion: non-image -->
+<section class="beat paper fr" data-ch="3" data-sec="Fashion" data-tr="fade">
+  <div class="pic"><figure><img data-src="img/11.webp" alt="A young woman with a black bob and a dark overcoat stands before a white wall, friends behind" decoding="async" style="max-height:min(68vh,563px)"><figcaption>Fig. 12 — Indie scene, Britain, 1980s</figcaption></figure></div>
+  <div class="txt">
+    <div class="cat"><span>PPK 012</span><em>Fashion</em></div><span class="rule"></span>
+    <h2>Monochrome. Androgynous. Anti-rockstar.</h2>
+    <p class="note">Short hair, a drab coat, trousers that don't quite fit. Dressed less like a star than a junior clerk: a deliberate non-image.</p>
+  </div>
+</section>
+
+<!-- 13 contact sheet -->
+<section class="beat black cs" data-ch="4" data-sec="Sound" data-tr="cut">
+  <div class="sheet">
+    <div class="fc" style="animation-delay:.1s"><span class="en"><span>▸ 1</span><span>1A</span></span><div class="fx"><img data-src="img/g02.webp" alt="Siouxsie Sioux with the Banshees" decoding="async" style="--op:35% 20%"><svg class="mark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M4 6 C30 3 70 4 97 5 C96 35 98 70 95 96 C65 98 30 95 3 97 C5 70 2 35 5 3" vector-effect="non-scaling-stroke"/></svg></div></div>
+    <div class="fc" style="animation-delay:.18s"><span class="en"><span>2</span><span>2A</span></span><div class="fx"><img data-src="img/g01.webp" alt="Joy Division on stage" decoding="async"></div></div>
+    <div class="fc" style="animation-delay:.26s"><span class="en"><span>3</span><span>3A</span></span><div class="fx"><img data-src="img/g04.webp" alt="A young woman with a bob and a long coat" decoding="async" style="--op:50% 20%"></div></div>
+    <div class="fc" style="animation-delay:.34s"><span class="en"><span>4</span><span>4A</span></span><div class="fx"><img data-src="img/g05.webp" alt="Bauhaus, the band, in black" decoding="async"></div></div>
+    <div class="fc" style="animation-delay:.42s"><span class="en"><span>5</span><span>5A</span></span><div class="fx"><img data-src="img/g06.webp" alt="A blonde woman in a leather jacket and short skirt, a guitar at her side" decoding="async" style="--op:50% 15%"></div></div>
+    <div class="fc" style="animation-delay:.5s"><span class="en"><span>6</span><span>6A</span></span><div class="fx"><img data-src="img/g03.webp" alt="A young singer at a microphone, lit from behind" decoding="async"></div></div>
+    <div class="fc" style="animation-delay:.58s"><span class="en"><span>7</span><span>7A</span></span><div class="fx"><img data-src="img/g08.webp" alt="Ian Curtis smoking, in a trench coat" decoding="async" style="--op:50% 35%"></div></div>
+    <div class="fc" style="animation-delay:.66s"><span class="en"><span>8</span><span>8A</span></span><div class="fx"><img data-src="img/g09.webp" alt="400 Blows' drummer at the Casbah" decoding="async"></div></div>
+    <div class="fc" style="animation-delay:.74s"><span class="en"><span>9</span><span>9A</span></span><div class="fx"><img data-src="img/g07.webp" alt="A young man in a pinstripe suit against a graffitied door" decoding="async" style="--op:50% 10%"></div></div>
+    <div class="fc" style="animation-delay:.82s"><span class="en"><span>10</span><span>10A</span></span><div class="fx"><img data-src="img/g11.webp" alt="David Byrne in a trench coat" decoding="async" style="--op:50% 30%"></div></div>
+    <div class="fc" style="animation-delay:.9s"><span class="en"><span>11</span><span>11A</span></span><div class="fx"><img data-src="img/g13.webp" alt="A young woman in a trench coat leaning against a wall" decoding="async" style="--op:50% 25%"></div></div>
+    <div class="fc" style="animation-delay:.98s"><span class="en"><span>12</span><span>End</span></span><div class="fx"><img data-src="img/g14.webp" alt="A woman in a quilted coat walking her children below the Hulme Crescents" decoding="async" style="--op:50% 20%"></div></div>
+  </div>
+  <div class="txt">
+    <div><div class="cat"><span>PPK 013</span><em>Sound</em></div><span class="rule"></span>
+    <h2>Bass up front. Drums dry. Guitar like sheet metal.</h2></div>
+    <p class="names">Joy Division · Siouxsie and the Banshees · The Slits · The Raincoats · Bauhaus · Gang of Four · Wire · The Fall · Talking Heads · Delta 5</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 013</span><button class="x">↓ Close</button></div>
+    <p>On the roll: Siouxsie Sioux with the Banshees · Joy Division live · a girl on the '80s indie scene · Bauhaus · a band today · a singer at the mic · Ian Curtis · 400 Blows at the Casbah · a fashion shoot in punk's image · David Byrne · a trench today · Hulme, the Crescents behind.</p>
+    <p>The early press called it "new musick". Producer Martin Hannett gave Joy Division their dry, separated drums and a lot of empty space.</p>
+    <div class="lk"><a href="https://en.wikipedia.org/wiki/Post-punk" target="_blank" rel="noopener">Post-punk</a><a href="https://commons.wikimedia.org/wiki/Category:Post-punk_music_groups_from_England" target="_blank" rel="noopener">Bands, Commons</a></div>
+  </aside>
+</section>
+
+<!-- 14 sound: 400 Blows -->
+<section class="beat black fu" data-ch="4" data-sec="Sound" data-tr="fade" style="--op:30% 55%">
+  <img class="bg" data-src="img/14.webp" alt="400 Blows playing at the Casbah: a shirtless drummer and a guitarist against a padded wall" decoding="async">
+  <div class="lab">
+    <div class="cat"><span>PPK 014</span><em>Sound</em></div><span class="rule"></span>
+    <h2>Facing Europe, not America.</h2>
+    <p class="note">Krautrock's motorik pulse, Kraftwerk's synthesizers, dub's empty space.</p>
+    <p class="names">Wire · The Fall · Gang of Four · The Pop Group · Cabaret Voltaire · Pere Ubu · Talking Heads · Young Marble Giants</p>
+    <div class="fig lfig">Fig. 14 — 400 Blows at the Casbah</div>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 014</span><button class="x">↓ Close</button></div>
+    <p>The steady motorik beat came from Can and Neu!, and the machines from Kraftwerk. From dub reggae came echo and space: Dennis Bovell produced The Slits' <i>Cut</i>, and Adrian Sherwood's On-U Sound worked with The Pop Group's circle.</p>
+    <p>By 1980 Talking Heads' <i>Remain in Light</i> was borrowing from Fela Kuti.</p>
+  </aside>
+</section>
+
+<!-- 15 after: pure type -->
+<section class="beat black ty" data-ch="4" data-sec="After" data-tr="hold">
+  <div class="tw">
+    <div class="cat"><span>PPK 015</span><em>After</em></div>
+    <h2 class="big">Then came<br>the eyeliner.</h2>
+    <svg class="wing" viewBox="0 0 640 40" aria-hidden="true"><path d="M6 30 C160 34 380 30 520 18 C570 13 610 7 634 2"/></svg>
+    <p class="rom">Siouxsie · Robert Smith · Bauhaus · the Batcave, 1982</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 015</span><button class="x">↓ Close</button></div>
+    <p>Siouxsie Sioux and Robert Smith added dark lipstick, teased hair and heavy eyeliner. Bauhaus released "Bela Lugosi's Dead" in 1979. The Batcave club opened in Soho in 1982, the same year as The Cure's <i>Pornography</i>.</p>
+    <p>Goth grew out of post-punk, and the two still share a wardrobe.</p>
+  </aside>
+</section>
+
+<!-- 16 revival -->
+<section class="beat paper fr" data-ch="4" data-sec="Now" data-tr="fade">
+  <div class="pic"><figure><img data-src="img/17.webp" alt="A band of five on a cobbled harbour edge, a blonde woman with a guitar at the right" decoding="async"><figcaption>Fig. 16 — A band today (photo: Cédric Calandraud)</figcaption></figure></div>
+  <div class="txt">
+    <div class="cat"><span>PPK 016</span><em>Now</em></div><span class="rule"></span>
+    <h2>It never quite ended.</h2>
+    <p class="note">Every few years a new band picks up the dry drums and the long coat.</p>
+    <p class="names">Interpol · Savages · Shame · Dry Cleaning · Fontaines D.C.</p>
+  </div>
+  <aside class="liner"><div class="lh"><span>Liner notes · PPK 016</span><button class="x">↓ Close</button></div>
+    <p>Interpol, Editors and Franz Ferdinand brought the sound back in the 2000s. Savages (with Jehnny Beth singing), Shame, Dry Cleaning (with Florence Shaw's spoken vocals) and Fontaines D.C. have carried it since.</p>
+  </aside>
+</section>
+
+<!-- 17 idea -->
+<section class="beat black wd" data-ch="5" data-sec="Idea" data-tr="hold">
+  <figure class="ph"><img data-src="img/16.webp" alt="A broken mannequin lies on paving stones among pigeons" decoding="async"><figcaption>Fig. 17 — Pavement, pigeons, a mannequin</figcaption></figure>
+  <div class="txt">
+    <div><div class="cat"><span>PPK 017</span><em>Idea</em></div><span class="rule"></span>
+    <h2>Experiment over energy.</h2></div>
+    <p class="note">Refuse the formula punk had already hardened into. Refuse the rock-star pose. Make something that can't be sold back to you as a costume.</p>
+  </div>
+</section>
+
+<!-- 18 something to keep -->
+<section class="beat room kc" data-ch="5" data-sec="Kept" data-tr="rise">
+  <div class="card">
+    <div class="ch">
+      <div><div class="cat"><span>PPK 018</span><em>Kept · liner card</em></div><h2 style="margin-top:12px">Post&#8209;Punk</h2></div>
+      <div class="m">1978 — 1984<br>Manchester · London · Sheffield<br>Leeds · Akron · New York</div>
+    </div>
+    <div class="cb">
+      <div>
+        <h3>Palette</h3>
+        <div class="sw">
+          <span><i style="background:#0b0b0b"></i>#0B0B0B<em><br>Sleeve black</em></span>
+          <span><i style="background:#e6e2d9"></i>#E6E2D9<em><br>Bone</em></span>
+          <span><i style="background:#8d897f"></i>#8D897F<em><br>Concrete</em></span>
+          <span><i style="background:#ebe7df"></i>#EBE7DF<em><br>Card</em></span>
+          <span><i style="background:#7e9bbd"></i>#7E9BBD<em><br>Cold blue</em></span>
+          <span><i style="background:#e2582c"></i>#E2582C<em><br>Signal</em></span>
+          <span><i style="background:#c48c8a"></i>#C48C8A<em><br>Rose, 1890</em></span>
+        </div>
+        <div class="tp">
+          <div><b style="font-family:var(--sans);font-weight:300">Aa</b><span>Jost — geometric, after Futura</span></div>
+          <div><b style="font-family:var(--mono);font-size:15px">FACT</b><span>IBM Plex Mono — numbers, labels</span></div>
+          <div><b style="font-family:var(--roman);letter-spacing:.2em;font-size:17px">A·C</b><span>Spaced Roman capitals</span></div>
+        </div>
+      </div>
+      <div>
+        <h3>Rules</h3>
+        <ol>
+          <li>Black, grey, and one cold colour.</li>
+          <li>Say less. No name on the sleeve if you can help it.</li>
+          <li>A second-hand coat, the collar buttoned.</li>
+          <li>Bass leads. Drums stay dry.</li>
+          <li>Experiment over energy.</li>
+        </ol>
+      </div>
+      <div class="ky">
+        <h3>Key</h3>
+        <p><b>Records</b>Pink Flag '77 · The Scream '78 · Unknown Pleasures '79 · Entertainment! '79 · Cut '79 · Metal Box '79 · The Raincoats '79 · Closer '80</p>
+        <p><b>People</b>Siouxsie Sioux · Ian Curtis · Ari Up · Gina Birch · Mark E. Smith · Cosey Fanni Tutti · Peter Saville · Martin Hannett</p>
+        <p><b>Places</b>Hulme, Manchester · the Russell Club · Rough Trade, London · Staglieno, Genoa</p>
+      </div>
+    </div>
+    <div class="cf"><span>Keep this card</span><span>PPK 018 · 33⅓</span></div>
+  </div>
+</section>
+
+<!-- 19 credits -->
+<section class="beat black cr" data-ch="5" data-sec="Credits" data-tr="fade">
+  <div class="in">
+    <div>
+      <div class="cat"><span>PPK 019</span><em>Credits</em></div><span class="rule"></span>
+      <h2>Photographs, sleeves, sources.</h2>
+      <p class="lic">Text: paraphrased from the Aesthetics Wiki — Post-Punk (CC BY-SA).<br>Images: collected on Are.na; the export records titles only, original sources not recorded. All rights remain with their owners.<br>Pulsar plot and sound: made in the page.</p>
+    </div>
+    <ol>
+      <li><span>01</span><div>image (Joy Division, live)<small>source not recorded</small></div></li>
+      <li><span>02</span><div>image (ANYTHING wall)<small>source not recorded</small></div></li>
+      <li><span>03</span><div>0a668d5c-8351-4822-aca8-7ab4a3149115 (Hulme Crescents)<small>source not recorded</small></div></li>
+      <li><span>05</span><div>Pulsar plot, drawn in the page<small>after Harold Craft, 1970 / sleeve Peter Saville, 1979</small></div></li>
+      <li><span>06</span><div>peter-saville-closer-album-cover<small>via Dezeen · sleeve Peter Saville</small></div></li>
+      <li><span>07</span><div>Tomba famiglia Ribaudo<small>source not recorded</small></div></li>
+      <li><span>08</span><div>New Order — Power, Corruption &amp; Lies<small>source not recorded · sleeve Peter Saville</small></div></li>
+      <li><span>09</span><div>Siouxsie and the Banshees<small>source not recorded</small></div></li>
+      <li><span>10</span><div>Curtis-us-trenchcoat-byrne · image (trench, Dr. Martens wall)<small>source not recorded</small></div></li>
+      <li><span>11</span><div>image ×6 (catalogue looks, Are.na 21, 23–27)<small>source not recorded</small></div></li>
+      <li><span>12</span><div>Nostalgic Photos of Britain's 80s Post-Punk Indie Scene<small>source not recorded</small></div></li>
+      <li><span>13</span><div>Contact sheet: Siouxsie and the Banshees · image (Joy Division) · Nostalgic Photos… · Bauhaus · WDNNWT · image (singer) · Curtis-us-trenchcoat-byrne · 400 Blows · Punk's not dead · image (trench) · 0a668d5c… (Hulme)<small>source not recorded</small></div></li>
+      <li><span>14</span><div>400 Blows @ The Casbah<small>source not recorded</small></div></li>
+      <li><span>16</span><div>WDNNWT_Cédric-Calandraud<small>photo credited in title: Cédric Calandraud</small></div></li>
+      <li><span>17</span><div>99bdbd65-a32d-4833-832d-bcf3dd337371 (mannequin)<small>source not recorded</small></div></li>
+    </ol>
+  </div>
+</section>
+
+</main>
+
+<script>
+(()=>{
+const beats=[...document.querySelectorAll('.beat')],N=beats.length;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=s=>document.querySelector(s);
+let cur=0;
+document.querySelectorAll('img').forEach(i=>{i.draggable=false});
+
+/* title colour code (letter -> hue on a wheel, after Saville's code for FACT 75) */
+(function(){const w='POST-PUNK',c=$('#code');for(const ch of w){const s=document.createElement('span'),i=document.createElement('i');
+  if(ch==='-'){i.style.background='var(--signal)'}else{const n=ch.charCodeAt(0)-65;i.style.background=`hsl(${(n*137)%360} 38% ${n%2?58:44}%)`}
+  s.appendChild(i);s.appendChild(document.createTextNode(ch==='-'?'·':ch));c.appendChild(s)}
+  [...c.children].forEach((s,k)=>s.style.animationDelay=(2.05+k*.09)+'s')})();
+
+function load(i){const b=beats[i];if(!b)return;b.querySelectorAll('img[data-src]').forEach(im=>{im.src=im.dataset.src;im.removeAttribute('data-src')})}
+function pad(n){return String(n).padStart(2,'0')}
+const TR=['tr-fade','tr-cut','tr-hold','tr-wipe','tr-rise'],OUT=['out-fade','out-cut','out-hold','out-wipe','out-rise'];
+function go(i,dir){
+  if(i<0||i>=N||i===cur&&dir)return;
+  const prev=beats[cur],b=beats[i];
+  closeDepth(true);
+  const t=dir>0?(b.dataset.tr||'fade'):(dir<0?'fade':'cut');
+  if(prev!==b){prev.classList.remove('on',...OUT);prev.classList.add('out-'+t);leave(prev);setTimeout(()=>{prev.classList.remove('pulled','spin')},800)}
+  b.classList.remove(...TR,...OUT);void b.offsetWidth;b.classList.add('tr-'+t,'on');
+  cur=i;try{parent!==window&&parent.postMessage({aw:'beat',i:cur,n:N},'*')}catch(e){}
+  load(i);load(i+1);load(i+2);load(i-1);
+  $('#prog').textContent=pad(i+1)+' / '+pad(N);
+  $('#catno').textContent='PPK '+String(i+1).padStart(3,'0')+' · '+b.dataset.sec;
+  $('#bar').style.width=((i)/(N-1)*100)+'%';
+  $('#bk').classList.toggle('off',i===0);
+  $('#dp').classList.toggle('off',!b.querySelector('.liner'));
+  if(dir)turnSound(dir,b.dataset.ch!==prev.dataset.ch);
+  enter(b);
+  setBed(b.dataset.ch);
+}
+const next=()=>go(cur+1,1),back=()=>go(cur-1,-1);
+
+/* ---------- depth: liner notes ---------- */
+function hasLiner(){return !!beats[cur].querySelector('.liner')}
+function isDeep(){return beats[cur].classList.contains('deep')}
+function openDepth(){if(!hasLiner())return;beats[cur].classList.add('deep');$('#dp').classList.add('off');paperSound()}
+function closeDepth(quiet){const b=beats[cur];if(!b.classList.contains('deep'))return;b.classList.remove('deep');if(!quiet){paperSound();$('#dp').classList.toggle('off',!hasLiner())}}
+document.querySelectorAll('.liner .x').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.addEventListener('click',e=>{e.stopPropagation();closeDepth()})});
+document.querySelectorAll('.liner a').forEach(a=>a.addEventListener('pointerdown',e=>e.stopPropagation()));
+
+/* ---------- pulsar ---------- */
+const pc=$('#pulsar'),pctx=pc.getContext('2d');
+const PL={lines:[],L:58,S:170,off:0,rev:0,raf:0,last:0,run:false};
+function smooth(k){const kn=[];for(let i=0;i<=k+1;i++)kn.push(Math.random()*2-1);return x=>{const p=x*k,i=Math.floor(p),f=p-i,t=(1-Math.cos(f*Math.PI))/2;return kn[i]+(kn[i+1]-kn[i])*t}}
+function mkLine(){const n1=smooth(26),n2=smooth(70),pk=[],np=2+Math.floor(Math.random()*4);
+  for(let j=0;j<np;j++)pk.push({c:.5+(Math.random()+Math.random()-1)*.08,w:.012+Math.random()*.03,a:.15+Math.random()*.7});
+  const v=new Float32Array(PL.S);
+  for(let s=0;s<PL.S;s++){const x=s/(PL.S-1),env=Math.exp(-Math.pow((x-.5)/.16,2));let p=0;for(const q of pk)p+=q.a*Math.exp(-Math.pow((x-q.c)/q.w,2));
+    v[s]=.035*(n2(x)+1)*.5+env*(p*.85+.22*(n1(x)+1)*.5+.05*Math.random())}
+  return v}
+function pSize(){const r=pc.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);pc.width=Math.max(1,Math.round(r.width*d));pc.height=Math.max(1,Math.round(r.height*d))}
+function pDraw(){const W=pc.width,H=pc.height,L=PL.L,gap=H/(L+7),amp=gap*8.5,mx=W*.06,lw=Math.max(1,1.25*(W/600));
+  pctx.fillStyle='#0b0b0b';pctx.fillRect(0,0,W,H);pctx.lineWidth=lw;pctx.lineJoin='round';
+  const n=Math.min(PL.lines.length,Math.floor(PL.rev));
+  for(let i=0;i<n;i++){const v=PL.lines[i],y0=gap*(i+6)-PL.off*gap;
+    let a=1;if(i===0)a=1-PL.off;if(i===PL.lines.length-1)a=PL.off;if(i===Math.floor(PL.rev)-1&&PL.rev<L)a*=PL.rev%1||1;
+    pctx.beginPath();for(let s=0;s<PL.S;s++){const x=mx+(W-2*mx)*s/(PL.S-1),y=y0-v[s]*amp;s?pctx.lineTo(x,y):pctx.moveTo(x,y)}
+    pctx.lineTo(W-mx,y0+gap*4);pctx.lineTo(mx,y0+gap*4);pctx.closePath();pctx.fillStyle='#0b0b0b';pctx.fill();
+    pctx.beginPath();for(let s=0;s<PL.S;s++){const x=mx+(W-2*mx)*s/(PL.S-1),y=y0-v[s]*amp;s?pctx.lineTo(x,y):pctx.moveTo(x,y)}
+    pctx.strokeStyle=`rgba(236,233,226,${a})`;pctx.stroke()}}
+function pLoop(t){if(!PL.run)return;const dt=Math.min(.05,(t-(PL.last||t))/1000);PL.last=t;
+  if(PL.rev<PL.L+1)PL.rev+=dt*PL.L/1.9;else{PL.off+=dt/.45;while(PL.off>=1){PL.off-=1;PL.lines.shift();PL.lines.push(mkLine())}}
+  pDraw();PL.raf=requestAnimationFrame(pLoop)}
+function pStart(){pSize();if(!PL.lines.length)for(let i=0;i<PL.L+1;i++)PL.lines.push(mkLine());
+  PL.off=0;if(RM){PL.rev=PL.L+1;pDraw();return}PL.rev=0;PL.last=0;PL.run=true;cancelAnimationFrame(PL.raf);PL.raf=requestAnimationFrame(pLoop)}
+function pStop(){PL.run=false;cancelAnimationFrame(PL.raf)}
+addEventListener('resize',()=>{if(beats[cur].classList.contains('pl')){pSize();pDraw()}});
+
+let pTick=null;
+function enter(b){
+  if(b.classList.contains('pl')){pStart();clearInterval(pTick);pTick=setInterval(pulseSound,1337)}
+  if(b.classList.contains('cs'))setTimeout(()=>{if(beats[cur]===b)shutter()},120);
+}
+function leave(b){if(b.classList.contains('pl')){setTimeout(()=>{if(!beats[cur].classList.contains('pl'))pStop()},900);clearInterval(pTick)}}
+
+/* ---------- audio ---------- */
+let ac=null,master=null,muted=false,nb=null,bn=null,verb=null;
+try{muted=localStorage.getItem('pp-mute')==='1'}catch(e){}
+function A(){
+  if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return null}
+    master=ac.createGain();master.gain.value=muted?0:.6;const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=6500;
+    const comp=ac.createDynamicsCompressor();master.connect(lp);lp.connect(comp);comp.connect(ac.destination);
+    nb=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+    bn=ac.createBuffer(1,ac.sampleRate*6,ac.sampleRate);const e=bn.getChannelData(0);let l=0;for(let i=0;i<e.length;i++){l=(l+.02*(Math.random()*2-1))/1.02;e[i]=l*3.5}
+    verb=ac.createConvolver();const L=Math.floor(ac.sampleRate*.32),ir=ac.createBuffer(2,L,ac.sampleRate);
+    for(let c=0;c<2;c++){const x=ir.getChannelData(c);for(let i=0;i<L;i++)x[i]=(Math.random()*2-1)*(i<L*.85?.55:Math.pow(1-(i-L*.85)/(L*.15),2)*.55)}
+    verb.buffer=ir;const vg=ac.createGain();vg.gain.value=.32;verb.connect(vg);vg.connect(master);
+    buildBeds();setBed(beats[cur].dataset.ch);
+  }
+  if(ac.state==='suspended')ac.resume();return ac;
+}
+function noise(t,dur,{type='bandpass',f=1200,q=1,g=.3,f2=null,dest=master}={}){
+  const s=ac.createBufferSource();s.buffer=nb;s.loop=true;const fl=ac.createBiquadFilter();fl.type=type;fl.frequency.setValueAtTime(f,t);fl.Q.value=q;
+  if(f2)fl.frequency.exponentialRampToValueAtTime(f2,t+dur);const gn=ac.createGain();gn.gain.setValueAtTime(g,t);gn.gain.exponentialRampToValueAtTime(.0006,t+dur);
+  s.connect(fl);fl.connect(gn);gn.connect(dest);s.start(t,Math.random());s.stop(t+dur+.05)}
+function tone(t,f0,f1,dur,g,type='sine',dest=master){const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f1,t+dur*.7);
+  gn.gain.setValueAtTime(g,t);gn.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(gn);gn.connect(dest);o.start(t);o.stop(t+dur+.02)}
+function turnSound(dir,newCh){if(!ac||muted)return;const t=ac.currentTime+.01;
+  noise(t,.045,{type:'highpass',f:dir>0?7200:5200,g:.09});
+  if(newCh){tone(t,1650,1500,.05,.07,'triangle');noise(t,.05,{f:2400,q:4,g:.05,dest:verb})}}
+function sleeveSlide(out){if(!ac||muted)return;const t=ac.currentTime;noise(t,.9,{f:out?700:2600,f2:out?2900:700,q:.6,g:.07})}
+function paperSound(){if(!ac||muted)return;const t=ac.currentTime;noise(t,.5,{f:1800,f2:3600,q:.5,g:.05})}
+function pulseSound(){if(!ac||muted||!beats[cur].classList.contains('pl'))return;const t=ac.currentTime+.02;
+  noise(t,.035,{f:2100,q:3,g:.06});tone(t,72,44,.22,.14)}
+function shutter(){if(!ac||muted)return;const t=ac.currentTime;noise(t,.03,{type:'highpass',f:3000,g:.14});noise(t+.07,.05,{f:900,q:1.2,g:.1})}
+
+/* ambient beds, one per chapter: city wind / low drone / room before a gig / a drum machine through the wall / tape hiss */
+const beds={};let bedNow=null,wallT=null,wallStep=0,wallNext=0;
+function src(buf){const s=ac.createBufferSource();s.buffer=buf;s.loop=true;s.start(0,Math.random()*2);return s}
+function lfo(f,depth,param){const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=depth;o.connect(g);g.connect(param);o.start();return o}
+function buildBeds(){
+  const mk=()=>{const g=ac.createGain();g.gain.value=0;g.connect(master);return g};
+  // 1 city: brown-noise wind and a far traffic rumble
+  {const g=mk(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=420;const a=ac.createGain();a.gain.value=.55;
+   src(bn).connect(f);f.connect(a);a.connect(g);lfo(.07,.3,a.gain);lfo(.05,180,f.frequency);
+   const r=ac.createBiquadFilter();r.type='bandpass';r.frequency.value=90;r.Q.value=.8;const rg=ac.createGain();rg.gain.value=.5;src(bn).connect(r);r.connect(rg);rg.connect(g);beds[1]={g,lvl:.16}}
+  // 2 look: a cold low drone with tape hiss
+  {const g=mk(),f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=240;f.Q.value=.7;
+   [[55,'sawtooth',.05],[55.35,'sawtooth',.05],[82.4,'triangle',.06]].forEach(([fr,ty,v])=>{const o=ac.createOscillator(),og=ac.createGain();o.type=ty;o.frequency.value=fr;og.gain.value=v;o.connect(og);og.connect(f);o.start()});
+   f.connect(g);lfo(.04,90,f.frequency);
+   const h=ac.createBiquadFilter();h.type='highpass';h.frequency.value=5200;const hg=ac.createGain();hg.gain.value=.03;src(nb).connect(h);h.connect(hg);hg.connect(g);beds[2]={g,lvl:.5}}
+  // 3 people: a room before the band comes on, voices as murmur
+  {const g=mk();[[380,1.1,.13],[720,1.6,.09],[1250,2.2,.05]].forEach(([fr,q,v],k)=>{const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=fr;f.Q.value=q;const a=ac.createGain();a.gain.value=v;
+     src(nb).connect(f);f.connect(a);a.connect(g);lfo(.23+k*.17,v*.7,a.gain);lfo(.11+k*.07,fr*.12,f.frequency)});
+   const lo=ac.createBiquadFilter();lo.type='lowpass';lo.frequency.value=160;const lg=ac.createGain();lg.gain.value=.35;src(bn).connect(lo);lo.connect(lg);lg.connect(g);beds[3]={g,lvl:.32}}
+  // 4 sound: a drum machine heard through a wall
+  {const g=mk(),wall=ac.createBiquadFilter();wall.type='lowpass';wall.frequency.value=230;wall.connect(g);beds[4]={g,lvl:.5,wall}}
+  // 5 after: tape hiss and a little wind
+  {const g=mk(),h=ac.createBiquadFilter();h.type='highpass';h.frequency.value=3400;const hg=ac.createGain();hg.gain.value=.05;src(nb).connect(h);h.connect(hg);hg.connect(g);
+   const w=ac.createBiquadFilter();w.type='lowpass';w.frequency.value=300;const wg=ac.createGain();wg.gain.value=.4;src(bn).connect(w);w.connect(wg);wg.connect(g);lfo(.06,.25,wg.gain);beds[5]={g,lvl:.2}}
+}
+function wallSched(){const B=beds[4];while(wallNext<ac.currentTime+.15){const s=wallStep%8;
+  if(s%2===0)tone(wallNext,95,42,.28,.9,'sine',B.wall);
+  if(s===2||s===6)noise(wallNext,.14,{f:520,q:.8,g:.5,dest:B.wall});
+  wallNext+=60/124/2;wallStep++}}
+function setBed(ch){if(!ac||!beds[1])return;if(ch===bedNow)return;const t=ac.currentTime;
+  for(const k in beds){beds[k].g.gain.cancelScheduledValues(t);beds[k].g.gain.setTargetAtTime(k===ch?beds[k].lvl:0,t,k===ch?1.2:.8)}
+  if(ch==='4'&&!wallT){wallNext=ac.currentTime+.3;wallT=setInterval(wallSched,40)}
+  if(ch!=='4'&&wallT){const w=wallT;setTimeout(()=>{if(bedNow!=='4'){clearInterval(w);if(wallT===w)wallT=null}},3500)}
+  bedNow=ch}
+
+/* sleeve hold: pull the inner, needle drops while held (Closer, PCL only) */
+const BPM=128,SP=60/BPM/4;let step=0,nextT=0,timer=null,crack=null;
+function kick(t){tone(t,120,44,.3,.8)}
+function snare(t){noise(t,.16,{f:1900,q:.7,g:.36});noise(t,.2,{f:2300,q:.5,g:.22,dest:verb});tone(t,240,170,.09,.18,'triangle')}
+function hat(t,a){noise(t,a?.06:.03,{type:'highpass',f:7800,g:a?.12:.06})}
+function tom(t,f){tone(t,f,f*.62,.32,.42);noise(t,.05,{f:f*4,q:1,g:.05,dest:verb})}
+function sched(){while(nextT<ac.currentTime+.12){const s=step%16,bar=Math.floor(step/16)%4;
+  if(bar===3&&s>=8){if(s%2===0)tom(nextT,[180,160,130,110][(s-8)/2])}
+  else{if(s===0||s===7||s===10)kick(nextT);if(s===4||s===12)snare(nextT);if(s%2===0)hat(nextT,s%4===2);if(bar===1&&s===14)tom(nextT,150)}
+  nextT+=SP;step++}}
+function crackle(){const L=ac.sampleRate*3,b=ac.createBuffer(1,L,ac.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<L;i++)d[i]=(Math.random()<.0006?(Math.random()*2-1)*.7:0)+(Math.random()*2-1)*.005;
+  const s=ac.createBufferSource();s.buffer=b;s.loop=true;const f=ac.createBiquadFilter();f.type='highpass';f.frequency.value=1100;const g=ac.createGain();g.gain.value=.45;
+  s.connect(f);f.connect(g);g.connect(master);s.start();return s}
+function needleDown(){if(!A())return;if(timer)return;const t=ac.currentTime;noise(t,.08,{f:300,q:.8,g:.25});tone(t,90,50,.12,.2);
+  crack=crackle();step=0;nextT=ac.currentTime+.45;timer=setInterval(sched,25);if(beds[2])beds[2].g.gain.setTargetAtTime(.08,t,.3)}
+function needleUp(){if(timer){clearInterval(timer);timer=null}if(crack){try{crack.stop()}catch(e){}crack=null}
+  if(ac&&!muted){noise(ac.currentTime,.12,{f:1800,f2:400,q:1,g:.08})}
+  if(ac&&beds[2]&&bedNow==='2')beds[2].g.gain.setTargetAtTime(beds[2].lvl,ac.currentTime,.8)}
+function isSleeve(){return beats[cur].classList.contains('sl')}
+function pull(on){const b=beats[cur];if(!b.classList.contains('sl'))return;
+  if(on){if(!b.classList.contains('pulled')){b.classList.add('pulled');sleeveSlide(true)}b.classList.add('spin');needleDown()}
+  else{b.classList.remove('spin');needleUp()}}
+function togglePull(){const b=beats[cur];if(!isSleeve())return;A();
+  if(b.classList.contains('pulled')){b.classList.remove('pulled','spin');needleUp();sleeveSlide(false)}
+  else{pull(true);setTimeout(()=>{if(b.classList.contains('spin'))pull(false)},RM?1500:60/BPM*16*1000)}}
+
+/* ---------- gestures ----------
+   tap / → / Space / swipe left = next · ← / swipe right = back
+   ↑ / swipe up = open liner notes (or next, where a beat has none) · ↓ / Esc / swipe down / tap outside = close */
+let sx=0,sy=0,down=false,held=false,ht=null,inPanel=false;
+const deck=document.getElementById('deck');
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>e.preventDefault());
+deck.addEventListener('pointerdown',e=>{if(e.button>0)return;inPanel=!!e.target.closest('.liner');
+  if(!inPanel)e.preventDefault();
+  down=true;held=false;sx=e.clientX;sy=e.clientY;A();
+  if(!inPanel&&!isDeep()&&isSleeve()){ht=setTimeout(()=>{held=true;pull(true)},240)}});
+deck.addEventListener('pointermove',e=>{if(!down)return;if(Math.hypot(e.clientX-sx,e.clientY-sy)>14&&!held)clearTimeout(ht)});
+function end(e,cancel){if(!down)return;down=false;clearTimeout(ht);
+  if(held){held=false;pull(false);return}
+  if(cancel)return;
+  const dx=e.clientX-sx,dy=e.clientY-sy,big=Math.abs(dx)>40||Math.abs(dy)>40;
+  if(inPanel){if(dy>60&&Math.abs(dy)>Math.abs(dx))closeDepth();return}
+  if(big){
+    if(Math.abs(dx)>Math.abs(dy)){(dx<0?next:back)();return}
+    if(dy<0){if(isDeep())return;hasLiner()?openDepth():next()}
+    else{isDeep()?closeDepth():back()}
+    return}
+  if(isDeep()){closeDepth();return}
+  next()}
+deck.addEventListener('pointerup',e=>end(e,false));
+deck.addEventListener('pointercancel',e=>end(e,true));
+let wheelLock=0;
+addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('.liner'))return;const n=Date.now();if(n<wheelLock||Math.abs(e.deltaY)<18)return;wheelLock=n+700;A();
+  if(isDeep()){closeDepth();return}(e.deltaY>0?next:back)()},{passive:true});
+addEventListener('keydown',e=>{if(e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key;
+  if(e.target.closest&&e.target.closest('button,a')&&(k===' '||k==='Enter'))return;
+  if([' ','ArrowRight','PageDown'].includes(k)){e.preventDefault();A();next()}
+  else if(k==='ArrowDown'){e.preventDefault();A();isDeep()?closeDepth():next()}
+  else if(['ArrowLeft','PageUp'].includes(k)){e.preventDefault();A();back()}
+  else if(k==='ArrowUp'){e.preventDefault();A();openDepth()}
+  else if(k==='Escape'){closeDepth()}
+  else if(k==='Home'){go(0,-1)}else if(k==='End'){go(N-1,1)}
+  else if(k==='Enter'){e.preventDefault();A();if(isSleeve())togglePull();else isDeep()?closeDepth():openDepth()}});
+
+const snd=$('#snd');
+function paint(){snd.textContent='Sound · '+(muted?'off':'on')}
+paint();
+[snd,$('#bk'),$('#dp')].forEach(b=>b.addEventListener('pointerdown',e=>e.stopPropagation()));
+snd.addEventListener('click',e=>{e.stopPropagation();muted=!muted;paint();try{localStorage.setItem('pp-mute',muted?'1':'0')}catch(err){}
+  if(A())master.gain.setTargetAtTime(muted?0:.6,ac.currentTime,.05)});
+$('#bk').addEventListener('click',e=>{e.stopPropagation();A();back()});
+$('#dp').addEventListener('click',e=>{e.stopPropagation();A();isDeep()?closeDepth():openDepth()});
+if(matchMedia('(max-width:720px)').matches)$('#dpl').textContent='Notes';
+document.addEventListener('visibilitychange',()=>{if(!ac)return;if(document.hidden){needleUp();beats[cur].classList.remove('spin');ac.suspend()}else ac.resume()});
+
+go(0,0);
+})();
+</script>
+<script>addEventListener('load',()=>{setTimeout(()=>{try{parent!==window&&parent.postMessage({aw:'beat',i:0,n:document.querySelectorAll('[data-beat],.beat,section').length||0,init:1},'*')}catch(e){}},300)})</script></body>
+</html>

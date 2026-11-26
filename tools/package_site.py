@@ -8,6 +8,7 @@ Run build.py first. Cloudflare Pages runs both on every push to main and serves 
   /vesta9/            Vesta 9 (lab/mirrors-edge/vesta9.html)
   /reports/<file>     reports, unchanged
   /lab/...            demos, world docs and archive pages (tools/lab_build.py)
+  /worlds/            Aesthetic Worlds (worlds/: an index + one folder per world, self-contained)
   /sites/             Things I’ve made (sites/index.html, built by tools/directory_build.py from sites/directory.json); the projects stay on GitHub Pages
 """
 import shutil
@@ -85,6 +86,7 @@ def main():
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_text(stub(new), encoding="utf-8")
     shutil.copytree(ROOT / "sites", SITE / "sites")
+    shutil.copytree(ROOT / "worlds", SITE / "worlds")
     if (ROOT / ".x7").exists():                # unlisted page, shared by link only
         shutil.copytree(ROOT / ".x7", SITE / "jerechristmas")
     (SITE / "_redirects").write_text("".join(f"{a} {b} 301\n" for a, b in MOVED.items()), encoding="utf-8")

@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Chic Modernist</title>
+<meta name="description" content="Chic Modernist as a slow walk through a glass house and a wardrobe: photographs enter behind curtains on a ceiling track, at Villa Tugendhat you hold to sink the glass wall, and it ends on a specification sheet you can keep.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stone:#ECE8E1;      /* travertine ground */
+  --silk:#D9D2C5;       /* raw-silk curtain */
+  --ink:#171619;        /* black velvet, steel */
+  --grey:#6B665F;
+  --line:rgba(23,22,25,.2);
+  --accent:#B3301C;     /* the one accent */
+  --camel:#AE8A5F; --ivory:#F2EBDD; --navy:#22304A;
+  --sans:"Jost","Futura","Avenir Next","Century Gothic","DM Sans","Inter",system-ui,sans-serif;
+  --serif:"Instrument Serif","Didot","Bodoni 72","Cormorant Garamond","Crimson Text","Gelasio",Georgia,serif;
+  --pad:clamp(16px,6.1vw,88px);
+  --ease:cubic-bezier(.72,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--stone);color:var(--ink)}
+body{font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:none;overscroll-behavior:none;cursor:default}
+img{display:block;-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}
+::selection{background:transparent}
+
+/* ---------- chrome: ceiling track, count, sound, back, more ---------- */
+#track{position:fixed;left:var(--pad);right:var(--pad);top:30px;height:1px;background:var(--line);z-index:20;pointer-events:none;transition:background .8s}
+#carrier{position:absolute;top:-3px;left:0;width:22px;height:7px;background:var(--accent);transform:translateX(0);transition:transform 1.1s var(--ease)}
+.hud{position:fixed;z-index:21;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:400;color:var(--ink);transition:color .8s,opacity .5s}
+#name{left:var(--pad);top:42px}
+#name i{font-style:normal;opacity:.55;margin-left:.9em}
+#count{right:var(--pad);top:42px;font-variant-numeric:tabular-nums}
+button.hud{background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:pointer}
+#snd{right:var(--pad);bottom:22px;padding:8px 0 8px 12px}
+#snd i{display:inline-block;width:6px;height:6px;margin-right:9px;vertical-align:1px;background:var(--accent)}
+#snd.off i{background:transparent;outline:1px solid currentColor;outline-offset:-1px}
+#back{left:var(--pad);bottom:22px;padding:8px 12px 8px 0;opacity:.6}
+#back:hover{opacity:1}
+#back.gone{opacity:0;pointer-events:none}
+#more{left:50%;bottom:22px;transform:translateX(-50%);padding:8px 10px;opacity:0;pointer-events:none;display:flex;align-items:center;gap:10px}
+#more::before{content:"";width:16px;height:1px;background:var(--accent)}
+#more.has{opacity:.78;pointer-events:auto}
+#more.has:hover{opacity:1}
+body.dark #track{background:rgba(236,232,225,.28)}
+body.dark .hud{color:var(--stone);text-shadow:0 1px 8px rgba(0,0,0,.55)}
+body.lite .hud{text-shadow:0 0 6px rgba(236,232,225,.95),0 0 14px rgba(236,232,225,.7)}
+body.sheet-open #more{opacity:0;pointer-events:none}
+/* over full-bleed photographs the bottom marks sit on small solid tags, like the title blocks */
+body.plate #back,body.plate #more,body.plate #snd{padding:7px 11px;background:var(--ink);color:var(--stone);text-shadow:none}
+body.plate.lite #back,body.plate.lite #more,body.plate.lite #snd{background:var(--stone);color:var(--ink)}
+body.plate #back,body.plate #snd{bottom:16px}body.plate #more{bottom:16px}
+body.plate #back{opacity:.9}body.plate #more.has{opacity:.95}
+
+/* ---------- the depth sheet: a specification strip that rises from the floor ---------- */
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--stone);color:var(--ink);border-top:1px solid var(--ink);
+  padding:26px var(--pad) 34px;transform:translateY(102%);transition:transform .75s var(--ease);box-shadow:0 -30px 60px rgba(0,0,0,.18);user-select:text;-webkit-user-select:text}
+body.sheet-open #sheet{transform:none}
+#sheet .in{max-width:980px;margin:0 auto;display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 40px}
+#sheet .lab{font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:400;color:var(--grey);padding-top:6px}
+#sheet .lab b{display:block;color:var(--accent);font-weight:500;margin-bottom:6px}
+#sheet p{font-size:clamp(14px,1.05vw,15.5px);line-height:1.6;max-width:44em}
+#sheet p+p{margin-top:8px}
+#sheet .links{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 22px;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;font-weight:400}
+#sheet a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent);padding-bottom:1px}
+#sheet .shut{position:absolute;right:var(--pad);top:14px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--grey);background:none;border:0;font-family:inherit;cursor:pointer;padding:8px 0 8px 10px}
+#veil{position:fixed;inset:0;z-index:29;background:rgba(23,22,25,.28);opacity:0;pointer-events:none;transition:opacity .6s}
+body.sheet-open #veil{opacity:1;pointer-events:auto}
+
+/* ---------- beats ---------- */
+#stage{position:fixed;inset:0}
+.beat{position:absolute;inset:0;visibility:hidden;opacity:0;transition:opacity .7s ease,visibility 0s .7s}
+.beat.on{visibility:visible;opacity:1;transition:opacity .7s ease .05s}
+body.cut .beat,body.cut .beat.on{transition:none!important}
+.beat[data-in=dissolve].on{transition:opacity 1.8s ease}
+.beat.ink{background:var(--ink);color:var(--stone)}
+.beat.stone{background:var(--stone)}
+
+.kick{font-size:11px;letter-spacing:.28em;text-transform:uppercase;font-weight:400;color:var(--grey);margin-bottom:18px;display:flex;align-items:center;gap:14px}
+.kick::before{content:"";width:28px;height:1px;background:var(--accent);flex:none}
+.ink .kick{color:#A9A39A}
+.st{font-family:var(--serif);font-weight:400;font-size:clamp(30px,3.9vw,58px);line-height:1.04;letter-spacing:-.005em}
+.st em{font-style:italic}
+.cap{font-size:clamp(14px,1.08vw,16px);line-height:1.6;color:var(--grey);margin-top:20px;max-width:34em}
+.ink .cap{color:#B8B2A8}
+.note{margin-top:26px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;font-weight:400;color:var(--accent)}
+
+/* text reveal (always readable at rest) */
+.txt > *{transition:transform .9s var(--ease),opacity .9s ease}
+.beat:not(.on) .txt > *{opacity:0;transform:translateY(14px)}
+.beat.on .txt > *:nth-child(2){transition-delay:.12s}
+.beat.on .txt > *:nth-child(3){transition-delay:.22s}
+.beat.on .txt > *:nth-child(4){transition-delay:.32s}
+
+/* frame + curtain on its ceiling track (the house transition) */
+.frame{position:relative;overflow:hidden;background:var(--silk)}
+.frame img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s}
+.frame img.ok{opacity:1}
+.curtain{position:absolute;inset:0;z-index:3;background:var(--silk);
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.035) 0 1px,transparent 1px 22px,rgba(255,255,255,.06) 22px 23px,transparent 23px 44px);
+  transform:translateX(0);transition:transform 1.25s var(--ease) .15s}
+.curtain.velvet{background-color:#232022}
+.beat.on .curtain{transform:translateX(101%)}
+.beat.on .curtain.l{transform:translateX(-101%)}
+/* variant: a stage curtain that rises (Bauhaus stage) */
+.curtain.rise{background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0 1px,transparent 1px 18px)}
+.beat.on .curtain.rise{transform:translateY(-101%);transition:transform 1.5s var(--ease) .1s}
+/* variant: two halves that part from the centre, after a held beat */
+.curtain.hl{right:50%}.curtain.hr{left:50%}
+.beat.on .curtain.hl{transform:translateX(-101%)}
+.beat.on .curtain.hr{transform:translateX(101%)}
+.beat.on .curtain.hold{transition:transform 1.5s var(--ease) .75s}
+
+/* full-bleed beats with a title block */
+.full .frame{position:absolute;inset:0}
+.tb{position:absolute;z-index:5;left:0;bottom:0;width:min(540px,46vw);padding:38px var(--pad) 72px;background:var(--ink);color:var(--stone)}
+.tb.lt{background:var(--stone);color:var(--ink)}
+.tb.lt .cap{color:var(--grey)}
+.tb.top{bottom:auto;top:0;padding-top:78px}
+.tb .cap{color:#B8B2A8}
+.tb .kick{color:#A9A39A}
+.tb.lt .kick{color:var(--grey)}
+.beat .tb{transition:transform 1s var(--ease) .35s}
+.beat:not(.on) .tb{transform:translateY(16px)}
+
+/* split beats: one framed photograph + one statement */
+.split{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(40px,7vw,112px);padding:84px var(--pad) 76px}
+.split.rev{grid-template-columns:auto minmax(0,1fr)}
+.split.rev .txt{order:2}
+.split .frame{width:min(58vw,calc((100svh - 160px) * var(--ar)));aspect-ratio:var(--ar);justify-self:end}
+.split.rev .frame{justify-self:start}
+.split .txt{max-width:470px;justify-self:end}
+.split.rev .txt{justify-self:start}
+.split .txt .dim{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--grey);margin-top:28px;font-weight:400;display:flex;gap:10px;align-items:center}
+.split .txt .dim::after{content:"";flex:1;max-width:110px;height:1px;background:var(--line)}
+
+/* palette beat: four solid planes and a red rule */
+.pal{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;height:100%}
+.pal div{position:relative;transform-origin:top;transition:transform 1.1s var(--ease)}
+.beat:not(.on) .pal div{transform:scaleY(0)}
+.beat.on .pal div:nth-child(2){transition-delay:.1s}.beat.on .pal div:nth-child(3){transition-delay:.2s}.beat.on .pal div:nth-child(4){transition-delay:.3s}
+.pal span{position:absolute;left:22px;bottom:150px;font-size:10.5px;letter-spacing:.26em;text-transform:uppercase;font-weight:400}
+.pal-tb{position:absolute;left:0;right:0;bottom:0;z-index:4;background:var(--stone);padding:30px var(--pad) 40px;display:flex;align-items:baseline;gap:30px;flex-wrap:wrap}
+.pal-tb .st{font-size:clamp(28px,3.2vw,48px)}
+.pal-tb .rule{flex:none;width:68px;height:6px;background:var(--accent);align-self:center}
+
+/* the glass wall (signature) */
+.glass{position:absolute;inset:0;z-index:2;pointer-events:none;will-change:transform}
+.glass .pane{position:absolute;inset:0;background:rgba(214,222,222,.42);-webkit-backdrop-filter:blur(3px) saturate(.6);backdrop-filter:blur(3px) saturate(.6)}
+.glass .sheen{position:absolute;inset:0;background:linear-gradient(112deg,transparent 30%,rgba(255,255,255,.22) 38%,transparent 46%,transparent 62%,rgba(255,255,255,.12) 66%,transparent 70%)}
+.glass .mull{position:absolute;top:0;bottom:0;width:5px;background:#2b2b2d}
+.glass .sill{position:absolute;left:0;right:0;bottom:0;height:7px;background:#2b2b2d}
+.slot{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);z-index:4;opacity:.0;transition:opacity .6s}
+.holding .slot{opacity:.9}
+.lowered .slot{opacity:0}
+.alt{display:none}
+.lowered .was{display:none}.lowered .alt{display:block}
+
+/* plates: a catalogue sheet of eight looks */
+.plates{display:grid;grid-template-columns:minmax(240px,340px) auto;align-items:center;justify-content:center;gap:clamp(36px,5vw,80px);padding:84px var(--pad) 70px}
+.pl-grid{display:grid;grid-template-columns:repeat(4,var(--tw));gap:14px 12px;--tw:min(12.4vw,calc((100svh - 250px) / 2 * .75))}
+.pl-grid figure{transition:opacity .6s ease,transform .8s var(--ease)}
+.beat:not(.on) .pl-grid figure{opacity:0;transform:translateY(10px)}
+.pl-grid .ph{aspect-ratio:3/4;overflow:hidden;background:var(--silk)}
+.pl-grid .ph img{width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}
+.pl-grid .ph img.ok{opacity:1}
+.pl-grid figcaption{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:400;padding-top:7px;border-top:1px solid var(--line);margin-top:7px;display:flex;gap:8px;white-space:nowrap;overflow:hidden}
+.pl-grid figcaption b{color:var(--accent);font-weight:500;font-variant-numeric:tabular-nums}
+.pl-grid figcaption s{text-decoration:none;color:var(--grey);margin-left:auto}
+
+/* silent: one photograph, nothing else */
+.silent{background:#EDEEF1}
+.silent .sil{position:absolute;inset:0;display:flex;justify-content:center}
+.silent img{height:100%;width:auto;max-width:none;opacity:0;transition:opacity 1.2s ease,transform 3.4s cubic-bezier(.2,.6,.2,1);transform:scale(1.035);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.silent img.ok{opacity:1}
+.beat.on.silent img{transform:none}
+
+/* pair: one rule, two wardrobes */
+.pair{display:grid;grid-template-columns:auto minmax(0,380px);align-items:center;justify-content:center;gap:clamp(36px,5vw,80px);padding:84px var(--pad) 70px}
+.pr-row{display:flex;gap:10px}
+.pr-row figure{display:flex;flex-direction:column}
+.pr-row .frame{height:min(calc(100svh - 210px),640px);aspect-ratio:3/4}
+.pr-row figcaption{font-size:10px;letter-spacing:.22em;text-transform:uppercase;font-weight:400;color:var(--grey);padding-top:9px;display:flex;gap:9px}
+.pr-row figcaption b{color:var(--ink);font-weight:500}
+
+/* pan: a blind that drops, then the camera travels the coat */
+.pan .frame{clip-path:inset(0 0 100% 0);transition:clip-path 1.3s var(--ease) .05s}
+.beat.on.pan .frame{clip-path:inset(0 0 0 0)}
+.pan .frame img{object-position:50% 6%}
+.beat.on.pan .frame img{animation:panV 16s cubic-bezier(.45,0,.4,1) .9s forwards}
+@keyframes panV{from{object-position:50% 6%}to{object-position:50% 88%}}
+@keyframes panH{from{object-position:4% 30%}to{object-position:96% 30%}}
+.pan .tb{width:min(420px,40vw);left:auto;right:0}
+
+/* strike: text action that brings in a photograph */
+.strike{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:clamp(40px,7vw,112px);padding:84px var(--pad) 76px}
+.words{font-family:var(--serif);font-size:clamp(40px,5.4vw,84px);line-height:1.02;justify-self:end}
+.words .w{display:block;position:relative;width:max-content;color:var(--ink);transition:color .5s}
+.words .w::after{content:"";position:absolute;left:-.06em;right:-.06em;top:56%;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .45s var(--ease)}
+.beat.on .words .w.x::after{transform:scaleX(1)}
+.beat.on .words .w.x{color:#A39D94}
+.beat.on .words .w:nth-child(1),.beat.on .words .w:nth-child(1)::after{transition-delay:.55s}
+.beat.on .words .w:nth-child(2),.beat.on .words .w:nth-child(2)::after{transition-delay:.95s}
+.beat.on .words .w:nth-child(3),.beat.on .words .w:nth-child(3)::after{transition-delay:1.35s}
+.beat.on .words .w:nth-child(4),.beat.on .words .w:nth-child(4)::after{transition-delay:1.75s}
+.words .w.kept{font-style:italic}
+.words .cap{font-family:var(--sans);font-size:clamp(14px,1.08vw,16px);max-width:26em}
+.strike .frame{width:min(40vw,calc((100svh - 160px) * .8));aspect-ratio:.8;clip-path:inset(100% 0 0 0);transition:clip-path 1.1s var(--ease)}
+.beat.on.strike .frame{clip-path:inset(0 0 0 0);transition-delay:2.25s}
+
+/* print: a small black-and-white print on the travertine */
+.print{display:grid;place-items:center;padding:84px var(--pad) 70px}
+.pr-wrap{display:flex;align-items:flex-end;gap:clamp(28px,4vw,64px)}
+.mat{background:#F7F4EE;padding:clamp(14px,1.6vw,24px) clamp(14px,1.6vw,24px) clamp(30px,3vw,48px);box-shadow:0 1px 0 rgba(0,0,0,.08),0 22px 40px -18px rgba(0,0,0,.35)}
+.mat .frame{height:min(calc(100svh - 290px),560px);aspect-ratio:.7185;background:#cfcfcf}
+.mat img{filter:grayscale(1) contrast(1.04)}
+.label{max-width:300px;padding-bottom:10px}
+.label .st{font-size:clamp(26px,2.6vw,40px)}
+
+/* less: pure type */
+.less{display:grid;place-items:center;padding:100px var(--pad)}
+.less .big{font-family:var(--serif);font-size:clamp(64px,12vw,190px);line-height:.9;letter-spacing:-.01em;text-align:center}
+.less .big span{display:inline-block;opacity:0;transform:translateY(.12em);transition:opacity .9s ease,transform 1.1s var(--ease)}
+.beat.on.less .big span{opacity:1;transform:none}
+.beat.on.less .big span:nth-child(2){transition-delay:.55s}
+.beat.on.less .big span:nth-child(3){transition-delay:1.1s}
+.less .rule{width:68px;height:6px;background:var(--accent);margin:clamp(26px,4vh,44px) auto 0;transform:scaleX(0);transition:transform .8s var(--ease) 1.7s}
+.beat.on.less .rule{transform:none}
+.less .cap{text-align:center;margin:18px auto 0;opacity:0;transition:opacity .9s 2s}
+.beat.on.less .cap{opacity:1}
+
+/* keep: the specification sheet */
+.keep{display:grid;place-items:center;padding:70px var(--pad) 60px}
+.card{width:min(1000px,100%);background:#F4F0E8;border:1px solid var(--ink);box-shadow:0 40px 70px -40px rgba(0,0,0,.45);display:grid;grid-template-columns:1.1fr 1fr;
+  transition:transform 1.2s var(--ease),opacity .8s ease}
+.beat:not(.on) .card{transform:translateY(40px);opacity:0}
+.card > div{padding:28px 32px}
+.card .hd{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding:18px 32px;gap:20px}
+.card .hd .st{font-size:clamp(26px,2.6vw,38px)}
+.card .hd small{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--grey);font-weight:400;white-space:nowrap}
+.card .l{border-right:1px solid var(--ink)}
+.card h4{font-size:10px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;color:var(--accent);margin-bottom:10px}
+.sw{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:44px}
+.sw div{aspect-ratio:1/1.15;position:relative;border:1px solid rgba(0,0,0,.12)}
+.sw span{position:absolute;left:0;top:calc(100% + 4px);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;line-height:1.3;color:var(--grey);white-space:nowrap}
+.sw span b{display:block;color:var(--ink);font-weight:500}
+.ty{display:grid;grid-template-columns:auto 1fr;gap:12px 16px;align-items:baseline}
+.ty .a{font-size:40px;line-height:1}
+.ty p{font-size:13px;line-height:1.4;color:var(--grey)}
+.ty p b{color:var(--ink);font-weight:500;display:block}
+.rules{list-style:none;counter-reset:r;margin-bottom:18px}
+.rules li{counter-increment:r;font-family:var(--serif);font-size:clamp(17px,1.5vw,21px);line-height:1.25;padding:5px 0;border-top:1px solid var(--line);display:flex;gap:12px}
+.rules li::before{content:counter(r,decimal-leading-zero);font-family:var(--sans);font-size:10px;letter-spacing:.12em;color:var(--accent);padding-top:5px;font-weight:500}
+.names{font-size:13px;line-height:1.65;color:var(--grey)}
+.names b{color:var(--ink);font-weight:500}
+
+/* credits */
+.credits{padding:84px var(--pad) 62px;display:flex;flex-direction:column;justify-content:center;height:100%}
+.credits h2{font-family:var(--serif);font-weight:400;font-size:clamp(28px,3vw,44px);margin-bottom:18px}
+.credits ol{list-style:none;columns:2;column-gap:56px;font-size:11px;line-height:1.4;color:var(--grey);max-width:1100px}
+.credits li{break-inside:avoid;padding:3px 0;border-top:1px solid var(--line);display:flex;gap:12px}
+.credits li b{font-weight:500;color:var(--ink);font-variant-numeric:tabular-nums;flex:none;width:1.6em}
+.credits li span{overflow-wrap:anywhere}
+.credits .foot{margin-top:18px;font-size:11px;letter-spacing:.06em;color:var(--grey);line-height:1.6;max-width:62em}
+.credits a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--accent)}
+
+/* ---------- phone / near-square (Fold) ---------- */
+@media (max-aspect-ratio:5/4){
+  #track{top:22px}
+  #name,#count{top:32px}
+  #name i{display:none}
+  #snd,#back,#more{bottom:10px}
+  .split,.split.rev{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:start;gap:22px;padding:62px 16px 40px}
+  .split .frame,.split.rev .frame{order:1;width:100%;max-height:58svh;justify-self:stretch}
+  .split .txt,.split.rev .txt{order:2;justify-self:start;max-width:36em}
+  .split .txt .dim{display:none}
+  .st{font-size:clamp(28px,7.6vw,46px)}
+  .cap{margin-top:12px;font-size:14px;line-height:1.5}
+  .kick{margin-bottom:12px}
+  .tb{width:100%;padding:24px 16px 52px}
+  .tb.top{padding-top:62px}
+  .pal{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+  .pal span{left:14px;bottom:auto;top:14px}
+  .pal div:nth-child(1) span,.pal div:nth-child(2) span{top:66px}
+  .pal-tb{padding:22px 16px 50px;gap:14px}
+
+  .plates{grid-template-columns:1fr;align-content:start;justify-content:stretch;gap:18px;padding:60px 16px 50px}
+  .pl-grid{--tw:calc((100vw - 32px - 24px) / 4);gap:12px 8px}
+  .pl-grid figcaption{font-size:8.5px;letter-spacing:.12em;gap:5px}
+  .pl-grid figcaption s{display:none}
+  .pair{grid-template-columns:1fr;align-content:start;justify-content:stretch;gap:20px;padding:62px 16px 50px}
+  .pair{align-content:center}
+  .pr-row{gap:8px}
+  .pr-row figure{flex:1;min-width:0}
+  .pr-row .frame{height:auto;width:100%;aspect-ratio:.62}
+  .pr-row figcaption{font-size:8.5px;letter-spacing:.14em}
+  .beat.on.pan .frame img{animation-name:panH}
+  .pan .frame img{object-position:4% 30%}
+  .pan .tb{width:100%}
+  .silent img{height:100%;width:100%;object-fit:cover;object-position:50% 25%;-webkit-mask-image:none;mask-image:none}
+  .strike{grid-template-columns:1fr;align-content:start;gap:20px;padding:62px 16px 50px}
+  .words{justify-self:start;font-size:clamp(34px,9.6vw,58px)}
+  .strike .frame{order:-1;width:auto;height:min(42svh,calc((100vw - 32px) * 1.25));justify-self:start}
+  .words .cap{font-size:14px}
+  .print{padding:62px 16px 50px;align-content:start}
+  .pr-wrap{flex-direction:column;align-items:flex-start;gap:18px}
+  .mat .frame{height:min(50svh,calc((100vw - 64px) / .7185))}
+  .label{max-width:none}
+  .less .big{font-size:clamp(60px,19vw,120px)}
+  .keep{padding:56px 12px 46px}
+  .card{grid-template-columns:1fr}
+  .card > div{padding:12px 14px}
+  .card .hd{padding:10px 14px}
+  .tb{padding-bottom:66px}
+  .card .hd{padding:10px 14px}
+  .card .hd small{display:none}
+  .card .l{border-right:0;border-bottom:1px solid var(--ink)}
+  .sw{margin-bottom:30px;gap:4px}
+  .sw span{font-size:7px;letter-spacing:.06em}
+  .ty{margin-top:4px;gap:2px 10px}.ty .a{font-size:22px}.ty p{font-size:10.5px}
+  .rules li{font-size:15px;padding:3px 0}
+  .rules{margin-bottom:8px}
+  .names{font-size:10.5px;line-height:1.45}
+  .credits{padding:58px 16px 46px;justify-content:flex-start}
+  .credits ol{columns:1;font-size:9.5px;line-height:1.25}
+  .credits li{padding:2px 0}
+  .credits h2{margin-bottom:8px;font-size:26px}
+  .credits .foot{font-size:9.5px;margin-top:8px;line-height:1.45}
+  #sheet{padding:20px 16px 30px}
+  #sheet .in{grid-template-columns:1fr;gap:6px}
+  #sheet .shut{right:16px;top:10px}
+}
+@media (max-aspect-ratio:5/4) and (min-width:700px){
+  .split,.split.rev{grid-template-columns:auto minmax(0,1fr);align-content:center;align-items:end;gap:32px;padding:76px 40px 56px}
+  .split .frame,.split.rev .frame{width:min(58vw,calc((100svh - 140px) * var(--ar)));max-height:none;justify-self:start}
+  .split .st{font-size:clamp(28px,4.2vw,40px)}
+  .tb{width:min(560px,80%)}
+  .plates,.pair,.strike{padding:76px 40px 56px;align-content:center}
+  .pl-grid{--tw:min(calc((100vw - 80px - 36px) / 4),calc((100svh - 330px) / 2 * .75))}
+  .pr-row .frame{height:min(calc(100svh - 360px),700px);width:auto}
+  .pr-row figure{flex:none}
+  .card{grid-template-columns:1.1fr 1fr}.card .l{border-right:1px solid var(--ink);border-bottom:0}
+}
+@media (max-height:560px) and (min-aspect-ratio:5/4){
+  .split{padding:56px var(--pad) 40px}
+  .split .frame{width:min(50vw,calc((100svh - 100px) * var(--ar)))}
+  .st{font-size:28px}.cap{font-size:13px;margin-top:10px}
+  .tb{padding:20px var(--pad) 26px}
+}
+@media (prefers-reduced-motion:reduce){
+  .curtain{display:none}
+  .txt > *,.tb,.pal div,#carrier,.pl-grid figure,.card,.less .big span,.less .rule,.less .cap{transition:none!important;transform:none!important;opacity:1!important}
+  .beat{transition:opacity .25s,visibility 0s .25s}
+  .beat.on{transition:opacity .25s}
+  .pan .frame,.strike .frame{clip-path:none!important;transition:none!important}
+  .beat.on.pan .frame img{animation:none}
+  .words .w,.words .w::after{transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="track"><div id="carrier"></div></div>
+<div class="hud" id="name">Chic Modernist<i id="chap">I · The house</i></div>
+<div class="hud" id="count">01 / 20</div>
+<button class="hud" id="back" aria-label="Previous">← Back</button>
+<button class="hud" id="more" aria-label="Open the specification for this beat">More ↑</button>
+<button class="hud" id="snd" aria-label="Toggle sound"><i></i><span>Sound</span></button>
+<div id="veil"></div>
+<aside id="sheet" aria-live="polite"><button class="shut" id="shut">Close ↓</button><div class="in" id="sheetin"></div></aside>
+
+<main id="stage">
+
+  <!-- 01 title -->
+  <section class="beat full ink" data-dark data-ch="1">
+    <div class="frame"><img data-src="img/01.webp" alt="A long glass house glowing at dusk among tall trees" style="object-position:62% 62%"><div class="curtain velvet"></div></div>
+    <div class="tb top">
+      <div class="kick">An aesthetic</div>
+      <h1 class="st" style="font-size:clamp(44px,6vw,92px)">Chic Modernist</h1>
+      <p class="cap">Clean lines, solid colour, one accent — worn on a person or built into a room.</p>
+      <p class="note">Tap, swipe or press → to walk through</p>
+    </div>
+  </section>
+
+  <!-- 02 what it is -->
+  <section class="beat split stone" style="--ar:.5627" data-ch="1">
+    <div class="txt">
+      <div class="kick">What it is</div>
+      <p class="st">Smart casual, <em>cut clean.</em></p>
+      <p class="cap">Dressed up just enough: presentable, never fussy. It sits near high fashion and near Paris, but leans on neither.</p>
+      <p class="dim">Elevation · 01</p>
+    </div>
+    <div class="frame"><img data-src="img/02.webp" alt="A woman in a long camel coat and wide black trousers against a pale stone wall" style="object-position:50% 30%"><div class="curtain"></div></div>
+  </section>
+
+  <!-- 03 person and room -->
+  <section class="beat split rev stone" style="--ar:1.3333" data-ch="1">
+    <div class="txt">
+      <div class="kick">One rule, two scales</div>
+      <p class="st">It dresses a room the way it dresses a person.</p>
+      <p class="cap">Pale walls, steel-and-cane chairs, a long table. Pale blue tailoring. The one accent is in the shoes.</p>
+    </div>
+    <div class="frame"><img data-src="img/03.webp" alt="A woman in pale blue tailoring and red shoes seated at a long table on cantilevered chairs" style="object-position:30% 50%"><div class="curtain l"></div></div>
+  </section>
+
+  <!-- 04 Bauhaus (stage curtain rises) -->
+  <section class="beat split stone" style="--ar:.6975" data-ch="1" data-more="bauhaus">
+    <div class="txt">
+      <div class="kick">Where it came from · 1919–1933</div>
+      <p class="st">A school that put art, craft and industry in one room.</p>
+      <p class="cap">The Bauhaus: Weimar, then Dessau, then Berlin. Shown: Joost Schmidt’s mechanical stage design, 1925–26 — primary colours, pure volumes.</p>
+    </div>
+    <div class="frame"><img data-src="img/04.webp" alt="Joost Schmidt's mechanical stage design: red, yellow and blue blocks on cream paper" style="object-position:50% 40%"><div class="curtain rise"></div></div>
+  </section>
+
+  <!-- 05 Tugendhat — signature -->
+  <section class="beat full ink glassbeat" data-dark data-glass data-ch="1" data-more="tugendhat">
+    <div class="frame">
+      <img data-src="img/05.webp" alt="Villa Tugendhat living room: a floor-to-ceiling window over a garden and the city of Brno" style="object-position:58% 50%">
+      <div class="glass"><div class="pane"></div><div class="sheen"></div><div class="mull" style="left:33%"></div><div class="mull" style="left:66.6%"></div><div class="sill"></div></div>
+      <div class="slot"></div>
+      <div class="curtain velvet"></div>
+    </div>
+    <div class="tb">
+      <div class="kick">Brno · 1930</div>
+      <p class="st">Villa Tugendhat.</p>
+      <p class="cap was">Mies van der Rohe and Lilly Reich. Its great living-room panes were built to sink, motor-driven, into the floor below.</p>
+      <p class="cap alt">The wall is gone. The garden is the room.</p>
+      <p class="note was">Press and hold to lower the glass</p>
+    </div>
+  </section>
+
+  <!-- 06 Knoll -->
+  <section class="beat full ink" data-dark data-ch="1" data-more="knoll">
+    <div class="frame"><img data-src="img/06.webp" alt="Archival photograph of a Knoll showroom: tan leather chairs, a red wall panel, a long low sofa" style="object-position:58% 50%"><div class="curtain velvet l"></div></div>
+    <div class="tb">
+      <div class="kick">America · mid-century</div>
+      <p class="st">Then into the office.</p>
+      <p class="cap">Hans and Florence Knoll carried the idea into American showrooms and workplaces. Florence had studied under Mies.</p>
+    </div>
+  </section>
+
+  <!-- 07 palette -->
+  <section class="beat stone" data-ch="1">
+    <div class="pal">
+      <div style="background:var(--camel);color:var(--ink)"><span>Camel</span></div>
+      <div style="background:var(--ink);color:var(--stone)"><span>Black</span></div>
+      <div style="background:var(--ivory);color:var(--ink)"><span>Ivory</span></div>
+      <div style="background:var(--navy);color:var(--stone)"><span>Navy</span></div>
+    </div>
+    <div class="pal-tb txt">
+      <p class="kick" style="margin:0">The look</p>
+      <p class="st">Mostly solid. Patterns, sparingly. <em>One accent.</em></p>
+      <span class="rule" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <!-- 08 her — chapter II opens on a hard cut -->
+  <section class="beat split rev stone" style="--ar:.4845" data-ch="2" data-in="cut" data-more="her">
+    <div class="txt">
+      <div class="kick">II · The wardrobe · her</div>
+      <p class="st">A plain top. A wide black trouser. One good bag.</p>
+      <p class="cap">Her list runs to long coats, turtlenecks, fitted jeans, blazers, tailored skirts and dresses, a heel, pearls.</p>
+      <p class="dim">Elevation · 02</p>
+    </div>
+    <div class="frame"><img data-src="img/07.webp" alt="A woman in a sage sleeveless top and wide black trousers against a beige wall" style="object-position:50% 34%"><div class="curtain l"></div></div>
+  </section>
+
+  <!-- 09 the list: eight plates, four hers, four his -->
+  <section class="beat plates stone" data-ch="2" data-in="stagger" data-more="him">
+    <div class="txt">
+      <div class="kick">The list</div>
+      <p class="st">Eight pieces. <em>Four hers, four his.</em></p>
+      <p class="cap">Each is one plain thing, done well. Put any two together and you are dressed.</p>
+    </div>
+    <div class="pl-grid">
+      <figure><div class="ph"><img data-src="img/08.webp" alt="A woman in a long grey coat over wide grey trousers" style="object-position:50% 30%"></div><figcaption><b>01</b>Long coat<s>Her</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/09.webp" alt="A man in a brown crewneck sweater and black pleated trousers" style="object-position:50% 22%"></div><figcaption><b>02</b>Knit crew<s>His</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/10.webp" alt="A woman in a brown turtleneck, cream pleated trousers and a wide brown belt" style="object-position:50% 30%"></div><figcaption><b>03</b>Turtleneck<s>Her</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/11.webp" alt="A man in a tan bomber jacket with a shearling collar and brown trousers" style="object-position:50% 26%"></div><figcaption><b>04</b>Jacket<s>His</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/12.webp" alt="A woman in a black turtleneck and a tweed pencil skirt crossing a street" style="object-position:50% 38%"></div><figcaption><b>05</b>Pencil skirt<s>Her</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/13.webp" alt="A man in a navy zip jacket and wide black trousers" style="object-position:50% 24%"></div><figcaption><b>06</b>Dress trouser<s>His</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/14.webp" alt="A woman in a cream blouse and a long patterned maxi skirt by a fireplace" style="object-position:50% 40%"></div><figcaption><b>07</b>Maxi skirt<s>Her</s></figcaption></figure>
+      <figure><div class="ph"><img data-src="img/15.webp" alt="A man's camel overcoat over a black knit and a belt" style="object-position:50% 50%"></div><figcaption><b>08</b>Overcoat<s>His</s></figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 10 silent -->
+  <section class="beat silent" data-lite data-ch="2" data-in="dissolve" aria-label="A man in a brown leather jacket over a cream shirt">
+    <div class="sil"><img data-src="img/16.webp" alt="A man in a brown leather jacket over a cream shirt, hands in pockets"></div>
+  </section>
+
+  <!-- 11 pair: same rule, two wardrobes (curtains part from the centre) -->
+  <section class="beat pair stone" data-ch="2" data-in="part">
+    <div class="pr-row">
+      <figure><div class="frame"><img data-src="img/17.webp" alt="A woman in an ivory high-neck knit and ivory trousers, carrying a black tote" style="object-position:50% 40%"><div class="curtain l"></div></div><figcaption><b>Her</b>Ivory on ivory, black tote</figcaption></figure>
+      <figure><div class="frame"><img data-src="img/18.webp" alt="A man in an ivory cable-knit sweater and black trousers" style="object-position:50% 40%"><div class="curtain"></div></div><figcaption><b>His</b>Ivory cable, black trouser</figcaption></figure>
+    </div>
+    <div class="txt">
+      <div class="kick">One rule, two wardrobes</div>
+      <p class="st">Pale on top. <em>Dark to anchor it.</em></p>
+      <p class="cap">The same idea fits either of them: a light knit, a quiet trouser, one dark object to finish.</p>
+    </div>
+  </section>
+
+  <!-- 12 outerwear: a blind drops, the camera travels -->
+  <section class="beat full pan stone" data-lite data-ch="2" data-in="blind" data-more="trench">
+    <div class="frame"><img data-src="img/19.webp" alt="A woman and a man in long olive trench coats standing side by side"></div>
+    <div class="tb lt">
+      <div class="kick">Outerwear</div>
+      <p class="st">The coat does the work.</p>
+      <p class="cap">A trench or a long wool coat, on her or on him, and the outfit is finished.</p>
+    </div>
+  </section>
+
+  <!-- 13 pattern: struck out until one remains, then the photograph -->
+  <section class="beat strike stone" data-ch="2" data-in="strike">
+    <div class="words">
+      <span class="w x">Check.</span>
+      <span class="w x">Stripe.</span>
+      <span class="w x">Paisley.</span>
+      <span class="w kept">Tweed.</span>
+      <p class="cap">Patterns, sparingly: strike all but one. Here it is a rust tweed trouser, under a plain navy knit.</p>
+    </div>
+    <div class="frame"><img data-src="img/20.webp" alt="A man in a navy turtleneck and pleated rust tweed trousers" style="object-position:50% 50%"></div>
+  </section>
+
+  <!-- 14 detail -->
+  <section class="beat split rev stone" style="--ar:.7503" data-ch="2">
+    <div class="txt">
+      <div class="kick">Detail</div>
+      <p class="st">The finish is in the hardware.</p>
+      <p class="cap">A brown belt through ivory knit and navy pleats; a small pendant. Elsewhere: a watch, pearls.</p>
+      <p class="dim">Detail · A</p>
+    </div>
+    <div class="frame"><img data-src="img/21.webp" alt="Close crop of an ivory cable knit tucked into navy trousers with a brown belt" style="object-position:50% 55%"><div class="curtain l"></div></div>
+  </section>
+
+  <!-- 15 rooms — chapter III; velvet holds, then parts -->
+  <section class="beat full ink" data-lite data-ch="3" data-in="part" data-more="rooms">
+    <div class="frame"><img data-src="img/22.webp" alt="A modern living room with a wall of windows onto autumn hills, low pale sofas and a dark sculpture" style="object-position:55% 50%"><div class="curtain velvet hl hold"></div><div class="curtain velvet hr hold"></div></div>
+    <div class="tb lt">
+      <div class="kick">III · Beyond clothes</div>
+      <p class="st">Then the house.</p>
+      <p class="cap">A wall of glass, low pale sofas, one sculpture, red cushions as the accent — the wardrobe, at the scale of a room.</p>
+    </div>
+  </section>
+
+  <!-- 16 the print -->
+  <section class="beat print stone" data-ch="3" data-in="cut">
+    <div class="pr-wrap">
+      <div class="mat"><div class="frame"><img data-src="img/23.webp" alt="Black-and-white photograph of a couple in dark coats and turtlenecks on a city street" style="object-position:50% 30%"></div></div>
+      <div class="label txt">
+        <div class="kick">Its picture</div>
+        <p class="st">It photographs best <em>in black and white.</em></p>
+        <p class="cap">Take the colour away and nothing is lost: the look is all shape and value. A dark coat, a pale street, two people.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 the idea: pure type -->
+  <section class="beat less ink" data-dark data-ch="3" data-in="type" data-more="less">
+    <div>
+      <p class="big"><span>Less</span> <span><em>is</em></span> <span>more.</span></p>
+      <div class="rule"></div>
+      <p class="cap">The motto Mies van der Rohe made his own. Restraint read as confidence.</p>
+    </div>
+  </section>
+
+  <!-- 18 close -->
+  <section class="beat full ink" data-dark data-ch="3" data-more="pavilion">
+    <div class="frame"><img data-src="img/24.webp" alt="The Barcelona Pavilion: a thin flat roof over travertine and onyx beside a shallow pool" style="object-position:48% 50%"><div class="curtain velvet"></div></div>
+    <div class="tb">
+      <div class="kick">Barcelona · 1929</div>
+      <p class="st">Then leave the room <em>almost empty.</em></p>
+      <p class="cap">The German Pavilion, by Mies and Reich: travertine, onyx, glass and still water. Nothing else.</p>
+    </div>
+  </section>
+
+  <!-- 19 keep: the specification sheet -->
+  <section class="beat keep stone" data-ch="4" data-in="drawer">
+    <div class="card">
+      <div class="hd"><p class="st">Chic Modernist</p><small>Specification · sheet 1 of 1</small></div>
+      <div class="l">
+        <h4>Palette</h4>
+        <div class="sw">
+          <div style="background:#AE8A5F"><span><b>Camel</b>#AE8A5F</span></div>
+          <div style="background:#171619"><span><b>Black</b>#171619</span></div>
+          <div style="background:#F2EBDD"><span><b>Ivory</b>#F2EBDD</span></div>
+          <div style="background:#22304A"><span><b>Navy</b>#22304A</span></div>
+          <div style="background:#ECE8E1"><span><b>Stone</b>#ECE8E1</span></div>
+          <div style="background:#B3301C"><span><b>Accent</b>#B3301C</span></div>
+        </div>
+        <h4>Type</h4>
+        <div class="ty">
+          <span class="a" style="font-family:var(--sans);font-weight:400">Aa</span><p><b>Jost</b>Futura’s geometry, tracked capitals: labels</p>
+          <span class="a" style="font-family:var(--serif);font-style:italic">Aa</span><p><b>Instrument Serif</b>a high-contrast serif: one line, said once</p>
+        </div>
+      </div>
+      <div>
+        <h4>Rules</h4>
+        <ol class="rules">
+          <li>Solid colour first.</li>
+          <li>One pattern, at most.</li>
+          <li>One accent, and keep it small.</li>
+          <li>The coat finishes the outfit.</li>
+          <li>Belt matches shoe.</li>
+        </ol>
+        <h4>Names</h4>
+        <p class="names"><b>Places</b> Bauhaus Dessau · Villa Tugendhat, Brno · Barcelona Pavilion<br><b>People</b> Mies van der Rohe · Lilly Reich · Florence Knoll<br><b>Wardrobe</b> Jil Sander · Margaret Howell · Lemaire · Toteme · COS</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 credits -->
+  <section class="beat stone" data-ch="4">
+    <div class="credits txt">
+      <div class="kick">Credits</div>
+      <h2>Schedule of images</h2>
+      <ol id="cred"></ol>
+      <p class="foot">Images collected on Are.na (channel: Chic Modernist); the export recorded titles but no source URLs, so none are listed. Text: paraphrased from the <a href="https://aesthetics.fandom.com/wiki/Chic_Modernist" target="_blank" rel="noopener">Aesthetics Wiki</a> (CC BY-SA).</p>
+    </div>
+  </section>
+</main>
+
+<!-- the second layer: specification notes per beat -->
+<template id="more-bauhaus">
+  <div class="lab"><b>Spec · Bauhaus</b>1919–1933</div>
+  <div><p>Walter Gropius founded the school in Weimar in 1919. It moved to Dessau in 1925, into a glass-walled building Gropius designed, then to Berlin in 1932, and closed under Nazi pressure in 1933.</p>
+  <p>Joost Schmidt studied there and went on to teach sculpture and typography. His stage design treats the theatre as a machine of coloured blocks.</p>
+  <p class="links"><a href="https://en.wikipedia.org/wiki/Bauhaus" target="_blank" rel="noopener">Bauhaus</a><a href="https://www.bauhaus-dessau.de/en/" target="_blank" rel="noopener">Bauhaus Dessau Foundation</a></p></div>
+</template>
+<template id="more-tugendhat">
+  <div class="lab"><b>Spec · Villa Tugendhat</b>Brno, 1928–30</div>
+  <div><p>Built for Grete and Fritz Tugendhat by Mies van der Rohe, with Lilly Reich on the interiors: an onyx wall, a curved screen of Macassar ebony, chrome-clad columns.</p>
+  <p>Two of the huge living-room panes really do drop, electrically, into the floor below. The house has been a UNESCO World Heritage Site since 2001.</p>
+  <p class="links"><a href="https://en.wikipedia.org/wiki/Ludwig_Mies_van_der_Rohe" target="_blank" rel="noopener">Mies van der Rohe</a><a href="https://www.dwell.com/article/mies-van-der-rohe-buildings-662369f1" target="_blank" rel="noopener">Dwell: 10 buildings by Mies</a></p></div>
+</template>
+<template id="more-knoll">
+  <div class="lab"><b>Spec · Knoll</b>New York, 1938–</div>
+  <div><p>Hans Knoll founded the furniture company in New York in 1938. Florence Schust, trained under Mies, joined and married him in 1946; her Planning Unit designed whole interiors around the modern furniture.</p>
+  <p>Knoll still makes Mies’s Barcelona chair, under licence from him since the 1950s.</p>
+  <p class="links"><a href="https://www.knoll.com" target="_blank" rel="noopener">Knoll</a><a href="https://en.wikipedia.org/wiki/International_Style" target="_blank" rel="noopener">International Style</a></p></div>
+</template>
+<template id="more-her">
+  <div class="lab"><b>Spec · Her</b>The wiki’s list</div>
+  <div><p>Long coats, turtlenecks, fitted jeans and slacks, blazers, heels, hats, tailored skirts and dresses (knee-length or maxi), pearls. Smart casual means jeans with a blazer, or a long skirt with a T-shirt.</p>
+  <p>Mostly solid colour. Labels that dress this way: Toteme, Jil Sander, Lemaire, COS.</p>
+  <p class="links"><a href="https://www.jilsander.com" target="_blank" rel="noopener">Jil Sander</a><a href="https://www.lemaire.fr" target="_blank" rel="noopener">Lemaire</a><a href="https://www.cos.com" target="_blank" rel="noopener">COS</a></p></div>
+</template>
+<template id="more-him">
+  <div class="lab"><b>Spec · His</b>The wiki’s list</div>
+  <div><p>Button-downs, clean solid tees, knit sweaters, fitted chinos, jeans, dress trousers; polished shoes or clean sneakers; a denim or leather jacket, a trench coat; a watch, and a belt that matches the shoes.</p>
+  <p>Labels that dress this way: Margaret Howell, Lemaire, ARKET.</p>
+  <p class="links"><a href="https://www.margarethowell.co.uk" target="_blank" rel="noopener">Margaret Howell</a><a href="https://www.arket.com" target="_blank" rel="noopener">ARKET</a></p></div>
+</template>
+<template id="more-trench">
+  <div class="lab"><b>Spec · The trench</b>1914–18</div>
+  <div><p>The trench coat was made for officers in the First World War, in tightly woven gabardine; Burberry and Aquascutum both claim it.</p>
+  <p>Shoulder straps, storm flap and belt are leftovers of that uniform. Here it is worn long and loose, in olive, by both of them.</p></div>
+</template>
+<template id="more-rooms">
+  <div class="lab"><b>Spec · Rooms</b>The same rules</div>
+  <div><p>Solid planes, low furniture, a wall of glass, one accent. The furniture comes from the same people as the buildings: Marcel Breuer’s Wassily chair (1925), Mies’s Barcelona chair (1929) and Brno chair (1930, for the Tugendhats).</p>
+  <p class="links"><a href="https://www.dailyartmagazine.com/5-bauhaus-buildings/" target="_blank" rel="noopener">5 Bauhaus buildings</a><a href="https://savingplaces.org/a-brief-history-of-bauhaus-architecture" target="_blank" rel="noopener">National Trust: Bauhaus architecture</a></p></div>
+</template>
+<template id="more-less">
+  <div class="lab"><b>Spec · “Less is more”</b>1855 · 1966</div>
+  <div><p>The phrase is older than Mies: it appears in Robert Browning’s 1855 poem “Andrea del Sarto”. Mies made it the motto of modern architecture.</p>
+  <p>Robert Venturi answered in 1966, “Less is a bore.” In fashion, Jil Sander was called the Queen of Less.</p>
+  <p class="links"><a href="https://en.wikipedia.org/wiki/Ludwig_Mies_van_der_Rohe" target="_blank" rel="noopener">Mies van der Rohe</a></p></div>
+</template>
+<template id="more-pavilion">
+  <div class="lab"><b>Spec · Barcelona Pavilion</b>1929 · 1986</div>
+  <div><p>Germany’s pavilion for the 1929 International Exposition in Barcelona, by Mies and Lilly Reich. The Barcelona chair was designed for it.</p>
+  <p>It was taken down in 1930 and rebuilt on the same site in 1983–86, which is the building you can visit now.</p>
+  <p class="links"><a href="https://bauhauskooperation.de/en/knowledge/the-bauhaus/works/architecture/barcelona-pavilion" target="_blank" rel="noopener">Bauhaus Kooperation</a><a href="https://www.barcelona.com/museums/barcelona-pavilion" target="_blank" rel="noopener">Visiting</a><a href="https://commons.wikimedia.org/wiki/Category:Barcelona-Pavillon" target="_blank" rel="noopener">Photos</a></p></div>
+</template>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const beats=$$('.beat'),N=beats.length;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cur=0,lock=0;
+const CH={1:'I · The house',2:'II · The wardrobe',3:'III · The room',4:'IV · To keep'};
+
+/* credits from the Are.na CSV (Title, Source) */
+const credits=[
+ ["01","KNO_Knoll_SHU_ConnecticutSpectacle_Image1-tif.jpg"],
+ ["02","152b3014134cdd75e5286f8c03e8225c"],
+ ["03","KNO_Knoll_SHU_BabbaRivera_Image1.jpg"],
+ ["04","Joost-schmidt-mechanical-stage-design-1925-1926-ink-and-tempera-on-paper-64-x-44-cm1"],
+ ["05","Vila_Tugendhat_interior_Dvorak"],
+ ["06","W-KNO_sf_showroom_archival-tif.jpg"],
+ ["07","e8e6e53fba85b2de2ce9bc281a8eaa3b"],
+ ["08","eb1236c8000e36dda8d1d33dc8ef9f6e"],
+ ["09","LOOK_64_0004_1200x"],
+ ["10","d54f1afaf28d27be7c2c89e588245ae9"],
+ ["11","B70177-295_A"],
+ ["12","da8414b38b78a2206c7df2be7a74b440"],
+ ["13","cd5f89fa2c92ac702c24ce9fa1e7850a91c803c6_xxl-1.jpg"],
+ ["14","0cd3a6635358552666e62a1dd3150a1b"],
+ ["15","Chic-male-tan"],
+ ["16","image (Are.na block 53250160)"],
+ ["17","image (Are.na block 53250234)"],
+ ["18","TOTEME_ECOM_SEASONAL_FW26_KNITWEAR_264-MRT0047-YA0309-448_RAGLAN_CABLE_CREW_ALMOND__045_C"],
+ ["19","image (Are.na block 53250178)"],
+ ["20","6135047874530dc569083af3dd5b92de"],
+ ["21","d32eeaa1836bd0e62dbc798f73787e4a"],
+ ["22","image (Are.na block 53250373)"],
+ ["23","Couple-black-white-chic-outfit"],
+ ["24","image (Are.na block 53250424)"]];
+$('#cred').innerHTML=credits.map(([n,t])=>`<li><b>${n}</b><span>${t} — source not recorded</span></li>`).join('');
+
+/* images: load current + next two; never draggable */
+function load(i){const b=beats[i];if(!b)return;b.querySelectorAll('img[data-src]').forEach(im=>{im.draggable=false;im.decoding='async';im.onload=()=>im.classList.add('ok');im.src=im.dataset.src;im.removeAttribute('data-src');if(im.complete&&im.naturalWidth)im.classList.add('ok');});}
+addEventListener('dragstart',e=>e.preventDefault());
+addEventListener('selectstart',e=>{if(!e.target.closest||!e.target.closest('#sheet'))e.preventDefault();});
+
+/* ---------- sound ---------- */
+let ac=null,master=null,muted=false,nb=null,wn=null;
+try{muted=localStorage.getItem('cm-mute')==='1'}catch(e){}
+function audio(){if(ac)return ac;try{ac=new (window.AudioContext||window.webkitAudioContext)();master=ac.createGain();master.gain.value=muted?0:.55;master.connect(ac.destination);}catch(e){ac=null}return ac;}
+function wake(){if(audio()){if(ac.state==='suspended')ac.resume();setBed(+beats[cur].dataset.ch||1);}}
+function noise(){if(nb)return nb;nb=ac.createBuffer(1,ac.sampleRate*2,ac.sampleRate);const d=nb.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){l=l*.6+(Math.random()*2-1)*.4;d[i]=l;}return nb;}
+function white(){if(wn)return wn;const len=ac.sampleRate*6;wn=ac.createBuffer(1,len,ac.sampleRate);const d=wn.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+  const f=Math.floor(ac.sampleRate*.25);for(let i=0;i<f;i++){const k=i/f;d[i]=d[i]*k+d[len-f+i]*(1-k);}return wn;}
+function src(){const s=ac.createBufferSource();s.buffer=white();s.loop=true;return s;}
+function lfo(rate,depth,param){const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=rate;g.gain.value=depth;o.connect(g);g.connect(param);o.start();return o;}
+
+/* ambient beds, one per chapter */
+let bed=null,bedCh=0;
+function makeBed(ch){
+  const out=ac.createGain();out.gain.value=.0001;out.connect(master);const stop=[];const ivs=[];
+  if(ch===1||ch===4){ /* the glass house: low room tone, wind leaning on the panes, a faint mains hum */
+    const s=src(),f=ac.createBiquadFilter(),g=ac.createGain();f.type='lowpass';f.frequency.value=ch===4?220:340;g.gain.value=.5;
+    s.connect(f);f.connect(g);g.connect(out);s.start();stop.push(s,lfo(.06,.28,g.gain),lfo(.11,90,f.frequency));
+    if(ch===1){const h=ac.createOscillator(),hg=ac.createGain();h.frequency.value=55;hg.gain.value=.05;h.connect(hg);hg.connect(out);h.start();stop.push(h);}
+  }else if(ch===2){ /* a street café: murmur, and now and then heels on stone */
+    const s=src(),f=ac.createBiquadFilter(),g=ac.createGain();f.type='bandpass';f.frequency.value=520;f.Q.value=.9;g.gain.value=.5;
+    s.connect(f);f.connect(g);g.connect(out);s.start();stop.push(s,lfo(.31,.18,g.gain),lfo(.47,.12,g.gain),lfo(.19,140,f.frequency));
+    const heel=()=>{if(!ac||muted)return;const t=ac.currentTime+.05,n=2+Math.floor(Math.random()*3),gap=.42+Math.random()*.1,p=ac.createStereoPanner?ac.createStereoPanner():null;
+      if(p){p.pan.value=Math.random()*1.6-.8;p.connect(out);}
+      for(let i=0;i<n;i++){const b=ac.createBufferSource(),hp=ac.createBiquadFilter(),gg=ac.createGain();b.buffer=noise();hp.type='bandpass';hp.frequency.value=2600;hp.Q.value=2.5;
+        const tt=t+i*gap;gg.gain.setValueAtTime(.0001,tt);gg.gain.exponentialRampToValueAtTime(.28,tt+.004);gg.gain.exponentialRampToValueAtTime(.0001,tt+.06);
+        b.connect(hp);hp.connect(gg);gg.connect(p||out);b.start(tt,Math.random());b.stop(tt+.08);}};
+    ivs.push(setInterval(()=>{if(Math.random()<.55)heel()},3200));
+  }else if(ch===3){ /* the pavilion pool: still water and a low drone */
+    const s=src(),f=ac.createBiquadFilter(),g=ac.createGain();f.type='bandpass';f.frequency.value=1700;f.Q.value=4;g.gain.value=.22;
+    s.connect(f);f.connect(g);g.connect(out);s.start();stop.push(s,lfo(1.3,.1,g.gain),lfo(2.1,.07,g.gain),lfo(.23,500,f.frequency));
+    [98,147,196].forEach((fr,i)=>{const o=ac.createOscillator(),og=ac.createGain();o.frequency.value=fr;og.gain.value=[.05,.03,.012][i];o.connect(og);og.connect(out);o.start();stop.push(o,lfo(.05+i*.03,og.gain.value*.5,og.gain));});
+  }
+  return {out,stop,ivs};
+}
+function setBed(ch){
+  if(!ac||ch===bedCh)return;bedCh=ch;const t=ac.currentTime;
+  if(bed){const o=bed;o.out.gain.cancelScheduledValues(t);o.out.gain.setValueAtTime(Math.max(o.out.gain.value,.0001),t);o.out.gain.exponentialRampToValueAtTime(.0001,t+2.2);
+    o.ivs.forEach(clearInterval);setTimeout(()=>{o.stop.forEach(n=>{try{n.stop()}catch(e){}});o.out.disconnect();},2600);}
+  bed=makeBed(ch);bed.out.gain.exponentialRampToValueAtTime({1:.06,2:.05,3:.06,4:.035}[ch],t+2.6);
+}
+
+/* transition sounds */
+function glide(dir=1){if(!audio()||muted)return;const t=ac.currentTime+.12,d=1.15,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();
+  s.buffer=noise();f.type='bandpass';f.Q.value=1.1;f.frequency.setValueAtTime(dir>0?700:1600,t);f.frequency.exponentialRampToValueAtTime(dir>0?1700:650,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.25);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.05);
+  tock(t+d-.05,.05);}
+function tock(t,v=.06,fr=190){if(!audio()||muted)return;t=t||ac.currentTime;const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.setValueAtTime(fr,t);o.frequency.exponentialRampToValueAtTime(fr*.62,t+.09);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g);g.connect(master);o.start(t);o.stop(t+.16);}
+function cord(){if(!audio()||muted)return;const t=ac.currentTime+.05;for(let i=0;i<9;i++)tock(t+i*.09,.025,900-i*40);tock(t+1.2,.06,140);}
+function swish(){if(!audio()||muted)return;const t=ac.currentTime,s=ac.createBufferSource(),f=ac.createBiquadFilter(),g=ac.createGain();s.buffer=noise();f.type='highpass';f.frequency.value=2400;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.05);g.gain.exponentialRampToValueAtTime(.0001,t+.3);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+.35);}
+function strikes(){if(!audio()||muted)return;const t=ac.currentTime;[.55,.95,1.35].forEach(d=>setTimeout(swish,d*1000));tock(t+2.3,.05,160);}
+function transSound(b,dir){
+  const k=b.dataset.in||'';
+  if(dir<0){glide(dir);return;}
+  if(k==='cut')tock(0,.08,120);
+  else if(k==='blind')cord();
+  else if(k==='strike')strikes();
+  else if(k==='dissolve'||k==='type'||k==='stagger'){}
+  else glide(dir);
+}
+
+/* the glass motor */
+let motor=null;
+function motorOn(){if(!audio()||muted||motor)return;const t=ac.currentTime,o=ac.createOscillator(),o2=ac.createOscillator(),f=ac.createBiquadFilter(),g=ac.createGain();
+  o.type='sawtooth';o.frequency.value=58;o2.type='sine';o2.frequency.value=117;f.type='lowpass';f.frequency.value=240;
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.05,t+.35);o.connect(f);o2.connect(f);f.connect(g);g.connect(master);o.start();o2.start();motor={o,o2,g};}
+function motorOff(){if(!motor)return;const t=ac.currentTime,m=motor;motor=null;m.g.gain.cancelScheduledValues(t);m.g.gain.setValueAtTime(m.g.gain.value,t);m.g.gain.exponentialRampToValueAtTime(.0001,t+.3);m.o.stop(t+.35);m.o2.stop(t+.35);}
+function setMute(m){muted=m;$('#snd').classList.toggle('off',m);$('#snd span').textContent=m?'Sound off':'Sound';if(master)master.gain.setTargetAtTime(m?0:.55,ac.currentTime,.05);if(m)motorOff();try{localStorage.setItem('cm-mute',m?'1':'0')}catch(e){}}
+setMute(muted);
+
+/* hud buttons never count as a page tap */
+['#snd','#back','#more','#shut','#sheet','#veil'].forEach(s=>{$(s).addEventListener('pointerdown',e=>e.stopPropagation());$(s).addEventListener('pointerup',e=>e.stopPropagation());});
+$('#snd').addEventListener('click',e=>{e.stopPropagation();wake();setMute(!muted);if(!muted)tock(0,.05,240);});
+$('#back').addEventListener('click',e=>{e.stopPropagation();wake();prev();});
+$('#more').addEventListener('click',e=>{e.stopPropagation();wake();openSheet();});
+$('#shut').addEventListener('click',e=>{e.stopPropagation();closeSheet();});
+$('#veil').addEventListener('click',e=>{e.stopPropagation();closeSheet();});
+
+/* ---------- the depth sheet ---------- */
+let sheetOpen=false;
+function hasMore(){return beats[cur].dataset.more||null}
+function openSheet(){const k=hasMore();if(!k||sheetOpen)return false;const t=document.getElementById('more-'+k);$('#sheetin').innerHTML=t.innerHTML;sheetOpen=true;document.body.classList.add('sheet-open');if(audio()&&!muted){tock(0,.04,300);tock(ac.currentTime+.08,.03,360);}return true;}
+function closeSheet(){if(!sheetOpen)return false;sheetOpen=false;document.body.classList.remove('sheet-open');if(ac&&!muted)tock(0,.035,220);return true;}
+
+/* ---------- navigation ---------- */
+function go(i,dir){
+  if(i<0||i>=N||i===cur&&dir)return;
+  closeSheet();stopHold();
+  const b=beats[i];
+  document.body.classList.toggle('cut',b.dataset.in==='cut');
+  beats[cur].classList.remove('on');cur=i;try{parent!==window&&parent.postMessage({aw:'beat',i:cur,n:N},'*')}catch(e){};
+  void b.offsetWidth;b.classList.add('on');
+  if(document.body.classList.contains('cut'))requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('cut')));
+  load(cur);load(cur+1);load(cur+2);
+  document.body.classList.toggle('dark',b.hasAttribute('data-dark'));document.body.classList.toggle('lite',b.hasAttribute('data-lite'));document.body.classList.toggle('plate',b.classList.contains('full')||b.classList.contains('silent'));
+  $('#count').textContent=String(cur+1).padStart(2,'0')+' / '+String(N).padStart(2,'0');
+  $('#chap').textContent=CH[b.dataset.ch||1];
+  $('#back').classList.toggle('gone',cur===0);
+  $('#more').classList.toggle('has',!!hasMore());
+  const tr=$('#track').clientWidth-22;$('#carrier').style.transform=`translateX(${(cur/(N-1))*tr}px)`;
+  if(ac)setBed(+b.dataset.ch||1);
+  if(dir)transSound(b,dir);
+}
+function next(){if(Date.now()<lock)return;lock=Date.now()+380;go(cur+1,1)}
+function prev(){if(Date.now()<lock)return;lock=Date.now()+380;go(cur-1,-1)}
+addEventListener('resize',()=>{const tr=$('#track').clientWidth-22;$('#carrier').style.transform=`translateX(${(cur/(N-1))*tr}px)`;});
+
+/* ---------- the glass wall ---------- */
+const G={p:0,holding:false,last:0};
+function glassBeat(){return beats[cur].hasAttribute('data-glass')?beats[cur]:null}
+function glassStep(ts){
+  const b=glassBeat();if(!G.holding||!b){G.last=0;return;}
+  const dt=G.last?ts-G.last:16;G.last=ts;
+  G.p=Math.min(1,G.p+dt/(reduce?900:2600));
+  render(b);
+  if(G.p>=1){G.holding=false;motorOff();b.classList.remove('holding');b.classList.add('lowered');tock(0,.09,95);return;}
+  requestAnimationFrame(glassStep);
+}
+function render(b){const gl=b.querySelector('.glass');gl.style.transform=`translateY(${G.p*101}%)`;b.querySelector('.frame img').style.filter=`saturate(${.75+.25*G.p})`;}
+function startHold(){const b=glassBeat();if(!b||G.p>=1)return false;G.holding=true;G.last=0;b.classList.add('holding');motorOn();requestAnimationFrame(glassStep);return true;}
+function stopHold(){if(!G.holding)return;G.holding=false;motorOff();const b=glassBeat();b&&b.classList.remove('holding');}
+
+/* ---------- gestures: tap / swipe / hold ----------
+   tap, swipe left = next · swipe right = back · swipe up = open the spec (or next if none) · swipe down = close (or back) */
+let down=null,holdT=null,held=false;
+addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();wake();down={x:e.clientX,y:e.clientY,t:Date.now()};held=false;
+  clearTimeout(holdT);holdT=setTimeout(()=>{if(down&&Math.hypot(down.mx||0,down.my||0)<12)held=startHold();},230);});
+addEventListener('pointermove',e=>{if(!down)return;e.preventDefault();down.mx=e.clientX-down.x;down.my=e.clientY-down.y;
+  /* once the glass is moving, a wandering hand doesn't stop it; before that, movement means a swipe */
+  if(!held&&Math.hypot(down.mx,down.my)>12)clearTimeout(holdT);});
+function up(e){clearTimeout(holdT);if(!down)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;down=null;
+  if(held){stopHold();held=false;return;}
+  if(Math.abs(dx)>40||Math.abs(dy)>40){
+    if(Math.abs(dx)>Math.abs(dy)){closeSheet();(dx<0?next:prev)();}
+    else if(dy<0){if(!sheetOpen&&!openSheet())next();}
+    else{if(!closeSheet())prev();}
+    return;}
+  if(e.type==='pointerup'){if(sheetOpen)closeSheet();else next();}}
+addEventListener('pointerup',up);addEventListener('pointercancel',e=>{clearTimeout(holdT);stopHold();down=null;});
+addEventListener('contextmenu',e=>e.preventDefault());
+
+let enterHeld=false;
+addEventListener('keydown',e=>{wake();
+  if(e.key==='Escape'){closeSheet();return;}
+  if(e.key==='Enter'){if(e.target.closest&&e.target.closest('button,a'))return;e.preventDefault();if(!e.repeat){enterHeld=startHold();if(!enterHeld)next();}return;}
+  if(e.repeat)return;
+  if(e.key==='ArrowUp'){e.preventDefault();if(!sheetOpen&&!openSheet())prev();return;}
+  if(e.key==='ArrowDown'){e.preventDefault();if(!closeSheet())next();return;}
+  if([' ','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();closeSheet();next();}
+  else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();closeSheet();prev();}
+  else if(e.key==='Home'){go(0,-1);}else if(e.key==='End'){go(N-1,1);}
+  else if(e.key==='m'||e.key==='M'){setMute(!muted);}
+});
+addEventListener('keyup',e=>{if(e.key==='Enter'&&enterHeld){stopHold();enterHeld=false;}});
+let wacc=0,wt=0;
+addEventListener('wheel',e=>{if(e.target.closest&&e.target.closest('#sheet'))return;e.preventDefault();if(sheetOpen)return;const n=Date.now();if(n-wt>300)wacc=0;wt=n;wacc+=e.deltaY+e.deltaX;if(Math.abs(wacc)>70){wacc>0?next():prev();wacc=0;lock=Date.now()+700;}},{passive:false});
+
+/* start */
+beats[0].classList.add('on');load(0);load(1);load(2);document.body.classList.add('dark','plate');$('#back').classList.add('gone');
+})();
+</script>
+<script>addEventListener('load',()=>{setTimeout(()=>{try{parent!==window&&parent.postMessage({aw:'beat',i:0,n:document.querySelectorAll('[data-beat],.beat,section').length||0,init:1},'*')}catch(e){}},300)})</script></body>
+</html>

@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sprezzatura</title>
+<meta name="description" content="A tailor's book of plates on the art that hides its art: chalk drafts that wipe clean, prints tipped in off-axis, a contact sheet, a colour card, and a few plates you can hold to see the effort underneath.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400;1,6..96,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f1ece2; --paper2:#e9e3d6; --ink:#1b1916; --ink2:#5d574d; --rule:#cfc6b4;
+  --thread:#9a2f25; --chalk:#f6f2e8; --night:#0e0c0a;
+  --display:'Bodoni Moda','Bodoni 72','Didot','TeX Gyre Pagella','Palatino Linotype',Palatino,Georgia,serif;
+  --text:'EB Garamond',Garamond,'Cardo','TeX Gyre Pagella','Palatino Linotype',Georgia,serif;
+  --hand:'Reenie Beanie','Bradley Hand','Segoe Print','TeX Gyre Chorus',cursive;
+  --ease:cubic-bezier(.22,.61,.25,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--paper);color:var(--ink)}
+body{font-family:var(--text);-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
+  touch-action:none;-webkit-touch-callout:none;cursor:default;transition:background-color 1.2s ease;
+  background-color:var(--paper)}
+body.night{background-color:var(--night)}
+img{-webkit-user-drag:none;user-select:none;pointer-events:none}
+/* paper grain + slow light that drifts across the page as you go */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.22;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .4 0 0 0 0 .33 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#light{position:fixed;inset:-20%;pointer-events:none;z-index:1;
+  background:radial-gradient(42% 38% at var(--lx,30%) var(--ly,22%),rgba(255,250,238,.55),transparent 70%);
+  transition:background-position 3s ease,opacity 2s ease}
+body.night #light{opacity:0}
+
+/* running head + foot */
+.head,.foot{position:fixed;left:0;right:0;z-index:30;display:flex;justify-content:space-between;align-items:baseline;
+  padding:0 clamp(16px,3.2vw,48px);font-family:var(--text);color:var(--ink2);pointer-events:none;transition:color .8s ease}
+.head{top:clamp(14px,2.6vh,28px);font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+.head i{font-style:italic;text-transform:none;letter-spacing:.02em;font-size:13px}
+.foot{bottom:clamp(10px,2.2vh,22px);font-size:13px;align-items:center}
+.foot .r{display:flex;align-items:baseline;gap:4px}
+.folio{font-variant-numeric:oldstyle-nums;letter-spacing:.04em}
+.folio b{font-weight:400;font-family:var(--display);font-style:italic;font-size:15px;color:var(--ink);margin-left:.2em}
+.foot button{pointer-events:auto;background:none;border:0;font:italic 14px var(--text);color:inherit;cursor:pointer;padding:10px 6px}
+.foot button span{border-bottom:1px solid var(--rule)}
+.foot button:focus-visible{outline:1px solid var(--thread);outline-offset:2px}
+#back{padding-left:0}
+#back[disabled]{opacity:0;pointer-events:none}
+#more{position:absolute;left:50%;transform:translateX(-50%);opacity:0;pointer-events:none;transition:opacity .6s ease;color:var(--thread);white-space:nowrap}
+#more.has{opacity:1;pointer-events:auto}
+#more span{border-bottom:1px dashed currentColor}
+#more i{font-style:normal;font-size:11px;margin-left:.35em;display:inline-block;transform:translateY(-1px)}
+.dark .head,.dark .foot{color:rgba(241,236,226,.85)}
+.dark .folio b{color:var(--chalk)}
+.dark .foot button span{border-color:rgba(241,236,226,.4)}
+.dark #more{color:#e9b9a9}
+
+/* beats: the house transition is a slow settle */
+.beat{position:fixed;inset:0;display:grid;opacity:0;visibility:hidden;z-index:2;transition:opacity .8s var(--ease),visibility 0s linear .8s}
+.beat.on{opacity:1;visibility:visible;z-index:3;transition:opacity 1.05s var(--ease) .1s,visibility 0s}
+/* breaks from the house transition */
+.beat.on.tr-cut{transition:none}
+body.cutting .beat{transition:none!important}
+.beat.on.tr-cloth{transition:none;background:var(--paper);animation:cloth 1.15s var(--ease) both}
+@keyframes cloth{from{clip-path:inset(0 0 0 100%)}to{clip-path:inset(0 0 0 0)}}
+.beat.on.tr-dusk{transition:opacity 2.6s ease .5s}
+.beat.on.tr-rise{transition:opacity .4s ease}
+.beat.on.tr-rise .card{animation:rise 1.2s var(--ease) both}
+@keyframes rise{from{transform:translateY(60vh) rotate(4deg)}to{transform:translateY(0) rotate(-.8deg)}}
+
+/* ---------- cover: the chalk draft, wiped clean ---------- */
+.cover{place-items:center}
+.cover .inner{position:relative;transform:rotate(-1.6deg) translateX(-2vw);max-width:92vw}
+.cover h1{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(58px,13.5vw,196px);
+  line-height:.9;letter-spacing:-.015em;font-variation-settings:"opsz" 96;opacity:0}
+.cover .draft{position:absolute;inset:-18% -6% -10% -4%;pointer-events:none}
+.cover .draft svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cover .draft .ch{font-family:var(--hand);fill:var(--ink2)}
+.cover .draft path,.cover .draft line{stroke:var(--ink2);stroke-width:1.3;fill:none;stroke-linecap:round}
+.cover .draft .red{stroke:var(--thread);fill:var(--thread)}
+.cover .sub{margin:clamp(18px,3vh,30px) 0 0 .35em;font-size:clamp(16px,1.9vw,22px);font-style:italic;color:var(--ink2);max-width:30em;opacity:0}
+.cover .sub small{display:block;font-style:normal;font-size:11px;letter-spacing:.2em;text-transform:uppercase;margin-top:.7em}
+.stitch{display:block;margin:clamp(18px,3vh,28px) 0 0 .3em;width:min(320px,60vw);height:8px;overflow:visible}
+.stitch path{stroke:var(--thread);stroke-width:1.4;fill:none;stroke-dasharray:9 7;stroke-linecap:round;opacity:0}
+.cover.on .draft{animation:wipe 1.1s var(--ease) 2.2s both}
+@keyframes wipe{from{clip-path:inset(-10% -10% -10% -10%);opacity:1}to{clip-path:inset(-10% -10% -10% 110%);opacity:.2}}
+.cover.on .draft .w{stroke-dasharray:var(--l,400);stroke-dashoffset:var(--l,400);animation:draw .9s ease forwards}
+.cover.on .draft .ch{opacity:0;animation:appear .5s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes appear{to{opacity:1}}
+.cover.on h1{animation:appear 1.4s var(--ease) 2.5s forwards}
+.cover.on .stitch path{animation:sew 2.2s var(--ease) 3.2s both}
+.cover.on .sub{animation:appear 1.2s ease 3.6s forwards}
+@keyframes sew{from{stroke-dashoffset:320;opacity:0}to{stroke-dashoffset:0;opacity:1}}
+
+/* ---------- editorial spread (image + column) ---------- */
+.spread{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);align-items:center;column-gap:clamp(28px,4vw,64px);
+  padding:clamp(70px,11vh,110px) clamp(24px,5vw,90px) clamp(70px,11vh,110px) 0}
+.spread .ph{position:relative;aspect-ratio:var(--ar);width:100%;max-height:74vh;overflow:hidden;background:var(--paper2)}
+.spread .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.spread .col{max-width:400px}
+
+/* ---------- shared type ---------- */
+.kicker{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--thread);margin-bottom:1.2em}
+.kicker em{font-family:var(--display);font-size:15px;letter-spacing:0;text-transform:none;color:var(--ink2);margin-right:.6em}
+.big{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.9vw,56px);line-height:1.08;letter-spacing:-.01em}
+.big i{font-style:italic}
+.line{margin-top:1em;font-size:clamp(16px,1.55vw,21px);line-height:1.42;color:var(--ink2);max-width:32em;font-style:italic}
+.lbl{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);margin-top:.7em}
+.lbl i{font-family:var(--display);text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);margin-right:.5em}
+
+/* ---------- frontispiece ---------- */
+.front{place-items:center;padding:clamp(64px,10vh,96px) 18px}
+.tp{position:relative;width:min(560px,90vw);max-height:76vh;aspect-ratio:.72;border:1px solid var(--ink);padding:10px;transform:rotate(.5deg);
+  background:#f6f1e6;box-shadow:0 18px 40px -26px rgba(40,30,15,.5)}
+.tp .in{border:3px double var(--ink);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;
+  padding:clamp(18px,4vh,40px) clamp(14px,3vw,34px)}
+.tp .t1{font-family:var(--text);letter-spacing:.32em;font-size:clamp(14px,2vw,21px);line-height:1.6}
+.tp .t1 b{display:block;font-weight:400;font-family:var(--display);font-size:clamp(26px,4.2vw,44px);letter-spacing:.12em;line-height:1.15;margin:.15em 0}
+.tp .fl{font-size:28px;color:var(--thread);line-height:1}
+.tp blockquote{font-family:var(--display);font-style:italic;font-size:clamp(17px,2.1vw,24px);line-height:1.3}
+.tp blockquote span{color:var(--thread)}
+.tp blockquote small{display:block;font-family:var(--text);font-style:italic;font-size:13px;color:var(--ink2);margin-top:.5em}
+.tp .t3{font-size:11px;letter-spacing:.3em;color:var(--ink2)}
+
+/* ---------- plates (framed prints, tipped in) ---------- */
+.plate{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;column-gap:clamp(28px,4vw,72px);
+  padding:clamp(60px,9vh,90px) clamp(24px,4vw,64px)}
+.plate.r .cap{grid-column:3;justify-self:start}
+.plate.r figure{grid-column:2;grid-row:1}
+.plate.l .cap{grid-column:1;justify-self:end;text-align:right}
+.plate.l figure{grid-column:2;grid-row:1}
+figure{position:relative;width:min(56vw,calc(74vh * var(--ar)));aspect-ratio:var(--ar);
+  background:#faf7f0;padding:clamp(6px,.7vw,11px);
+  box-shadow:0 1px 0 rgba(0,0,0,.04),0 14px 30px -18px rgba(40,30,15,.45),0 2px 6px -3px rgba(40,30,15,.25);
+  transform:rotate(0deg) translateY(8px);transition:transform 1.6s var(--ease)}
+.beat.on figure{transform:rotate(var(--t)) translate(var(--dx,0),0)}
+figure .ph{position:relative;width:100%;height:100%;overflow:hidden;background:var(--paper2)}
+figure img{display:block;width:100%;height:100%;object-fit:cover}
+img.lz{opacity:0;transition:opacity .8s ease,filter .5s ease}
+img.lz.ld{opacity:1}
+.cap{max-width:min(300px,24vw)}
+.cap .n{font-family:var(--display);font-style:italic;font-size:15px;color:var(--ink2);display:block;margin-bottom:.9em}
+.cap p.s{font-family:var(--display);font-size:clamp(22px,2.2vw,32px);line-height:1.14;letter-spacing:-.005em}
+.cap p.m{margin-top:1em;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2)}
+.cap .front,.cap .back{transition:opacity .5s var(--ease)}
+.cap .wrap{display:grid}
+.cap .wrap>*{grid-area:1/1}
+.cap .back{opacity:0}
+.cap .back p{font-family:var(--hand);font-size:clamp(25px,2.3vw,32px);line-height:1.05;color:var(--thread)}
+.cap .back p.m{font-family:var(--text);font-size:11px;color:var(--ink2);margin-top:.9em}
+.hint{position:absolute;font-family:var(--hand);font-size:22px;color:var(--ink2);white-space:nowrap;opacity:0;transition:opacity 1.2s ease;transform:rotate(-3deg)}
+.beat.on .hint{opacity:.85;transition-delay:2.2s}
+.held .hint,.hint.gone{opacity:0!important;transition-delay:0s!important}
+/* backstage overlay (chalk + basting) — only on three plates */
+.bk{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .45s var(--ease)}
+.bk svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.bk .c{stroke:var(--chalk);stroke-width:1.6;fill:none;stroke-linecap:round;opacity:.92;filter:drop-shadow(0 0 1px rgba(0,0,0,.45))}
+.bk .c.d{stroke-dasharray:2 6}
+.bk .th{stroke:var(--thread);stroke-width:1.6;fill:none;stroke-dasharray:10 8;stroke-linecap:round}
+.bk .lab{position:absolute;font-family:var(--hand);font-size:clamp(18px,1.9vw,26px);color:var(--chalk);line-height:1;
+  text-shadow:0 0 3px rgba(0,0,0,.55),0 0 1px rgba(0,0,0,.6);white-space:nowrap}
+.held figure{transform:rotate(0deg) translate(0,0)!important;transition:transform .55s var(--ease)!important}
+.held .bk{opacity:1}
+.held .cap .front{opacity:0}
+.held .cap .back{opacity:1}
+.held .ph img{filter:saturate(.75) brightness(.86)}
+
+/* ---------- pairs ---------- */
+.pair{grid-template-rows:auto auto;align-content:center;justify-items:center;align-items:center;padding:clamp(64px,10vh,96px) clamp(18px,5vw,80px) clamp(64px,10vh,90px)}
+.pair .two{display:flex;gap:clamp(14px,2.4vw,40px);align-items:flex-end;justify-content:center;width:100%}
+.pair .one{display:flex;flex-direction:column}
+.pair .one .ph{height:min(60vh,calc(40vw / var(--ar)));width:auto;aspect-ratio:var(--ar);overflow:hidden;background:var(--paper2);box-shadow:0 14px 30px -20px rgba(40,30,15,.5)}
+.pair .one .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.pair .one:first-child{transform:translateX(-14px);transition:transform 1.4s var(--ease)}
+.pair .one:last-child{transform:translateX(14px);transition:transform 1.4s var(--ease)}
+.pair.on .one{transform:none}
+.pair .txt2{text-align:center;margin-top:clamp(14px,2.4vh,26px);max-width:640px}
+.pair .txt2 .big{font-size:clamp(22px,2.6vw,36px)}
+.pair .txt2 .kicker{margin-bottom:.6em}
+
+/* ---------- struck list, then the photo ---------- */
+.strike{align-items:center;padding:clamp(64px,10vh,96px) clamp(22px,7vw,120px)}
+.strike .row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(24px,4vw,64px);align-items:center}
+.strike ol{list-style:none;font-family:var(--display);font-size:clamp(23px,3vw,40px);line-height:1.25;transition:opacity 1s ease}
+.strike ol li s{text-decoration:none;background:linear-gradient(var(--thread),var(--thread)) no-repeat 0 58%/0% 1.5px;transition:background-size 1s var(--ease)}
+.strike.on ol li s{background-size:100% 1.5px}
+.strike.on ol li:nth-child(1) s{transition-delay:.7s}.strike.on ol li:nth-child(2) s{transition-delay:1.15s}.strike.on ol li:nth-child(3) s{transition-delay:1.6s}
+.strike .ans{opacity:0;transform:translateY(22px) rotate(1.2deg);transition:opacity 1.1s var(--ease),transform 1.3s var(--ease)}
+.strike .ans .ph{aspect-ratio:2.222;overflow:hidden;background:#faf7f0;padding:clamp(5px,.6vw,9px);box-shadow:0 14px 30px -18px rgba(40,30,15,.45)}
+.strike .ans img{width:100%;height:100%;object-fit:cover;display:block}
+.strike .ans p{font-family:var(--hand);font-size:clamp(24px,2.3vw,32px);color:var(--thread);line-height:1.05;margin-top:.5em}
+.strike.shown .ans{opacity:1;transform:rotate(-.6deg)}
+.strike.shown ol{opacity:.55}
+
+/* ---------- contact sheet ---------- */
+.sheet{align-content:center;justify-items:center;padding:clamp(60px,9vh,86px) clamp(16px,4vw,60px) clamp(60px,9vh,80px);row-gap:clamp(12px,2vh,22px)}
+.sheet .grid{display:grid;grid-template-columns:repeat(3,auto);gap:clamp(8px,1.2vw,18px);background:#211e1a;padding:clamp(10px,1.4vw,20px);
+  box-shadow:0 20px 40px -26px rgba(0,0,0,.6);transform:rotate(-.5deg);position:relative}
+.sheet .c{position:relative;width:min(15vw,calc((74vh - 130px)/2 * .8));aspect-ratio:.8}
+.sheet .c .ph{width:100%;height:100%;overflow:hidden;background:#333}
+.sheet .c img{width:100%;height:100%;object-fit:cover;display:block}
+.sheet .c span{position:absolute;left:2px;bottom:-15px;font:10px/1 var(--text);letter-spacing:.14em;color:#c8bfae;text-transform:uppercase}
+.sheet .c{opacity:0;transform:translateY(-16px) rotate(-2deg)}
+.sheet.on .c{opacity:1;transform:none;transition:opacity .6s ease,transform .8s var(--ease)}
+.sheet.on .c:nth-child(2){transition-delay:.12s}.sheet.on .c:nth-child(3){transition-delay:.24s}.sheet.on .c:nth-child(4){transition-delay:.36s}.sheet.on .c:nth-child(5){transition-delay:.48s}.sheet.on .c:nth-child(6){transition-delay:.6s}
+.sheet .mark{position:absolute;inset:-7% -9%;pointer-events:none}
+.sheet .mark path{stroke:#d8402c;stroke-width:3;fill:none;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420}
+.sheet.on .mark path{animation:draw 1s ease 1.4s forwards}
+.sheet .grid{padding-bottom:clamp(24px,2.6vw,34px)}
+.sheet .txt2{text-align:center;max-width:620px}
+.sheet .txt2 .big{font-size:clamp(22px,2.5vw,34px)}
+.sheet .txt2 .kicker{margin-bottom:.5em}
+
+/* ---------- colour card ---------- */
+.colour{align-content:center;justify-items:center;padding:clamp(60px,9vh,86px) clamp(14px,4vw,60px);row-gap:clamp(14px,2.6vh,28px)}
+.colour .row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,1.2vw,18px);width:min(1240px,100%)}
+.colour .sw{display:flex;flex-direction:column;opacity:0;transform:translateY(10px)}
+.colour.on .sw{opacity:1;transform:none;transition:opacity .7s ease,transform .9s var(--ease)}
+.colour.on .sw:nth-child(2){transition-delay:.1s}.colour.on .sw:nth-child(3){transition-delay:.2s}.colour.on .sw:nth-child(4){transition-delay:.3s}.colour.on .sw:nth-child(5){transition-delay:.4s}.colour.on .sw:nth-child(6){transition-delay:.5s}
+.colour .sw .ph{aspect-ratio:.72;max-height:50vh;overflow:hidden;background:var(--paper2)}
+.colour .sw img{width:100%;height:100%;object-fit:cover;display:block}
+.colour .chip{height:clamp(22px,3.6vh,34px);margin-top:6px;background:var(--c);
+  -webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/8px 100%;mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/8px 100%}
+.colour .sw b{font:italic 400 clamp(13px,1.3vw,17px)/1.2 var(--display);margin-top:5px}
+.colour .sw small{font-size:10px;letter-spacing:.12em;color:var(--ink2);text-transform:uppercase}
+.colour .txt2{text-align:center;max-width:640px}
+.colour .txt2 .big{font-size:clamp(22px,2.6vw,36px)}
+.colour .txt2 .kicker{margin-bottom:.5em}
+
+/* ---------- slow pan ---------- */
+.pan{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+.pan .col{align-self:center;padding:0 clamp(20px,4vw,70px) 0 clamp(24px,7vw,120px)}
+.pan .win{position:relative;overflow:hidden;height:100%}
+.pan .win img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%;transform:scale(2.1) translate(8%,4%);transform-origin:50% 45%}
+.pan.on .win img{animation:pan 18s cubic-bezier(.3,.1,.3,1) forwards}
+@keyframes pan{from{transform:scale(2.1) translate(8%,4%)}to{transform:scale(1.15) translate(-2%,-1%)}}
+
+/* ---------- full-bleed ---------- */
+.bleed{place-items:end start}
+.bleed .ph{position:absolute;inset:0;overflow:hidden;background:var(--night)}
+.bleed .ph img{width:100%;height:100%;object-fit:cover;transition:opacity 1s ease,filter .5s ease,transform 9s linear;transform:scale(1.04)}
+.bleed.on .ph img{transform:scale(1)}
+.bleed .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,12,8,.35) 0,transparent 22%,transparent 50%,rgba(15,12,8,.82) 100%),linear-gradient(90deg,rgba(15,12,8,.5) 0,transparent 48%)}
+.bleed .cap{position:relative;z-index:2;color:var(--chalk);max-width:min(560px,86vw);margin:0 0 clamp(70px,11vh,110px) clamp(20px,6vw,96px);transform:rotate(-.8deg);text-shadow:0 1px 12px rgba(0,0,0,.55)}
+.bleed .cap .n,.bleed .cap p.m{color:rgba(241,236,226,.8)}
+.silent .ph::after{background:linear-gradient(180deg,rgba(10,8,6,.3),transparent 30%,transparent 75%,rgba(10,8,6,.55))}
+.silent .ph img{filter:brightness(1.25) contrast(1.05);transform:scale(1.08)}
+.silent.on .ph img{transform:scale(1);transition:opacity 1s ease,transform 16s linear}
+.silent .place{position:relative;z-index:2;margin:0 0 clamp(64px,10vh,100px) clamp(20px,6vw,96px);font:11px/1.6 var(--text);letter-spacing:.32em;text-transform:uppercase;color:rgba(241,236,226,.85)}
+.silent .place i{display:block;font:italic 400 clamp(26px,3vw,40px)/1.1 var(--display);letter-spacing:0;text-transform:none;color:var(--chalk)}
+
+/* ---------- text ---------- */
+.txt{align-items:center;padding:0 clamp(22px,8vw,140px)}
+.txt .inner{max-width:780px;margin-left:clamp(0px,9vw,160px);transform:rotate(var(--t,-.5deg))}
+
+/* ---------- the keepsake card ---------- */
+.keep{place-items:center;padding:clamp(52px,8vh,80px) 12px clamp(54px,8vh,80px)}
+.card{position:relative;width:min(1000px,100%);background:#f8f4ea;border:1px solid #d9cfbb;padding:clamp(16px,2.6vw,36px) clamp(16px,3vw,44px);
+  box-shadow:0 26px 50px -30px rgba(40,30,15,.6),0 2px 4px -2px rgba(40,30,15,.2);transform:rotate(-.8deg)}
+.card .hole{position:absolute;left:18px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--paper);box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.card .loop{position:absolute;left:-30px;top:-34px;width:64px;height:64px;overflow:visible}
+.card .loop path{stroke:var(--thread);stroke-width:1.5;fill:none}
+.card header{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ink);padding:0 0 .5em 22px;margin-bottom:clamp(10px,1.8vh,18px);gap:12px}
+.card h2{font:italic 400 clamp(30px,4vw,52px)/1 var(--display)}
+.card header span{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink2);text-align:right}
+.card .g{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(12px,2vh,22px) clamp(20px,3vw,44px)}
+.card h3{font:400 12px/1 var(--text);letter-spacing:.24em;text-transform:uppercase;color:var(--thread);margin-bottom:.7em}
+.card .pal{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 8px}
+.card .pal div{font-size:12px;color:var(--ink2);line-height:1.2}
+.card .pal div::before{content:"";display:block;height:clamp(22px,4.6vh,44px);background:var(--c);margin-bottom:3px;
+  mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/7px 100%;-webkit-mask:conic-gradient(from -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 50%/7px 100%}
+.card .pal div b{display:block;font:italic 400 15px var(--display);color:var(--ink)}
+.card .ty p{display:flex;align-items:baseline;gap:.6em;line-height:1.3;font-size:14px;color:var(--ink2)}
+.card .ty p span{font-size:clamp(20px,2.6vw,34px);color:var(--ink);min-width:1.5em}
+.card ol{list-style:none;counter-reset:r;font-size:clamp(13px,1.35vw,18px);line-height:1.35}
+.card ol li{counter-increment:r;padding-left:1.6em;position:relative;margin-bottom:.15em}
+.card ol li::before{content:counter(r,upper-roman)".";position:absolute;left:0;font:italic 13px var(--display);color:var(--thread)}
+.card .nm{font-size:clamp(12.5px,1.3vw,17px);line-height:1.45;color:var(--ink)}
+.card .nm i{color:var(--ink2)}
+
+/* ---------- credits ---------- */
+.credits{align-items:center;padding:clamp(60px,10vh,96px) clamp(20px,6vw,110px)}
+.credits .inner{max-width:920px;margin:0 auto;width:100%;transform:rotate(-.4deg)}
+.credits h2{font-family:var(--display);font-style:italic;font-weight:400;font-size:clamp(26px,3vw,38px);margin-bottom:.5em}
+.credits ol{columns:3;column-gap:30px;list-style:none;font-size:clamp(11px,1vw,13px);line-height:1.3;color:var(--ink2)}
+.credits li{break-inside:avoid;margin-bottom:.35em;display:flex;gap:.5em}
+.credits li span.k{font-family:var(--display);font-style:italic;color:var(--ink);min-width:2.6em}
+.credits li a{color:var(--ink2);text-decoration:none;border-bottom:1px solid var(--rule);pointer-events:auto}
+.credits .f{margin-top:1.2em;font-size:clamp(11.5px,1.05vw,14px);color:var(--ink2);font-style:italic;line-height:1.5}
+.credits .f a{color:var(--ink2);pointer-events:auto}
+
+/* ---------- the slip: second layer of depth ---------- */
+#slip{position:fixed;left:50%;bottom:0;z-index:40;width:min(560px,100%);transform:translate(-50%,calc(100% + 60px));visibility:hidden;transition:transform .6s var(--ease),visibility 0s linear .6s;
+  background:#f8f4ea;color:var(--ink);padding:26px clamp(18px,3vw,32px) calc(22px + env(safe-area-inset-bottom));
+  box-shadow:0 -20px 50px -30px rgba(0,0,0,.6);user-select:text;-webkit-user-select:text}
+#slip::before{content:"";position:absolute;left:0;right:0;top:-8px;height:8px;background:#f8f4ea;
+  mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%;-webkit-mask:conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) 50%/12px 100%}
+#slip.open{transform:translate(-50%,0);visibility:visible;transition:transform .6s var(--ease),visibility 0s}
+#slip .k{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--thread);margin-bottom:.8em;display:flex;justify-content:space-between}
+#slip .k button{background:none;border:0;font:italic 14px var(--text);color:var(--ink2);cursor:pointer;letter-spacing:0;text-transform:none;padding:0 0 6px 10px}
+#slip p{font-size:clamp(15px,1.4vw,17px);line-height:1.45;margin-bottom:.55em}
+#slip p.l{font-size:13px;color:var(--ink2);margin-top:.8em}
+#slip a{color:var(--thread);text-decoration:none;border-bottom:1px solid rgba(154,47,37,.35);margin-right:.9em;white-space:nowrap}
+#shade{position:fixed;inset:0;z-index:35;background:rgba(20,16,12,.25);opacity:0;pointer-events:none;transition:opacity .5s ease}
+#shade.open{opacity:1;pointer-events:auto}
+.more-src{display:none}
+
+/* ---------- phone ---------- */
+@media (max-width:760px), (max-aspect-ratio:4/5){
+  .plate{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:center;justify-items:center;row-gap:clamp(18px,3vh,30px);
+    padding:clamp(54px,8vh,72px) 16px clamp(58px,9vh,76px)}
+  .plate.r figure,.plate.l figure{grid-column:1;grid-row:1}
+  .plate.r .cap,.plate.l .cap{grid-column:1;grid-row:2;justify-self:stretch;text-align:left;max-width:none;padding:0 6px}
+  .plate.l .cap{text-align:right}
+  figure{width:min(86vw,calc(56vh * var(--ar)))}
+  .cap .n{display:inline;margin:0 .6em 0 0}
+  .cap p.s{display:inline;font-size:clamp(21px,5.8vw,28px)}
+  .cap p.m{margin-top:.7em}
+  .cap .back p{font-size:24px}
+  .cover h1{font-size:17.5vw}
+  .spread{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:center;padding:60px 0 70px;row-gap:22px}
+  .spread .ph{max-height:46vh}
+  .spread .col{padding:0 22px}
+  .big{font-size:clamp(26px,7.4vw,34px)}
+  .txt{padding:0 22px}
+  .txt .inner{margin-left:0}
+  .pair{padding:60px 16px 64px}
+  .pair .one .ph{height:min(52vh,calc(45vw / var(--ar)))}
+  .pair .two{gap:10px}
+  .pair .txt2 .big,.sheet .txt2 .big,.colour .txt2 .big{font-size:clamp(20px,5.6vw,26px)}
+  .strike .row{grid-template-columns:1fr;gap:22px}
+  .strike{padding:60px 22px 70px}
+  .strike ol{font-size:clamp(21px,6vw,28px)}
+  .sheet .c{width:min(27vw,calc((62vh - 120px)/2 * .8))}
+  .sheet .c span{font-size:8.5px;letter-spacing:.08em}
+  .colour .row{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 8px}
+  .colour .sw .ph{max-height:20vh}
+  .colour .sw small{display:none}
+  .pan{grid-template-columns:1fr}
+  .pan .win{position:absolute;inset:0;height:auto}
+  .pan .win::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(15,12,8,.78))}
+  .pan .col{position:relative;z-index:2;align-self:end;padding:0 22px 92px;color:var(--chalk);text-shadow:0 1px 12px rgba(0,0,0,.5)}
+  .pan .col .line{color:rgba(241,236,226,.85)}
+  .pan .col .kicker{color:#e9b9a9}.pan .col .kicker em{color:rgba(241,236,226,.8)}
+  .card{padding:14px 14px 16px;transform:rotate(-.5deg)}
+  .card .g{grid-template-columns:1fr;gap:11px}
+  .card header{padding-left:20px;margin-bottom:10px}
+  .card header span{font-size:9px;letter-spacing:.14em}
+  .card .pal{gap:5px}
+  .card .pal div{font-size:0}
+  .card .pal div b{font-size:11.5px}
+  .card .pal div::before{height:20px}
+  .card .ty{display:flex;gap:12px}
+  .card .ty p{flex-direction:column;gap:0;font-size:10px}
+  .card .ty p span{font-size:19px}
+  .card ol{font-size:12.5px}
+  .card .nm{font-size:12px;line-height:1.4}
+  .card .loop{left:-22px;top:-26px;width:50px;height:50px}
+  .credits ol{columns:2;column-gap:14px;font-size:10.5px}
+  .credits{align-items:start;padding-top:58px}
+  .credits li{margin-bottom:.25em}
+  .credits .f{font-size:11px}
+  .hint{font-size:19px}
+  #back span{display:none}
+  #more{bottom:auto}
+}
+@media (max-height:520px){ .cap p.s{font-size:20px} }
+@media (prefers-reduced-motion:reduce){
+  figure,.beat.on figure,.held figure{transition:none!important}
+  .beat,.beat.on,.beat.on.tr-dusk{transition:opacity .2s linear,visibility 0s}
+  .beat.on.tr-cloth,.beat.on.tr-rise .card{animation:none}
+  .bleed .ph img,.pan.on .win img{transform:none!important;transition:opacity .2s;animation:none!important}
+  .pan .win img{transform:scale(1.4)!important}
+  .cover .draft{display:none}
+  .cover.on h1,.cover.on .sub{animation:none;opacity:1}
+  .cover.on .stitch path{animation:none;opacity:1}
+  .sheet .c,.colour .sw{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div id="light"></div>
+<div class="head"><span>Sprezzatura</span><i id="chap">I · Il segreto</i></div>
+<div class="foot">
+  <button id="back" aria-label="Previous plate">‹ <span>indietro</span></button>
+  <button id="more" aria-label="Read more about this plate"><span>più</span><i>↑</i></button>
+  <span class="r"><span class="folio">Tav.<b id="fol">I</b> <span id="tot">/ XIX</span></span><button id="mute" aria-label="Toggle sound"><span>suono</span></button></span>
+</div>
+<div id="shade"></div>
+<aside id="slip" aria-live="polite"><div class="k"><span id="slipk">Più</span><button id="slipx" aria-label="Close">chiudi ↓</button></div><div id="slipb"></div></aside>
+
+<main id="book">
+
+<!-- I · IL SEGRETO -->
+<section class="beat cover" data-ch="0">
+  <div class="inner">
+    <div class="draft" aria-hidden="true"><svg viewBox="0 0 1000 420" preserveAspectRatio="none">
+      <text class="ch" x="40" y="230" font-size="150" style="animation-delay:.1s">sprezatura</text>
+      <path class="w red" style="--l:60;animation-delay:.9s" d="M318 250 l12 -26 l12 26"/>
+      <text class="ch red" x="314" y="205" font-size="60" style="animation-delay:1.1s;stroke:none">z</text>
+      <line class="w" style="--l:900;animation-delay:.5s" x1="34" y1="275" x2="930" y2="268"/>
+      <path class="w" style="--l:60;animation-delay:.6s" d="M40 262 v24 M930 256 v24 M480 258 v20"/>
+      <text class="ch" x="600" y="330" font-size="44" style="animation-delay:1.3s">più leggero? — 1,5°</text>
+      <text class="ch" x="60" y="80" font-size="40" style="animation-delay:1.6s">prova n. 7</text>
+      <path class="w" style="--l:260;animation-delay:1.7s" d="M820 60 q60 30 20 90 q-20 30 -70 20"/>
+    </svg></div>
+    <h1>Sprezzatura</h1>
+    <svg class="stitch" viewBox="0 0 320 8" preserveAspectRatio="none"><path d="M2 5 C 80 2, 180 7, 318 3"/></svg>
+    <p class="sub">“…which conceals all art.”<small>Baldassare Castiglione · 1528</small></p>
+  </div>
+</section>
+
+<section class="beat spread" data-ch="0" data-tr="fade">
+  <div class="ph" style="--ar:1.49"><img class="lz" data-src="img/01.webp" draggable="false" alt="A woman in a loose white shirt and dark skirt stands in a room hung with billowing linen, one arm lifted" style="object-position:40% 40%"></div>
+  <div class="col">
+    <p class="kicker"><em>ii.</em>Che cos’è</p>
+    <p class="big">Mastery, made to look like it <i>cost nothing.</i></p>
+    <p class="line">Not only for men, and not only for clothes: a way of carrying anything.</p>
+  </div>
+  <div class="more-src" data-k="Che cos’è">
+    <p>An Italian word for studied nonchalance: doing something well while hiding that it took work, so it looks natural.</p>
+    <p>Today it is used mostly for menswear. The idea itself has nothing to do with gender. It is about how a thing is worn, said or done, not about what the thing is.</p>
+    <p class="l"><a href="https://en.wikipedia.org/wiki/Sprezzatura" target="_blank" rel="noopener">Wikipedia</a><a href="https://aesthetics.fandom.com/wiki/Sprezzatura" target="_blank" rel="noopener">Aesthetics Wiki</a></p>
+  </div>
+</section>
+
+<section class="beat front" data-ch="0" data-tr="cut">
+  <div class="tp"><div class="in">
+    <p class="t1">IL LIBRO<b>DEL CORTEGIANO</b>DEL CONTE BALDESAR<br>CASTIGLIONE</p>
+    <p class="fl">❦</p>
+    <blockquote>“…una certa <span>sprezzatura</span>, che nasconda l’arte…”<small>a certain nonchalance, that hides the art · Libro I</small></blockquote>
+    <p class="t3">VENEZIA · STAMPERIA ALDINA · MDXXVIII</p>
+  </div></div>
+  <div class="more-src" data-k="Origine · 1528">
+    <p><i>The Book of the Courtier</i> is set over four evenings at the court of Urbino in 1507. Castiglione worked on it for about twenty years, and the Aldine Press in Venice printed it in 1528.</p>
+    <p>The ideal courtier should do difficult things as if they cost him no thought. Castiglione needed a new word for that, so he coined one.</p>
+    <p>Thomas Hoby’s English translation of 1561 turned it into “recklessness”.</p>
+    <p class="l"><a href="https://en.wikipedia.org/wiki/The_Book_of_the_Courtier" target="_blank" rel="noopener">The Book of the Courtier</a><a href="https://exhibitions.lib.cam.ac.uk/hoby/?p=69" target="_blank" rel="noopener">Cambridge UL: A Studied Carelessness</a></p>
+  </div>
+</section>
+
+<!-- II · IL MODO -->
+<section class="beat plate l" data-ch="1" data-tr="cloth">
+  <figure style="--ar:.6675;--t:.9deg"><div class="ph"><img class="lz" data-src="img/02.webp" draggable="false" alt="A grey-haired man in a tan jacket sits on a granite bench checking his phone, shirt open at the collar" style="object-position:50% 40%"></div></figure>
+  <div class="cap"><span class="n">iv.</span><div class="wrap">
+    <div class="front"><p class="s">One button more, left open.</p><p class="m">La camicia</p></div></div></div>
+</section>
+
+<section class="beat plate r" data-ch="1" data-tr="fade">
+  <figure style="--ar:.8;--t:-.7deg"><div class="ph"><img class="lz" data-src="img/03.webp" draggable="false" alt="A man in a tan check suit and striped tie leans on a silver car" style="object-position:50% 30%"></div>
+    <div class="bk" data-lab="knot — left of centre|stripe ≠ check|lean, weight on one hip"></div>
+    <span class="hint" style="right:2%;bottom:calc(100% + 6px)">tieni premuto</span>
+  </figure>
+  <div class="cap"><span class="n">v.</span><div class="wrap">
+    <div class="front"><p class="s">The knot sits a little off centre.</p><p class="m">Il nodo</p></div>
+    <div class="back"><p>Tied properly, then loosened. A perfect knot looks bought.</p><p class="m">Dietro le quinte</p></div></div></div>
+  <div class="more-src" data-k="Il nodo">
+    <p>The model everyone cites is Gianni Agnelli (1921–2003), the head of Fiat. His tie blade was left askew or worn outside the sweater. His button-down collar stayed unbuttoned. His wristwatch went on over the shirt cuff.</p>
+    <p>Each detail looks like an accident. Each one was repeated for fifty years.</p>
+    <p class="l"><a href="https://en.wikipedia.org/wiki/Gianni_Agnelli" target="_blank" rel="noopener">Gianni Agnelli</a><a href="https://xacus.com/en-uk/blogs/notizie/style-icon-gianni-agnelli-the-king-of-sprezzatura" target="_blank" rel="noopener">Xacus on Agnelli</a></p>
+  </div>
+</section>
+
+<section class="beat pair" data-ch="1" data-tr="fade">
+  <div class="two">
+    <div class="one"><div class="ph" style="--ar:.8"><img class="lz" data-src="img/04.webp" draggable="false" alt="A woman in a mustard knit polo with a brown jacket slung over one shoulder" style="object-position:50% 30%"></div><p class="lbl"><i>lei</i>la giacca</p></div>
+    <div class="one"><div class="ph" style="--ar:.75"><img class="lz" data-src="img/05.webp" draggable="false" alt="A man in a white shirt and black trousers with a pink sweater knotted over his shoulders" style="object-position:50% 25%"></div><p class="lbl"><i>lui</i>il maglione</p></div>
+  </div>
+  <div class="txt2"><p class="kicker"><em>vi.</em>Sulle spalle</p><p class="big">Thrown over the shoulders, sleeves empty. <i>Same gesture, either wardrobe.</i></p></div>
+  <div class="more-src" data-k="Sulle spalle">
+    <p>A jacket worn over the shoulders, or a sweater knotted loosely at the chest. It is the most copied move in Italian street style, and it works the same on a cashmere crew neck as on a tailored jacket.</p>
+    <p>Florence during the menswear fairs is where to watch it done well, and done badly.</p>
+    <p class="l"><a href="https://www.mrporter.com/en-it/journal/fashion/style-tips-from-florences-best-dressed-744852" target="_blank" rel="noopener">Mr Porter: Florence’s best dressed</a></p>
+  </div>
+</section>
+
+<section class="beat plate r" data-ch="1" data-tr="fade">
+  <figure style="--ar:.7595;--t:1.3deg"><div class="ph"><img class="lz" data-src="img/06.webp" draggable="false" alt="A young man in a long grey coat and loose trousers leans on an old pickup truck" style="object-position:50% 40%"></div>
+    <div class="bk" data-lab="coat, worn in|crease left alone|collar up — once"></div></figure>
+  <div class="cap"><span class="n">vii.</span><div class="wrap">
+    <div class="front"><p class="s">Worn until it stops being worn.</p><p class="m">Seconda pelle</p></div>
+    <div class="back"><p>Ease takes years. The coat has to learn the body.</p><p class="m">Dietro le quinte</p></div></div></div>
+</section>
+
+<section class="beat strike" data-ch="1" data-tr="cut">
+  <div class="row">
+    <div>
+      <p class="kicker"><em>viii.</em>Cosa la uccide</p>
+      <ol>
+        <li><s>The pre-tied bow tie.</s></li>
+        <li><s>The pre-folded pocket square.</s></li>
+        <li><s>The tie and square, sold as a set.</s></li>
+      </ol>
+    </div>
+    <div class="ans">
+      <div class="ph"><img class="lz" data-src="img/07.webp" draggable="false" alt="Three men at Pitti Uomo in green, brown and cream jackets, pocket squares pushed in loosely, ties that do not match" style="object-position:50% 35%"></div>
+      <p>Instead: squares pushed in by hand, ties that don’t match, nothing bought as a set.</p>
+    </div>
+  </div>
+  <div class="more-src" data-k="Cosa la uccide">
+    <p>The Aesthetics Wiki’s list of what kills it: the pre-tied bow tie, the pre-folded square, the matching tie-and-square set. All three are ease that someone else did for you.</p>
+    <p>A planned flaw doesn’t fix it either. Forced imperfection looks just as fake. What works is doing it by hand and leaving it a little loose.</p>
+    <p class="l"><a href="https://www.permanentstyle.com/2016/01/what-is-sprezzatura.html" target="_blank" rel="noopener">Permanent Style: What is sprezzatura?</a></p>
+  </div>
+</section>
+
+<section class="beat sheet" data-ch="1" data-tr="deal">
+  <div class="grid">
+    <div class="c"><div class="ph"><img class="lz" data-src="img/08.webp" draggable="false" alt="A woman in sunglasses and an oversized pale suit jacket over a black top" style="object-position:50% 20%"></div><span>1 · Firenze</span></div>
+    <div class="c"><div class="ph"><img class="lz" data-src="img/09.webp" draggable="false" alt="Two women and a man talking on a Florentine street, shirts loose, one in a red knit over a striped dress" style="object-position:50% 40%"></div><span>2 · Pitti</span></div>
+    <div class="c"><div class="ph"><img class="lz" data-src="img/10.webp" draggable="false" alt="Three young people in worn-in jackets and open shirts, one woman in the middle" style="object-position:50% 30%"></div><span>3 · Pitti</span></div>
+    <div class="c"><div class="ph"><img class="lz" data-src="img/11.webp" draggable="false" alt="An elderly man in a belted tweed coat with a red scarf thrown loosely, cigarette in his mouth" style="object-position:50% 25%"></div><span>4 · Firenze</span></div>
+    <div class="c"><div class="ph"><img class="lz" data-src="img/12.webp" draggable="false" alt="Two men in a piazza, one in a yellow shirt and red tie with shorts and long red socks, one in double denim" style="object-position:50% 50%"></div><span>5 · Pitti</span></div>
+    <div class="c"><div class="ph"><img class="lz" data-src="img/13.webp" draggable="false" alt="A man in a navy blazer and white trousers leans on a brick wall by the Arno" style="object-position:73% 50%"></div><span>6 · Lungarno</span></div>
+    <svg class="mark" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path vector-effect="non-scaling-stroke" d="M8 6 C 2 14, 3 44, 10 50 C 20 56, 36 52, 37 40 C 38 22, 34 6, 22 4 C 16 3, 10 5, 7 9"/></svg>
+  </div>
+  <div class="txt2"><p class="kicker"><em>ix.</em>La strada</p><p class="big">Its stage is the street, and the trap is <i>the lens.</i></p></div>
+  <div class="more-src" data-k="La strada · Pitti Uomo">
+    <p>Pitti Uomo is the menswear fair held in Florence every January and June, mostly in the Fortezza da Basso. Street photographers have made its courtyards and piazzas the look’s main stage since the 2000s.</p>
+    <p>That is also the trap. Once you are dressing for the lens, the ease is gone. The ones worth circling look as if they haven’t noticed the camera.</p>
+    <p class="l"><a href="https://www.pittimmagine.com" target="_blank" rel="noopener">Pitti Immagine</a><a href="https://www.mrporter.com/en-it/journal/fashion/style-tips-from-florences-best-dressed-744852" target="_blank" rel="noopener">Mr Porter: Florence</a></p>
+  </div>
+</section>
+
+<section class="beat colour" data-ch="1" data-tr="fade">
+  <div class="row">
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/14.webp" draggable="false" alt="A bald man in plum trousers and a checked overshirt on a stone wall before a villa" style="object-position:30% 70%"></div><span class="chip" style="--c:#421532"></span><b>prugna</b><small>#421532</small></div>
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/15.webp" draggable="false" alt="A woman in a rust turtleneck and khaki trousers" style="object-position:50% 30%"></div><span class="chip" style="--c:#a34d3f"></span><b>ruggine</b><small>#a34d3f</small></div>
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/16.webp" draggable="false" alt="A man in an olive double-breasted suit" style="object-position:50% 30%"></div><span class="chip" style="--c:#4f5046"></span><b>oliva</b><small>#4f5046</small></div>
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/17.webp" draggable="false" alt="A woman in a mixed-floral dress and red espadrille wedges sits on a terrace chair" style="object-position:50% 60%"></div><span class="chip" style="--c:#bc3b55"></span><b>fiori, rosso</b><small>#bc3b55</small></div>
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/18.webp" draggable="false" alt="A man in a burgundy double-breasted suit" style="object-position:50% 30%"></div><span class="chip" style="--c:#512828"></span><b>bordeaux</b><small>#512828</small></div>
+    <div class="sw"><div class="ph"><img class="lz" data-src="img/19.webp" draggable="false" alt="A woman in a champagne satin wrap dress and tall boots" style="object-position:50% 30%"></div><span class="chip" style="--c:#b39a78"></span><b>sabbia</b><small>#b39a78</small></div>
+  </div>
+  <div class="txt2"><p class="kicker"><em>x.</em>Il colore</p><p class="big">Colour, taken lightly. <i>A clash is only a clash if you hesitate.</i></p></div>
+  <div class="more-src" data-k="Il colore">
+    <p>Earth tones carry it: tobacco, camel, olive, rust, sand. Over them goes one colour pushed further than it should go, like plum trousers, a burgundy suit or red espadrilles under a floral dress.</p>
+    <p>The chips are sampled from the photographs themselves.</p>
+    <p class="l"><a href="https://www.fashionbeans.com/article/how-to-dress-with-sprezzatura/" target="_blank" rel="noopener">FashionBeans: how to dress with sprezzatura</a></p>
+  </div>
+</section>
+
+<!-- III · LA BOTTEGA -->
+<section class="beat pair" data-ch="2" data-tr="cloth">
+  <div class="two">
+    <div class="one"><div class="ph" style="--ar:.7057"><img class="lz" data-src="img/20.webp" draggable="false" alt="A young man in an olive overshirt stands among paper tailoring patterns hung on a wall" style="object-position:50% 50%"></div><p class="lbl"><i>il cartamodello</i></p></div>
+    <div class="one"><div class="ph" style="--ar:.7057"><img class="lz" data-src="img/21.webp" draggable="false" alt="Two women in brown double-breasted trouser suits in a tailoring atelier, rolls of cloth on a trolley" style="object-position:50% 50%"></div><p class="lbl"><i>la prova</i></p></div>
+  </div>
+  <div class="txt2"><p class="kicker"><em>xi.</em>Il laboratorio</p><p class="big">Behind the ease, <i>the pattern:</i> paper cut to one body.</p></div>
+  <div class="more-src" data-k="Il laboratorio">
+    <p>The technical home of the look is Neapolitan tailoring. Shoulders have no padding. The sleeve is gathered into the shoulder (<i>spalla camicia</i>), armholes are high, and the canvas is light. The jacket is built to look as though it was never built.</p>
+    <p>Rubinacci has made clothes in Naples since 1932. Kiton was founded in 1968. Isaia works from Casalnuovo, just outside the city.</p>
+    <p class="l"><a href="https://therake.com/stories/rubinacci-the-peak-of-neapolitan-tailoring" target="_blank" rel="noopener">The Rake: Rubinacci</a><a href="https://us.kiton.com" target="_blank" rel="noopener">Kiton</a><a href="https://www.isaia.it" target="_blank" rel="noopener">Isaia</a></p>
+  </div>
+</section>
+
+<section class="beat plate r" data-ch="2" data-tr="fade">
+  <figure style="--ar:.8;--t:1.1deg"><div class="ph"><img class="lz" data-src="img/22.webp" draggable="false" alt="Close view of printed silk in brown, cream and navy, folded on the diagonal" style="object-position:50% 50%"></div></figure>
+  <div class="cap"><span class="n">xii.</span><div class="wrap">
+    <div class="front"><p class="s">Silk, folded without ceremony.</p><p class="m">La materia</p></div></div></div>
+  <div class="more-src" data-k="La materia">
+    <p>A good square is printed on silk, and its edges are rolled and stitched by hand. That small hem is the only proof of the work.</p>
+    <p>Then it gets pushed into the pocket and never folded. Drake’s in London is the house most people point to for squares and ties worn this way.</p>
+    <p class="l"><a href="https://www.drakes.com" target="_blank" rel="noopener">Drake’s</a></p>
+  </div>
+</section>
+
+<section class="beat pan" data-ch="2" data-tr="fade">
+  <div class="col">
+    <p class="kicker"><em>xiii.</em>La maglia</p>
+    <p class="big">Knit loose, <i>worn looser.</i></p>
+    <p class="line">An open crochet stripe, a skirt that doesn’t try to match. The hand shows in every row.</p>
+  </div>
+  <div class="win"><img class="lz" data-src="img/23.webp" draggable="false" alt="A woman with cropped hair in an open-knit red and cream striped sweater over a white skirt"></div>
+</section>
+
+<!-- IV · LA CASA -->
+<section class="beat bleed silent dark" data-ch="3" data-tr="dusk">
+  <div class="ph"><img class="lz" data-src="img/24.webp" draggable="false" alt="The hilltop hamlet of Solomeo in Umbria at dusk, cypresses below" style="object-position:50% 55%"></div>
+  <p class="place"><i>Solomeo</i>Umbria</p>
+  <div class="more-src" data-k="Solomeo">
+    <p>Solomeo is a medieval hamlet on a hill near Perugia. Brunello Cucinelli founded his cashmere company in 1978. In the 1980s he moved it here and restored the village around it: the theatre, the workshops, the gardens.</p>
+    <p>Here the ease extends past clothes to an entire place.</p>
+    <p class="l"><a href="https://www.brunellocucinelli.com" target="_blank" rel="noopener">Brunello Cucinelli</a></p>
+  </div>
+</section>
+
+<section class="beat bleed dark" data-ch="3" data-tr="fade">
+  <div class="ph"><img class="lz" data-src="img/25.webp" draggable="false" alt="A family in cream and grey tailoring gathered in a wood-panelled library" style="object-position:50% 45%"></div>
+  <div class="cap"><span class="n">xv.</span><div class="wrap">
+    <div class="front"><p class="s">Not only clothes: the house, the books, the long table.</p><p class="m">Oltre gli abiti</p></div></div></div>
+  <div class="more-src" data-k="Oltre gli abiti">
+    <p>This is a Cucinelli family portrait: three generations, women and men, in cream, grey and camel, in a library meant to look lived in.</p>
+    <p>Nobody in the frame looks dressed up, and that is how you can tell it was arranged.</p>
+  </div>
+</section>
+
+<!-- V · L'IDEA -->
+<section class="beat txt" data-ch="4" data-tr="cloth" style="--t:-.4deg">
+  <div class="inner">
+    <p class="kicker"><em>xvi.</em>L’idea</p>
+    <p class="big">Practised ease, taken for a gift. The rehearsals happen; <i>they just never show.</i></p>
+    <p class="line">Its opposite isn’t carelessness. It is visible care.</p>
+  </div>
+  <div class="more-src" data-k="L’idea">
+    <p>Castiglione saw the worst fault as affectation, meaning effort put on display. Sprezzatura is how you avoid it. You still do the work. You just don’t ask anyone to admire it.</p>
+    <p>That is why the idea reaches beyond clothes. A pianist can seem to improvise, a host can serve a dinner that looks unplanned, and a sentence can read as if it wrote itself.</p>
+  </div>
+</section>
+
+<section class="beat plate l" data-ch="4" data-tr="fade">
+  <figure style="--ar:1.3333;--t:-.8deg;--dx:-1vw"><div class="ph"><img class="lz" data-src="img/26.webp" draggable="false" alt="A man in a tan jacket and dark trousers runs past a green New York subway entrance" style="object-position:50% 50%"></div>
+    <div class="bk" data-lab="late|will not look it|scarf, flying"></div></figure>
+  <div class="cap"><span class="n">xvii.</span><div class="wrap">
+    <div class="front"><p class="s"><i>Fatto bene. Portato male.</i></p><p class="m">Made well · worn carelessly</p></div>
+    <div class="back"><p>He is late. He will not look it.</p><p class="m">Dietro le quinte</p></div></div></div>
+</section>
+
+<section class="beat keep" data-ch="5" data-tr="rise">
+  <div class="card">
+    <span class="hole"></span>
+    <svg class="loop" viewBox="0 0 64 64" aria-hidden="true"><path d="M54 52 C 40 40, 10 44, 8 26 C 6 10, 30 4, 40 18 C 46 28, 40 44, 52 50"/></svg>
+    <header><h2>Sprezzatura</h2><span>Cartellino · da tenere<br>Castiglione, 1528</span></header>
+    <div class="g">
+      <div>
+        <h3>Palette</h3>
+        <div class="pal">
+          <div style="--c:#6c420e"><b>tabacco</b>#6c420e</div>
+          <div style="--c:#bd7e1f"><b>senape</b>#bd7e1f</div>
+          <div style="--c:#a34d3f"><b>ruggine</b>#a34d3f</div>
+          <div style="--c:#b39a78"><b>sabbia</b>#b39a78</div>
+          <div style="--c:#4f5046"><b>oliva</b>#4f5046</div>
+          <div style="--c:#001744"><b>blu</b>#001744</div>
+          <div style="--c:#512828"><b>bordeaux</b>#512828</div>
+          <div style="--c:#421532"><b>prugna</b>#421532</div>
+        </div>
+      </div>
+      <div>
+        <h3>Caratteri</h3>
+        <div class="ty">
+          <p><span style="font-family:var(--display);font-style:italic">Aa</span>Bodoni Moda · titles</p>
+          <p><span style="font-family:var(--text)">Aa</span>EB Garamond · text</p>
+          <p><span style="font-family:var(--hand)">Aa</span>Reenie Beanie · chalk</p>
+        </div>
+      </div>
+      <div>
+        <h3>Regole</h3>
+        <ol>
+          <li>Learn the rule properly, then loosen it.</li>
+          <li>One undone detail, never three.</li>
+          <li>Wear it until it stops being new.</li>
+          <li>Nothing pre-tied, pre-folded, or sold as a set.</li>
+          <li>Never be seen trying.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Nomi</h3>
+        <p class="nm">Castiglione, <i>Il Cortegiano</i> (1528) · Gianni Agnelli · Pitti Uomo, Firenze · Rubinacci, Napoli · Kiton · Isaia · Brunello Cucinelli, Solomeo · Drake’s, London</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="beat credits" data-ch="5" data-tr="fade">
+  <div class="inner">
+    <h2>Le tavole</h2>
+    <ol id="cr"></ol>
+    <p class="f">Images from Jere’s Are.na channel. The export records no original photographer or source, so each plate links to its Are.na block. Rights stay with the photographers and houses pictured.<br>Text paraphrased from the <a href="https://aesthetics.fandom.com/wiki/Sprezzatura" target="_blank" rel="noopener">Aesthetics Wiki</a> (CC BY-SA). Castiglione quoted from the 1528 text and in translation.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+const beats=[...document.querySelectorAll('.beat')];
+const N=beats.length;
+const roman=n=>{const m=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let s='';for(const[v,r]of m)while(n>=v){s+=r;n-=v}return s};
+document.getElementById('tot').textContent='/ '+roman(N);
+const fol=document.getElementById('fol'),chap=document.getElementById('chap');
+const CH=['I · Il segreto','II · Il modo','III · La bottega','IV · La casa','V · L’idea','Da tenere'];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* credits */
+const credits=[
+ ['ii','image',53252812],['iv','45b42fa61290322acc6997e018efd13d',53251923],['v','bielvalldo_InterviewingBielValldosera2',53252166],
+ ['vi a','image',53252313],['vi b','w764_q60',53252093],['vii','343c66c6424bd095034eba32f10a8145',53251935],['viii','sprezz-top-1',53252097],
+ ['ix.1','W1900_q65',53251932],['ix.2','image',53252877],['ix.3','image',53252892],['ix.4','191117cbaffccc621f6cb316f12dde41',53251929],['ix.5','image',53252870],['ix.6','w1500_q80',53252175],
+ ['x.1','E3B0286',53252198],['x.2','image',53252743],['x.3','image',53252709],['x.4','Mixed_Florals_dress',53252904],['x.5','image',53252712],['x.6','image',53252327],
+ ['xi a','image',53252414],['xi b','image',53252338],['xii','image',53252360],['xiii','image',53252776],['xiv','image',53252612],
+ ['xv','RITRATTO_FAMIGLIA_LIBRERIA_2880',53252665],['xvii','third',53251964]];
+document.getElementById('cr').innerHTML=credits.map(([k,t,id])=>`<li title="${t}"><span class="k">${k}.</span><a href="https://www.are.na/block/${id}" target="_blank" rel="noopener">are.na/block/${id}</a></li>`).join('');
+
+/* backstage chalk overlays (three plates only) */
+function seedR(s){return()=>{s=(s*9301+49297)%233280;return s/233280}}
+document.querySelectorAll('.bk').forEach((bk,i)=>{
+  const r=seedR(i*7+3);
+  const labs=(bk.dataset.lab||'').split('|');
+  const cx=46+r()*8, y1=22+r()*8, y2=48+r()*10;
+  bk.innerHTML=`<svg viewBox="0 0 100 100" preserveAspectRatio="none">
+   <rect class="th" x="3.5" y="3" width="93" height="94" vector-effect="non-scaling-stroke"/>
+   <line class="c d" x1="${cx}" y1="6" x2="${cx+.6}" y2="94" vector-effect="non-scaling-stroke"/>
+   <path class="c" d="M${12+r()*6} ${y1} Q 50 ${y1-2} ${82+r()*6} ${y1+1}" vector-effect="non-scaling-stroke"/>
+   <path class="c d" d="M14 ${y2} L 86 ${y2+.8}" vector-effect="non-scaling-stroke"/>
+   <path class="c" d="M${cx-3} ${y1-3} l6 6 M${cx+3} ${y1-3} l-6 6" vector-effect="non-scaling-stroke"/>
+   ${[0,1,2,3,4,5,6].map(k=>`<line class="c" x1="${14+k*12}" y1="${y2-1.4}" x2="${14+k*12}" y2="${y2+1.6}" vector-effect="non-scaling-stroke"/>`).join('')}
+  </svg>`+
+  labs.map((t,k)=>{const pos=[`left:7%;top:${y1-9}%`,`left:${cx+3}%;top:${y2+3}%`,`left:8%;bottom:8%`][k];
+    return `<span class="lab" style="${pos};transform:rotate(${(r()*5-2.5).toFixed(1)}deg)">${t}</span>`}).join('');
+});
+
+/* image loading: current + next 2 */
+function load(i){for(let k=Math.max(0,i-1);k<=i+2&&k<N;k++){beats[k].querySelectorAll('img[data-src]').forEach(im=>{
+  if(!im.getAttribute('src')){im.decoding='async';im.onload=()=>im.classList.add('ld');im.src=im.dataset.src;if(im.complete)im.classList.add('ld')}})}}
+
+/* ---------- depth slip ---------- */
+const slip=document.getElementById('slip'),slipb=document.getElementById('slipb'),slipk=document.getElementById('slipk'),
+  shade=document.getElementById('shade'),moreBtn=document.getElementById('more'),backBtn=document.getElementById('back');
+let slipOpen=false;
+function depth(){return beats[cur].querySelector('.more-src')}
+function openSlip(){const d=depth();if(!d||slipOpen)return false;slipk.textContent='Più · '+(d.dataset.k||'');slipb.innerHTML=d.innerHTML;
+  slip.classList.add('open');shade.classList.add('open');slipOpen=true;rustle(1);return true}
+function closeSlip(){if(!slipOpen)return;slip.classList.remove('open');shade.classList.remove('open');slipOpen=false;rustle(-1)}
+document.getElementById('slipx').addEventListener('click',e=>{e.stopPropagation();closeSlip()});
+['pointerdown','pointerup'].forEach(t=>{slip.addEventListener(t,e=>e.stopPropagation());moreBtn.addEventListener(t,e=>e.stopPropagation());backBtn.addEventListener(t,e=>e.stopPropagation())});
+shade.addEventListener('pointerup',e=>{e.stopPropagation();closeSlip()});
+shade.addEventListener('pointerdown',e=>e.stopPropagation());
+moreBtn.addEventListener('click',e=>{e.stopPropagation();ctx();openSlip()});
+backBtn.addEventListener('click',e=>{e.stopPropagation();ctx();prev()});
+let sy0=0;slip.addEventListener('touchstart',e=>{sy0=e.touches[0].clientY},{passive:true});
+slip.addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-sy0>50)closeSlip()},{passive:true});
+
+/* ---------- navigation ---------- */
+let cur=0;
+try{const h=parseInt(location.hash.slice(1),10);if(h>=1&&h<=N)cur=h-1}catch(e){}
+let revealT=null;
+function enter(b){
+  if(b.classList.contains('strike')){b.classList.remove('shown');clearTimeout(revealT);revealT=setTimeout(()=>{if(beats[cur]===b){b.classList.add('shown');snip()}},reduce?300:2900)}
+}
+function paint(){
+  const b=beats[cur];
+  document.body.classList.toggle('dark',b.classList.contains('dark'));
+  document.body.classList.toggle('night',b.classList.contains('dark'));
+  fol.textContent=roman(cur+1);
+  chap.textContent=CH[+b.dataset.ch||0];
+  moreBtn.classList.toggle('has',!!depth());
+  backBtn.disabled=cur===0;
+  /* the light drifts slowly across the page as you go */
+  const p=cur/(N-1);document.getElementById('light').style.cssText=`--lx:${18+p*64}%;--ly:${16+Math.sin(p*3.1)*14}%`;
+}
+function show(i,dir){
+  if(i<0||i>=N||i===cur)return;
+  closeSlip();
+  const old=beats[cur],b=beats[i],tr=dir>0?(b.dataset.tr||'fade'):'fade';
+  old.classList.remove('held');holding=false;
+  beats.forEach(x=>x.classList.remove('tr-cut','tr-cloth','tr-dusk','tr-rise','tr-deal'));
+  if(tr==='cut'||tr==='dusk'){document.body.classList.add('cutting');old.classList.remove('on');void old.offsetWidth;document.body.classList.remove('cutting')}
+  else old.classList.remove('on');
+  if(!reduce&&tr!=='fade')b.classList.add('tr-'+tr);
+  cur=i;b.classList.add('on');
+  try{parent!==window&&parent.postMessage({aw:'beat',i:cur,n:N},'*')}catch(e){}
+  paint();load(cur);enter(b);
+  try{history.replaceState(null,'','#'+(cur+1))}catch(e){}
+  if(dir)turn(dir,tr);
+  bedFor(+b.dataset.ch||0);
+}
+function next(){const b=beats[cur];
+  if(b.classList.contains('strike')&&!b.classList.contains('shown')){clearTimeout(revealT);b.classList.add('shown');snip();return}
+  show(cur+1,1)}
+function prev(){show(cur-1,-1)}
+
+/* ---------- sound ---------- */
+let ac=null,muted=false,white=null,brown=null,master=null;
+try{muted=localStorage.getItem('sprezz-mute')==='1'}catch(e){}
+const muteBtn=document.getElementById('mute');
+function paintMute(){muteBtn.firstChild.textContent=muted?'muto':'suono'}
+paintMute();
+function ctx(){
+  if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)();
+    master=ac.createGain();master.gain.value=muted?0:1;master.connect(ac.destination);
+    const len=ac.sampleRate*3;white=ac.createBuffer(1,len,ac.sampleRate);brown=ac.createBuffer(1,len,ac.sampleRate);
+    const w=white.getChannelData(0),br=brown.getChannelData(0);let l=0;
+    for(let k=0;k<len;k++){const x=Math.random()*2-1;w[k]=x;l=(l+.02*x)/1.02;br[k]=l*3.5}
+    bedFor(+beats[cur].dataset.ch||0,true);
+  }catch(e){ac=null}}
+  if(ac&&ac.state==='suspended')ac.resume();return ac}
+function noise(dur,f1,f2,q,g,type,t0,buf){
+  const a=ac;if(!a||muted)return null;const t=(t0||a.currentTime);
+  const s=a.createBufferSource();s.buffer=buf||white;
+  const f=a.createBiquadFilter();f.type=type||'bandpass';f.Q.value=q;f.frequency.setValueAtTime(f1,t);f.frequency.exponentialRampToValueAtTime(f2,t+dur);
+  const v=a.createGain();v.gain.setValueAtTime(0,t);v.gain.linearRampToValueAtTime(g,t+dur*.25);v.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(v);v.connect(master);s.start(t,Math.random()*2);s.stop(t+dur+.05);return s}
+function ping(freq,g,dur,t0){const a=ac;if(!a||muted)return;const t=t0||a.currentTime;
+  const o=a.createOscillator(),v=a.createGain();o.frequency.value=freq;o.type='sine';v.gain.setValueAtTime(g,t);v.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  o.connect(v);v.connect(master);o.start(t);o.stop(t+dur+.05)}
+/* effects */
+function turn(dir,tr){if(!ac)return;
+  if(tr==='cloth'){noise(.9,600,2400,.6,.05,'bandpass');return}
+  if(tr==='cut'){noise(.06,3000,2000,1,.05,'bandpass');return}
+  if(tr==='rise'){noise(.7,400,1600,.7,.05,'bandpass');return}
+  noise(.42,dir>0?1800:900,dir>0?700:2200,.9,.05,'bandpass');noise(.12,4200,3000,2,.012,'bandpass')}
+function rustle(d){if(!ac)return;noise(.35,d>0?900:2000,d>0?2400:800,.8,.035,'bandpass')}
+function snip(){if(!ac)return;const t=ac.currentTime;noise(.05,5000,4000,3,.05,'bandpass',t);noise(.05,4400,3600,3,.04,'bandpass',t+.12)}
+let chalkTimer=null;
+function chalkStart(){if(!ac||muted)return;let n=0;
+  const stroke=()=>{noise(.16+Math.random()*.12,2600+Math.random()*1400,1900,3.5,.03,'bandpass');if(++n<4)chalkTimer=setTimeout(stroke,170+Math.random()*120)};stroke()}
+function chalkStop(){clearTimeout(chalkTimer);noise(.3,500,260,1.2,.03,'bandpass')}
+
+/* ambient beds, one per chapter */
+let bed=null,bedCh=-1;
+function loopSrc(buf){const s=ac.createBufferSource();s.buffer=buf;s.loop=true;s.start(0,Math.random()*2);return s}
+function makeBed(ch){
+  const a=ac,out=a.createGain();out.gain.value=0;out.connect(master);const nodes=[],timers=[];
+  const filtered=(buf,type,f,q,g)=>{const s=loopSrc(buf),fl=a.createBiquadFilter(),v=a.createGain();fl.type=type;fl.frequency.value=f;fl.Q.value=q||.7;v.gain.value=g;s.connect(fl);fl.connect(v);v.connect(out);nodes.push(s);return{s,fl,v}};
+  const every=(min,max,fn)=>{const go=()=>{timers.push(setTimeout(()=>{if(!muted)fn();go()},min+Math.random()*(max-min)))};go()};
+  if(ch===0||ch===5){ /* stanza: room tone of an old house */
+    filtered(brown,'lowpass',240,.7,.16);
+    const o=a.createOscillator(),v=a.createGain();o.frequency.value=55;v.gain.value=.006;o.connect(v);v.connect(out);o.start();nodes.push(o);
+  } else if(ch===1){ /* piazza: café murmur, a cup now and then */
+    filtered(brown,'lowpass',400,.7,.10);
+    const m=filtered(white,'bandpass',520,1.1,.012);
+    every(140,320,()=>{const t=a.currentTime;m.v.gain.linearRampToValueAtTime(.004+Math.random()*.02,t+.12);m.fl.frequency.linearRampToValueAtTime(380+Math.random()*420,t+.15)});
+    every(3500,8000,()=>{const t=a.currentTime,f=2300+Math.random()*1200;ping(f,.012,.5,t);ping(f*2.7,.004,.25,t)});
+  } else if(ch===2){ /* bottega: room, a clock, scissors */
+    filtered(brown,'lowpass',300,.7,.13);
+    let k=0;every(980,1020,()=>{noise(.03,k++%2?2600:3100,2000,4,.014,'bandpass')});
+    every(6000,11000,()=>snip());
+  } else if(ch===3){ /* collina: wind across the hill, birds */
+    const w=filtered(brown,'lowpass',500,.9,.22);
+    const lfo=a.createOscillator(),lg=a.createGain();lfo.frequency.value=.07;lg.gain.value=280;lfo.connect(lg);lg.connect(w.fl.frequency);lfo.start();nodes.push(lfo);
+    filtered(white,'highpass',3000,.5,.004);
+    every(3500,9000,()=>{const t=a.currentTime,n=2+Math.floor(Math.random()*3),b0=3000+Math.random()*1200;
+      for(let j=0;j<n;j++){const o=a.createOscillator(),v=a.createGain(),s=t+j*.13;o.frequency.setValueAtTime(b0,s);o.frequency.exponentialRampToValueAtTime(b0*1.35,s+.08);
+        v.gain.setValueAtTime(0,s);v.gain.linearRampToValueAtTime(.007,s+.02);v.gain.exponentialRampToValueAtTime(.0001,s+.1);o.connect(v);v.connect(out);o.start(s);o.stop(s+.12)}});
+  } else if(ch===4){ /* sera: a low held chord under the room */
+    filtered(brown,'lowpass',200,.7,.12);
+    [98,147,196].forEach((f,j)=>{const o=a.createOscillator(),v=a.createGain();o.frequency.value=f+(j-1)*.3;v.gain.value=.0045;o.connect(v);v.connect(out);o.start();nodes.push(o)});
+  }
+  return{out,nodes,timers};
+}
+function bedFor(ch,force){
+  if(!ac||(ch===bedCh&&!force))return;
+  if(ch===5&&bedCh===0)return;
+  const t=ac.currentTime;
+  if(bed){const o=bed;o.out.gain.cancelScheduledValues(t);o.out.gain.setValueAtTime(o.out.gain.value,t);o.out.gain.linearRampToValueAtTime(0,t+2.2);o.timers.forEach(clearTimeout);
+    setTimeout(()=>{o.nodes.forEach(n=>{try{n.stop()}catch(e){}});o.out.disconnect()},2600)}
+  bedCh=ch;bed=makeBed(ch);bed.out.gain.linearRampToValueAtTime(1,t+2.6);
+}
+muteBtn.addEventListener('pointerdown',e=>e.stopPropagation());
+muteBtn.addEventListener('pointerup',e=>e.stopPropagation());
+muteBtn.addEventListener('click',e=>{e.stopPropagation();muted=!muted;paintMute();try{localStorage.setItem('sprezz-mute',muted?'1':'0')}catch(_){}
+  ctx();if(master)master.gain.setTargetAtTime(muted?0:1,ac.currentTime,.15)});
+
+/* ---------- signature: hold for the backstage (beats v, vii, xvii) ---------- */
+let holding=false;
+function canHold(){return !!beats[cur].querySelector('.bk')}
+function holdOn(){if(!canHold()||holding||slipOpen)return;holding=true;beats[cur].classList.add('held');
+  document.querySelectorAll('.hint').forEach(h=>h.classList.add('gone'));chalkStart()}
+function holdOff(){if(!holding)return;holding=false;beats[cur].classList.remove('held');chalkStop()}
+
+/* ---------- gesture ---------- */
+let sx=0,sy=0,down=false,ht=null,moved=false;
+document.addEventListener('pointerdown',e=>{
+  if(e.button>0)return;if(!(e.target.closest&&e.target.closest('a,button')))e.preventDefault();
+  ctx();down=true;moved=false;sx=e.clientX;sy=e.clientY;
+  clearTimeout(ht);ht=setTimeout(()=>{if(down&&!moved)holdOn()},300);
+});
+document.addEventListener('pointermove',e=>{if(!down)return;if(Math.hypot(e.clientX-sx,e.clientY-sy)>12){moved=true;clearTimeout(ht)}});
+function up(e){
+  if(!down)return;down=false;clearTimeout(ht);
+  if(holding){holdOff();return}
+  if(e.type==='pointercancel')return;
+  if(e.target.closest&&e.target.closest('a,button'))return;
+  const dx=e.clientX-sx,dy=e.clientY-sy;
+  if(Math.max(Math.abs(dx),Math.abs(dy))>45){
+    if(Math.abs(dx)>Math.abs(dy))dx<0?next():prev();
+    else if(dy<0){if(!openSlip())next()}
+    else{if(slipOpen)closeSlip();else prev()}
+  } else next();
+}
+document.addEventListener('pointerup',up);
+document.addEventListener('pointercancel',up);
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('dragstart',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>{if(!(e.target.closest&&e.target.closest('#slip')))e.preventDefault()});
+document.addEventListener('keydown',e=>{
+  ctx();
+  if(e.key==='Escape'){closeSlip();return}
+  if(e.key==='ArrowUp'){e.preventDefault();if(!e.repeat)openSlip();return}
+  if(e.key==='ArrowDown'){e.preventDefault();if(e.repeat)return;if(slipOpen)closeSlip();else next();return}
+  if(slipOpen&&[' ','ArrowRight','ArrowLeft','Enter'].includes(e.key)){closeSlip()}
+  if(e.key==='Shift'||e.key==='h'||e.key==='H'){if(!e.repeat)holdOn();return}
+  if([' ','ArrowRight','PageDown','Enter'].includes(e.key)){e.preventDefault();if(!e.repeat)next()}
+  else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();if(!e.repeat)prev()}
+  else if(e.key==='Home')show(0,-1); else if(e.key==='End')show(N-1,1);
+});
+document.addEventListener('keyup',e=>{if(e.key==='Shift'||e.key==='h'||e.key==='H')holdOff()});
+let wl=0;document.addEventListener('wheel',e=>{if(slipOpen)return;const now=Date.now();if(now-wl<900||Math.abs(e.deltaY)<18)return;wl=now;e.deltaY>0?next():prev()},{passive:true});
+window.addEventListener('blur',holdOff);
+
+beats[cur].classList.add('on');paint();load(cur);enter(beats[cur]);
+})();
+</script>
+<script>addEventListener('load',()=>{setTimeout(()=>{try{parent!==window&&parent.postMessage({aw:'beat',i:0,n:document.querySelectorAll('.beat').length||0,init:1},'*')}catch(e){}},300)})</script></body>
+</html>
