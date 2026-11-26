@@ -1,11 +1,11 @@
 {
-  "_about": "Things I’ve made (jere.ing/sites/). tools/directory_build.py turns this into sites/index.html. Order on the page: live first, then newest first. kind: read | generator | look | android | series | world. Sections in BOTTOM (Old) always sit last, under a divider. series items can carry \"count\". thumb: the stand-in drawing until real screenshots exist (see THUMBS in the build script).",
+  "_about": "Things I’ve made (jere.ing/sites/). tools/directory_build.py turns this into sites/index.html. Order on the page: pin: true items first as big cards, then live, then newest; Old last. kind: read | generator | look | android | series | world. Sections in BOTTOM (Old) always sit last, under a divider. series items can carry \"count\". thumb: the stand-in drawing until real screenshots exist (see THUMBS in the build script).",
   "announce": "NOW SHOWING — LOOKBOOK INDEX   ·   COMING SOON — AESTHETIC WORLDS",
   "collection": "COLLECTION 01 — AUTUMN / WINTER 2026",
   "sections": ["Argue", "Learn", "Laugh", "Look", "Use", "Old"],
   "items": [
-    {"id": "worlds", "section": "Look", "made": "2026-11-25", "name": "Aesthetic Worlds", "line": "Six worlds so far. Enter slowly.", "kind": "series", "live": false, "url": "", "thumb": "worlds", "count": 6},
-    {"id": "lookbook", "section": "Look", "made": "2026-11-24", "name": "Lookbook Index", "line": "Every drop, the day it lands.", "kind": "look", "live": true, "url": "https://jere-mee-as.github.io/lookbookindex/", "thumb": "lookbook"},
+    {"id": "worlds", "pin": true, "section": "Look", "made": "2026-11-25", "name": "Aesthetic Worlds", "line": "Six worlds so far. Enter slowly.", "kind": "series", "live": false, "url": "", "thumb": "worlds", "count": 6},
+    {"id": "lookbook", "pin": true, "section": "Look", "made": "2026-11-24", "name": "Lookbook Index", "line": "Every drop, the day it lands.", "kind": "look", "live": true, "url": "https://jere-mee-as.github.io/lookbookindex/", "thumb": "lookbook"},
     {"id": "understand", "section": "Learn", "made": "2026-11-16", "name": "So You Want to Understand", "line": "Every field’s big fight, refereed.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/understanding/?v=6", "thumb": "chalk"},
     {"id": "norms", "section": "Learn", "made": "2026-11-15", "name": "Norm Dictionary", "line": "The rules we say vs. the rules we keep.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/normdictionary/?v=6", "thumb": "dict"},
     {"id": "metaphors", "section": "Learn", "made": "2026-11-15", "name": "Metaphors", "line": "Time is money. Argument is war.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/metaphors/?v=6", "thumb": "riso"},

@@ -397,7 +397,8 @@ def thumb(it):
 
 def main():
     d = json.loads(DATA.read_text(encoding="utf-8"))
-    items = sorted(d["items"], key=lambda i: (i["section"] in BOTTOM, not i["live"], [-ord(c) for c in i["made"]]))
+    # "pin": true puts an item first, as a big card (in pin order); the rest: live first, newest first, Old last.
+    items = sorted(d["items"], key=lambda i: (not i.get("pin"), i["section"] in BOTTOM, not i["live"], [-ord(c) for c in i["made"]]))
     links = SITE["links"]
     top = "".join(f'<a href="{e("mailto:" + l["email"] if l.get("email") else l["href"])}">{e(l["label"].upper())}</a>' for l in links)
     cards, rows, drawn, seen = [], [], [], set()
@@ -409,13 +410,14 @@ def main():
         if it["section"] in BOTTOM and it["section"] not in seen:
             seen.add(it["section"])
             sep = f'<p class="sep" data-sep>{e(it["section"].upper())} — STILL ONLINE, NO LONGER WORKED ON</p>'
-            cards.append(sep); rows.append(sep)
+            # Its own grid, so the dense packing above can't pull old cards up past the divider.
+            cards.append('</div>' + sep.replace('data-sep', 'data-sep="g"') + '<div class="grid">'); rows.append(sep)
         tag = "a" if it["live"] and it["url"] else "div"
         href = f' href="{e(it["url"])}"' if tag == "a" else ' aria-disabled="true"'
         th = thumb(it)
         drawn.append(th)
-        data = f'data-s="{e(it["section"].lower())}" data-q="{e((it["name"] + " " + it["line"] + " " + it["section"] + " " + badge).lower())}"'
-        cards.append(f'<{tag} class="look{" hero" if n == 1 else ""}{"" if it["live"] else " soon"}{" old" if it["section"] in BOTTOM else ""}"{href} {data}>'
+        data = (' data-pin="1"' if it.get("pin") else "") + f' data-s="{e(it["section"].lower())}" data-q="{e((it["name"] + " " + it["line"] + " " + it["section"] + " " + badge).lower())}"'
+        cards.append(f'<{tag} class="look{" hero" if it.get("pin") else ""}{"" if it["live"] else " soon"}{" old" if it["section"] in BOTTOM else ""}"{href} {data}>'
                      f'<span class="th" aria-hidden="true">{th}</span>'
                      f'<span class="cap"><span class="meta"><span>LOOK {no}</span><span>{badge}</span></span>'
                      f'<span class="nm">{e(it["name"].upper())}</span><span class="ln">{e(it["line"])}</span></span></{tag}>')
@@ -483,7 +485,7 @@ a.look:hover{text-decoration:none}a.look:hover .nm{text-decoration:underline;tex
 .ln{font:italic 400 21px/1.12 "Instrument Serif",Georgia,serif;margin-top:2px}
 .hero .ln{font-size:40px}
 .soon .th::after{content:"SOON";position:absolute;top:12px;left:12px;background:var(--bg);font:600 10px Inter,sans-serif;letter-spacing:.14em;padding:5px 9px}
-.sep{grid-column:1/-1;margin:40px 0 12px;padding:10px 12px 0;border-top:1px solid var(--ink);font-size:10px;letter-spacing:.14em}
+.sep{margin:40px 0 0;padding:10px 12px 12px;border-top:1px solid var(--ink);font-size:10px;letter-spacing:.14em}
 .index .sep{margin:32px 0 0;border-top:0}
 .old .th>*{filter:grayscale(1)}a.old:hover .th>*{filter:none}
 .th>*{transition:transform .6s cubic-bezier(.2,.7,.2,1),filter .6s}
@@ -523,15 +525,15 @@ footer{display:flex;justify-content:space-between;gap:16px;margin-top:48px;paddi
 (function(){
 var f='',q='',view='grid',tabs=[].slice.call(document.querySelectorAll('.tabs button')),
     looks=[].slice.call(document.querySelectorAll('.look')),rows=[].slice.call(document.querySelectorAll('.row')),
-    grid=document.getElementById('grid'),index=document.getElementById('index'),vb=document.getElementById('view'),
+    grids=[].slice.call(document.querySelectorAll('.grid')),index=document.getElementById('index'),vb=document.getElementById('view'),
     seps=[].slice.call(document.querySelectorAll('[data-sep]')),none=document.getElementById('none'),count=document.getElementById('count'),input=document.getElementById('q');
 try{if(localStorage.getItem('dir-view')==='index')view='index'}catch(e){}
 function ok(el){return (!f||el.dataset.s===f)&&(!q||el.dataset.q.indexOf(q)>=0)}
-function draw(){var n=0,first=true;
- looks.forEach(function(el){var s=ok(el);el.hidden=!s;if(s)n++;el.classList.toggle('hero',s&&first&&!f&&!q);if(s)first=false});
+function draw(){var n=0;
+ looks.forEach(function(el){var s=ok(el);el.hidden=!s;if(s)n++;el.classList.toggle('hero',s&&!f&&!q&&el.dataset.pin==='1')});
  rows.forEach(function(el){el.hidden=!ok(el)});
- seps.forEach(function(el){el.hidden=!!(f||q)});
- grid.hidden=view!=='grid';index.hidden=view!=='index';none.hidden=n>0;
+ seps.forEach(function(el){el.hidden=!!(f||q)||(el.dataset.sep==='g'&&view!=='grid')});
+ grids.forEach(function(g){g.hidden=view!=='grid'});index.hidden=view!=='index';none.hidden=n>0;
  vb.textContent=view==='grid'?'VIEW: INDEX':'VIEW: GRID';count.textContent=n+(n===1?' LOOK':' LOOKS')}
 tabs.forEach(function(b){b.addEventListener('click',function(){f=b.dataset.f;tabs.forEach(function(t){t.setAttribute('aria-pressed',String(t===b))});draw()})});
 input.addEventListener('input',function(){q=input.value.trim().toLowerCase();draw()});
