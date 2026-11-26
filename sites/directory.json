@@ -1,0 +1,21 @@
+{
+  "_about": "Things I’ve made (jere.ing/sites/). tools/directory_build.py turns this into sites/index.html. Order on the page: live first, then newest first. kind: read | generator | look | android. thumb: the stand-in drawing until real screenshots exist (see THUMBS in the build script).",
+  "announce": "NOW SHOWING — LOOKBOOK INDEX   ·   COMING SOON — AESTHETIC WORLDS",
+  "collection": "COLLECTION 01 — AUTUMN / WINTER 2026",
+  "sections": ["Argue", "Learn", "Laugh", "Look", "Use"],
+  "items": [
+    {"id": "worlds", "section": "Look", "made": "2026-11-25", "name": "Aesthetic Worlds", "line": "Six worlds. Enter slowly.", "kind": "look", "live": false, "url": "", "thumb": "worlds"},
+    {"id": "lookbook", "section": "Look", "made": "2026-11-24", "name": "Lookbook Index", "line": "Every drop, the day it lands.", "kind": "look", "live": true, "url": "https://jere-mee-as.github.io/lookbookindex/", "thumb": "lookbook"},
+    {"id": "understand", "section": "Learn", "made": "2026-11-16", "name": "So You Want to Understand", "line": "Every field’s big fight, refereed.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/understanding/", "thumb": "chalk"},
+    {"id": "norms", "section": "Learn", "made": "2026-11-15", "name": "Norm Dictionary", "line": "The rules we say vs. the rules we keep.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/normdictionary/", "thumb": "dict"},
+    {"id": "metaphors", "section": "Learn", "made": "2026-11-15", "name": "Metaphors", "line": "Time is money. Argument is war.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/metaphors/", "thumb": "riso"},
+    {"id": "studies", "section": "Learn", "made": "2026-11-15", "name": "DiD yOu KnOw?", "line": "Science’s wildest claims, autopsied.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/crazystudies/", "thumb": "tabloid"},
+    {"id": "papers", "section": "Learn", "made": "2026-11-15", "name": "Ten Best Papers", "line": "Any field. Ten papers. Caught up.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/tenbestpapers/", "thumb": "arxiv"},
+    {"id": "cope", "section": "Laugh", "made": "2026-11-15", "name": "Cope Generator", "line": "Excuses on tap. Comebacks included.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/copegenerator/", "thumb": "gen", "q": "What’s the excuse about?", "chips": ["Success", "Dating", "Your look"], "bg": "#121a16", "accent": "#7fd6a0"},
+    {"id": "arg", "section": "Argue", "made": "2026-11-14", "name": "Arguing Philosophy and Politics", "line": "163 philosophies walk into a fight.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/philosophyarguing/", "thumb": "fight"},
+    {"id": "facts", "section": "Argue", "made": "2026-11-14", "name": "Uncomfortable Facts", "line": "True. Sourced. Awkward.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/sosureabout/", "thumb": "label"},
+    {"id": "paper", "section": "Use", "made": "2026-11-13", "name": "Paper", "line": "Your phone, minus the noise.", "kind": "android", "live": true, "url": "https://github.com/jere-mee-as/paper/releases/latest", "thumb": "app"},
+    {"id": "philrage", "section": "Laugh", "made": "2026-11-12", "name": "Philosophy Rage Bait", "line": "Ruin any philosopher’s fan club.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/philosophyragebait/", "thumb": "gen", "q": "Which philosophy?", "chips": ["Stoicism", "Marxism", "Utilitarianism"], "bg": "#16141f", "accent": "#b59cff"},
+    {"id": "ragebait", "section": "Laugh", "made": "2026-11-12", "name": "Rage Bait", "line": "Say this. Watch them melt.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/ragebait/", "thumb": "gen", "q": "What’s the argument?", "chips": ["Politics", "Dating", "Work"], "bg": "#1a1416", "accent": "#ff6a5c"}
+  ]
+}

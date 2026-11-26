@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Sites for arguing · jere.ing</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Sites for arguing: facts, philosophies and rage bait.">
+<link rel="icon" href="/favicon.svg">
+<script>var t='ink';try{var s=localStorage.getItem('st-theme');if(['ink','day','night','paper'].indexOf(s)>=0)t=s}catch(e){}document.documentElement.dataset.theme=t</script>
+<style>
+:root[data-theme=day]{--ink:#111;--dim:#8a8a8a;--faint:#e6e6e6;--bg:#fff;color-scheme:light}
+:root[data-theme=night]{--ink:#ebebeb;--dim:#6c6c6c;--faint:#222;--bg:#0b0b0b;color-scheme:dark}
+:root[data-theme=paper]{--ink:#2b241d;--dim:#9a8c79;--faint:#e3d9c6;--bg:#f5efe3;color-scheme:light}
+:root[data-theme=ink]{--ink:#e9eef6;--dim:#7f93ad;--faint:#22385a;--bg:#0f2240;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.4 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;transition:background-color .3s,color .3s}
+a{color:inherit;text-decoration:none} button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+/* the group names sit in the left margin; everything else starts from one left edge */
+.wrap{max-width:44em;margin:0 auto;padding:clamp(80px,16vh,150px) 28px 14vh}
+h1{font:inherit;font-size:clamp(30px,4.4vw,44px);line-height:1.15;margin:0 0 56px 9rem}
+.grp{display:grid;grid-template-columns:9rem 1fr;align-items:baseline;margin-bottom:40px}
+.lab{color:var(--dim);font-size:14px;text-align:right;padding-right:28px}
+.it{display:block;padding:0 0 20px}
+.n{display:block;font-size:24px;line-height:1.2;transition:opacity .2s}.it:hover .n{opacity:.6}
+.s{display:block;color:var(--dim);font-size:15px;margin-top:3px}
+.back{display:inline-block;margin-left:9rem;color:var(--dim);font-size:14px}.back:hover{color:var(--ink)}
+h1,.grp,.back{opacity:0;animation:up .6s ease-out forwards}.grp:nth-of-type(1){animation-delay:.15s}.grp:nth-of-type(2){animation-delay:.24s}.grp:nth-of-type(3){animation-delay:.33s}.back{animation-delay:.42s}
+#theme{position:fixed;top:18px;right:20px;width:28px;height:28px;color:var(--dim);display:grid;place-items:center}#theme:hover{color:var(--ink)}#theme svg{width:15px;height:15px}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (max-width:640px){h1,.back{margin-left:0}.grp{grid-template-columns:1fr}.lab{text-align:left;padding:0 0 10px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}h1,.grp,.back{opacity:1}}
+</style></head><body>
+<button id="theme" aria-label="Change theme" title="Theme: ink, day, night, paper"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button>
+<main class="wrap">
+  <h1>Sites for arguing</h1>
+  <div class="grp"><div class="lab">Arguing</div><div>
+    <a class="it" href="https://jere-mee-as.github.io/philosophyarguing/"><span class="n">Arguing Philosophy and Politics</span><span class="s">163 philosophies, rage bait included</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/metaphors/"><span class="n">Metaphors</span><span class="s">308 metaphors we live by</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/sosureabout/"><span class="n">Uncomfortable facts</span><span class="s">Sourced, with caveats</span></a>
+  </div></div>
+  <div class="grp"><div class="lab">Generators</div><div>
+    <a class="it" href="https://jere-mee-as.github.io/copegenerator/"><span class="n">Cope generator</span><span class="s">For any excuse</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/philosophyragebait/"><span class="n">Philosophy rage bait generator</span><span class="s">For any philosophy’s fans</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/ragebait/"><span class="n">Rage bait generator</span><span class="s">For any argument</span></a>
+  </div></div>
+  <div class="grp"><div class="lab">Reading</div><div>
+    <a class="it" href="https://jere-mee-as.github.io/crazystudies/"><span class="n">DiD yUo KnOw?</span><span class="s">140 crazy studies, judged</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/normdictionary/"><span class="n">Norm Dictionary</span><span class="s">Listed out, often inconsistent</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/understanding/"><span class="n">So You Want to Understand</span><span class="s">Each field’s big fights, judged</span></a>
+    <a class="it" href="https://jere-mee-as.github.io/tenbestpapers/"><span class="n">Ten Best Papers</span><span class="s">Every field, caught up</span></a>
+  </div></div>
+  <a class="back" href="/">← jere.ing</a>
+</main>
+<script>
+(function(){ const r = document.documentElement, order = ['ink', 'day', 'night', 'paper'];
+  document.getElementById('theme').onclick = () => { const t = order[(order.indexOf(r.dataset.theme) + 1) % order.length];
+    r.dataset.theme = t; try { localStorage.setItem('st-theme', t); } catch(e){} }; })();
+</script>
+</body></html>

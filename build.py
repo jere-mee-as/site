@@ -1,6 +1,7 @@
 """Builds the site's pages.
 
   index.html          the front door, from template.html + site.json (tools/front_door.py)
+  sites/index.html    Things I've made, from sites/directory.json (tools/directory_build.py)
   uplink/index.html   Uplink, the old front page, from uplink/template.html + the report list below
   reports/_archive/   older versions of the site
 
@@ -248,6 +249,10 @@ def main():
     sys.path.insert(0, str(ROOT / "tools"))
     import front_door
     front_door.render([Path(i["href"]).name for i in reversed(items)])
+
+    # Things I've made (jere.ing/sites/), from sites/directory.json.
+    import directory_build
+    directory_build.main()
 
     # Older versions of the site, kept for nostalgia: archive/<name>/template.html is
     # rendered to reports/_archive/<name>/index.html (the deploy step copies reports/).

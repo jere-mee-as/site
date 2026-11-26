@@ -8,7 +8,7 @@ Run build.py first. Cloudflare Pages runs both on every push to main and serves 
   /vesta9/            Vesta 9 (lab/mirrors-edge/vesta9.html)
   /reports/<file>     reports, unchanged
   /lab/...            demos, world docs and archive pages (tools/lab_build.py)
-  /sites/             Sites for arguing (sites/index.html); the sites themselves stay on GitHub Pages
+  /sites/             Things I’ve made (sites/index.html, built by tools/directory_build.py from sites/directory.json); the projects stay on GitHub Pages
 """
 import shutil
 from pathlib import Path
