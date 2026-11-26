@@ -21,7 +21,9 @@ SITE = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 
 e = html.escape
 MONTHS = "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split()
-BADGE = {"read": "READ", "generator": "GENERATOR", "look": "LOOK", "android": "ANDROID"}
+BADGE = {"read": "READ", "generator": "GENERATOR", "look": "LOOK", "android": "ANDROID", "series": "SERIES", "world": "WORLD"}
+# Sections that always sit at the bottom of the page, below everything current.
+BOTTOM = {"Old"}
 
 # Fonts the drawn thumbnails use. Loaded with Google Fonts' text= option, so only
 # the letters the drawings need are downloaded.
@@ -197,6 +199,30 @@ def t_lookbook(it):
             '<span style="flex:1 1 auto;height:44cqw;background:#cfcac2"></span><span style="flex:1 1 auto;height:44cqw;background:#e9e6e1"></span></span></div>')
 
 
+def t_uplink(it):
+    # Uplink: the Marathon "graphic realism" console (the old front page).
+    return ('<div style="position:absolute;inset:0;background:#050506;color:#f2f2ee;font-family:\'Kode Mono\',\'Courier New\',monospace;padding:6cqw;display:flex;flex-direction:column;gap:3cqw">'
+            '<span style="display:flex;justify-content:space-between;font-size:2.6cqw;letter-spacing:.1em;color:#6f706c"><span>UPLINK // RUNNER SHELL</span><span>接続</span></span>'
+            '<span style="height:.6cqw;background:#c2ff16;width:38%"></span>'
+            '<span style="font-family:\'Hubot Sans\',Inter,sans-serif;font-weight:300;font-size:15cqw;line-height:.88;letter-spacing:-.02em;margin-top:6cqw">JERE<br>.ING</span>'
+            '<span style="font-size:3cqw;color:#c2ff16">&gt; root_ <span style="color:#6f706c">// set dressing</span></span>'
+            '<span style="margin-top:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6cqw">'
+            '<span style="height:16cqw;background:#c2ff16"></span><span style="height:16cqw;background:#e0216f"></span><span style="height:16cqw;border:.5cqw solid #f2f2ee"></span>'
+            '<span style="font-size:2.4cqw">01 LAB</span><span style="font-size:2.4cqw">02 COMMS</span><span style="font-size:2.4cqw">03 NOISE</span></span></div>')
+
+
+def t_vesta(it):
+    # Vesta 9: Mirror's Edge city-web site, white, red and navy.
+    return ('<div style="position:absolute;inset:0;background:#fff;color:#1a2140;font-family:\'Barlow Condensed\',\'Arial Narrow\',sans-serif;display:flex;flex-direction:column">'
+            '<span style="height:46cqw;background:linear-gradient(160deg,#eef2f6 0 55%,#e6ebf1 55% 100%);position:relative">'
+            '<span style="position:absolute;right:8cqw;top:0;bottom:0;width:20cqw;background:#e3120b"></span>'
+            '<span style="position:absolute;left:6cqw;top:8cqw;width:26cqw;height:30cqw;border:.5cqw solid #1a2140"></span></span>'
+            '<span style="padding:6cqw;display:flex;flex-direction:column;gap:2.4cqw">'
+            '<span style="font-size:2.6cqw;letter-spacing:.24em;color:#8a94a6">RESIDENCES · CITY WEB</span>'
+            '<span style="font-size:13cqw;font-weight:600;line-height:.9;letter-spacing:.02em">vesta 9</span>'
+            '<span style="font-size:3.4cqw;color:#e3120b;letter-spacing:.1em">ヴェスタ 9 ― WELCOME HOME</span></span></div>')
+
+
 def t_app(it):
     apps = "".join(f"<span>{a}</span>" for a in ["Brave", "Claude", "Discord", "Gmail", "Maps", "YouTube", "Camera", "Phone"])
     return ('<div style="position:absolute;inset:0;background:#e6e1d7;display:flex;justify-content:center;align-items:center">'
@@ -359,7 +385,8 @@ def t_chalk(it):
 
 
 THUMBS = {"fight": t_fight, "label": t_label, "tabloid": t_tabloid, "riso": t_riso, "dict": t_dict, "arxiv": t_arxiv,
-          "chalk": t_chalk, "gen": t_gen, "worlds": t_worlds, "lookbook": t_lookbook, "app": t_app}
+          "chalk": t_chalk, "gen": t_gen, "worlds": t_worlds, "lookbook": t_lookbook, "app": t_app,
+          "uplink": t_uplink, "vesta": t_vesta}
 
 
 def thumb(it):
@@ -370,19 +397,25 @@ def thumb(it):
 
 def main():
     d = json.loads(DATA.read_text(encoding="utf-8"))
-    items = sorted(d["items"], key=lambda i: (not i["live"], [-ord(c) for c in i["made"]]))
+    items = sorted(d["items"], key=lambda i: (i["section"] in BOTTOM, not i["live"], [-ord(c) for c in i["made"]]))
     links = SITE["links"]
     top = "".join(f'<a href="{e("mailto:" + l["email"] if l.get("email") else l["href"])}">{e(l["label"].upper())}</a>' for l in links)
-    cards, rows, drawn = [], [], []
+    cards, rows, drawn, seen = [], [], [], set()
     for n, it in enumerate(items, 1):
         no = f"{n:02d}"
         badge = BADGE[it["kind"]] if it["live"] else "SOON"
+        if it["live"] and it.get("count"):
+            badge += f' · {it["count"]}'
+        if it["section"] in BOTTOM and it["section"] not in seen:
+            seen.add(it["section"])
+            sep = f'<p class="sep" data-sep>{e(it["section"].upper())} — STILL ONLINE, NO LONGER WORKED ON</p>'
+            cards.append(sep); rows.append(sep)
         tag = "a" if it["live"] and it["url"] else "div"
         href = f' href="{e(it["url"])}"' if tag == "a" else ' aria-disabled="true"'
         th = thumb(it)
         drawn.append(th)
         data = f'data-s="{e(it["section"].lower())}" data-q="{e((it["name"] + " " + it["line"] + " " + it["section"] + " " + badge).lower())}"'
-        cards.append(f'<{tag} class="look{" hero" if n == 1 else ""}{"" if it["live"] else " soon"}"{href} {data}>'
+        cards.append(f'<{tag} class="look{" hero" if n == 1 else ""}{"" if it["live"] else " soon"}{" old" if it["section"] in BOTTOM else ""}"{href} {data}>'
                      f'<span class="th" aria-hidden="true">{th}</span>'
                      f'<span class="cap"><span class="meta"><span>LOOK {no}</span><span>{badge}</span></span>'
                      f'<span class="nm">{e(it["name"].upper())}</span><span class="ln">{e(it["line"])}</span></span></{tag}>')
@@ -450,6 +483,10 @@ a.look:hover{text-decoration:none}a.look:hover .nm{text-decoration:underline;tex
 .ln{font:italic 400 21px/1.12 "Instrument Serif",Georgia,serif;margin-top:2px}
 .hero .ln{font-size:40px}
 .soon .th::after{content:"SOON";position:absolute;top:12px;left:12px;background:var(--bg);font:600 10px Inter,sans-serif;letter-spacing:.14em;padding:5px 9px}
+.sep{grid-column:1/-1;margin:40px 0 12px;padding:10px 12px 0;border-top:1px solid var(--ink);font-size:10px;letter-spacing:.14em}
+.index .sep{margin:32px 0 0;border-top:0}
+.old .th>*{filter:grayscale(1)}a.old:hover .th>*{filter:none}
+.th>*{transition:transform .6s cubic-bezier(.2,.7,.2,1),filter .6s}
 .index{border-top:1px solid var(--ink);margin:8px var(--pad) 0}
 .row{display:grid;grid-template-columns:48px minmax(0,1fr) 140px 120px;gap:16px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--rule)}
 a.row:hover{background:#e9e6df;text-decoration:none}
@@ -487,12 +524,13 @@ footer{display:flex;justify-content:space-between;gap:16px;margin-top:48px;paddi
 var f='',q='',view='grid',tabs=[].slice.call(document.querySelectorAll('.tabs button')),
     looks=[].slice.call(document.querySelectorAll('.look')),rows=[].slice.call(document.querySelectorAll('.row')),
     grid=document.getElementById('grid'),index=document.getElementById('index'),vb=document.getElementById('view'),
-    none=document.getElementById('none'),count=document.getElementById('count'),input=document.getElementById('q');
+    seps=[].slice.call(document.querySelectorAll('[data-sep]')),none=document.getElementById('none'),count=document.getElementById('count'),input=document.getElementById('q');
 try{if(localStorage.getItem('dir-view')==='index')view='index'}catch(e){}
 function ok(el){return (!f||el.dataset.s===f)&&(!q||el.dataset.q.indexOf(q)>=0)}
 function draw(){var n=0,first=true;
  looks.forEach(function(el){var s=ok(el);el.hidden=!s;if(s)n++;el.classList.toggle('hero',s&&first&&!f&&!q);if(s)first=false});
  rows.forEach(function(el){el.hidden=!ok(el)});
+ seps.forEach(function(el){el.hidden=!!(f||q)});
  grid.hidden=view!=='grid';index.hidden=view!=='index';none.hidden=n>0;
  vb.textContent=view==='grid'?'VIEW: INDEX':'VIEW: GRID';count.textContent=n+(n===1?' LOOK':' LOOKS')}
 tabs.forEach(function(b){b.addEventListener('click',function(){f=b.dataset.f;tabs.forEach(function(t){t.setAttribute('aria-pressed',String(t===b))});draw()})});

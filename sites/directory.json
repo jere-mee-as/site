@@ -1,10 +1,10 @@
 {
-  "_about": "Things I’ve made (jere.ing/sites/). tools/directory_build.py turns this into sites/index.html. Order on the page: live first, then newest first. kind: read | generator | look | android. thumb: the stand-in drawing until real screenshots exist (see THUMBS in the build script).",
+  "_about": "Things I’ve made (jere.ing/sites/). tools/directory_build.py turns this into sites/index.html. Order on the page: live first, then newest first. kind: read | generator | look | android | series | world. Sections in BOTTOM (Old) always sit last, under a divider. series items can carry \"count\". thumb: the stand-in drawing until real screenshots exist (see THUMBS in the build script).",
   "announce": "NOW SHOWING — LOOKBOOK INDEX   ·   COMING SOON — AESTHETIC WORLDS",
   "collection": "COLLECTION 01 — AUTUMN / WINTER 2026",
-  "sections": ["Argue", "Learn", "Laugh", "Look", "Use"],
+  "sections": ["Argue", "Learn", "Laugh", "Look", "Use", "Old"],
   "items": [
-    {"id": "worlds", "section": "Look", "made": "2026-11-25", "name": "Aesthetic Worlds", "line": "Six worlds. Enter slowly.", "kind": "look", "live": false, "url": "", "thumb": "worlds"},
+    {"id": "worlds", "section": "Look", "made": "2026-11-25", "name": "Aesthetic Worlds", "line": "Six worlds so far. Enter slowly.", "kind": "series", "live": false, "url": "", "thumb": "worlds", "count": 6},
     {"id": "lookbook", "section": "Look", "made": "2026-11-24", "name": "Lookbook Index", "line": "Every drop, the day it lands.", "kind": "look", "live": true, "url": "https://jere-mee-as.github.io/lookbookindex/", "thumb": "lookbook"},
     {"id": "understand", "section": "Learn", "made": "2026-11-16", "name": "So You Want to Understand", "line": "Every field’s big fight, refereed.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/understanding/?v=6", "thumb": "chalk"},
     {"id": "norms", "section": "Learn", "made": "2026-11-15", "name": "Norm Dictionary", "line": "The rules we say vs. the rules we keep.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/normdictionary/?v=6", "thumb": "dict"},
@@ -16,6 +16,8 @@
     {"id": "facts", "section": "Argue", "made": "2026-11-14", "name": "Uncomfortable Facts", "line": "True. Sourced. Awkward.", "kind": "read", "live": true, "url": "https://jere-mee-as.github.io/sosureabout/?v=6", "thumb": "label"},
     {"id": "paper", "section": "Use", "made": "2026-11-13", "name": "Paper", "line": "Your phone, minus the noise.", "kind": "android", "live": true, "url": "https://github.com/jere-mee-as/paper/releases/latest", "thumb": "app"},
     {"id": "philrage", "section": "Laugh", "made": "2026-11-12", "name": "Philosophy Rage Bait", "line": "Ruin any philosopher’s fan club.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/philosophyragebait/", "thumb": "gen", "q": "Which philosophy?", "chips": ["Stoicism", "Marxism", "Utilitarianism"], "bg": "#16141f", "accent": "#b59cff"},
-    {"id": "ragebait", "section": "Laugh", "made": "2026-11-12", "name": "Rage Bait", "line": "Say this. Watch them melt.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/ragebait/", "thumb": "gen", "q": "What’s the argument?", "chips": ["Politics", "Dating", "Work"], "bg": "#1a1416", "accent": "#ff6a5c"}
+    {"id": "ragebait", "section": "Laugh", "made": "2026-11-12", "name": "Rage Bait", "line": "Say this. Watch them melt.", "kind": "generator", "live": true, "url": "https://jere-mee-as.github.io/ragebait/", "thumb": "gen", "q": "What’s the argument?", "chips": ["Politics", "Dating", "Work"], "bg": "#1a1416", "accent": "#ff6a5c"},
+    {"id": "uplink", "section": "Old", "made": "2026-11-09", "name": "Uplink", "line": "The old front page. A runner’s shell.", "kind": "world", "live": true, "url": "/uplink/", "thumb": "uplink"},
+    {"id": "vesta9", "section": "Old", "made": "2026-11-09", "name": "Vesta 9", "line": "A building’s site, somewhere in the City.", "kind": "world", "live": true, "url": "/vesta9/", "thumb": "vesta"}
   ]
 }
